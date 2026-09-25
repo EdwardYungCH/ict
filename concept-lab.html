@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>概念練習室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --bg:#EEF2F0; --surface:#FFFFFF; --sunk:#E3E9E6; --ink:#17262A; --muted:#566A6E; --line:#C9D4D0;
+  --accent:#0E7466; --accent-ink:#FFFFFF; --led:#E39B10; --good:#1F7A3A; --good-bg:#E3F3E7; --bad:#B3261E; --bad-bg:#FBE7E5;
+  --aa:#2E6FB0; --ab:#8A5A00; --ac:#0E7466;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0E1618; --surface:#162226; --sunk:#1D2C31; --ink:#E2ECE9; --muted:#95A9AB; --line:#2C3E43;
+  --accent:#35BFA9; --accent-ink:#0B1413; --led:#F4B23C; --good:#5BD17E; --good-bg:#15301F; --bad:#FF8A80; --bad-bg:#3A1A18;
+  --aa:#7FB2EA; --ab:#E0B25C; --ac:#35BFA9; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0E1618; --surface:#162226; --sunk:#1D2C31; --ink:#E2ECE9; --muted:#95A9AB; --line:#2C3E43;
+  --accent:#35BFA9; --accent-ink:#0B1413; --led:#F4B23C; --good:#5BD17E; --good-bg:#15301F; --bad:#FF8A80; --bad-bg:#3A1A18;
+  --aa:#7FB2EA; --ab:#E0B25C; --ac:#35BFA9; color-scheme:dark; }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;margin:0}
+.wrap{max-width:820px;margin:0 auto;padding-inline:16px;padding-block:24px 48px;display:flex;flex-direction:column;gap:18px}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+h1{font-size:30px;font-weight:900;margin:0;text-wrap:balance}
+.tabs{display:flex;gap:6px;background:var(--sunk);padding:4px;border-radius:12px}
+.tabs button{font:inherit;font-weight:700;border:0;background:transparent;color:var(--muted);padding:8px 16px;border-radius:9px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chips span{font-size:14px;color:var(--muted)}
+.chip{font:inherit;font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:16px}
+.qmeta{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;color:#fff}
+.pill.aa{background:var(--aa)}.pill.ab{background:var(--ab)}.pill.ac{background:var(--ac)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .pill{color:#0B1413} }
+:root[data-theme="dark"] .pill{color:#0B1413}
+.progress{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.bar{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .2s}
+.stem{font-size:19px;line-height:1.7;font-weight:500}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;display:flex;gap:10px}
+.opt b{font-family:var(--mono);color:var(--muted)}
+.opt.right{border-color:var(--good);background:var(--good-bg)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.opt[disabled]{cursor:default}
+.exp{border-radius:10px;padding:12px 14px;background:var(--sunk);font-size:15px}
+.exp strong.ok{color:var(--good)} .exp strong.no{color:var(--bad)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:700;padding:10px 18px;border-radius:10px;border:1px solid var(--accent);cursor:pointer;background:transparent;color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.summary h2{margin:0;font-size:22px}
+.big{font-family:var(--mono);font-size:44px;font-weight:600;color:var(--accent);line-height:1}
+.review{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.review li{border-left:4px solid var(--bad);padding:6px 12px;background:var(--bg);border-radius:0 8px 8px 0}
+.review small{color:var(--muted)}
+.flash{perspective:1200px}
+.fc{position:relative;min-height:230px;border:0;padding:0;width:100%;background:transparent;cursor:pointer;font:inherit;color:inherit}
+.face{position:absolute;inset:0;border-radius:14px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center;backface-visibility:hidden;transition:transform .45s}
+.face.back{transform:rotateY(180deg);background:var(--sunk)}
+.fc.flipped .front{transform:rotateY(180deg)} .fc.flipped .back{transform:rotateY(360deg)}
+.term{font-size:34px;font-weight:900}
+.en{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--accent)}
+.def{font-size:17px;max-width:52ch}
+.hint{font-size:13px;color:var(--muted)}
+.fcnav{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.note{font-size:14px;color:var(--muted)}
+.note a{color:var(--accent)}
+@media (max-width:480px){h1{font-size:24px}.stem{font-size:17px}.term{font-size:28px}}
+@media (prefers-reduced-motion:reduce){.face,.bar i{transition:none}}
+</style>
+<style>[hidden]{display:none!important} body{margin:0} img{max-width:100%}</style>
+</head>
+<body>
+<nav style="max-width:860px;margin:0 auto;padding:12px 16px 0;font-size:14px"><a href="index.html" style="color:var(--accent)">← 返回首頁</a></nav>
+<div class="wrap">
+  <header>
+    <div><div class="eyebrow">HKDSE ICT · 必修 A a / A b / A c</div><h1>概念練習室</h1></div>
+    <div class="tabs" role="group" aria-label="模式">
+      <button type="button" id="tab-quiz" aria-pressed="true">概念自測</button>
+      <button type="button" id="tab-cards" aria-pressed="false">詞彙卡</button>
+    </div>
+  </header>
+  <div class="chips" id="chips"><span>範圍：</span></div>
+
+  <section id="quiz" class="card" aria-live="polite"></section>
+
+  <section id="cards" hidden>
+    <div class="flash"><button type="button" class="fc" id="fc" aria-label="翻轉詞彙卡">
+      <div class="face front"><span class="pill" id="fc-pill"></span><div class="term" id="fc-term"></div><div class="hint">按一下或按空白鍵翻轉</div></div>
+      <div class="face back"><div class="en" id="fc-en"></div><div class="def" id="fc-def"></div></div>
+    </button></div>
+    <div class="fcnav" style="margin-top:14px">
+      <button class="btn" type="button" id="fc-prev">← 上一張</button>
+      <span class="progress" id="fc-pos"></span>
+      <button class="btn" type="button" id="fc-shuffle">洗牌</button>
+      <button class="btn primary" type="button" id="fc-next">下一張 →</button>
+    </div>
+  </section>
+
+  <p class="note">數字計算（進制轉換、補碼、字節、奇偶及檢查數位）請到另一個網頁<a href="bit-lab.html">「位元練習室」</a>練習。</p>
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const TOP = { aa: "A a 資訊處理簡介", ab: "A b 數據組織及數據控制", ac: "A c 數據表示" };
+  // [topic, stem, answer, [distractors], explanation]
+  const Q = [
+    ["aa", "下列哪項是「資訊」而不是「數據」？", "顯示全班本月出席率下降的圖表", ["每位學生每日的出席記錄", "學生的學號", "溫度計的讀數"], "資訊是經處理後有意義、可用作決策的內容；其餘三項都是未經處理的原始事實。"],
+    ["aa", "在網上購物系統中，「送貨員」屬於資訊系統的哪一個部件？", "從業員", ["數據", "流程", "科技"], "使用及維護系統的人屬於從業員。"],
+    ["aa", "網上購物系統中「顧客下單 → 確認付款 → 倉庫執貨 → 安排送貨」屬於哪一個部件？", "流程", ["系統功能", "數據", "科技"], "流程是處理數據的步驟及次序。"],
+    ["aa", "網上購物系統的伺服器及手機應用程式屬於哪一個部件？", "科技", ["流程", "從業員", "數據"], "科技包括硬件、軟件及網絡。"],
+    ["aa", "學生會把問卷結果按年級分類。這屬於哪一個資訊處理過程？", "組織", ["收集", "處理", "分析"], "分類、排序、編排數據屬於組織。"],
+    ["aa", "學生會以試算表計算每個年級的平均分。這屬於哪一個資訊處理過程？", "處理", ["分析", "組織", "演示"], "計算或轉換數據屬於處理。"],
+    ["aa", "學生會比較過去五年的數據，找出參加人數持續上升的活動。這屬於哪一個資訊處理過程？", "分析", ["處理", "組織", "儲存"], "比較數據、找出趨勢或模式以支援決策，屬於分析。"],
+    ["aa", "學生會以電郵把報告寄給校長。這屬於哪一個資訊處理過程？", "傳輸", ["演示", "儲存", "收集"], "把數據或資訊傳送到另一地方屬於傳輸。"],
+    ["aa", "下列哪項**不是**把紙本檔案數碼化的好處？", "可以確保資料不會外洩", ["容易按關鍵字搜尋", "容易建立備份", "多人可同時在網上閱覽"], "數碼化本身不能保證安全，反而需要額外的保安措施。"],
+    ["aa", "下列哪項最能描述「知識型社會」？", "知識成為推動經濟及社會發展的主要動力", ["人們不再需要使用電腦", "只有科技行業需要知識", "網上資訊一般都可靠"], "在知識型社會中，人們要把資訊轉化為知識並持續學習。"],
+    ["aa", "下列哪項做法**不**符合資訊素養？", "只參考搜尋結果中的第一個網站", ["比較多個來源核實資料", "在報告中註明資料來源", "轉發他人相片前先徵求同意"], "搜尋結果的排名不代表可信程度，應比較多個來源。"],
+    ["aa", "下列哪一項屬於「視頻」數據？", "課堂的錄影片段", ["學生的聲線錄音", "掃描的考試卷", "學生名單"], "錄音屬音頻，掃描的試卷屬圖像，名單屬文本。"],
+    ["ab", "「一位學生的全部資料（姓名、班別、學號……）」屬於數據分級組織的哪一層？", "記錄", ["欄位", "檔案", "數據庫"], "一個記錄包含同一對象的所有欄位。"],
+    ["ab", "「班別」屬於數據分級組織的哪一層？", "欄位", ["記錄", "檔案", "數據庫"], "欄位是一項資料的名稱，例如姓名、班別。"],
+    ["ab", "公司每晚把全部數據備份到磁帶。磁帶採用哪種存取方法？", "順序存取", ["直接存取", "隨機存取", "並行存取"], "磁帶要由頭開始逐一讀取，屬順序存取，適合備份。"],
+    ["ab", "客戶服務員要即時查詢某一位客戶的記錄，系統應採用哪種存取方法？", "直接存取", ["順序存取", "磁帶存取", "成批存取"], "直接存取可直接跳到所需記錄，適合即時查詢。"],
+    ["ab", "「年齡必須在 12 至 20 之間」屬於哪一種有效性檢驗？", "範圍檢查", ["長度檢查", "格式檢查", "一致性檢查"], "檢查數值是否在指定範圍內。"],
+    ["ab", "「產品編號必須是 2 個英文字母加 4 位數字，例如 AB1234」屬於哪一種有效性檢驗？", "格式檢查", ["範圍檢查", "固定值檢查", "唯一性檢查"], "檢查數據是否符合指定的排列格式。"],
+    ["ab", "更改密碼時系統要求輸入新密碼兩次。這屬於甚麼？", "驗證（雙重輸入）", ["範圍檢查", "格式檢查", "奇偶檢驗"], "比較兩次輸入是否相同，屬於驗證。"],
+    ["ab", "以下哪個錯誤最**不能**被有效性檢驗發現？", "把 65 分輸入為 56 分", ["把 65 分輸入為 650 分", "分數欄位留空", "在分數欄位輸入「abc」"], "56 分是合理數值，有效性檢驗發現不到，需要驗證（例如校對）。"],
+    ["ab", "網上表格以下拉式選單讓用戶選擇班別，主要好處是", "用戶只能選擇有效的班別", ["檔案會較小", "資料會自動加密", "可以輸入任何班別"], "下拉式選單限制了可選的值，等同固定值檢查。"],
+    ["ab", "「無用輸入，無用輸出」（GIGO）的意思是", "輸入錯誤的數據，輸出的資訊也會錯誤", ["電腦會自動修正錯誤", "無用的檔案應刪除", "輸出越多越好"], "這說明數據控制的重要性。"],
+    ["ab", "下列哪項是單一奇偶檢驗位**不能**做到的？", "找出哪一個位元出錯", ["偵測一個位元出錯", "偵測三個位元出錯", "偵測傳送錯誤"], "單一檢驗位只知道有錯，不知道錯在哪裏；偶數個位元出錯更偵測不到。"],
+    ["ab", "檢查數位**不能**偵測以下哪種錯誤？", "輸入了另一個有效的編號", ["輸錯其中一位數字", "漏打一位數字", "多打一位數字"], "另一個有效編號本身符合規則，需要驗證才能發現。"],
+    ["ab", "下列哪項是「換位錯誤」的例子？", "把 57 輸入為 75", ["把 57 輸入為 58", "把 57 輸入為 5", "漏填了 57"], "換位錯誤是把數字的次序對調。"],
+    ["ac", "下列哪項是模擬數據？", "咪高峰接收到的聲音", ["電腦中的 MP3 檔案", "手機相片檔案", "二進制數字 1010"], "模擬數據是連續變化的數值，例如聲音、溫度。"],
+    ["ac", "用咪高峰把聲音錄到電腦，涉及哪種轉換？", "模擬數據轉為數碼數據", ["數碼數據轉為模擬數據", "數碼數據轉為數碼數據", "沒有任何轉換"], "聲音是模擬數據，電腦只能儲存數碼數據。"],
+    ["ac", "電腦使用二進制的主要原因是", "電子元件以兩種狀態（開／關）表示最可靠", ["二進制比十進制更容易閱讀", "二進制數字較短", "二進制可以表示小數"], "兩種狀態容易分辨，不易出錯。"],
+    ["ac", "在本科中，1 KB 等於多少字節？", "1024", ["1000", "100", "8"], "1 KB ＝ 2¹⁰ ＝ 1024 字節。"],
+    ["ac", "學校要把校徽放在有顏色背景的網頁上，應選用哪種格式？", "PNG", ["JPG", "BMP", "MP4"], "PNG 支援透明背景；JPG 及 BMP 不支援。"],
+    ["ac", "要保存最佳音質的原始錄音以供剪輯，應選用哪種格式？", "WAV", ["MP3", "MP4", "PNG"], "WAV 通常不壓縮，音質最好；MP3 是有損壓縮。"],
+    ["ac", "下列哪種格式採用有損壓縮？", "MP3", ["WAV", "PNG", "ZIP"], "MP3 刪去人較難察覺的聲音資料，不能完全還原。"],
+    ["ac", "把檔案的副檔名由 .bmp 改為 .jpg，會怎樣？", "檔案格式不會改變", ["檔案會被壓縮", "檔案會自動轉換為 JPG", "檔案大小會減半"], "要用軟件匯出或轉換，才會真正改變格式。"],
+    ["ac", "發布學校通告時選用 PDF 的主要原因是", "在不同裝置上顯示相同的版面", ["PDF 最容易修改", "PDF 檔案一定最小", "PDF 不能包含圖像"], "PDF 可以保持排版一致，適合發布。"],
+    ["ac", "要在同一份文件中同時顯示中文、日文及韓文，應使用哪種編碼？", "統一碼（Unicode）", ["ASCII", "大五碼", "國標碼"], "統一碼包含世界上大部分語言的字符。"],
+    ["ac", "以大五碼儲存的文件，用國標碼開啟時通常會", "出現亂碼", ["自動轉為簡體字", "正常顯示", "檔案大小加倍"], "兩種編碼的代碼不同，不能互換。"],
+    ["ac", "其他條件不變，把相片的解像度提高，檔案大小會", "變大", ["變小", "不變", "減半"], "像素越多，需要儲存的數據越多。"],
+    ["ac", "以二進制補碼計算時，兩個正數相加得出負數，表示", "出現溢出誤差", ["計算正確", "出現進位，但結果正確", "數字太小"], "同號相加結果變號，便是溢出。"],
+    ["ac", "8 位元二進制補碼可表示的最大值是", "127", ["128", "255", "256"], "範圍是 −128 至 127。"],
+  ];
+  // [topic, 中文, English, definition]
+  const F = [
+    ["aa", "資訊系統", "information system", "由系統功能、數據、流程、科技及從業員組成，把數據處理成資訊的系統。"],
+    ["aa", "數據", "data", "未經處理的原始事實，例如每位學生的分數。"],
+    ["aa", "資訊", "information", "經處理後有意義、可用作決策的內容，例如全班平均分。"],
+    ["aa", "資訊處理", "information processing", "收集、組織、儲存、處理、分析、傳輸及演示七個過程。"],
+    ["aa", "從業員", "personnel", "使用及維護資訊系統的人，例如收銀員、系統管理員。"],
+    ["aa", "數碼化", "digitisation", "把實物或模擬資料轉換成電腦可以處理的數碼數據。"],
+    ["aa", "資訊時代", "Information Age", "資訊及通訊科技普及，資訊的產生、傳播及取得變得迅速和容易的時代。"],
+    ["aa", "知識型社會", "knowledge-based society", "知識成為推動經濟及社會發展主要動力的社會。"],
+    ["aa", "資訊素養", "information literacy", "有效地搜尋、評估、整理及合乎道德地使用資訊的能力。"],
+    ["ab", "欄位", "field", "一項資料，例如「姓名」、「班別」。"],
+    ["ab", "記錄", "record", "同一對象的所有欄位，例如一位學生的全部資料。"],
+    ["ab", "檔案", "file", "同類記錄的集合，例如全校學生資料表。"],
+    ["ab", "數據庫", "database", "多個相關檔案的集合。"],
+    ["ab", "順序存取", "sequential access", "由頭開始逐一讀取直至找到所需記錄，例如磁帶。"],
+    ["ab", "直接存取", "direct access", "直接跳到所需記錄，例如硬碟、SSD。"],
+    ["ab", "有效性檢驗", "validation check", "檢查輸入的數據是否合理，例如範圍檢查、格式檢查。"],
+    ["ab", "驗證", "verification", "檢查輸入的數據是否與原始資料相同，例如雙重輸入、校對。"],
+    ["ab", "雙重輸入", "double entry", "把數據輸入兩次，由電腦比較兩次是否相同。"],
+    ["ab", "檢查數位", "check digit", "由編號其他數字按規則計算、附在末端的數字，用來偵測輸入錯誤。"],
+    ["ab", "奇偶檢驗", "parity check", "加一個檢驗位令 1 的總數為偶數或奇數，用來偵測傳送錯誤。"],
+    ["ab", "換位錯誤", "transposition error", "把數字的次序對調，例如把 57 輸入為 75。"],
+    ["ab", "無用輸入，無用輸出", "GIGO（garbage in, garbage out）", "輸入錯誤的數據，輸出的資訊也會錯誤。"],
+    ["ac", "模擬數據", "analog data", "連續變化的數值，例如聲音、溫度。"],
+    ["ac", "數碼數據", "digital data", "以不連續的 0 和 1 表示的數據。"],
+    ["ac", "位元", "bit", "二進制的一個數位，0 或 1。"],
+    ["ac", "字節", "byte", "8 個位元。1 KB ＝ 1024 字節。"],
+    ["ac", "十六進制", "hexadecimal", "以 0–9 及 A–F 表示的數字系統；1 位十六進制等於 4 位元。"],
+    ["ac", "二進制補碼", "two's complement", "表示負整數的方法：反轉所有位元再加 1。"],
+    ["ac", "溢出誤差", "overflow error", "結果超出可表示的範圍，所得結果錯誤。"],
+    ["ac", "字符集", "character set", "一組字符及其編碼，例如 ASCII、大五碼、統一碼。"],
+    ["ac", "統一碼", "Unicode", "可表示世界上大部分語言字符的字符集，例如 UTF-8。"],
+    ["ac", "解像度", "resolution", "圖像的像素數目（寬 × 高）。"],
+    ["ac", "色深", "colour depth", "每個像素使用的位元數；8 位元可表示 256 種顏色。"],
+    ["ac", "取樣率", "sampling rate", "每秒對聲音取樣的次數，例如 44,100 Hz。"],
+    ["ac", "有損壓縮", "lossy compression", "刪去部分資料以縮小檔案，不能完全還原，例如 JPG、MP3。"],
+    ["ac", "無損壓縮", "lossless compression", "解壓後與原檔完全相同，例如 PNG、ZIP。"],
+  ];
+
+  const S = { mode: "quiz", topic: "all", round: [], i: 0, score: 0, wrong: [], answered: false, cards: [], ci: 0 };
+  try { const t = localStorage.getItem("clab-topic"); if (["all", "aa", "ab", "ac"].includes(t)) S.topic = t; } catch (e) {}
+  if (location.hash === "#cards") S.mode = "cards";
+
+  const chips = $("chips");
+  [["all", "全部"], ["aa", "A a"], ["ab", "A b"], ["ac", "A c"]].forEach(([k, n]) => { const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = n; b.dataset.k = k;
+    b.addEventListener("click", () => { S.topic = k; try { localStorage.setItem("clab-topic", k); } catch (e) {} renderChips(); S.mode === "quiz" ? newRound() : newDeck(); }); chips.appendChild(b); });
+  const renderChips = () => [...chips.querySelectorAll(".chip")].forEach(b => b.setAttribute("aria-pressed", String(b.dataset.k === S.topic)));
+  const pool = (arr) => arr.filter(x => S.topic === "all" || x[0] === S.topic);
+  const pill = (t) => `<span class="pill ${t}">${TOP[t]}</span>`;
+  const md = (s) => s.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+
+  // ---------- quiz ----------
+  function newRound() { S.round = shuffle(pool(Q)).slice(0, 10).map(q => ({ q, opts: shuffle([q[2], ...q[3]]) })); S.i = 0; S.score = 0; S.wrong = []; showQ(); }
+  function showQ() {
+    const el = $("quiz"); const n = S.round.length;
+    if (S.i >= n) return summary();
+    const { q, opts } = S.round[S.i]; S.answered = false;
+    el.innerHTML = `<div class="qmeta">${pill(q[0])}<span class="progress">第 ${S.i + 1} ／ ${n} 題　答對 ${S.score}</span></div>
+      <div class="bar"><i style="width:${S.i / n * 100}%"></i></div>
+      <div class="stem">${md(q[1])}</div>
+      <div class="opts">${opts.map((o, k) => `<button type="button" class="opt" data-o="${k}"><b>${"ABCD"[k]}</b><span>${o}</span></button>`).join("")}</div>
+      <div id="exp"></div>`;
+    el.querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => choose(+b.dataset.o)));
+  }
+  function choose(k) {
+    if (S.answered) return; S.answered = true;
+    const { q, opts } = S.round[S.i]; const ok = opts[k] === q[2];
+    if (ok) S.score++; else S.wrong.push(q);
+    $("quiz").querySelectorAll(".opt").forEach((b, j) => { b.disabled = true; if (opts[j] === q[2]) b.classList.add("right"); else if (j === k) b.classList.add("wrong"); });
+    $("exp").innerHTML = `<div class="exp"><strong class="${ok ? "ok" : "no"}">${ok ? "答對了。" : `未答對。答案是「${q[2]}」。`}</strong> ${q[4]}</div>
+      <div class="row" style="margin-top:12px"><button type="button" class="btn primary" id="go">${S.i + 1 >= S.round.length ? "查看結果" : "下一題 →"}</button></div>`;
+    $("go").addEventListener("click", () => { S.i++; showQ(); }); $("go").focus({ preventScroll: true });
+  }
+  function summary() {
+    const n = S.round.length;
+    $("quiz").innerHTML = `<div class="summary" style="display:flex;flex-direction:column;gap:14px">
+      <h2>本回合完成</h2><div><span class="big">${S.score}</span><span class="progress">　／ ${n} 題答對</span></div>
+      ${S.wrong.length ? `<div>需要重溫的概念：</div><ul class="review">${S.wrong.map(q => `<li>${md(q[1])}<br><small>答案：${q[2]}　｜　${q[4]}</small></li>`).join("")}</ul>` : `<div>全部答對，可以試試其他範圍。</div>`}
+      <div class="row"><button type="button" class="btn primary" id="again">再來一回合</button><button type="button" class="btn" id="tocards">溫習詞彙卡</button></div></div>`;
+    $("again").addEventListener("click", newRound); $("tocards").addEventListener("click", () => setMode("cards"));
+  }
+
+  // ---------- flashcards ----------
+  function newDeck() { S.cards = pool(F); S.ci = 0; showCard(); }
+  function showCard() { const c = S.cards[S.ci]; $("fc").classList.remove("flipped");
+    $("fc-pill").className = `pill ${c[0]}`; $("fc-pill").textContent = TOP[c[0]]; $("fc-term").textContent = c[1]; $("fc-en").textContent = c[2]; $("fc-def").textContent = c[3];
+    $("fc-pos").textContent = `${S.ci + 1} ／ ${S.cards.length}`; }
+  $("fc").addEventListener("click", () => $("fc").classList.toggle("flipped"));
+  $("fc-next").addEventListener("click", () => { S.ci = (S.ci + 1) % S.cards.length; showCard(); });
+  $("fc-prev").addEventListener("click", () => { S.ci = (S.ci - 1 + S.cards.length) % S.cards.length; showCard(); });
+  $("fc-shuffle").addEventListener("click", () => { S.cards = shuffle(S.cards); S.ci = 0; showCard(); });
+  document.addEventListener("keydown", (e) => { if (S.mode !== "cards") return;
+    if (e.key === "ArrowRight") $("fc-next").click(); else if (e.key === "ArrowLeft") $("fc-prev").click();
+    else if (e.key === " " && document.activeElement === document.body) { e.preventDefault(); $("fc").click(); } });
+
+  function setMode(m) { S.mode = m; $("tab-quiz").setAttribute("aria-pressed", String(m === "quiz")); $("tab-cards").setAttribute("aria-pressed", String(m === "cards"));
+    $("quiz").hidden = m !== "quiz"; $("cards").hidden = m !== "cards"; m === "quiz" ? newRound() : newDeck(); }
+  $("tab-quiz").addEventListener("click", () => setMode("quiz"));
+  $("tab-cards").addEventListener("click", () => setMode("cards"));
+  renderChips(); setMode(S.mode);
+})();
+</script>
+</body>
+</html>

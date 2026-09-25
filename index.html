@@ -1,120 +1,36 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant-HK">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ICT 學習資源中心</title>
-<meta name="description" content="資訊及通訊科技（ICT）學習資源：補充筆記、練習與互動自學工具">
-<link rel="stylesheet" href="assets/css/style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ICT 自學練習室</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+TC:wght@400;700;900&display=swap">
+<style>
+:root{--bg:#EEF2F0;--surface:#FFFFFF;--ink:#17262A;--muted:#566A6E;--line:#C9D4D0;--accent:#0E7466;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+@media (prefers-color-scheme: dark){:root{--bg:#0E1618;--surface:#162226;--ink:#E2ECE9;--muted:#95A9AB;--line:#2C3E43;--accent:#35BFA9;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:40px 48px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+h1{font-size:32px;font-weight:900;margin:0}
+p{margin:0;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+a.tile{display:flex;flex-direction:column;gap:8px;padding:22px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none}
+a.tile:hover,a.tile:focus-visible{border-color:var(--accent);outline:none}
+.tile b{font-size:21px}
+.tile code{font-family:var(--mono);color:var(--accent);font-size:14px}
+.tile span{color:var(--muted);font-size:15px}
+</style>
 </head>
 <body>
-
-<header class="site-header">
-  <h1>📘 ICT 學習資源中心</h1>
-  <p>資訊及通訊科技（Information and Communication Technology）補充筆記、練習與互動自學工具</p>
-</header>
-
-<main>
-
-  <section>
-    <h2 class="section-title">🗂 課題總覽</h2>
-    <div class="card-grid">
-
-      <div class="card">
-        <span class="tag">基礎課題</span>
-        <h3>1. 資訊處理</h3>
-        <p>資料、資訊與知識、資料表達方式、資料處理週期。</p>
-        <div class="links">
-          <a href="notes/information-processing.html">📖 筆記</a>
-          <a href="exercises/information-processing.html">✏️ 練習</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <span class="tag">基礎課題</span>
-        <h3>2. 電腦系統</h3>
-        <p>硬件、軟件、系統架構、輸入輸出裝置與儲存裝置。</p>
-        <div class="links">
-          <a href="notes/computer-systems.html">📖 筆記</a>
-          <a href="exercises/computer-systems.html">✏️ 練習</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <span class="tag">基礎課題</span>
-        <h3>3. 互聯網及其應用</h3>
-        <p>網絡基礎知識、通訊協定、雲端服務與網絡保安。</p>
-        <div class="links">
-          <a href="notes/internet-applications.html">📖 筆記</a>
-          <a href="exercises/internet-applications.html">✏️ 練習</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <span class="tag">基礎課題</span>
-        <h3>4. 資訊及通訊科技與社會</h3>
-        <p>資訊素養、知識產權、私隱、資訊倫理與電腦罪行。</p>
-        <div class="links">
-          <a href="notes/ict-and-society.html">📖 筆記</a>
-          <a href="exercises/ict-and-society.html">✏️ 練習</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <span class="tag">基礎課題</span>
-        <h3>5. 基本程式編寫概念</h3>
-        <p>演算法、流程圖、變數、選擇結構與循環結構。</p>
-        <div class="links">
-          <a href="notes/programming-concepts.html">📖 筆記</a>
-          <a href="exercises/programming-concepts.html">✏️ 練習</a>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <section>
-    <h2 class="section-title">🎮 互動自學工具</h2>
-    <div class="card-grid">
-      <div class="card">
-        <span class="tag">互動測驗</span>
-        <h3>綜合測驗</h3>
-        <p>隨機抽取各課題問題，即時對答案，並記錄最佳分數。</p>
-        <div class="links">
-          <a href="interactive/quiz.html">▶️ 開始測驗</a>
-        </div>
-      </div>
-      <div class="card">
-        <span class="tag">記憶卡</span>
-        <h3>術語閃卡</h3>
-        <p>透過翻卡練習，鞏固各課題的重要詞彙與定義。</p>
-        <div class="links">
-          <a href="interactive/flashcards.html">▶️ 開始練習</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <h2 class="section-title">ℹ️ 使用說明</h2>
-    <div class="card">
-      <p>
-        本網站收錄的筆記與練習頁面為靜態 HTML，可直接在瀏覽器開啟，也可透過
-        <strong>GitHub Pages</strong> 發佈成網站瀏覽。互動測驗與閃卡工具使用
-        純 JavaScript 編寫，毋須安裝任何額外軟件，亦不會上傳任何個人資料。
-      </p>
-      <p>
-        歡迎同學根據自己進度使用：先閱讀筆記，完成對應練習，再以互動測驗
-        自我檢視學習成效。
-      </p>
-    </div>
-  </section>
-
-</main>
-
-<footer class="site-footer">
-  ICT 學習資源中心 · 持續更新中
-</footer>
-
+<div class="wrap">
+  <div><div class="eyebrow">HKDSE ICT · 中四 · 必修 A a – A c</div><h1>ICT 自學練習室</h1></div>
+  <p>兩個練習室的題目都是即時生成，可以重複練習。答完會顯示解說，成績只會保存在你自己的裝置上。</p>
+  <div class="grid">
+    <a class="tile" href="concept-lab.html"><code>概念</code><b>概念練習室</b><span>A a–A c 概念選擇題（每回合 10 題）及中英詞彙卡。</span></a>
+    <a class="tile" href="bit-lab.html"><code>0100 0001</code><b>位元練習室</b><span>進制互換、二進制補碼、位元計算、字符編碼、奇偶檢驗及檢查數位。</span></a>
+  </div>
+</div>
 </body>
 </html>
