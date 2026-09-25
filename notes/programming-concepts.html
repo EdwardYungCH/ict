@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>基本程式編寫概念 - 筆記 | ICT 學習資源中心</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <h1>5. 基本程式編寫概念</h1>
+  <p>Basic Programming Concepts</p>
+</header>
+<main>
+  <a class="back-link" href="../index.html">← 返回主頁</a>
+  <div class="content-page">
+
+    <h2>5.1 演算法 Algorithm</h2>
+    <p>演算法是解決問題的一連串清晰、有限步驟。良好的演算法應具備：</p>
+    <ul>
+      <li><strong>明確性</strong>：每個步驟意思清楚，不含糊。</li>
+      <li><strong>有限性</strong>：步驟數目有限，最終會結束。</li>
+      <li><strong>有效性</strong>：每個步驟都能實際執行。</li>
+    </ul>
+    <p>常見表達方式：<strong>自然語言</strong>、<strong>虛擬碼 Pseudocode</strong>、<strong>流程圖 Flowchart</strong>。</p>
+
+    <h2>5.2 流程圖符號</h2>
+    <table>
+      <tr><th>符號</th><th>意思</th></tr>
+      <tr><td>橢圓形</td><td>開始 / 結束</td></tr>
+      <tr><td>平行四邊形</td><td>輸入 / 輸出</td></tr>
+      <tr><td>矩形</td><td>處理步驟</td></tr>
+      <tr><td>菱形</td><td>條件判斷</td></tr>
+      <tr><td>箭嘴</td><td>流程方向</td></tr>
+    </table>
+
+    <h2>5.3 變數與資料類型</h2>
+    <p><strong>變數 Variable</strong> 是用於儲存資料的容器，執行程式期間其值可以改變。</p>
+    <table>
+      <tr><th>資料類型</th><th>例子</th></tr>
+      <tr><td>整數 Integer</td><td>10, -5, 0</td></tr>
+      <tr><td>浮點數 Float</td><td>3.14, -0.5</td></tr>
+      <tr><td>字串 String</td><td>"Hello", "ICT"</td></tr>
+      <tr><td>布林值 Boolean</td><td>True / False</td></tr>
+    </table>
+
+    <h2>5.4 三種基本程式結構</h2>
+    <h3>5.4.1 順序結構 Sequence</h3>
+    <p>程式按照指令先後次序逐一執行。</p>
+    <pre>顯示 "請輸入你的名字"
+輸入 name
+顯示 "你好，" + name</pre>
+
+    <h3>5.4.2 選擇結構 Selection</h3>
+    <p>根據條件是否成立，決定執行哪一組指令，常見為 <code>IF...THEN...ELSE</code>。</p>
+    <pre>輸入 score
+IF score >= 60 THEN
+    顯示 "及格"
+ELSE
+    顯示 "不及格"
+END IF</pre>
+
+    <h3>5.4.3 循環結構 Iteration / Loop</h3>
+    <p>重複執行某組指令，直到條件不再成立為止。</p>
+    <pre>total = 0
+FOR i = 1 TO 10
+    total = total + i
+NEXT i
+顯示 total</pre>
+    <div class="key-point">
+      常見循環：<strong>FOR 循環</strong>（已知重複次數）、<strong>WHILE 循環</strong>（先檢查條件，符合才執行）、
+      <strong>DO...UNTIL 循環</strong>（先執行，後檢查條件）。
+    </div>
+
+    <h2>5.5 除錯 Debugging</h2>
+    <table>
+      <tr><th>錯誤類型</th><th>說明</th></tr>
+      <tr><td>語法錯誤 Syntax Error</td><td>程式碼不符合語言文法規則，無法執行</td></tr>
+      <tr><td>邏輯錯誤 Logic Error</td><td>程式可執行，但結果不正確</td></tr>
+      <tr><td>執行時錯誤 Runtime Error</td><td>程式執行期間發生錯誤，如除數為零</td></tr>
+    </table>
+
+  </div>
+</main>
+<footer class="site-footer">ICT 學習資源中心</footer>
+</body>
+</html>

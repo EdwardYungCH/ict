@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>綜合測驗 | ICT 學習資源中心</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <h1>🎯 ICT 綜合測驗</h1>
+  <p>隨機抽取各課題問題，即時對答案</p>
+</header>
+<main>
+  <a class="back-link" href="../index.html">← 返回主頁</a>
+
+  <div class="quiz-box" id="quizBox">
+    <div class="quiz-progress" id="progress"></div>
+    <div class="quiz-question" id="question"></div>
+    <div class="quiz-options" id="options"></div>
+    <div class="quiz-controls">
+      <span id="feedback"></span>
+      <button class="btn" id="nextBtn" disabled>下一題</button>
+    </div>
+  </div>
+
+  <div class="quiz-box" id="resultBox" style="display:none;">
+    <div class="score-banner">
+      <p>測驗完成！</p>
+      <div class="score" id="finalScore"></div>
+      <p id="bestScore" style="color:var(--color-text-muted); font-size:0.9rem;"></p>
+      <button class="btn" id="restartBtn">再玩一次</button>
+      <a class="btn secondary" href="../index.html" style="margin-left:0.5rem;">返回主頁</a>
+    </div>
+  </div>
+
+</main>
+<footer class="site-footer">ICT 學習資源中心</footer>
+
+<script src="../assets/js/quiz-data.js"></script>
+<script>
+(function () {
+  const STORAGE_KEY = "ict-quiz-best-score";
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  let questions = shuffle(QUIZ_QUESTIONS);
+  let current = 0;
+  let score = 0;
+  let answered = false;
+
+  const progressEl = document.getElementById("progress");
+  const questionEl = document.getElementById("question");
+  const optionsEl = document.getElementById("options");
+  const feedbackEl = document.getElementById("feedback");
+  const nextBtn = document.getElementById("nextBtn");
+  const quizBox = document.getElementById("quizBox");
+  const resultBox = document.getElementById("resultBox");
+  const finalScoreEl = document.getElementById("finalScore");
+  const bestScoreEl = document.getElementById("bestScore");
+  const restartBtn = document.getElementById("restartBtn");
+
+  function renderQuestion() {
+    answered = false;
+    nextBtn.disabled = true;
+    feedbackEl.textContent = "";
+    const q = questions[current];
+    progressEl.textContent = `第 ${current + 1} / ${questions.length} 題 · 課題：${q.topic}`;
+    questionEl.textContent = q.question;
+    optionsEl.innerHTML = "";
+    q.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "quiz-option";
+      btn.textContent = opt;
+      btn.addEventListener("click", () => selectOption(idx, btn));
+      optionsEl.appendChild(btn);
+    });
+  }
+
+  function selectOption(idx, btn) {
+    if (answered) return;
+    answered = true;
+    const q = questions[current];
+    const allBtns = optionsEl.querySelectorAll(".quiz-option");
+    allBtns.forEach((b) => (b.disabled = true));
+
+    if (idx === q.answer) {
+      btn.classList.add("correct");
+      feedbackEl.textContent = "✅ 答對了！";
+      score++;
+    } else {
+      btn.classList.add("incorrect");
+      allBtns[q.answer].classList.add("correct");
+      feedbackEl.textContent = "❌ 答錯了。";
+    }
+    nextBtn.disabled = false;
+  }
+
+  function nextQuestion() {
+    current++;
+    if (current >= questions.length) {
+      showResult();
+    } else {
+      renderQuestion();
+    }
+  }
+
+  function showResult() {
+    quizBox.style.display = "none";
+    resultBox.style.display = "block";
+    finalScoreEl.textContent = `${score} / ${questions.length}`;
+
+    let best = 0;
+    try {
+      best = Number(localStorage.getItem(STORAGE_KEY) || 0);
+    } catch (e) { best = 0; }
+
+    if (score > best) {
+      best = score;
+      try { localStorage.setItem(STORAGE_KEY, String(best)); } catch (e) {}
+    }
+    bestScoreEl.textContent = `最佳紀錄：${best} / ${questions.length}`;
+  }
+
+  function restart() {
+    questions = shuffle(QUIZ_QUESTIONS);
+    current = 0;
+    score = 0;
+    quizBox.style.display = "block";
+    resultBox.style.display = "none";
+    renderQuestion();
+  }
+
+  nextBtn.addEventListener("click", nextQuestion);
+  restartBtn.addEventListener("click", restart);
+
+  renderQuestion();
+})();
+</script>
+</body>
+</html>
