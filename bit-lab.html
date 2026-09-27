@@ -51,7 +51,7 @@ nav button:focus-visible,.btn:focus-visible,.bit:focus-visible,input:focus-visib
 .prompt{font-size:18px;line-height:1.7}
 .prompt .num,.mono{font-family:var(--mono);font-weight:600;letter-spacing:.03em}
 sub{font-size:.7em}
-.given{font-family:var(--mono);font-size:26px;font-weight:600;letter-spacing:.08em;background:var(--sunk);border-radius:10px;padding:10px 14px;display:inline-block;overflow-x:auto;max-width:100%}
+.given{font-family:var(--mono);font-size:26px;font-weight:600;letter-spacing:.08em;background:var(--sunk);border-radius:10px;padding:10px 14px;display:block;width:fit-content;margin-top:6px;overflow-x:auto;max-width:100%}
 .bitrow{display:flex;flex-direction:column;gap:6px;overflow-x:auto;padding-bottom:4px}
 .bits{display:flex;gap:6px}
 .bit{width:44px;height:52px;flex:0 0 auto;border-radius:8px;border:1px solid var(--line);background:var(--led-off);color:var(--muted);font-family:var(--mono);font-size:22px;font-weight:600;cursor:pointer;transition:background .12s,box-shadow .12s}
@@ -83,7 +83,45 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
 .tips b{color:var(--ink)}
 @media (max-width:480px){h1{font-size:24px}.bit{width:34px;height:44px;font-size:18px}.weights span{width:34px}.given{font-size:20px}.prompt{font-size:16px}}
 @media (prefers-reduced-motion:reduce){.bit{transition:none}}
+.filter{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.filter summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:10px 14px;font-weight:700;font-size:15px}
+.filter summary::-webkit-details-marker{display:none}
+.filter summary::after{content:"▾";color:var(--muted);transition:transform .15s}
+.filter[open] summary::after{transform:rotate(180deg)}
+.filter summary:focus-visible{outline:3px solid var(--led);outline-offset:2px;border-radius:12px}
+.fcount{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--muted);margin-left:auto}
+.fcount.partial{color:var(--accent);font-weight:600}
+.fbody{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px}
+.fact{display:flex;flex-wrap:wrap;gap:8px}
+.fgroup{display:flex;flex-direction:column;gap:6px}
+.fgroup h3{margin:0;font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:14px;line-height:1.4;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sunk);border-color:var(--accent);color:var(--ink);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip[aria-pressed="true"]::before{content:"✓ ";color:var(--accent);font-weight:700}
+.chip:focus-visible,.mini:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.mini{font:inherit;font-size:13px;padding:4px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer}
+.fhint{margin:0;font-size:12px;color:var(--muted)}
+.empty{color:var(--muted);font-size:16px}
+.vs{display:grid;width:fit-content;grid-template-columns:auto auto repeat(var(--w),auto) auto;row-gap:2px;align-items:end;font-family:var(--mono);font-weight:600;background:var(--sunk);border-radius:10px;padding:10px 14px;max-width:100%;overflow-x:auto;line-height:1.3}
+.prompt .vs{font-size:22px;margin-top:6px}
+.steps .vs{font-size:16px;margin:4px 0}
+.vs span{min-width:1.25ch;text-align:center}
+.vs span.g{padding-left:.8ch}
+.vs .lab{font-family:var(--sans);font-size:.75em;color:var(--muted);padding-right:.5ch;text-align:right}
+.vs .co{padding-right:.45ch}
+.vs .cy{font-size:.6em;color:var(--bad)}
+.vs .rl{border-top:2px solid var(--ink);padding-top:2px}
+.vs .cut{color:var(--bad);text-decoration:line-through}
+.vs .bad{color:var(--bad)}
+.vs .nt{font-family:var(--sans);font-weight:400;font-size:.7em;color:var(--muted);padding-left:1.2ch;text-align:left;white-space:nowrap}
+.stmts{display:flex;flex-direction:column;gap:4px;margin-top:8px;font-size:16px}
+.choices.monoc{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.bitrow .chunk{display:flex;flex-direction:column;gap:6px}
+.bitrow.wide{gap:12px}
+@media (max-width:480px){.prompt .vs{font-size:18px}.bit{width:30px}.weights span{width:30px;font-size:9px;letter-spacing:-.03em}.bit.gap,.weights span.gap{margin-left:8px}}
 </style>
+
 <style>[hidden]{display:none!important} body{margin:0} img{max-width:100%}</style>
 </head>
 <body>
@@ -104,6 +142,15 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
 
   <nav id="modes" aria-label="練習類別"></nav>
   <p class="topic-note" id="mode-note"></p>
+
+  <details class="filter" id="filter">
+    <summary><span>題型篩選</span><span class="fcount" id="fcount"></span></summary>
+    <div class="fbody">
+      <div class="fact"><button type="button" class="mini" id="f-all">全選</button><button type="button" class="mini" id="f-none">全部取消</button></div>
+      <div id="fchips"></div>
+      <p class="fhint">點按題型可加入或移除。只會出已選的題型，選擇會記在這部裝置上。</p>
+    </div>
+  </details>
 
   <section class="card" id="card" aria-live="polite">
     <div class="qhead"><span class="qtype" id="qtype"></span><span class="qno" id="qno"></span></div>
@@ -127,7 +174,7 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
   const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const bin = (n, w) => n.toString(2).padStart(w, "0");
   const hex = (n, w = 2) => n.toString(16).toUpperCase().padStart(w, "0");
-  const grp = (s) => s.replace(/(.{4})(?=.)/g, "$1 ");
+  const grp = (s) => s.replace(/\B(?=(.{4})+$)/g, " ");
   const sub = (s, b) => `<span class="mono">${s}</span><sub>${b}</sub>`;
   const norm = (s) => String(s).replace(/[−–]/g, "-").toUpperCase().replace(/[\s₂₁₆]/g, "").replace(/^0X/, "").replace(/^#/, "").replace(/，/g, ",");
   const fmt = (n) => n.toLocaleString("en-US");
@@ -167,30 +214,264 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
   ];
 
   // 二進制補碼
-  G.tc = [
-    () => { const v = R(-128, 127) || -1; const b = tc(v); const steps = v >= 0
-        ? [`${v} 是正數，直接轉換為二進制：${grp(b)}`]
-        : [`先寫出 ${-v} 的 8 位元二進制：${grp(bin(-v, 8))}`, `把所有位元反轉：${grp(bin(~(-v) & 255, 8))}`, `再加 1：${grp(b)}`, `另一方法：256 − ${-v} ＝ ${256 + v} ＝ ${grp(b)}`];
-      return { type: "十進制 → 8 位元補碼", prompt: `以 8 位元二進制補碼表示 <span class="num">${v}</span>。`,
-        input: { kind: "bits", w: 8, weights: ["−128", "64", "32", "16", "8", "4", "2", "1"] }, answer: b, show: sub(grp(b), 2), explain: steps }; },
-    () => { const v = R(-128, 127); const b = tc(v); const w = [-128, 64, 32, 16, 8, 4, 2, 1];
-      const terms = b.split("").map((c, i) => c === "1" ? w[i] : null).filter(x => x !== null);
-      return { type: "8 位元補碼 → 十進制", prompt: `以下是一個 8 位元二進制補碼數字。它的十進制數值是多少？<div class="given">${grp(b)}</div>`,
-        input: { kind: "text", ph: "可以是負數" }, answer: String(v), show: String(v),
-        explain: [`補碼中最左一位的位值是 −128。`, `${terms.length ? terms.join(" + ").replace(/\+ -/g, "− ") : "0"} ＝ ${v}`] }; },
-    () => { const n = pick([4, 5, 6, 8, 10, 12, 16]); const which = pick(["最小值", "最大值"]); const min = -(2 ** (n - 1)), max = 2 ** (n - 1) - 1;
-      const ans = which === "最小值" ? min : max;
-      return { type: "補碼的範圍", prompt: `${n} 位元二進制補碼可表示的<b>${which}</b>是多少？`,
-        input: { kind: "text", ph: "十進制數值" }, answer: String(ans), show: fmt(ans),
-        explain: [`範圍：−2<sup>n−1</sup> 至 2<sup>n−1</sup> − 1`, `n ＝ ${n}：${fmt(min)} 至 ${fmt(max)}`, `負數比正數多一個，因為 0 佔用了一個非負數的位置。`] }; },
-    () => { let a, b, s; const want = Math.random() < 0.5;
-      for (;;) { a = R(-128, 127); b = R(-128, 127); s = a + b; if ((s > 127 || s < -128) === want) break; }
-      const over = s > 127 || s < -128; const raw = ((a & 255) + (b & 255)) & 255;
-      return { type: "溢出判斷", prompt: `以 8 位元二進制補碼計算 <span class="num">${a}</span> ＋ <span class="num">${b}</span>，會否出現溢出誤差？<div class="given" style="font-size:18px">${grp(tc(a))}<br>+ ${grp(tc(b))}</div>`,
-        input: { kind: "choice", opts: ["會溢出", "不會溢出"] }, answer: over ? "會溢出" : "不會溢出", show: over ? "會溢出" : "不會溢出",
-        explain: [`真正的結果是 ${s}；8 位元補碼的範圍是 −128 至 127。`, over ? `${s} 超出範圍，所以溢出。8 位元的結果 ${grp(bin(raw, 8))} 代表 ${raw > 127 ? raw - 256 : raw}，是錯誤的。` : `${s} 在範圍之內，沒有溢出。多出的進位（如有）會被捨棄，不等於溢出。`,
-          `快速判斷：兩個<b>同號</b>的數相加，結果卻變成<b>異號</b>，便是溢出；異號相加一定不會溢出。`] }; },
+  // 二進制補碼（每個題型：name 用於篩選及顯示，group 用於分組）
+  const sv = (b) => parseInt(b, 2) - (b[0] === "1" ? 2 ** b.length : 0);
+  const sN = (v) => String(v).replace("-", "−");
+  const pN = (v) => (v < 0 ? `（${sN(v)}）` : sN(v));
+  const lim = (w) => [-(2 ** (w - 1)), 2 ** (w - 1) - 1];
+  const tcw = (w) => Array.from({ length: w }, (_, i) => (i === 0 ? "−" + 2 ** (w - 1) : String(2 ** (w - 1 - i))));
+  const inv = (s) => s.replace(/[01]/g, (c) => (c === "0" ? "1" : "0"));
+  const wrap = (n, w) => bin(((n % 2 ** w) + 2 ** w) % 2 ** w, w);
+  const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const RV = (w, o = {}) => { const [mn, mx] = lim(w); let v; do { v = R(o.min ?? mn, o.max ?? mx); } while (o.nz && v === 0); return v; };
+  const isOver = (s, w) => { const [mn, mx] = lim(w); return s < mn || s > mx; };
+  const hasCarry = (a, b, w) => parseInt(tc(a, w), 2) + parseInt(tc(b, w), 2) >= 2 ** w;
+  // 直式加法（格線排版）。A、B 為位元字串；o.carry 顯示進位；o.result 顯示結果
+  const vsum = (A, B, o = {}) => {
+    const w = A.length; let c = 0; const res = [], cin = [];
+    for (let i = w - 1; i >= 0; i--) { const s = +A[i] + +B[i] + c; res[i] = String(s % 2); cin[i] = c; c = s >> 1; }
+    const cells = (arr, cls = "") => arr.map((x, i) => `<span class="${cls}${i && (w - i) % 4 === 0 ? " g" : ""}">${x}</span>`).join("");
+    let h = `<div class="vs" style="--w:${w}">`;
+    if (o.carry) h += `<span class="lab">進位</span><span class="co"></span>${cells(cin.map((x) => (x ? "1" : "")), "cy")}<span class="nt"></span>`;
+    h += `<span class="lab"></span><span class="co"></span>${cells(A.split(""))}<span class="nt">${o.na || ""}</span>`;
+    h += `<span class="lab">${o.op || "+"}</span><span class="co"></span>${cells(B.split(""))}<span class="nt">${o.nb || ""}</span>`;
+    if (o.result) h += `<span class="lab"></span><span class="co rl${c ? " cut" : ""}">${c ? "1" : ""}</span>${cells(res, "rl" + (o.bad ? " bad" : ""))}<span class="nt">${o.nr || ""}${c ? "　最左進位捨棄" : ""}</span>`;
+    return h + "</div>";
+  };
+  const verdict = (a, b, w) => {
+    const [mn, mx] = lim(w); const s = a + b; const Rb = wrap(s, w); const over = isOver(s, w); const cy = hasCarry(a, b, w);
+    const sg = (v) => (v < 0 ? "負" : "正");
+    return over
+      ? `真正結果 ${sN(a)} ＋ ${pN(b)} ＝ ${sN(s)}，超出 ${w} 位元範圍（${sN(mn)} 至 ${mx}）→ <b>溢出</b>。保留的 ${grp(Rb)} 代表 ${sN(sv(Rb))}，是錯誤的（${sg(a)} ＋ ${sg(b)} 得${sg(sv(Rb))}）。`
+      : `真正結果 ${sN(a)} ＋ ${pN(b)} ＝ ${sN(s)}，在範圍（${sN(mn)} 至 ${mx}）之內 → <b>沒有溢出</b>${cy ? "。最左邊雖有進位，捨棄後答案仍然正確，進位不等於溢出" : ""}。`;
+  };
+  const fullSum = (a, b, w) => vsum(tc(a, w), tc(b, w), { carry: true, result: true, na: `（${sN(a)}）`, nb: `（${sN(b)}）`, nr: `（${sN(sv(wrap(a + b, w)))}）`, bad: isOver(a + b, w) });
+  const bitsIn = (w, weights) => ({ kind: "bits", w, weights: weights === undefined ? tcw(w) : weights });
+  const addStr = (a, b, w) => `${grp(tc(a, w))} + ${grp(tc(b, w))}`;
+
+  const TC = [];
+  const T = (group, name, fn) => TC.push({ group, name, fn });
+
+  // ----- 轉換 -----
+  T("轉換", "十進制 → 補碼數字", () => {
+    const w = pick([8, 8, 4]); const v = RV(w, { nz: true }); const b = tc(v, w);
+    const explain = v >= 0 ? [`${v} 是正數，直接轉換為 ${w} 位元二進制：${grp(b)}`]
+      : [`先寫出 ${-v} 的 ${w} 位元二進制：${grp(bin(-v, w))}`, `反碼（所有位元反轉）：${grp(inv(bin(-v, w)))}`, `加 1：${grp(b)}`, `另一方法：2<sup>${w}</sup> − ${-v} ＝ ${2 ** w + v} ＝ ${grp(b)}`];
+    return { prompt: `以 ${w} 位元二進制補碼表示 <span class="num">${sN(v)}</span>。`, input: bitsIn(w), answer: b, show: sub(grp(b), 2), explain };
+  });
+  T("轉換", "補碼數字 → 十進制", () => {
+    const w = pick([8, 8, 4]); const v = RV(w); const b = tc(v, w); const wt = tcw(w).map((x) => +x.replace("−", "-"));
+    const terms = b.split("").map((c, i) => (c === "1" ? wt[i] : null)).filter((x) => x !== null);
+    return { prompt: `以下是一個 ${w} 位元二進制補碼數字。它的十進制數值是多少？<div class="given">${grp(b)}</div>`,
+      input: { kind: "text", ph: "可以是負數" }, answer: String(v), show: sN(v),
+      explain: [`補碼中最左一位的位值是 ${sN(wt[0])}。`, `${terms.length ? terms.map(sN).join(" ＋ ") : "0"} ＝ ${sN(v)}`,
+        ...(v < 0 ? [`亦可：當作無符號數是 ${parseInt(b, 2)}，減 2<sup>${w}</sup>（${2 ** w}）得 ${sN(v)}。`] : [])] };
+  });
+  T("轉換", "二進制 → 指定位元補碼", () => {
+    const w = pick([8, 8, 4, 6]); const [mn, mx] = lim(w); const posQ = Math.random() < 0.15;
+    const m = posQ ? R(1, mx) : R(1, -mn); const mb = m.toString(2); const v = posQ ? m : -m; const b = tc(v, w); const pad = mb.padStart(w, "0");
+    const explain = posQ ? [`正數只需在左邊補 0 至 ${w} 位元：${grp(pad)}`]
+      : [`補 0 至 ${w} 位元：${mb} → ${grp(pad)}`, `反碼：${grp(inv(pad))}`, `加 1：${grp(b)}`, `驗算：${mb}<sub>2</sub> ＝ ${m}；${grp(b)} ＝ ${sN(v)} ✓`, `要先補 0 才反碼。先反碼再補 0，首位會變成 0，結果變成正數。`];
+    return { prompt: `以 ${w} 位元二進制補碼表示 <span class="num">${posQ ? "+" : "−"}${mb}<sub>2</sub></span>。`, input: bitsIn(w), answer: b, show: sub(grp(b), 2), explain };
+  });
+  T("轉換", "補碼與補碼數字", () => {
+    const w = pick([8, 8, 4]); const [, mx] = lim(w); const X = R(1, mx) * pick([1, -1]); const ask = pick(["補碼", "補碼數字"]);
+    const ans = ask === "補碼" ? tc(-X, w) : tc(X, w);
+    return { prompt: `寫出 <span class="num">${sN(X)}</span> 的 ${w} 位元<b>二進制${ask}</b>。`, input: bitsIn(w), answer: ans, show: sub(grp(ans), 2),
+      explain: [ask === "補碼" ? `「${sN(X)} 的二進制補碼」是對 ${sN(X)} 進行「反碼加 1」的結果，即 ${sN(-X)} 的補碼數字。` : `「${sN(X)} 的二進制補碼數字」是 ${sN(X)} 本身以補碼表示出來的樣子。`,
+        `${sN(X)} 的補碼數字：${grp(tc(X, w))}；${sN(-X)} 的補碼數字：${grp(tc(-X, w))}`, `所以答案是 ${grp(ans)}。先看清楚題目有沒有「數字」二字。`] };
+  });
+  T("轉換", "負補碼 → 正數（減 1、反碼）", () => {
+    const w = pick([8, 8, 4]); const [mn] = lim(w); const v = R(mn + 1, -1); const b = tc(v, w); const m1 = tc(v - 1, w); const pos = inv(m1);
+    return { prompt: `${w} 位元二進制補碼數字 <div class="given">${grp(b)}</div> 是負數。用「減 1 → 反碼」求出它的<b>正數</b>，以 ${w} 位元二進制作答。`,
+      input: { kind: "bits", w }, answer: pos, show: `${sub(grp(pos), 2)}（${-v}）`,
+      explain: [`減 1：${grp(b)} − 1 ＝ ${grp(m1)}`, `反碼：${grp(pos)} ＝ ${-v}`, `所以 ${grp(b)} 代表 ${sN(v)}。`, `亦可用「反碼加 1」：${grp(inv(b))} ＋ 1 ＝ ${grp(pos)}，結果相同。`] };
+  });
+  T("轉換", "同一組位元，兩種讀法", () => {
+    const w = pick([8, 8, 4]); const [mn, mx] = lim(w); const neg = Math.random() < 0.8; const v = neg ? R(mn, -1) : R(1, mx); const b = tc(v, w); const u = parseInt(b, 2);
+    const f = (a, c) => `無符號 ${sN(a)}；補碼 ${sN(c)}`; const ans = f(u, v);
+    const cands = [f(u, -(u & (2 ** (w - 1) - 1))), f(u, v + 1), f(v, u), f(u, -u), f(u, u - 2 ** (w - 1)), f(-u, v)].filter((x, i, a) => x !== ans && a.indexOf(x) === i);
+    const wt = tcw(w).map((x) => +x.replace("−", "-")); const terms = b.split("").map((c, i) => (c === "1" ? wt[i] : null)).filter((x) => x !== null);
+    return { prompt: `位元樣式 <div class="given">${grp(b)}</div> 分別當作 ${w} 位元<b>無符號整數</b>及 ${w} 位元<b>二進制補碼數字</b>，代表的十進制數值是：`,
+      input: { kind: "choice", opts: shuffle([ans, ...shuffle(cands).slice(0, 3)]) }, answer: ans, show: ans,
+      explain: [`無符號整數：所有位值都是正數，${grp(b)} ＝ ${u}`, `補碼數字：首位位值是 ${sN(wt[0])}，${terms.map(sN).join(" ＋ ")} ＝ ${sN(v)}`,
+        neg ? `首位是 1 時，補碼數值 ＝ 無符號數值 − 2<sup>${w}</sup>：${u} − ${2 ** w} ＝ ${sN(v)}` : `首位是 0，兩種讀法相同。`] };
+  });
+  T("轉換", "十六進制表示的補碼", () => {
+    const w = Math.random() < 0.75 ? 8 : 16; const d = w / 4; const [mn, mx] = lim(w); const v = Math.random() < 0.7 ? R(mn, -1) : R(0, mx);
+    const b = tc(v, w); const hx = parseInt(b, 2).toString(16).toUpperCase().padStart(d, "0"); const groups = b.match(/.{4}/g);
+    if (Math.random() < 0.5) return { prompt: `某 ${w} 位元二進制補碼數字以十六進制表示為 ${sub(hx, 16)}。它的十進制數值是多少？`,
+      input: { kind: "text", ph: "可以是負數" }, answer: String(v), show: sN(v),
+      explain: [`每個十六進制位換成 4 位元：${hx.split("").map((c) => `${c} → ${bin(parseInt(c, 16), 4)}`).join("，")}`, `${grp(b)}：首位是 ${b[0]}，所以${v < 0 ? "是負數" : "是正數或 0"}。`,
+        v < 0 ? `無符號值 ${fmt(parseInt(b, 2))} − 2<sup>${w}</sup>（${fmt(2 ** w)}）＝ ${sN(v)}` : `直接計算：${v}`] };
+    return { prompt: `以十六進制寫出 <span class="num">${sN(v)}</span> 的 ${w} 位元二進制補碼數字。`, input: { kind: "text", ph: w === 8 ? "例如 F0" : "例如 FF9C" },
+      answer: hx, accept: [hx.replace(/^0+(?=.)/, "")], show: sub(hx, 16),
+      explain: [...(v < 0 ? [`${-v} 的 ${w} 位元二進制：${grp(bin(-v, w))}`, `反碼加 1：${grp(b)}`] : [`${v} 的 ${w} 位元二進制：${grp(b)}`]),
+        `每 4 位一組換成十六進制：${groups.map((g) => `${g} → ${parseInt(g, 2).toString(16).toUpperCase()}`).join("，")}`, `答案：${hx}<sub>16</sub>`] };
+  });
+  T("轉換", "符號延伸", () => {
+    const [w0, w1] = pick([[4, 8], [4, 8], [6, 8], [8, 16]]); const [mn, mx] = lim(w0); const v = Math.random() < 0.7 ? R(mn, -1) : R(0, mx); const b0 = tc(v, w0), b1 = tc(v, w1);
+    return { prompt: `把 ${w0} 位元二進制補碼數字 <div class="given">${grp(b0)}</div> 延伸為 ${w1} 位元，而數值保持不變。`, input: bitsIn(w1), answer: b1, show: sub(grp(b1), 2),
+      explain: [`首位是 ${b0[0]}，所以左邊新加的 ${w1 - w0} 個位元全部補 ${b0[0]}。`, `${grp(b0)} → ${grp(b1)}，兩者都代表 ${sN(v)}。`,
+        ...(v < 0 ? [`若錯誤地補 0，會得到 ${grp(b0.padStart(w1, "0"))}，即 +${parseInt(b0, 2)}。`] : [])] };
+  });
+
+  // ----- 範圍與概念 -----
+  T("範圍與概念", "補碼的範圍", () => {
+    const n = pick([4, 5, 6, 8, 10, 12, 16]); const which = pick(["最小值", "最大值"]); const min = -(2 ** (n - 1)), max = 2 ** (n - 1) - 1;
+    const ans = which === "最小值" ? min : max;
+    return { prompt: `${n} 位元二進制補碼可表示的<b>${which}</b>是多少？`, input: { kind: "text", ph: "十進制數值" }, answer: String(ans), show: sN(fmt(ans)),
+      explain: [`範圍：−2<sup>n−1</sup> 至 2<sup>n−1</sup> − 1`, `n ＝ ${n}：${sN(fmt(min))} 至 ${fmt(max)}`, `負數比正數多一個，因為 0 佔用了一個非負數的位置。`] };
+  });
+  T("範圍與概念", "特別樣式與 −128 特例", () => {
+    const k = R(0, 2);
+    if (k === 0) {
+      const w = pick([4, 6, 8, 8]); const which = pick(["最大值", "最小值", "0", "−1"]); const [mn, mx] = lim(w);
+      const val = { "最大值": mx, "最小值": mn, "0": 0, "−1": -1 }[which]; const b = tc(val, w);
+      const feat = { "最大值": "首位 0，其餘全部是 1", "最小值": "首位 1，其餘全部是 0", "0": "全部是 0", "−1": "全部是 1" }[which];
+      return { prompt: `寫出 ${w} 位元二進制補碼中${which.length > 2 ? `<b>${which}</b>` : `數值 <span class="num">${which}</span> `}的位元樣式。`, input: bitsIn(w), answer: b, show: `${sub(grp(b), 2)}（${sN(val)}）`,
+        explain: [`${which}：${feat}（任何位元長度都適用）。`, `${grp(b)} ＝ ${sN(val)}`] };
+    }
+    if (k === 1) {
+      const w = pick([4, 8, 8, 16]); const mn = -(2 ** (w - 1)); const b = tc(mn, w);
+      return { prompt: `對 ${w} 位元二進制補碼數字 <div class="given">${grp(b)}</div> 進行「反碼加 1」，結果是甚麼？`, input: bitsIn(w), answer: b, show: sub(grp(b), 2),
+        explain: [`${grp(b)} 是最小值 ${sN(fmt(mn))}。`, `反碼：${grp(inv(b))}；加 1：${grp(b)}，得回自己。`, `原因：+${fmt(-mn)} 超出 ${w} 位元範圍（最大值是 ${fmt(-mn - 1)}），所以最小值沒有可以表示的相反數。`] };
+    }
+    return { prompt: `8 位元二進制補碼中，下列哪個數值的<b>相反數不能</b>以 8 位元補碼表示？`, input: { kind: "choice", opts: shuffle(["−128", "−127", "−1", "127"]) }, answer: "−128", show: "−128",
+      explain: [`−128 的相反數是 +128，但 8 位元補碼的最大值是 127。`, `−127 與 127、−1 與 1 都在範圍之內。`, `對 1000 0000 反碼加 1，會得回 1000 0000。`] };
+  });
+  T("範圍與概念", "補碼數字排序", () => {
+    const w = Math.random() < 0.7 ? 4 : 8; const [mn, mx] = lim(w); let vals;
+    do { const s = new Set(); while (s.size < 4) s.add(R(mn, mx)); vals = [...s]; } while (!(vals.filter((v) => v < 0).length >= 2 && vals.some((v) => v >= 0)));
+    const pats = vals.map((v) => tc(v, w)); const lab = (i) => `(${i + 1})`;
+    const order = (key) => [0, 1, 2, 3].sort((i, j) => key(i) - key(j)).map(lab).join(" < ");
+    const ans = order((i) => vals[i]);
+    const set = new Set([order((i) => parseInt(pats[i], 2)), order((i) => -vals[i]), order((i) => (pats[i][0] === "1" ? -1 : 1) * parseInt(pats[i].slice(1), 2)), order((i) => -parseInt(pats[i], 2))]);
+    set.delete(ans); let guard = 0; while (set.size < 3 && guard++ < 50) { const p = shuffle([0, 1, 2, 3]).map(lab).join(" < "); if (p !== ans) set.add(p); }
+    const opts = shuffle([ans, ...shuffle([...set]).slice(0, 3)]);
+    return { prompt: `把下列 ${w} 位元二進制補碼數字<b>由小至大</b>排列。<div class="given" style="font-size:20px;line-height:1.5">${pats.map((p, i) => `${lab(i)} ${grp(p)}`).join("<br>")}</div>`,
+      input: { kind: "choice", opts, mono: true }, answer: ans, show: esc(ans),
+      explain: [...pats.map((p, i) => `${lab(i)} ${grp(p)} ＝ ${sN(vals[i])}`), `由小至大：${esc(ans)}`, `先分正負：首位是 1 的一定較小；負數之間，${grp("1" + "0".repeat(w - 1))} 最小，${grp("1".repeat(w))}（−1）最大。`] };
+  });
+  const TF = [
+    ["二進制補碼中，0 只有一種表示方法。", true, "0 只有全部是 0 一種表示；+0、−0 兩種表示只出現在符號及值和一補碼。"],
+    ["最左一位是 1 的二進制補碼數字一定是負數。", true, "首位位值是負數，其餘正位值加起來也不足以抵銷。"],
+    ["n 位元二進制補碼可表示的負數比正數多一個。", true, "範圍是 −2ⁿ⁻¹ 至 2ⁿ⁻¹ − 1，0 佔用了一個非負數的位置。"],
+    ["8 位元二進制補碼數字 1111 1111 代表 −1。", true, "−128 ＋ 127 ＝ −1。"],
+    ["一正一負兩個數相加，一定不會出現溢出誤差。", true, "和一定介乎兩數之間，不會超出範圍。"],
+    ["把 4 位元補碼數字延伸至 8 位元時，負數要在左邊補 1。", true, "符號延伸：用首位的數值填滿新加的位元。"],
+    ["8 位元二進制補碼的最大值是 0111 1111。", true, "首位 0，其餘全部是 1，即 127。"],
+    ["減法 A − B 可以用 A ＋（−B）計算。", true, "先把 B 反碼加 1 得到 −B，再相加。"],
+    ["二進制補碼的算術運算中不會出現溢出誤差。", false, "結果超出範圍便會溢出，例如 127 ＋ 1。（DSE 2019 甲1）"],
+    ["8 位元二進制補碼的最小值是 1111 1111。", false, "1111 1111 是 −1；最小值是 1000 0000（−128）。（DSE 2019 甲1）"],
+    ["8 位元二進制補碼的範圍是 −127 至 127。", false, "應是 −128 至 127。"],
+    ["補碼加法中，最左一位出現進位便代表溢出。", false, "例如 −1 ＋ 1 有進位，但結果 0 正確。"],
+    ["兩個負數相加，結果的首位一定是 1。", false, "溢出時結果會變成正數，例如 −100 ＋（−50）得 0110 1010。"],
+    ["把一個補碼數字的所有位元反轉，便得到它的相反數。", false, "反轉後還要加 1；只反轉得到的是一補碼。"],
+    ["8 位元二進制補碼數字 1000 0000 代表 −0。", false, "1000 0000 代表 −128；補碼沒有 −0。"],
+    ["4 位元二進制補碼數字 1000 代表 8。", false, "首位位值是 −8，所以 1000 代表 −8。"],
+    ["對 −128 的 8 位元補碼進行「反碼加 1」，會得到 +128。", false, "+128 超出範圍，結果仍是 1000 0000。"],
+    ["兩個正數相加一定會出現溢出誤差。", false, "只有結果超過最大值（8 位元是 127）才會溢出。"],
   ];
+  const COMBOS = ["只有 (1)", "只有 (2)", "只有 (3)", "只有 (1) 和 (2)", "只有 (1) 和 (3)", "只有 (2) 和 (3)", "(1)、(2) 和 (3)"];
+  const comboOf = (t) => { const idx = t.map((x, i) => (x ? i + 1 : 0)).filter(Boolean); return idx.length === 3 ? COMBOS[6] : idx.length === 1 ? `只有 (${idx[0]})` : `只有 (${idx[0]}) 和 (${idx[1]})`; };
+  T("範圍與概念", "概念判斷（DSE 句子題）", () => {
+    let st; do { st = shuffle(TF).slice(0, 3); } while (!st.some((x) => x[1]));
+    const ans = comboOf(st.map((x) => x[1]));
+    const opts = [ans, ...shuffle(COMBOS.filter((c) => c !== ans)).slice(0, 3)].sort((a, b) => COMBOS.indexOf(a) - COMBOS.indexOf(b));
+    return { prompt: `下列哪些關於二進制補碼的句子是正確的？<div class="stmts">${st.map((x, i) => `<div>(${i + 1}) ${x[0]}</div>`).join("")}</div>`,
+      input: { kind: "choice", opts }, answer: ans, show: ans,
+      explain: st.map((x, i) => `(${i + 1}) ${x[1] ? "✓ 正確" : "✗ 錯誤"}：${x[2]}`) };
+  });
+
+  // ----- 加法與溢出 -----
+  T("加法與溢出", "溢出判斷", () => {
+    const w = Math.random() < 0.75 ? 8 : 4; const want = Math.random() < 0.5; let a, b;
+    for (;;) { a = RV(w); b = RV(w); if (isOver(a + b, w) === want) break; }
+    return { prompt: `以 ${w} 位元二進制補碼計算下式，會否出現溢出誤差？${vsum(tc(a, w), tc(b, w))}`,
+      input: { kind: "choice", opts: ["會溢出", "不會溢出"] }, answer: want ? "會溢出" : "不會溢出", show: want ? "會溢出" : "不會溢出",
+      explain: [fullSum(a, b, w), verdict(a, b, w), `快速判斷：兩個<b>同號</b>的數相加，結果卻變成<b>異號</b>，便是溢出；異號相加一定不會溢出。`] };
+  });
+  T("加法與溢出", "補碼加法：計出結果", () => {
+    const w = Math.random() < 0.7 ? 8 : 4; const [mn, mx] = lim(w);
+    if (w === 8 && Math.random() < 0.3) { // DSE 2025 甲4：結果為 0000 0000
+      const X = R(2, mx - 1); const N = tc(-X, 8);
+      const cand = shuffle([[N, inv(N)], [tc(mx, 8), tc(1, 8)], [N, tc(X + 1, 8)], [tc(0, 8), tc(1, 8)]]).slice(0, 3);
+      const f = ([A, B]) => `${grp(A)} + ${grp(B)}`; const ans = f([N, tc(X, 8)]);
+      const all = [[N, tc(X, 8)], ...cand];
+      return { prompt: `下列哪一項 8 位元二進制補碼加法的結果是 <span class="num">0000 0000</span>？`, input: { kind: "choice", opts: shuffle(all.map(f)), mono: true }, answer: ans, show: ans,
+        explain: [...all.map(([A, B]) => `${grp(A)} + ${grp(B)}：${sN(sv(A))} ＋ ${pN(sv(B))} → ${grp(wrap(sv(A) + sv(B), 8))}`), `結果為 0，兩個數必須互為相反數：${grp(N)}（${sN(-X)}）的相反數要「反碼加 1」，得 ${grp(tc(X, 8))}（${X}）。`, `只反碼（${grp(inv(N))}）相加會得到 1111 1111。`] };
+    }
+    const kind = pick(["carry", "over", "plain", "zero"]); let a, b;
+    for (;;) {
+      if (kind === "zero") { a = RV(w, { min: mn + 1, nz: true }); b = -a; break; }
+      a = RV(w); b = RV(w); const over = isOver(a + b, w), cy = hasCarry(a, b, w);
+      if ((kind === "carry" && cy && !over) || (kind === "over" && over) || (kind === "plain" && !cy && !over)) break;
+    }
+    const Rb = wrap(a + b, w);
+    return { prompt: `以 ${w} 位元二進制補碼計算下式，寫出 ${w} 位元的結果（捨棄最左進位）。${vsum(tc(a, w), tc(b, w))}`, input: bitsIn(w), answer: Rb, show: sub(grp(Rb), 2),
+      explain: [fullSum(a, b, w), verdict(a, b, w)] };
+  });
+  T("加法與溢出", "哪項加法會溢出（選擇題）", () => {
+    const w = Math.random() < 0.7 ? 8 : 4; const [, mx] = lim(w);
+    const gen = (cond) => { for (;;) { const a = RV(w), b = RV(w); if (cond(a, b)) return [a, b]; } };
+    let items;
+    do {
+      const ans = Math.random() < 0.5 ? gen((a, b) => a >= 0 && b >= 0 && isOver(a + b, w)) : gen((a, b) => a < 0 && b < 0 && isOver(a + b, w));
+      items = [ans, gen((a, b) => a < 0 && b < 0 && !isOver(a + b, w)), gen((a, b) => (a < 0) !== (b < 0) && hasCarry(a, b, w)), gen((a, b) => a >= 0 && b >= 0 && !isOver(a + b, w) && a + b > mx / 2)];
+    } while (new Set(items.map(([a, b]) => addStr(a, b, w))).size < 4);
+    const ans = addStr(...items[0], w);
+    return { prompt: `下列哪一項 ${w} 位元二進制補碼加法會引致溢出誤差？`, input: { kind: "choice", opts: shuffle(items.map(([a, b]) => addStr(a, b, w))), mono: true }, answer: ans, show: ans,
+      explain: [...items.map(([a, b]) => `${addStr(a, b, w)}：${sN(a)} ＋ ${pN(b)} ＝ ${sN(a + b)}${isOver(a + b, w) ? " → 超出範圍，<b>溢出</b>" : hasCarry(a, b, w) ? " → 在範圍之內（有進位但沒有溢出）" : " → 在範圍之內"}`),
+        `${w} 位元範圍是 ${sN(lim(w)[0])} 至 ${mx}。先刪去一正一負的選項，再檢查同號的選項。`] };
+  });
+  T("加法與溢出", "加 1、減 1 的邊界", () => {
+    const w = Math.random() < 0.75 ? 8 : 4; const [mn, mx] = lim(w); const k = pick([1, 1, 2, 3]); const up = Math.random() < 0.6; let vals;
+    do {
+      vals = up ? [R(mx - k + 1, mx), R(-k, -1), mn, R(0, mx - k)] : [R(mn, mn + k - 1), mx, R(0, k), R(mn + k, -1)];
+    } while (new Set(vals).size < 4);
+    const d = up ? k : -k; const ans = grp(tc(vals[0], w));
+    return { prompt: `把下列 ${w} 位元二進制補碼數字<b>${up ? "加" : "減"} ${k}</b>，哪一個會引致溢出誤差？`, input: { kind: "choice", opts: shuffle(vals.map((v) => grp(tc(v, w)))), mono: true }, answer: ans, show: ans,
+      explain: [...vals.map((v) => `${grp(tc(v, w))} ＝ ${sN(v)}，${up ? "＋" : "−"} ${k} ＝ ${sN(v + d)}${isOver(v + d, w) ? " → 超出範圍，<b>溢出</b>" : up && v < 0 && v + d >= 0 ? " → 有進位，但沒有溢出" : " → 沒有溢出"}`),
+        up ? `加一個正數，只有正數才可能溢出：最大值 ${mx} 的下一個會變成 ${sN(mn)}。` : `減一個正數即加上負數，只有負數才可能溢出：最小值 ${sN(mn)} 減 1 會變成 ${mx}。`] };
+  });
+  T("加法與溢出", "以加法做減法", () => {
+    const w = Math.random() < 0.75 ? 8 : 4; const [mn, mx] = lim(w); const want = Math.random() < 0.5; let a, b;
+    for (;;) { a = RV(w); b = RV(w, { min: mn + 1, nz: true }); if (isOver(a - b, w) === want) break; }
+    const A = tc(a, w), B = tc(b, w), NB = tc(-b, w); const asBits = Math.random() < 0.5; const Rb = wrap(a - b, w);
+    const explain = [`減數取補碼：${grp(B)}（${sN(b)}）→ 反碼 ${grp(inv(B))} → 加 1 → ${grp(NB)}（${sN(-b)}）`, `${sN(a)} − ${pN(b)} ＝ ${sN(a)} ＋ ${pN(-b)}`, fullSum(a, -b, w), verdict(a, -b, w)];
+    const prompt = `以 ${w} 位元二進制補碼計算 <span class="num">${grp(A)} − ${grp(B)}</span>（即 ${sN(a)} − ${pN(b)}）。`;
+    return asBits ? { prompt: prompt + `寫出 ${w} 位元的結果。`, input: bitsIn(w), answer: Rb, show: sub(grp(Rb), 2), explain }
+      : { prompt: prompt + `會否出現溢出誤差？`, input: { kind: "choice", opts: ["會溢出", "不會溢出"] }, answer: want ? "會溢出" : "不會溢出", show: want ? "會溢出" : "不會溢出", explain };
+  });
+
+  // ----- 延伸 -----
+  T("延伸", "三種表示法（延伸）", () => {
+    const k = R(0, 2);
+    const note = "新課程只要求二補碼；此題幫助理解舊試題及干擾選項。";
+    if (k === 0) {
+      const X = R(1, 127); const rep = pick(["符號及值", "一補碼", "二補碼"]); const pos = tc(X, 8);
+      const ans = rep === "符號及值" ? "1" + pos.slice(1) : rep === "一補碼" ? inv(pos) : tc(-X, 8);
+      return { prompt: `（延伸）以 8 位元<b>${rep}</b>表示 <span class="num">−${X}</span>。`, input: { kind: "bits", w: 8, weights: Array(8).fill("") }, answer: ans, show: sub(grp(ans), 2),
+        explain: [`${X} ＝ ${grp(pos)}`, `符號及值：首位改為 1 → ${grp("1" + pos.slice(1))}`, `一補碼：所有位元反轉 → ${grp(inv(pos))}`, `二補碼：反轉再加 1 → ${grp(tc(-X, 8))}`, note] };
+    }
+    if (k === 1) {
+      let u; do { u = 128 + R(0, 127); } while (u === 192); const b = bin(u, 8); const sm = u === 128 ? "−0" : sN(-(u - 128)); const oc = u === 255 ? "−0" : sN(u - 255); const two = sN(u - 256);
+      const f = (x, y, z) => `符號及值 ${x}；一補碼 ${y}；二補碼 ${z}`; const ans = f(sm, oc, two);
+      const perms = [[sm, two, oc], [oc, sm, two], [two, oc, sm], [oc, two, sm], [two, sm, oc]].map((p) => f(...p));
+      return { prompt: `（延伸）8 位元樣式 <div class="given">${grp(b)}</div> 在三種表示法中分別代表：`, input: { kind: "choice", opts: shuffle([ans, ...shuffle(perms).slice(0, 3)]) }, answer: ans, show: ans,
+        explain: [`符號及值：首位 1 代表負號，其餘 ${b.slice(1)} ＝ ${u - 128}，所以是 ${sm}。`, `一補碼：反轉得 ${grp(inv(b))} ＝ ${255 - u}，所以是 ${oc}。`, `二補碼：−128 ＋ ${u - 128} ＝ ${two}。`, note] };
+    }
+    const cs = pick(["all", "none", "only12"]); let a, b;
+    if (cs === "only12") { a = R(-127, -1); b = -128 - a; if (b < -127 || b > -1) { a = -64; b = -64; } }
+    else for (;;) { const neg = Math.random() < 0.5; a = neg ? R(-127, -1) : R(1, 127); b = neg ? R(-127, -1) : R(1, 127); const s = a + b; if ((cs === "all") === (s > 127 || s < -128)) { if (cs === "none" && s === -128) continue; break; } }
+    const s = a + b; const ans = cs === "all" ? "(1)、(2) 和 (3)" : cs === "only12" ? "只有 (1) 和 (2)" : "三種都不會";
+    const show = (v) => (v > 0 ? `整數 ${bin(v, 8)}` : sN(v));
+    return { prompt: `（延伸）在以下 8 位元表示法中，哪些會令 ${show(a)} 與 ${show(b)} 相加時產生溢出誤差？<div class="stmts"><div>(1) 符號及值</div><div>(2) 一補碼</div><div>(3) 二補碼</div></div>`,
+      input: { kind: "choice", opts: ["只有 (1) 和 (2)", "只有 (3)", "(1)、(2) 和 (3)", "三種都不會"] }, answer: ans, show: ans,
+      explain: [`${sN(a)} ＋ ${pN(b)} ＝ ${sN(s)}`, `範圍：符號及值及一補碼都是 −127 至 127；二補碼是 −128 至 127。`,
+        cs === "all" ? `${sN(s)} 超出三種表示法的範圍，三種都溢出（DSE 2023 甲4：96 ＋ 96 ＝ 192）。` : cs === "only12" ? `−128 只有二補碼可以表示，所以只有 (1) 和 (2) 溢出。` : `${sN(s)} 在三種表示法的範圍之內，都不會溢出。`, note] };
+  });
 
   // 位元與組合
   G.bits = [
@@ -244,17 +525,17 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
         explain: [`數據中有 ${ones} 個 1。`, `${kind}同位要求連同檢驗位在內，1 的總數為${kind}數，所以檢驗位是 ${p}。`] }; },
     () => { const kind = pick(["偶", "奇"]); let bytes = [];
       const good = () => { const d = bin(R(1, 127), 7); const o = d.split("").filter(c => c === "1").length; const p = kind === "偶" ? o % 2 : 1 - o % 2; return p + d; };
-      const badIdx = R(0, 3); for (let i = 0; i < 4; i++) { let x = good(); if (i === badIdx) { const k = R(0, 7); x = x.slice(0, k) + (x[k] === "1" ? "0" : "1") + x.slice(k + 1); } bytes.push(x); }
+      const badIdx = R(0, 3); do { bytes = []; for (let i = 0; i < 4; i++) { let x = good(); if (i === badIdx) { const k = R(0, 7); x = x.slice(0, k) + (x[k] === "1" ? "0" : "1") + x.slice(k + 1); } bytes.push(x); } } while (new Set(bytes).size < 4);
       const opts = bytes.map(grp); const ans = opts[badIdx];
       return { type: "找出出錯的位元組", prompt: `某系統採用<b>${kind}同位</b>（檢驗位在最左方）。下列哪個接收到的位元組<b>一定</b>出現錯誤？`,
         input: { kind: "choice", opts, mono: true }, answer: ans, show: ans,
         explain: [...opts.map(o => `${o}：${o.split("").filter(c => c === "1").length} 個 1`), `${kind}同位要求 1 的總數為${kind}數，只有 ${ans} 不符合。`, `注意：其他位元組只是「沒有偵測到錯誤」，若有兩個位元同時出錯，奇偶檢驗是偵測不到的。`] }; },
-    () => { const sch = pick([
+    (force) => { const sch = pick([
         { name: "首四位數字之和除以 10 的餘數", w: [1, 1, 1, 1], m: 10 },
         { name: "(4×d1 ＋ 3×d2 ＋ 2×d3 ＋ 1×d4) 除以 10 的餘數", w: [4, 3, 2, 1], m: 10 },
         { name: "(5×d1 ＋ 4×d2 ＋ 3×d3 ＋ 2×d4) 除以 11 的餘數（餘數 10 以 X 表示）", w: [5, 4, 3, 2], m: 11 }]);
       const d = [R(0, 9), R(0, 9), R(0, 9), R(0, 9)]; const s = d.reduce((a, x, i) => a + x * sch.w[i], 0); const r = s % sch.m; const c = r === 10 ? "X" : String(r);
-      const ask = Math.random() < 0.5;
+      const ask = force === undefined ? Math.random() < 0.5 : force;
       if (ask) return { type: "計算檢查數位", prompt: `某編號的檢查數位 C ＝ ${sch.name}。首四位是 <span class="num">${d.join("")}</span>，檢查數位是甚麼？`,
         input: { kind: "text", ph: "一位數字或 X" }, answer: c, show: `${c}（完整編號 ${d.join("")}${c}）`,
         explain: [`${d.map((x, i) => sch.w[i] === 1 ? x : `${sch.w[i]}×${x}`).join(" ＋ ")} ＝ ${s}`, `${s} ÷ ${sch.m} 的餘數 ＝ ${r}${r === 10 ? "，以 X 表示" : ""}`] };
@@ -270,50 +551,109 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
       return { type: "數據控制概念", prompt: q[1], input: { kind: "choice", opts: shuffle(q[2]) }, answer: q[0], show: q[0], explain: [q[3]] }; },
   ];
 
+
+  // ---------- 題型清單（名稱用於篩選及顯示） ----------
+  const named = (group, names, fns) => fns.map((fn, i) => ({ group, name: names[i], fn }));
+  const ENTRIES = {
+    base: named(null, ["二進制 → 十六進制", "十六進制 → 二進制", "二進制 → 十進制", "十進制 → 二進制", "十進制 → 十六進制", "十六進制 → 十進制"], G.base),
+    tc: TC,
+    bits: named(null, ["最少需要多少位元", "十六進制編號的數量", "網頁顏色碼", "點陣圖大小"], G.bits),
+    chars: named(null, ["字符編碼與檔案大小", "ASCII 碼", "字符集概念"], G.chars),
+    ctrl: named(null, ["計算同位位元", "找出出錯的位元組", "計算檢查數位", "判斷編號是否有效", "數據控制概念"],
+      [G.ctrl[0], G.ctrl[1], () => G.ctrl[2](true), () => G.ctrl[2](false), G.ctrl[3]]),
+  };
+
   const MODES = [
     { id: "base", name: "進制互換", note: "二進制、十進制、十六進制之間的轉換。二進制與十六進制互換時，每 4 位一組，毋須經過十進制。", tips: "<b>提示：</b>1 位十六進制 ＝ 4 位元。點按位元開關可以開或關該位元，下方數字是每個位置的位值。" },
-    { id: "tc", name: "二進制補碼", note: "以 8 位元二進制補碼表示正負整數、補碼的範圍，以及判斷溢出誤差。", tips: "<b>提示：</b>補碼最左一位的位值是負數（8 位元是 −128）。同號相加結果變號，便是溢出。" },
+    { id: "tc", name: "二進制補碼", note: "補碼的轉換、範圍及概念、加法與溢出誤差（4 位元及 8 位元），另有三種表示法的延伸題。可在「題型篩選」只練習指定題型。", tips: "<b>提示：</b>補碼最左一位的位值是負數（8 位元是 −128）。同號相加結果變號，便是溢出；最左有進位不等於溢出。" },
     { id: "bits", name: "位元與組合", note: "n 位元可表示的樣式數量、最少需要的位元數、網頁顏色碼及點陣圖大小。", tips: "<b>提示：</b>n 位元有 2ⁿ 種樣式；k 種狀態最少需要 n 位元，使 2ⁿ ≥ k。" },
     { id: "chars", name: "字符編碼", note: "ASCII、大五碼、統一碼（UTF-8／UTF-16）的字節計算及概念。", tips: "<b>提示：</b>逐類點算字符，空格和符號也是字符。題目會提供每種字符所佔的字節數。" },
     { id: "ctrl", name: "奇偶與檢查數位", note: "奇偶檢驗、檢查數位的計算，以及它們能或不能偵測的錯誤。", tips: "<b>提示：</b>奇偶檢驗只能偵測奇數個位元出錯；檢查數位不能偵測另一個有效編號。" },
   ];
 
   // ---------- state ----------
-  const S = { mode: "base", q: null, n: 0, answered: false, right: 0, total: 0, streak: 0, best: 0, sel: null, bits: [] };
+  const S = { mode: "base", q: null, entry: null, n: 0, answered: false, right: 0, total: 0, streak: 0, best: 0, sel: null, bits: [], on: {} };
   try { S.best = +localStorage.getItem("bitlab-best") || 0; } catch (e) {}
   try { const m = localStorage.getItem("bitlab-mode"); if (MODES.some(x => x.id === m)) S.mode = m; } catch (e) {}
-  const h = location.hash.replace("#", ""); if (MODES.some(x => x.id === h)) S.mode = h;
+  const hsh = location.hash.replace("#", ""); if (MODES.some(x => x.id === hsh)) S.mode = hsh;
+  // 題型篩選：每個類別各自記住已選的題型名稱
+  MODES.forEach(m => { S.on[m.id] = new Set(ENTRIES[m.id].map(e => e.name)); });
+  try { const saved = JSON.parse(localStorage.getItem("bitlab-filter") || "{}");
+    Object.keys(saved).forEach(id => { if (!ENTRIES[id] || !Array.isArray(saved[id])) return; const names = new Set(ENTRIES[id].map(e => e.name));
+      const keep = saved[id].filter(n => names.has(n)); if (keep.length) S.on[id] = new Set(keep); }); } catch (e) {}
+  const saveFilter = () => { try { const o = {}; Object.keys(S.on).forEach(id => { o[id] = [...S.on[id]]; }); localStorage.setItem("bitlab-filter", JSON.stringify(o)); } catch (e) {} };
 
   const nav = $("modes");
   MODES.forEach(m => { const b = document.createElement("button"); b.type = "button"; b.textContent = m.name; b.dataset.id = m.id;
-    b.addEventListener("click", () => { S.mode = m.id; try { localStorage.setItem("bitlab-mode", m.id); } catch (e) {} renderNav(); next(); }); nav.appendChild(b); });
+    b.addEventListener("click", () => { S.mode = m.id; try { localStorage.setItem("bitlab-mode", m.id); } catch (e) {} renderNav(); renderFilter(); next(); }); nav.appendChild(b); });
   function renderNav() { [...nav.children].forEach(b => b.setAttribute("aria-pressed", String(b.dataset.id === S.mode)));
     const m = MODES.find(x => x.id === S.mode); $("mode-note").textContent = m.note; $("tips").innerHTML = m.tips; }
 
+  function renderCount() {
+    const all = ENTRIES[S.mode].length, on = S.on[S.mode].size; const el = $("fcount");
+    el.textContent = on === all ? `全部 ${all} 種題型` : `已選 ${on}／${all} 種`; el.classList.toggle("partial", on !== all);
+  }
+  function renderFilter() {
+    const box = $("fchips"); box.innerHTML = ""; const list = ENTRIES[S.mode]; const groups = [];
+    list.forEach(e => { let g = groups.find(x => x.name === e.group); if (!g) { g = { name: e.group, items: [] }; groups.push(g); } g.items.push(e); });
+    groups.forEach(g => {
+      const wrap = document.createElement("div"); wrap.className = "fgroup";
+      if (g.name) { const h = document.createElement("h3"); h.textContent = g.name; wrap.appendChild(h); }
+      const chips = document.createElement("div"); chips.className = "chips";
+      g.items.forEach(e => { const c = document.createElement("button"); c.type = "button"; c.className = "chip"; c.textContent = e.name;
+        c.setAttribute("aria-pressed", String(S.on[S.mode].has(e.name)));
+        c.addEventListener("click", () => { const set = S.on[S.mode]; set.has(e.name) ? set.delete(e.name) : set.add(e.name);
+          c.setAttribute("aria-pressed", String(set.has(e.name))); saveFilter(); renderCount(); afterFilter(); });
+        chips.appendChild(c); });
+      if (g.name && groups.length > 1) { const only = document.createElement("button"); only.type = "button"; only.className = "mini"; only.textContent = `只練「${g.name}」`;
+        only.addEventListener("click", () => { S.on[S.mode] = new Set(g.items.map(x => x.name)); saveFilter(); renderFilter(); afterFilter(); });
+        const head = wrap.querySelector("h3"); head.style.display = "flex"; head.style.alignItems = "center"; head.style.gap = "10px"; head.appendChild(only); }
+      wrap.appendChild(chips); box.appendChild(wrap);
+    });
+    renderCount();
+  }
+  function afterFilter() { // 目前題目的題型被移除、或之前沒有可選題型時，換一題
+    if (!S.on[S.mode].size) { showEmpty(); return; }
+    if (!S.q || !S.entry || !S.on[S.mode].has(S.entry.name)) next();
+  }
+  $("f-all").addEventListener("click", () => { S.on[S.mode] = new Set(ENTRIES[S.mode].map(e => e.name)); saveFilter(); renderFilter(); afterFilter(); });
+  $("f-none").addEventListener("click", () => { S.on[S.mode] = new Set(); saveFilter(); renderFilter(); afterFilter(); });
+
   function renderScore() { $("sc-right").textContent = S.right; $("sc-total").textContent = S.total; $("sc-streak").textContent = S.streak; $("sc-best").textContent = S.best; }
 
+  function showEmpty() {
+    S.q = null; S.entry = null; $("qtype").textContent = ""; $("qno").textContent = "";
+    $("prompt").innerHTML = `<p class="empty">請在上方「題型篩選」選擇至少一種題型。</p>`; $("input-area").innerHTML = ""; $("feedback").hidden = true;
+    $("btn-check").disabled = true; $("btn-show").disabled = true; $("btn-next").disabled = true; $("filter").open = true;
+  }
+
   function next() {
-    S.q = pick(G[S.mode])(); S.n++; S.answered = false; S.sel = null;
-    const q = S.q; $("qtype").textContent = q.type; $("qno").textContent = `第 ${S.n} 題`;
+    const pool = ENTRIES[S.mode].filter(e => S.on[S.mode].has(e.name));
+    if (!pool.length) { showEmpty(); return; }
+    let e = pick(pool); if (pool.length > 1 && S.entry && e.name === S.entry.name) e = pick(pool.filter(x => x.name !== S.entry.name));
+    S.entry = e; S.q = e.fn(); S.n++; S.answered = false; S.sel = null; $("btn-next").disabled = false;
+    const q = S.q; $("qtype").textContent = e.name; $("qno").textContent = `第 ${S.n} 題`;
     $("prompt").innerHTML = q.prompt + (q.note ? `<p style="font-size:14px;color:var(--muted);margin:8px 0 0">${q.note}</p>` : "");
     const area = $("input-area"); area.innerHTML = ""; $("feedback").hidden = true; $("btn-check").disabled = false; $("btn-show").disabled = false;
     if (q.input.kind === "text") {
       const row = document.createElement("div"); row.className = "answer-row";
       row.innerHTML = `<label for="ans" class="bitval">你的答案</label><input id="ans" type="text" autocomplete="off" spellcheck="false" placeholder="${q.input.ph || ""}">`;
-      area.appendChild(row); const inp = $("ans"); inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); S.answered ? next() : check(); } }); inp.focus({ preventScroll: true });
+      area.appendChild(row); const inp = $("ans"); inp.addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); S.answered ? next() : check(); } }); inp.focus({ preventScroll: true });
     } else if (q.input.kind === "bits") {
       const w = q.input.w; S.bits = Array(w).fill(0);
       const wt = q.input.weights || Array.from({ length: w }, (_, i) => String(2 ** (w - 1 - i)));
-      const box = document.createElement("div"); box.className = "bitrow";
-      box.innerHTML = `<div class="bits" role="group" aria-label="位元開關">${S.bits.map((_, i) => `<button type="button" class="bit${i % 4 === 0 && i ? " gap" : ""}" data-i="${i}" aria-label="第 ${i + 1} 位" aria-pressed="false">0</button>`).join("")}</div>
-        <div class="weights" aria-hidden="true">${wt.map((x, i) => `<span class="${i % 4 === 0 && i ? "gap" : ""}">${x}</span>`).join("")}</div>
-        <div class="bitval" id="bitval"></div>`;
+      const chunks = []; for (let s0 = 0; s0 < w; s0 += 8) chunks.push([s0, Math.min(w, s0 + 8)]); // 多於 8 位元時分行顯示，每行 8 位
+      const gap = (i, s0) => (i > s0 && (w - i) % 4 === 0 ? " gap" : "");
+      const box = document.createElement("div"); box.className = "bitrow" + (w > 8 ? " wide" : "");
+      box.innerHTML = chunks.map(([s0, e0]) => { const idx = []; for (let i = s0; i < e0; i++) idx.push(i);
+        return `<div class="chunk"><div class="bits" role="group" aria-label="位元開關 ${s0 + 1}–${e0}">${idx.map(i => `<button type="button" class="bit${gap(i, s0)}" data-i="${i}" aria-label="第 ${i + 1} 位" aria-pressed="false">0</button>`).join("")}</div>
+        <div class="weights" aria-hidden="true">${idx.map(i => `<span class="${gap(i, s0).trim()}">${wt[i]}</span>`).join("")}</div></div>`; }).join("") + `<div class="bitval" id="bitval"></div>`;
       area.appendChild(box);
       box.querySelectorAll(".bit").forEach(btn => btn.addEventListener("click", () => { if (S.answered) return; const i = +btn.dataset.i; S.bits[i] ^= 1;
         btn.classList.toggle("on", !!S.bits[i]); btn.textContent = S.bits[i]; btn.setAttribute("aria-pressed", String(!!S.bits[i])); updBits(); }));
       updBits();
     } else {
-      const box = document.createElement("div"); box.className = "choices";
+      const box = document.createElement("div"); box.className = "choices" + (q.input.mono ? " monoc" : "");
       q.input.opts.forEach(o => { const b = document.createElement("button"); b.type = "button"; b.className = "choice"; if (q.input.mono) b.style.fontFamily = "var(--mono)";
         b.textContent = o; b.setAttribute("aria-pressed", "false");
         b.addEventListener("click", () => { if (S.answered) return; S.sel = o; box.querySelectorAll(".choice").forEach(x => x.setAttribute("aria-pressed", String(x === b))); });
@@ -336,17 +676,17 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
     $("btn-next").focus({ preventScroll: true });
   }
   function check() {
-    if (S.answered) return; const a = current();
+    if (S.answered || !S.q) return; const a = current();
     if (a === null || a === "") { const fb = $("feedback"); fb.className = "feedback bad"; fb.hidden = false; fb.innerHTML = `<div class="verdict">請先作答，或按「顯示答案」。</div>`; return; }
     const q = S.q; let ok;
-    if (q.input.kind === "text") ok = norm(a).replace(/,/g, "") === norm(q.answer); else ok = a === q.answer;
+    if (q.input.kind === "text") { const g = norm(a).replace(/,/g, ""); ok = [q.answer, ...(q.accept || [])].some(x => g === norm(x)); } else ok = a === q.answer;
     finish(ok, false);
   }
   $("btn-check").addEventListener("click", check);
-  $("btn-show").addEventListener("click", () => { if (!S.answered) finish(false, true); });
+  $("btn-show").addEventListener("click", () => { if (!S.answered && S.q) finish(false, true); });
   $("btn-next").addEventListener("click", next);
 
-  renderNav(); renderScore(); next();
+  renderNav(); renderFilter(); renderScore(); next();
 })();
 </script>
 </body>
