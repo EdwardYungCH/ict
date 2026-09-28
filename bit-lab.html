@@ -28,6 +28,7 @@
   --good:#5BD17E; --good-bg:#15301F; --bad:#FF8A80; --bad-bg:#3A1A18; color-scheme:dark;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;margin:0}
 .wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:24px 48px;display:flex;flex-direction:column;gap:20px}
 header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
@@ -88,7 +89,10 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
 .steps{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
 .steps li{line-height:1.6}
 .swatch{display:inline-block;width:1.4em;height:1.4em;border-radius:4px;vertical-align:-.3em;border:1px solid var(--line);margin-left:.3em}
-.actions{display:flex;flex-wrap:wrap;gap:10px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#btn-next{margin-left:auto}
+#btn-next.skip{border-color:var(--line);color:var(--muted);font-weight:500}
+#btn-next.confirm{border-color:var(--bad);color:var(--bad);font-weight:700}
 .tips{font-size:14px;color:var(--muted);border-top:1px dashed var(--line);padding-top:14px}
 .tips b{color:var(--ink)}
 @media (max-width:480px){h1{font-size:24px}.bit{width:34px;height:44px;font-size:18px}.weights span{width:34px}.given{font-size:20px}.prompt{font-size:16px}}
@@ -170,7 +174,7 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
     <div class="actions">
       <button class="btn primary" id="btn-check" type="button">核對答案</button>
       <button class="btn ghost" id="btn-show" type="button">顯示答案</button>
-      <button class="btn ghost" id="btn-next" type="button">下一題 →</button>
+      <button class="btn ghost skip" id="btn-next" type="button">跳過此題</button>
     </div>
     <div id="feedback" hidden></div>
     <div class="tips" id="tips"></div>
@@ -675,7 +679,7 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
     let e = pick(pool); if (pool.length > 1 && S.entry && e.name === S.entry.name) e = pick(pool.filter(x => x.name !== S.entry.name));
     S.entry = e; S.q = e.fn(); S.n++; S.answered = false; S.sel = null; $("btn-next").disabled = false;
     const q = S.q; $("qtype").textContent = e.name; $("qno").textContent = `第 ${S.n} 題`;
-    $("hintbox").innerHTML = hintHTML(e.name); $("btn-hint").hidden = !HINTS[e.name]; setHint(S.hintOpen && !!HINTS[e.name]);
+    $("hintbox").innerHTML = hintHTML(e.name); $("btn-hint").hidden = !HINTS[e.name]; S.hintOpen = false; setHint(false); updNext();
     $("prompt").innerHTML = q.prompt + (q.note ? `<p style="font-size:14px;color:var(--muted);margin:8px 0 0">${q.note}</p>` : "");
     const area = $("input-area"); area.innerHTML = ""; $("feedback").hidden = true; $("btn-check").disabled = false; $("btn-show").disabled = false;
     if (q.input.kind === "text") {
@@ -716,7 +720,7 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
     const fb = $("feedback"); fb.className = "feedback " + (correct ? "good" : "bad"); fb.hidden = false;
     const head = revealed ? "答案" : correct ? "答對了" : "未答對";
     fb.innerHTML = `<div class="verdict">${head}：${S.q.show}</div><ol class="steps">${S.q.explain.map(x => `<li>${x}</li>`).join("")}</ol>`;
-    $("btn-next").focus({ preventScroll: true });
+    updNext(); $("btn-next").focus({ preventScroll: true });
   }
   function check() {
     if (S.answered || !S.q) return; const a = current();
@@ -729,7 +733,19 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
   $("btn-hint").addEventListener("click", () => { S.hintOpen = $("hintbox").hidden; setHint(S.hintOpen); });
   $("btn-check").addEventListener("click", check);
   $("btn-show").addEventListener("click", () => { if (!S.answered && S.q) finish(false, true); });
-  $("btn-next").addEventListener("click", next);
+  // 防止誤按：未作答時按鈕是「跳過此題」，要按兩次才會換題；作答後才變成「下一題」
+  let skipTimer = null;
+  function updNext(confirming) {
+    const b = $("btn-next"); clearTimeout(skipTimer); b.classList.remove("primary", "ghost", "skip", "confirm");
+    if (S.answered) { b.classList.add("primary"); b.textContent = "下一題 →"; }
+    else if (confirming) { b.classList.add("ghost", "confirm"); b.textContent = "再按一次確認跳過"; skipTimer = setTimeout(() => updNext(false), 3000); }
+    else { b.classList.add("ghost", "skip"); b.textContent = "跳過此題"; }
+  }
+  $("btn-next").addEventListener("click", () => {
+    if (S.answered) return next();
+    if ($("btn-next").classList.contains("confirm")) return next();
+    updNext(true);
+  });
 
   renderNav(); renderFilter(); renderScore(); next();
 })();
