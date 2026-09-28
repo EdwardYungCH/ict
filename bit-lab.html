@@ -48,6 +48,16 @@ nav button:focus-visible,.btn:focus-visible,.bit:focus-visible,input:focus-visib
 .qhead{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
 .qtype{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--accent);text-transform:uppercase}
 .qno{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.qright{display:flex;align-items:center;gap:12px;margin-left:auto}
+.hintbtn{font:inherit;font-size:14px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--led);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.hintbtn::before{content:"?";display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--led);color:#1A1204;font-family:var(--mono);font-size:12px}
+.hintbtn[aria-expanded="true"]{background:var(--led);color:#1A1204}
+.hintbtn[aria-expanded="true"]::before{background:#1A1204;color:var(--led)}
+.hintbtn:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.hintbox{border:1px solid var(--led);border-left-width:4px;border-radius:10px;padding:12px 14px;background:var(--sunk);font-size:15px;line-height:1.7;display:flex;flex-direction:column;gap:6px}
+.hintbox h4{margin:0;font-size:13px;letter-spacing:.06em;color:var(--muted)}
+.hintbox ol,.hintbox ul{margin:0;padding-left:1.3em}
+.hintbox .ex{font-family:var(--mono);font-size:14px;background:var(--surface);border-radius:8px;padding:6px 10px;width:fit-content;max-width:100%;overflow-x:auto;white-space:pre}
 .prompt{font-size:18px;line-height:1.7}
 .prompt .num,.mono{font-family:var(--mono);font-weight:600;letter-spacing:.03em}
 sub{font-size:.7em}
@@ -153,8 +163,9 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
   </details>
 
   <section class="card" id="card" aria-live="polite">
-    <div class="qhead"><span class="qtype" id="qtype"></span><span class="qno" id="qno"></span></div>
+    <div class="qhead"><span class="qtype" id="qtype"></span><div class="qright"><span class="qno" id="qno"></span><button class="hintbtn" id="btn-hint" type="button" aria-expanded="false" aria-controls="hintbox">提示：計算方法</button></div></div>
     <div class="prompt" id="prompt"></div>
+    <div class="hintbox" id="hintbox" hidden></div>
     <div id="input-area"></div>
     <div class="actions">
       <button class="btn primary" id="btn-check" type="button">核對答案</button>
@@ -297,18 +308,6 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
       input: { kind: "choice", opts: shuffle([ans, ...shuffle(cands).slice(0, 3)]) }, answer: ans, show: ans,
       explain: [`無符號整數：所有位值都是正數，${grp(b)} ＝ ${u}`, `補碼數字：首位位值是 ${sN(wt[0])}，${terms.map(sN).join(" ＋ ")} ＝ ${sN(v)}`,
         neg ? `首位是 1 時，補碼數值 ＝ 無符號數值 − 2<sup>${w}</sup>：${u} − ${2 ** w} ＝ ${sN(v)}` : `首位是 0，兩種讀法相同。`] };
-  });
-  T("轉換", "十六進制表示的補碼", () => {
-    const w = Math.random() < 0.75 ? 8 : 16; const d = w / 4; const [mn, mx] = lim(w); const v = Math.random() < 0.7 ? R(mn, -1) : R(0, mx);
-    const b = tc(v, w); const hx = parseInt(b, 2).toString(16).toUpperCase().padStart(d, "0"); const groups = b.match(/.{4}/g);
-    if (Math.random() < 0.5) return { prompt: `某 ${w} 位元二進制補碼數字以十六進制表示為 ${sub(hx, 16)}。它的十進制數值是多少？`,
-      input: { kind: "text", ph: "可以是負數" }, answer: String(v), show: sN(v),
-      explain: [`每個十六進制位換成 4 位元：${hx.split("").map((c) => `${c} → ${bin(parseInt(c, 16), 4)}`).join("，")}`, `${grp(b)}：首位是 ${b[0]}，所以${v < 0 ? "是負數" : "是正數或 0"}。`,
-        v < 0 ? `無符號值 ${fmt(parseInt(b, 2))} − 2<sup>${w}</sup>（${fmt(2 ** w)}）＝ ${sN(v)}` : `直接計算：${v}`] };
-    return { prompt: `以十六進制寫出 <span class="num">${sN(v)}</span> 的 ${w} 位元二進制補碼數字。`, input: { kind: "text", ph: w === 8 ? "例如 F0" : "例如 FF9C" },
-      answer: hx, accept: [hx.replace(/^0+(?=.)/, "")], show: sub(hx, 16),
-      explain: [...(v < 0 ? [`${-v} 的 ${w} 位元二進制：${grp(bin(-v, w))}`, `反碼加 1：${grp(b)}`] : [`${v} 的 ${w} 位元二進制：${grp(b)}`]),
-        `每 4 位一組換成十六進制：${groups.map((g) => `${g} → ${parseInt(g, 2).toString(16).toUpperCase()}`).join("，")}`, `答案：${hx}<sub>16</sub>`] };
   });
   T("轉換", "符號延伸", () => {
     const [w0, w1] = pick([[4, 8], [4, 8], [6, 8], [8, 16]]); const [mn, mx] = lim(w0); const v = Math.random() < 0.7 ? R(mn, -1) : R(0, mx); const b0 = tc(v, w0), b1 = tc(v, w1);
@@ -553,6 +552,47 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
   ];
 
 
+  // ---------- 提示：每個題型的計算方法（按題型名稱） ----------
+  const HINTS = {
+    "二進制 → 十六進制": [["由右至左每 4 位一組，不足 4 位在左邊補 0。", "每組換成一個十六進制位：0000–1001 是 0–9，1010 是 A … 1111 是 F。"], "1011 0110\n  B    6   → B6"],
+    "十六進制 → 二進制": [["每個十六進制位換成 4 位元（位值 8 4 2 1）。", "A＝10、B＝11、C＝12、D＝13、E＝14、F＝15。"], "3C → 0011 1100"],
+    "二進制 → 十進制": [["寫出每個位置的位值：128 64 32 16 8 4 2 1。", "把位元是 1 的位值相加。"], "0101 0011 → 64 + 16 + 2 + 1 = 83"],
+    "十進制 → 二進制": [["由最大的位值（128）開始比較。", "放得下就寫 1 並減去該位值；放不下就寫 0。", "亦可用短除法：連續除以 2，由下而上讀餘數。"], "83 = 64 + 16 + 2 + 1 → 0101 0011"],
+    "十進制 → 十六進制": [["把數字除以 16。", "商是左邊一位，餘數是右邊一位（10–15 寫成 A–F）。"], "183 ÷ 16 = 11 餘 7 → B7"],
+    "十六進制 → 十進制": [["左邊一位 × 16，再加上右邊一位。", "A–F 先換成 10–15。"], "B7 = 11 × 16 + 7 = 183"],
+    "十進制 → 補碼數字": [["正數：直接轉為二進制，左邊補 0 至指定位元。", "負數：① 取它的正數轉為二進制 ② 補 0 至指定位元 ③ 反碼（0、1 互換）④ 加 1。", "另一方法（負數）：2ⁿ − 正數，再轉為二進制。"], "−44（8 位元）\n0010 1100   44\n1101 0011   反碼\n1101 0100   加 1"],
+    "補碼數字 → 十進制": [["首位的位值是負數：4 位元是 −8，8 位元是 −128。", "其餘位值照常，把位元是 1 的位值相加。"], "1101 0100 = −128 + 64 + 16 + 4 = −44"],
+    "二進制 → 指定位元補碼": [["① 左邊補 0 至指定位元。", "② 反碼。", "③ 加 1。", "一定要先補 0 才反碼，否則首位會變成 0。"], "−10110₂（8 位元）\n0001 0110   補 0\n1110 1001   反碼\n1110 1010   加 1"],
+    "補碼與補碼數字": [["「X 的二進制補碼數字」：X 本身用補碼表示出來的樣子。", "「X 的二進制補碼」：對 X 反碼加 1，即 −X 的補碼數字（只用於正數 X）。", "先看清楚題目有沒有「數字」二字。"], "0000 1001   9 的補碼數字\n1111 0111   9 的補碼（即 −9）"],
+    "負補碼 → 正數（減 1、反碼）": [["① 把補碼數字減 1。", "② 反碼，得到它的正數。", "③ 原本的數字就是這個正數加上負號。"], "1101 0100\n1101 0011   減 1\n0010 1100   反碼 = 44 → 原數是 −44"],
+    "同一組位元，兩種讀法": [["無符號整數：所有位值都是正數，直接相加。", "補碼數字：首位位值是負數。", "首位是 1 時：補碼數值 = 無符號數值 − 2ⁿ（8 位元減 256）。"], "1010 0001\n無符號 161；補碼 161 − 256 = −95"],
+    "符號延伸": [["看首位：首位是 0 就在左邊補 0，首位是 1 就補 1。", "數值保持不變。"], "1011（−5）→ 1111 1011（−5）"],
+    "補碼的範圍": [["n 位元補碼的範圍是 −2ⁿ⁻¹ 至 2ⁿ⁻¹ − 1。", "負數比正數多一個。"], "4 位元：−8 至 7\n8 位元：−128 至 127"],
+    "特別樣式與 −128 特例": [["最大值：首位 0，其餘全部是 1。", "最小值：首位 1，其餘全部是 0。", "0：全部是 0；−1：全部是 1。", "最小值「反碼加 1」後會得回自己，因為它的相反數超出範圍。"], "1000 0000 → 反碼 0111 1111 → 加 1 → 1000 0000"],
+    "補碼數字排序": [["① 先分正負：首位是 1 的（負數）一定較小。", "② 同號的，比較其餘位元，較大的數值也較大。", "最穩妥：逐個轉為十進制再排。"], "1000(−8) < 1111(−1) < 0100(4) < 0111(7)"],
+    "概念判斷（DSE 句子題）": [["逐句判斷，再選出正確的組合。", "常考：0 只有一種表示；範圍是 −2ⁿ⁻¹ 至 2ⁿ⁻¹ − 1；最小值是 1000…0；最左進位不等於溢出；異號相加不會溢出；只反碼不是相反數。"], ""],
+    "溢出判斷": [["方法一：轉為十進制相加，看結果是否超出範圍（8 位元：−128 至 127）。", "方法二：兩個同號的數相加，結果卻變成異號 → 溢出。", "一正一負相加一定不會溢出；最左進位捨棄，不等於溢出。"], "0110 0100 + 0011 0010 = 1001 0110\n正 + 正 得負 → 溢出"],
+    "補碼加法：計出結果": [["由右至左逐位相加：1 + 1 = 10（寫 0 進 1）；1 + 1 + 1 = 11（寫 1 進 1）。", "只保留指定的位元數，最左多出的進位捨棄。", "結果是 0 的話，兩個數必須互為相反數（反碼加 1）。"], "  1111 1111   (−1)\n+ 0000 0001   (1)\n 10000 0000 → 0000 0000"],
+    "哪項加法會溢出（選擇題）": [["先刪去一正一負的選項，它們一定不會溢出。", "其餘的轉為十進制相加，看結果是否超出範圍。"], ""],
+    "加 1、減 1 的邊界": [["補碼的數值像一個圓圈：最大值再加 1 會變成最小值。", "加一個正數，只有正數才可能溢出；減一個正數，只有負數才可能溢出。", "1111 1111（−1）加 1 有進位，但結果 0 正確，沒有溢出。"], "0111 1111 + 1 = 1000 0000\n127 + 1 → −128（溢出）"],
+    "以加法做減法": [["A − B = A + (−B)。", "把 B 反碼加 1，得到 −B。", "A 與 −B 相加，捨棄最左進位。", "判斷溢出時，看 A 和 −B 的符號。"], "20 − 60 = 20 + (−60)\n0001 0100 + 1100 0100 = 1101 1000 (−40)"],
+    "三種表示法（延伸）": [["負數的表示：符號及值 → 首位改為 1；一補碼 → 所有位元反轉；二補碼 → 反轉再加 1。", "範圍：符號及值和一補碼是 −127 至 127；二補碼是 −128 至 127。"], "−5\n1000 0101   符號及值\n1111 1010   一補碼\n1111 1011   二補碼"],
+    "最少需要多少位元": [["找最小的 n，使 2ⁿ ≥ 物品數量。", "常用：2⁸ = 256，2¹⁰ = 1,024，2¹⁶ = 65,536。"], "500 件：2⁸ = 256 < 500 ≤ 2⁹ = 512 → 9 位元"],
+    "十六進制編號的數量": [["每位十六進制數字有 16 個可能。", "d 位 → 16ᵈ 個編號，亦即 2⁴ᵈ。"], "3 位：16³ = 4,096"],
+    "網頁顏色碼": [["#RRGGBB：每兩位是一種顏色成分的十六進制值（紅、綠、藍）。", "十進制 = 左位 × 16 + 右位。"], "#3A…：紅色 3A = 3 × 16 + 10 = 58"],
+    "點陣圖大小": [["① k 種顏色需要 n 位元，使 2ⁿ = k。", "② 闊 × 高 × n = 位元。", "③ ÷ 8 = 字節。"], "32 × 32，16 種顏色\n32 × 32 × 4 = 4,096 位元 ÷ 8 = 512 字節"],
+    "字符編碼與檔案大小": [["分開數英文字母（包括空格、符號）和中文字的數目。", "各自乘以每個字符的字節數，再相加。", "UTF-8：英文 1、中文 3；大五碼：英文 1、中文 2；UTF-16：每個字符 2。"], "「Hi 你好」UTF-8：3 × 1 + 2 × 3 = 9 字節"],
+    "ASCII 碼": [["字母的編碼是連續的：'A' = 41₁₆（65），'a' = 61₁₆（97）。", "目標字母 = 基準編碼 + 相隔幾個字母，再轉為所需進制。"], "'D' = 41₁₆ + 3 = 44₁₆ = 0100 0100"],
+    "字符集概念": [["ASCII：7 位元，128 個字符，只有英文。", "大五碼：繁體中文；國標碼：簡體中文；統一碼：世界上大部分語言。", "用錯編碼開啟文件會出現亂碼。"], ""],
+    "計算同位位元": [["數一數數據中 1 的數目。", "偶同位：令 1 的總數（連檢驗位）是偶數。", "奇同位：令 1 的總數（連檢驗位）是奇數。"], "偶同位，數據有 3 個 1 → 檢驗位是 1"],
+    "找出出錯的位元組": [["逐個位元組數 1 的數目（包括檢驗位）。", "不符合同位要求的，一定出錯。", "符合的只代表偵測不到錯誤（兩個位元同時出錯是偵測不到的）。"], ""],
+    "計算檢查數位": [["按題目的公式計算（例如加權和）。", "求除以指定數字的餘數；除以 11 時，餘數 10 以 X 表示。"], "4×1 + 3×2 + 2×3 + 1×4 = 20，20 ÷ 10 餘 0 → 0"],
+    "判斷編號是否有效": [["用編號的首幾位，按公式重新計算檢查數位。", "與編號最後一位比較：相同便有效，不同便無效。"], ""],
+    "數據控制概念": [["奇偶檢驗只能偵測奇數個位元出錯。", "檢查數位不能偵測輸入了另一個有效編號。", "驗證（例如雙重輸入）檢查輸入的數據是否與來源一致。"], ""],
+  };
+  const hintHTML = (name) => { const h = HINTS[name]; if (!h) return "";
+    return `<h4>計算方法：${esc(name)}</h4><ol>${h[0].map(x => `<li>${esc(x)}</li>`).join("")}</ol>${h[1] ? `<div class="ex">例：${h[1].includes("\n") ? "\n" : ""}${esc(h[1])}</div>` : ""}`; };
+
   // ---------- 題型清單（名稱用於篩選及顯示） ----------
   const named = (group, names, fns) => fns.map((fn, i) => ({ group, name: names[i], fn }));
   const ENTRIES = {
@@ -573,7 +613,7 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
   ];
 
   // ---------- state ----------
-  const S = { mode: "base", q: null, entry: null, n: 0, answered: false, right: 0, total: 0, streak: 0, best: 0, sel: null, bits: [], on: {} };
+  const S = { hintOpen: false, mode: "base", q: null, entry: null, n: 0, answered: false, right: 0, total: 0, streak: 0, best: 0, sel: null, bits: [], on: {} };
   try { S.best = +localStorage.getItem("bitlab-best") || 0; } catch (e) {}
   try { const m = localStorage.getItem("bitlab-mode"); if (MODES.some(x => x.id === m)) S.mode = m; } catch (e) {}
   const hsh = location.hash.replace("#", ""); if (MODES.some(x => x.id === hsh)) S.mode = hsh;
@@ -626,6 +666,7 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
     S.q = null; S.entry = null; $("qtype").textContent = ""; $("qno").textContent = "";
     $("prompt").innerHTML = `<p class="empty">請在上方「題型篩選」選擇至少一種題型。</p>`; $("input-area").innerHTML = ""; $("feedback").hidden = true;
     $("btn-check").disabled = true; $("btn-show").disabled = true; $("btn-next").disabled = true; $("filter").open = true;
+    $("btn-hint").hidden = true; $("hintbox").hidden = true;
   }
 
   function next() {
@@ -634,6 +675,7 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
     let e = pick(pool); if (pool.length > 1 && S.entry && e.name === S.entry.name) e = pick(pool.filter(x => x.name !== S.entry.name));
     S.entry = e; S.q = e.fn(); S.n++; S.answered = false; S.sel = null; $("btn-next").disabled = false;
     const q = S.q; $("qtype").textContent = e.name; $("qno").textContent = `第 ${S.n} 題`;
+    $("hintbox").innerHTML = hintHTML(e.name); $("btn-hint").hidden = !HINTS[e.name]; setHint(S.hintOpen && !!HINTS[e.name]);
     $("prompt").innerHTML = q.prompt + (q.note ? `<p style="font-size:14px;color:var(--muted);margin:8px 0 0">${q.note}</p>` : "");
     const area = $("input-area"); area.innerHTML = ""; $("feedback").hidden = true; $("btn-check").disabled = false; $("btn-show").disabled = false;
     if (q.input.kind === "text") {
@@ -683,6 +725,8 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
     if (q.input.kind === "text") { const g = norm(a).replace(/,/g, ""); ok = [q.answer, ...(q.accept || [])].some(x => g === norm(x)); } else ok = a === q.answer;
     finish(ok, false);
   }
+  function setHint(open) { $("hintbox").hidden = !open; $("btn-hint").setAttribute("aria-expanded", String(open)); }
+  $("btn-hint").addEventListener("click", () => { S.hintOpen = $("hintbox").hidden; setHint(S.hintOpen); });
   $("btn-check").addEventListener("click", check);
   $("btn-show").addEventListener("click", () => { if (!S.answered && S.q) finish(false, true); });
   $("btn-next").addEventListener("click", next);
