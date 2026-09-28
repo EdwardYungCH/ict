@@ -275,11 +275,12 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
     return { prompt: `以 ${w} 位元二進制補碼表示 <span class="num">${posQ ? "+" : "−"}${mb}<sub>2</sub></span>。`, input: bitsIn(w), answer: b, show: sub(grp(b), 2), explain };
   });
   T("轉換", "補碼與補碼數字", () => {
-    const w = pick([8, 8, 4]); const [, mx] = lim(w); const X = R(1, mx) * pick([1, -1]); const ask = pick(["補碼", "補碼數字"]);
+    // 負數只問「補碼數字」；正數可問「補碼」或「補碼數字」（與 DSE 題目一致）
+    const w = pick([8, 8, 4]); const [, mx] = lim(w); const k = R(0, 3); const X = k === 3 ? -R(1, mx) : R(1, mx); const ask = k <= 1 ? "補碼" : "補碼數字";
     const ans = ask === "補碼" ? tc(-X, w) : tc(X, w);
     return { prompt: `寫出 <span class="num">${sN(X)}</span> 的 ${w} 位元<b>二進制${ask}</b>。`, input: bitsIn(w), answer: ans, show: sub(grp(ans), 2),
       explain: [ask === "補碼" ? `「${sN(X)} 的二進制補碼」是對 ${sN(X)} 進行「反碼加 1」的結果，即 ${sN(-X)} 的補碼數字。` : `「${sN(X)} 的二進制補碼數字」是 ${sN(X)} 本身以補碼表示出來的樣子。`,
-        `${sN(X)} 的補碼數字：${grp(tc(X, w))}；${sN(-X)} 的補碼數字：${grp(tc(-X, w))}`, `所以答案是 ${grp(ans)}。先看清楚題目有沒有「數字」二字。`] };
+        `${sN(X)} 的補碼數字：${grp(tc(X, w))}；${sN(-X)} 的補碼數字：${grp(tc(-X, w))}`, `所以答案是 ${grp(ans)}。先看清楚題目有沒有「數字」二字。`, `題目只會問<b>正數</b>的「二進制補碼」；負數只會問它的「二進制補碼數字」。`] };
   });
   T("轉換", "負補碼 → 正數（減 1、反碼）", () => {
     const w = pick([8, 8, 4]); const [mn] = lim(w); const v = R(mn + 1, -1); const b = tc(v, w); const m1 = tc(v - 1, w); const pos = inv(m1);
