@@ -495,6 +495,28 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
       return { type: "點陣圖大小", prompt: `一幅未經壓縮的點陣圖，解像度為 <span class="num">${w} × ${h}</span>，每個像素可顯示 <span class="num">${k}</span> 種顏色。圖像數據需要多少<b>字節</b>（不計檔案標頭）？`,
         input: { kind: "text", ph: "字節" }, answer: String(bytes), show: `${fmt(bytes)} 字節`,
         explain: [`${k} 種顏色需要 ${bpp} 位元（2<sup>${bpp}</sup> ＝ ${k}）`, `${w} × ${h} × ${bpp} ＝ ${fmt(w * h * bpp)} 位元`, `÷ 8 ＝ ${fmt(bytes)} 字節`] }; },
+    () => { const rate = pick([8000, 11025, 22050, 44100, 48000]), dep = pick([8, 16, 24]), ch = pick([1, 2]), sec = pick([10, 30, 45, 60, 90, 120, 180]);
+      const bytes = rate * dep * ch * sec / 8; const unit = pick(["字節", "KB", "MB"]);
+      const val = unit === "字節" ? bytes : unit === "KB" ? bytes / 1024 : bytes / 1024 / 1024;
+      const r1 = Math.round(val * 10) / 10; const tm = sec >= 60 ? `${sec / 60 % 1 ? (sec / 60).toFixed(1) : sec / 60} 分鐘（${sec} 秒）` : `${sec} 秒`;
+      return { type: "音頻檔案大小", prompt: `一段未經壓縮的錄音：取樣頻率 <span class="num">${fmt(rate)} Hz</span>，位元深度 <span class="num">${dep}</span> 位元，<b>${ch === 1 ? "單聲道" : "立體聲"}</b>，長 <span class="num">${tm}</span>。檔案大小是多少 <b>${unit}</b>？${unit === "字節" ? "" : "（準確至一位小數；1 KB ＝ 1,024 字節）"}`,
+        input: { kind: "text", ph: unit }, answer: unit === "字節" ? String(bytes) : String(r1), num: val, tol: unit === "字節" ? 0 : 0.051,
+        show: `${unit === "字節" ? fmt(bytes) : fmt(r1)} ${unit}`,
+        explain: [`${fmt(rate)} × ${dep} × ${ch}（聲道）× ${sec}（秒）＝ ${fmt(bytes * 8)} 位元`, `÷ 8 ＝ ${fmt(bytes)} 字節`,
+          ...(unit === "字節" ? [] : unit === "KB" ? [`÷ 1,024 ≈ ${fmt(r1)} KB`] : [`÷ 1,024 ÷ 1,024 ≈ ${fmt(r1)} MB`])] }; },
+    () => { const [w, h] = pick([[160, 120], [320, 240], [640, 480], [800, 600], [1280, 720]]), dep = pick([8, 16, 24]), fps = pick([10, 15, 24, 25, 30]), sec = pick([5, 10, 20, 30, 60]);
+      const frame = w * h * dep / 8, bytes = frame * fps * sec; const unit = bytes >= 1024 ** 3 ? "GB" : "MB";
+      const val = bytes / 1024 ** (unit === "GB" ? 3 : 2); const r1 = Math.round(val * 10) / 10;
+      return { type: "視頻檔案大小", prompt: `一段未經壓縮、沒有聲音的影片：解像度 <span class="num">${w} × ${h}</span>，色深 <span class="num">${dep}</span> 位元，每秒 <span class="num">${fps}</span> 幀，長 <span class="num">${sec}</span> 秒。檔案大小約是多少 <b>${unit}</b>？（準確至一位小數；1 KB ＝ 1,024 字節）`,
+        input: { kind: "text", ph: unit }, answer: String(r1), num: val, tol: 0.051, show: `${fmt(r1)} ${unit}`,
+        explain: [`每幀：${w} × ${h} × ${dep} ÷ 8 ＝ ${fmt(frame)} 字節`, `× ${fps}（幀）× ${sec}（秒）＝ ${fmt(bytes)} 字節`,
+          `÷ 1,024 ÷ 1,024${unit === "GB" ? " ÷ 1,024" : ""} ≈ ${fmt(r1)} ${unit}`] }; },
+    () => { const rate = pick([22050, 44100, 48000]), dep = pick([16, 24]), ch = pick([1, 2]), gb = pick([1, 2, 4, 8]);
+      const perSec = rate * dep * ch / 8, mins = gb * 1024 ** 3 / perSec / 60; const ans = Math.floor(mins);
+      return { type: "儲存量可錄多久", prompt: `以取樣頻率 <span class="num">${fmt(rate)} Hz</span>、位元深度 <span class="num">${dep}</span> 位元、<b>${ch === 1 ? "單聲道" : "立體聲"}</b>錄音，不作壓縮。<span class="num">${gb} GB</span> 的記憶卡最多可以錄多少<b>完整分鐘</b>？（1 GB ＝ 1,024 × 1,024 × 1,024 字節）`,
+        input: { kind: "text", ph: "分鐘" }, answer: String(ans), show: `${ans} 分鐘`,
+        explain: [`每秒：${fmt(rate)} × ${dep} × ${ch} ÷ 8 ＝ ${fmt(perSec)} 字節`, `${gb} GB ＝ ${fmt(gb * 1024 ** 3)} 字節`,
+          `${fmt(gb * 1024 ** 3)} ÷ ${fmt(perSec)} ÷ 60 ≈ ${mins.toFixed(2)} 分鐘，最多 ${ans} 個完整分鐘`] }; },
   ];
 
   // 字符編碼
@@ -585,6 +607,9 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
     "十六進制編號的數量": [["每位十六進制數字有 16 個可能。", "d 位 → 16ᵈ 個編號，亦即 2⁴ᵈ。"], "3 位：16³ = 4,096"],
     "網頁顏色碼": [["#RRGGBB：每兩位是一種顏色成分的十六進制值（紅、綠、藍）。", "十進制 = 左位 × 16 + 右位。"], "#3A…：紅色 3A = 3 × 16 + 10 = 58"],
     "點陣圖大小": [["① k 種顏色需要 n 位元，使 2ⁿ = k。", "② 闊 × 高 × n = 位元。", "③ ÷ 8 = 字節。"], "32 × 32，16 種顏色\n32 × 32 × 4 = 4,096 位元 ÷ 8 = 512 字節"],
+    "音頻檔案大小": [["取樣頻率 × 位元深度 × 聲道數目 × 秒數 = 位元。", "÷ 8 = 字節；再 ÷ 1,024 = KB，再 ÷ 1,024 = MB。", "單聲道 1 個聲道，立體聲 2 個。"], "44,100 Hz、16 位元、立體聲、30 秒\n44,100 × 16 × 2 × 30 ÷ 8 = 5,292,000 字節 ≈ 5.0 MB"],
+    "視頻檔案大小": [["每幀：闊 × 高 × 色深 ÷ 8 = 字節。", "× 每秒幀數 × 秒數 = 字節。", "÷ 1,024 ÷ 1,024 = MB；再 ÷ 1,024 = GB。"], "640 × 480、24 位元、25 幀、10 秒\n921,600 × 25 × 10 = 230,400,000 字節 ≈ 219.7 MB"],
+    "儲存量可錄多久": [["先計每秒的字節：取樣頻率 × 位元深度 × 聲道 ÷ 8。", "把儲存量換成字節（1 GB = 1,024³ 字節）。", "儲存量 ÷ 每秒字節 = 秒；÷ 60 = 分鐘，取整數。"], "44,100 Hz、16 位元、立體聲：每秒 176,400 字節\n1 GB ÷ 176,400 ÷ 60 ≈ 101.4 → 101 分鐘"],
     "字符編碼與檔案大小": [["分開數英文字母（包括空格、符號）和中文字的數目。", "各自乘以每個字符的字節數，再相加。", "UTF-8：英文 1、中文 3；大五碼：英文 1、中文 2；UTF-16：每個字符 2。"], "「Hi 你好」UTF-8：3 × 1 + 2 × 3 = 9 字節"],
     "ASCII 碼": [["字母的編碼是連續的：'A' = 41₁₆（65），'a' = 61₁₆（97）。", "目標字母 = 基準編碼 + 相隔幾個字母，再轉為所需進制。"], "'D' = 41₁₆ + 3 = 44₁₆ = 0100 0100"],
     "字符集概念": [["ASCII：7 位元，128 個字符，只有英文。", "大五碼：繁體中文；國標碼：簡體中文；統一碼：世界上大部分語言。", "用錯編碼開啟文件會出現亂碼。"], ""],
@@ -602,7 +627,7 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
   const ENTRIES = {
     base: named(null, ["二進制 → 十六進制", "十六進制 → 二進制", "二進制 → 十進制", "十進制 → 二進制", "十進制 → 十六進制", "十六進制 → 十進制"], G.base),
     tc: TC,
-    bits: named(null, ["最少需要多少位元", "十六進制編號的數量", "網頁顏色碼", "點陣圖大小"], G.bits),
+    bits: named(null, ["最少需要多少位元", "十六進制編號的數量", "網頁顏色碼", "點陣圖大小", "音頻檔案大小", "視頻檔案大小", "儲存量可錄多久"], G.bits),
     chars: named(null, ["字符編碼與檔案大小", "ASCII 碼", "字符集概念"], G.chars),
     ctrl: named(null, ["計算同位位元", "找出出錯的位元組", "計算檢查數位", "判斷編號是否有效", "數據控制概念"],
       [G.ctrl[0], G.ctrl[1], () => G.ctrl[2](true), () => G.ctrl[2](false), G.ctrl[3]]),
@@ -611,7 +636,7 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
   const MODES = [
     { id: "base", name: "進制互換", note: "二進制、十進制、十六進制之間的轉換。二進制與十六進制互換時，每 4 位一組，毋須經過十進制。", tips: "<b>提示：</b>1 位十六進制 ＝ 4 位元。點按位元開關可以開或關該位元，下方數字是每個位置的位值。" },
     { id: "tc", name: "二進制補碼", note: "補碼的轉換、範圍及概念、加法與溢出誤差（4 位元及 8 位元），另有三種表示法的延伸題。可在「題型篩選」只練習指定題型。", tips: "<b>提示：</b>補碼最左一位的位值是負數（8 位元是 −128）。同號相加結果變號，便是溢出；最左有進位不等於溢出。" },
-    { id: "bits", name: "位元與組合", note: "n 位元可表示的樣式數量、最少需要的位元數、網頁顏色碼及點陣圖大小。", tips: "<b>提示：</b>n 位元有 2ⁿ 種樣式；k 種狀態最少需要 n 位元，使 2ⁿ ≥ k。" },
+    { id: "bits", name: "位元與組合", note: "n 位元可表示的樣式數量、最少需要的位元數、網頁顏色碼，以及點陣圖、音頻和視頻的檔案大小。", tips: "<b>提示：</b>n 位元有 2ⁿ 種樣式；k 種狀態最少需要 n 位元，使 2ⁿ ≥ k。" },
     { id: "chars", name: "字符編碼", note: "ASCII、大五碼、統一碼（UTF-8／UTF-16）的字節計算及概念。", tips: "<b>提示：</b>逐類點算字符，空格和符號也是字符。題目會提供每種字符所佔的字節數。" },
     { id: "ctrl", name: "奇偶與檢查數位", note: "奇偶檢驗、檢查數位的計算，以及它們能或不能偵測的錯誤。", tips: "<b>提示：</b>奇偶檢驗只能偵測奇數個位元出錯；檢查數位不能偵測另一個有效編號。" },
   ];
@@ -726,7 +751,8 @@ input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border
     if (S.answered || !S.q) return; const a = current();
     if (a === null || a === "") { const fb = $("feedback"); fb.className = "feedback bad"; fb.hidden = false; fb.innerHTML = `<div class="verdict">請先作答，或按「顯示答案」。</div>`; return; }
     const q = S.q; let ok;
-    if (q.input.kind === "text") { const g = norm(a).replace(/,/g, ""); ok = [q.answer, ...(q.accept || [])].some(x => g === norm(x)); } else ok = a === q.answer;
+    if (q.input.kind === "text") { const g = norm(a).replace(/,/g, ""); ok = [q.answer, ...(q.accept || [])].some(x => g === norm(x));
+      if (!ok && q.tol && /^-?\d+(\.\d+)?$/.test(g)) ok = Math.abs(parseFloat(g) - q.num) <= q.tol; } else ok = a === q.answer;
     finish(ok, false);
   }
   function setHint(open) { $("hintbox").hidden = !open; $("btn-hint").setAttribute("aria-expanded", String(open)); }
