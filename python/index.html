@@ -1,0 +1,977 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Python 程式練習室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --bg:#EEF2F0; --surface:#FFFFFF; --sunk:#E3E9E6; --ink:#17262A; --muted:#566A6E; --line:#C9D4D0;
+  --accent:#0E7466; --accent-ink:#FFFFFF; --led:#E39B10; --led-ink:#1A1204; --led-glow:rgba(227,155,16,.35);
+  --hl:rgba(227,155,16,.18); --str:#9A4A06; --cur:#F6F1E4;
+  --good:#1F7A3A; --good-bg:#E3F3E7; --bad:#B3261E; --bad-bg:#FBE7E5;
+  --b1:#CFE6F5; --b1-ink:#164A6B; --b2:#DDEFD3; --b2-ink:#2C5A1B; --b3:#EADCF4; --b3-ink:#5A2C77;
+  --bx:#F6D3CF; --bx-ink:#8A1F17; --hatch:rgba(179,38,30,.18);
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1618; --surface:#162226; --sunk:#1D2C31; --ink:#E2ECE9; --muted:#95A9AB; --line:#2C3E43;
+    --accent:#35BFA9; --accent-ink:#0B1413; --led:#F4B23C; --led-ink:#1A1204; --led-glow:rgba(244,178,60,.35);
+    --hl:rgba(244,178,60,.16); --str:#F2B880; --cur:#232B22;
+    --good:#5BD17E; --good-bg:#15301F; --bad:#FF8A80; --bad-bg:#3A1A18;
+    --b1:#24506B; --b1-ink:#CDE7F8; --b2:#2F5426; --b2-ink:#D2F0C4; --b3:#4B3266; --b3-ink:#EAD6F8;
+    --bx:#4A2220; --bx-ink:#FFB4AC; --hatch:rgba(255,138,128,.2); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1618; --surface:#162226; --sunk:#1D2C31; --ink:#E2ECE9; --muted:#95A9AB; --line:#2C3E43;
+  --accent:#35BFA9; --accent-ink:#0B1413; --led:#F4B23C; --led-ink:#1A1204; --led-glow:rgba(244,178,60,.35);
+  --hl:rgba(244,178,60,.16); --str:#F2B880; --cur:#232B22;
+  --good:#5BD17E; --good-bg:#15301F; --bad:#FF8A80; --bad-bg:#3A1A18;
+  --b1:#24506B; --b1-ink:#CDE7F8; --b2:#2F5426; --b2-ink:#D2F0C4; --b3:#4B3266; --b3-ink:#EAD6F8;
+  --bx:#4A2220; --bx-ink:#FFB4AC; --hatch:rgba(255,138,128,.2); color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:24px 48px;display:flex;flex-direction:column;gap:20px}
+.wrap>*,.card>*{min-width:0}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+h1{font-size:30px;font-weight:900;margin:0;letter-spacing:.02em;text-wrap:balance}
+h1 .bits{display:inline-block;white-space:nowrap;font-family:var(--mono);font-weight:600;color:var(--accent);font-size:.7em;margin-left:.4em;letter-spacing:.04em}
+.score{display:flex;gap:16px;font-variant-numeric:tabular-nums}
+.score div{display:flex;flex-direction:column;align-items:flex-end}
+.score b{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1.1}
+.score span{font-size:12px;color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav button{font:inherit;font-size:15px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+nav button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.topic-note{font-size:14px;color:var(--muted);margin:-6px 0 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.qhead{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.qtype{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--accent)}
+.qno{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.qright{display:flex;align-items:center;gap:12px;margin-left:auto}
+.hintbtn{font:inherit;font-size:14px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--led);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.hintbtn::before{content:"?";display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--led);color:var(--led-ink);font-family:var(--mono);font-size:12px}
+.hintbtn[aria-expanded="true"]{background:var(--led);color:var(--led-ink)}
+.hintbtn[aria-expanded="true"]::before{background:var(--led-ink);color:var(--led)}
+.hintbox{border:1px solid var(--led);border-left-width:4px;border-radius:10px;padding:12px 14px;background:var(--sunk);font-size:15px;line-height:1.7;display:flex;flex-direction:column;gap:6px}
+.hintbox h4{margin:0;font-size:13px;letter-spacing:.06em;color:var(--muted)}
+.hintbox ol{margin:0;padding-left:1.3em}
+.hintbox .ex{font-family:var(--mono);font-size:14px;background:var(--surface);border-radius:8px;padding:6px 10px;width:fit-content;max-width:100%;overflow-x:auto;white-space:pre}
+.prompt{font-size:17px;line-height:1.7;display:flex;flex-direction:column;gap:10px;min-width:0}
+.prompt p{margin:0}
+.mono{font-family:var(--mono);font-weight:600;letter-spacing:.02em}
+.small{font-size:14px;color:var(--muted)}
+.scroll{overflow-x:auto;max-width:100%}
+/* 程式碼 */
+.code{font-family:var(--mono);font-size:15px;line-height:1.7;background:var(--sunk);border-radius:10px;padding:10px 0;overflow-x:auto;max-width:100%}
+.code .ln{display:flex;white-space:pre;padding-right:14px;border-left:3px solid transparent;min-width:fit-content}
+.code .no{width:2.6em;flex:0 0 auto;text-align:right;padding-right:.9em;color:var(--muted);user-select:none;font-size:12px;opacity:.75;line-height:inherit}
+.code .ln.hl{background:var(--hl);border-left-color:var(--led)}
+.code .kw{color:var(--accent);font-weight:600}
+.code .st{color:var(--str)}
+.code .cm{color:var(--muted);font-style:italic}
+.io{font-family:var(--mono);font-size:15px;line-height:1.6;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;white-space:pre;overflow-x:auto;max-width:100%;margin:0}
+.io .er{color:var(--bad);font-weight:600}
+.io .muted{color:var(--muted);font-family:var(--sans);font-size:14px}
+.iolab{font-size:13px;color:var(--muted);margin:0 0 4px}
+.stdin{display:inline-block;font-family:var(--mono);font-weight:700;background:var(--sunk);border-radius:6px;padding:0 7px;margin:0 2px}
+/* 作答 */
+.answer-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.answer-row label,.flab{font-size:14px;color:var(--muted)}
+input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:min(260px,100%)}
+input.sm{font-size:17px;padding:6px 10px;width:5.5em;text-align:center}
+textarea{display:block;font-family:var(--mono);font-size:17px;line-height:1.55;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;min-height:7.5em;resize:vertical;white-space:pre;overflow-x:auto}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.choice{font:inherit;text-align:left;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;min-width:0}
+.choice[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.choice.pre{font-family:var(--mono);font-size:14px;white-space:pre;overflow-x:auto;line-height:1.5}
+.choice.ok{border-color:var(--good);background:var(--good-bg)}
+.choice.no{border-color:var(--bad);background:var(--bad-bg)}
+.choices.wide{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+.qpart{display:flex;flex-direction:column;gap:8px}
+.qpart h3{margin:0;font-size:15px}
+.btn{font:inherit;font-weight:700;padding:10px 18px;border-radius:10px;border:1px solid var(--accent);cursor:pointer}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.sm{padding:6px 12px;font-size:14px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#btn-next{margin-left:auto}
+#btn-next.skip{border-color:var(--line);color:var(--muted);font-weight:500}
+#btn-next.confirm{border-color:var(--bad);color:var(--bad);font-weight:700}
+.feedback{border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.feedback.good{background:var(--good-bg)}
+.feedback.bad{background:var(--bad-bg)}
+.feedback .verdict{font-weight:700}
+.feedback.good .verdict{color:var(--good)}
+.feedback.bad .verdict{color:var(--bad)}
+.feedback .io{background:var(--surface)}
+.steps{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.steps li{line-height:1.6}
+.cmp-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px}
+.diff .x{background:var(--bad-bg);color:var(--bad)}
+.tips{font-size:14px;color:var(--muted);border-top:1px dashed var(--line);padding-top:14px}
+.tips b{color:var(--ink)}
+/* 篩選 */
+.filter{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.filter summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:10px 14px;font-weight:700;font-size:15px}
+.filter summary::-webkit-details-marker{display:none}
+.filter summary::after{content:"▾";color:var(--muted);transition:transform .15s}
+.filter[open] summary::after{transform:rotate(180deg)}
+.fcount{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--muted);margin-left:auto}
+.fcount.partial{color:var(--accent);font-weight:600}
+.fbody{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px}
+.fact{display:flex;flex-wrap:wrap;gap:8px}
+.fgroup{display:flex;flex-direction:column;gap:6px}
+.fgroup h3{margin:0;font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:14px;line-height:1.4;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sunk);border-color:var(--accent);color:var(--ink);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip[aria-pressed="true"]::before{content:"✓ ";color:var(--accent);font-weight:700}
+.mini{font:inherit;font-size:13px;padding:4px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer}
+.fhint{margin:0;font-size:12px;color:var(--muted)}
+.empty{color:var(--muted);font-size:16px}
+/* range() 與索引 */
+.rx{display:flex;flex-direction:column;gap:12px}
+.rx-ctl{display:flex;flex-wrap:wrap;gap:8px 14px}
+.stepper{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--muted)}
+.stepper button{font:inherit;font-family:var(--mono);font-size:18px;font-weight:600;width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.stepper button:disabled{opacity:.4;cursor:default}
+.stepper b{font-family:var(--mono);font-size:18px;color:var(--ink);min-width:2ch;text-align:center}
+.cells{display:flex;gap:4px;overflow-x:auto;max-width:100%;padding:16px 2px 4px}
+.cellx{flex:0 0 auto;width:46px;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+.cellx .ix{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.cellx .vx{width:46px;height:40px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-family:var(--mono);font-weight:600}
+.cellx.ghost .vx{border-style:dashed;color:var(--muted);background:transparent;font-weight:400;font-size:12px}
+.cellx.hit .vx{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.cellx.err .vx{background:var(--bad-bg);border:2px solid var(--bad);color:var(--bad)}
+.cellx .ord{position:absolute;top:-14px;font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:700}
+.cellx.err .ord{color:var(--bad)}
+.ivals{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:14px;color:var(--muted)}
+.iv{font-family:var(--mono);font-weight:600;font-size:15px;padding:1px 9px;border-radius:999px;background:var(--sunk);color:var(--ink)}
+.iv.err{background:var(--bad-bg);color:var(--bad)}
+.iv.skip{opacity:.5;text-decoration:line-through}
+.target{border-left:4px solid var(--accent);background:var(--sunk);border-radius:8px;padding:8px 12px}
+/* 測試數據 */
+.nlwrap{overflow-x:auto;max-width:100%;padding-bottom:4px}
+.nl{position:relative;padding-top:30px}
+.nl.stag{padding-top:44px}
+.band{display:flex;height:30px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.band>*{border:0;padding:0;margin:0;font:inherit;display:grid;place-items:center;min-width:0;position:relative}
+.band button{cursor:pointer}
+.band button:hover{filter:brightness(.93)}
+.band .k{border-left:1px solid var(--surface)}
+.band .gap,.band .tail{font-size:12px;color:var(--muted)}
+.br0{background:var(--b1);color:var(--b1-ink)}.br1{background:var(--b2);color:var(--b2-ink)}.br2{background:var(--b3);color:var(--b3-ink)}.br3{background:var(--b1);color:var(--b1-ink)}
+.brx{background:repeating-linear-gradient(135deg,var(--bx) 0 6px,var(--hatch) 6px 10px);color:var(--bx-ink)}
+.ticks{position:relative;height:20px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.ticks span{position:absolute;transform:translateX(-50%);top:2px}
+.ticks span.c{color:var(--ink);font-weight:700}
+.marks{position:absolute;left:0;right:0;top:0;height:30px}
+.nl.stag .marks{height:44px}
+.mk.up{bottom:18px}
+.mk{position:absolute;transform:translateX(-50%);bottom:4px;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--led);color:var(--led-ink);border-radius:999px;padding:0 5px;white-space:nowrap}
+.mk::after{content:"";position:absolute;left:50%;bottom:-6px;border:3px solid transparent;border-top-color:var(--led);transform:translateX(-50%)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:13px;color:var(--muted);align-items:center}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:4px;border:1px solid var(--line)}
+.tvt{width:100%;border-collapse:collapse;font-size:15px}
+.tvt th,.tvt td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:left;vertical-align:middle}
+.tvt th{font-size:12px;color:var(--muted);font-weight:500}
+.tvt td.v{font-family:var(--mono);font-weight:700;font-size:17px;width:3.4em}
+.tvt td.o{font-family:var(--mono);font-size:13px}
+.tvt.pre .o{display:none}
+@media (max-width:480px){.tg{font-size:13px;padding:2px 8px}.tvt td.v{font-size:16px;width:2.8em}}
+.tvt td.r{width:1.6em;font-weight:700}
+.tvt td.r.ok{color:var(--good)}.tvt td.r.no{color:var(--bad)}
+.tags{display:flex;flex-wrap:wrap;gap:4px}
+.tg{font:inherit;font-size:14px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer}
+.tg[aria-pressed="true"].n{background:var(--good-bg);border-color:var(--good);color:var(--good);font-weight:700}
+.tg[aria-pressed="true"].e{background:var(--bad-bg);border-color:var(--bad);color:var(--bad);font-weight:700}
+.tg[aria-pressed="true"].b{background:var(--hl);border-color:var(--led);color:var(--ink);font-weight:700}
+.rm{font:inherit;border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:18px;padding:0 6px}
+.cov{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:10px;font-size:14px}
+.cov>div{background:var(--sunk);border-radius:10px;padding:8px 12px}
+.cov h4{margin:0 0 4px;font-size:13px;color:var(--muted)}
+.cov ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px}
+.cov .y{color:var(--good);font-weight:700}.cov .n{color:var(--bad);font-weight:700}
+.addrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+/* 比較次數 */
+.stp{display:flex;flex-direction:column;gap:12px;border:1px solid var(--line);border-radius:12px;padding:12px}
+.stp-ctl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:14px;color:var(--muted)}
+.algs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.alg{display:flex;flex-direction:column;gap:6px;min-width:0}
+.alg h4{margin:0;font-size:14px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.alg .cnt{font-family:var(--mono);font-size:14px;color:var(--muted)}
+.alg .cnt b{font-size:20px;color:var(--ink)}
+.alg .msg{font-size:14px;min-height:3.2em;background:var(--sunk);border-radius:8px;padding:6px 10px}
+.alg .code{font-size:14px}
+.ptr1{color:var(--accent)}.ptr2{color:var(--led)}
+.cellx .p{position:absolute;top:-15px;font-family:var(--mono);font-size:11px;font-weight:700;display:flex;gap:4px}
+.cellx.p1 .vx{box-shadow:inset 0 0 0 2px var(--accent)}
+.cellx.p2 .vx{box-shadow:inset 0 -4px 0 var(--led)}
+.cellx.p1.p2 .vx{box-shadow:inset 0 0 0 2px var(--accent),inset 0 -5px 0 var(--led)}
+.lockmsg{font-size:14px;color:var(--muted);margin:0}
+table.bw{border-collapse:collapse;font-size:15px}
+.bw th,.bw td{border:1px solid var(--line);padding:6px 10px;text-align:center}
+.bw th{background:var(--sunk);font-weight:500;font-size:13px}
+.bw input.ok{border-color:var(--good);background:var(--good-bg)}
+.bw input.no{border-color:var(--bad);background:var(--bad-bg)}
+input.sm.ok{border-color:var(--good);background:var(--good-bg)}
+input.sm.no{border-color:var(--bad);background:var(--bad-bg)}
+@media (max-width:480px){h1{font-size:24px}.prompt{font-size:16px}.card{padding:18px 14px 16px}.code{font-size:14px}.score{gap:12px}.score b{font-size:19px}textarea{font-size:16px}.cellx,.cellx .vx{width:40px}}
+@media (prefers-reduced-motion:reduce){.filter summary::after{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">HKDSE ICT · 必修 D c / D d</span>
+      <h1>Python 程式練習室<span class="bits">print()</span></h1>
+    </div>
+    <div class="score" aria-live="polite">
+      <div><b id="sc-right">0</b><span>答對</span></div>
+      <div><b id="sc-total">0</b><span>已答</span></div>
+      <div><b id="sc-streak">0</b><span>連續答對</span></div>
+      <div><b id="sc-best">0</b><span>最佳紀錄</span></div>
+    </div>
+  </header>
+
+  <nav id="modes" aria-label="練習類別"></nav>
+  <p class="topic-note" id="mode-note"></p>
+
+  <details class="filter" id="filter">
+    <summary><span>題型篩選</span><span class="fcount" id="fcount"></span></summary>
+    <div class="fbody">
+      <div class="fact"><button type="button" class="mini" id="f-all">全選</button><button type="button" class="mini" id="f-none">全部取消</button></div>
+      <div id="fchips"></div>
+      <p class="fhint">點按題型可加入或移除。只會出已選的題型，選擇會記在這部裝置上。每題的數值都是隨機產生的。</p>
+    </div>
+  </details>
+
+  <section class="card" id="card">
+    <div class="qhead"><span class="qtype" id="qtype"></span><div class="qright"><span class="qno" id="qno"></span><button class="hintbtn" id="btn-hint" type="button" aria-expanded="false" aria-controls="hintbox">提示：方法</button></div></div>
+    <div class="hintbox" id="hintbox" hidden></div>
+    <div class="prompt" id="prompt"></div>
+    <div id="input-area"></div>
+    <div class="actions">
+      <button class="btn primary" id="btn-check" type="button">核對答案</button>
+      <button class="btn ghost" id="btn-show" type="button">顯示答案</button>
+      <button class="btn ghost skip" id="btn-next" type="button">跳過此題</button>
+    </div>
+    <div id="feedback" aria-live="polite" hidden></div>
+    <div class="tips" id="tips"></div>
+  </section>
+
+  <details class="filter" id="explorer" open hidden>
+    <summary><span>range() 探索器：自由試</span></summary>
+    <div class="fbody" id="explorer-body"></div>
+  </details>
+
+  <p class="topic-note">本頁的程式全部是 Python 3，縮排 4 個空格，列表索引由 0 開始。偽代碼的空運行及追蹤表在「空運行練習室」練習。</p>
+</div>
+
+<script>
+(() => {
+/*GEN:BEGIN*/
+const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const coin = (p = 0.5) => Math.random() < p;
+const J = (...a) => a.join("\n");
+const pyS = (v) => (typeof v === "string" ? "'" + v + "'" : typeof v === "boolean" ? (v ? "True" : "False") : String(v));
+const pyList = (a) => "[" + a.map(pyS).join(", ") + "]";
+const srcList = (a) => "[" + a.map((v) => (typeof v === "string" ? '"' + v + '"' : String(v))).join(", ") + "]";
+const pyF = (x) => (Number.isInteger(x) ? x + ".0" : String(x));
+const pyB = (b) => (b ? "True" : "False");
+const distinct = (n, a, b) => { const s = new Set(); while (s.size < n) s.add(R(a, b)); return [...s]; };
+const rangeVals = (s, e, st = 1) => { const o = []; if (st > 0) for (let i = s; i < e; i += st) o.push(i); else if (st < 0) for (let i = s; i > e; i += st) o.push(i); return o; };
+const rangeSrc = (s, e, st) => (st === 1 || st === undefined ? `range(${s}, ${e})` : `range(${s}, ${e}, ${st})`);
+const NAMES = ["Amy", "Ben", "Chloe", "David", "Eric", "Fiona", "Gary", "Helen", "Ivan", "Jacky"];
+const WORDS = ["PYTHON", "LAPTOP", "SCHOOL", "GARDEN", "ROCKET", "CAMERA", "WINDOW", "DRAGON", "ORANGE", "PLANET", "APPLE", "HELLO", "TIGER", "PIZZA", "CHAIR", "MOUSE"];
+
+// =================== 1. 輸出預測：模板 ===================
+// 每個模板傳回 { code, stdin（用家輸入，可無）, out（Python 實際輸出，逐字）, ex（解說） }
+const OUT = [
+  // ---- print 輸出 ----
+  { g: "print 輸出", n: "print 的逗號", f: () => { const name = pick(NAMES), mark = R(40, 99), g = pick(["Hi", "Hello"]);
+    return { code: J(`name = "${name}"`, `mark = ${mark}`, `print("${g}", name)`, `print("Your mark is", mark)`), out: `${g} ${name}\nYour mark is ${mark}\n`,
+      ex: ["print() 內以逗號分隔的項目，輸出時之間自動加一個空格。", `第 3 行：${g} 與 name 的值 ${name} 之間有一個空格。`, "每個 print() 完成後自動換行，所以第 4 行的輸出在下一行。"] }; } },
+  { g: "print 輸出", n: 'end="" 不換行', f: () => { const [a, b] = pick([["Hi", "Bye"], ["Good", "Night"], ["Tic", "Toe"], ["Ping", "Pong"]]), name = pick(NAMES);
+    return { code: J(`name = "${name}"`, `print("${a}", end="")`, `print(name, end="")`, `print("${b}")`, `print("End")`), out: `${a}${name}${b}\nEnd\n`,
+      ex: ['end="" 令 print() 完成後不換行，下一個 print() 的內容緊接在同一行，中間沒有空格。', `第 2 至 4 行的輸出合成一行：${a}${name}${b}`, '第 4 行沒有 end=""，完成後換行，所以 End 在下一行。'] }; } },
+  { g: "print 輸出", n: "逗號與 end 混合", f: () => { const a = R(2, 9), b = R(2, 9);
+    return { code: J(`a = ${a}`, `b = ${b}`, `print(a, b, end="")`, `print(a + b)`, `print("a + b =", a + b)`), out: `${a} ${b}${a + b}\na + b = ${a + b}\n`,
+      ex: [`第 3 行：a、b 以逗號分隔，輸出「${a} ${b}」；end="" 令下一個 print() 接在同一行。`, `第 4 行輸出 ${a + b}，緊貼在 ${b} 後面（沒有空格），然後換行。`, `第 5 行：字串 "a + b =" 照印，逗號後自動加空格，再印出 ${a + b}。`] }; } },
+  { g: "print 輸出", n: "字串合併 +", f: () => { const [f, l] = pick([["Tai", "Man"], ["Siu", "Ming"], ["Mei", "Ling"], ["Ka", "Yan"], ["Chi", "Keung"]]);
+    return { code: J(`first = "${f}"`, `last = "${l}"`, `print(first + last)`, `print(first, last)`, `print(first + " " + last + "!")`), out: `${f}${l}\n${f} ${l}\n${f} ${l}!\n`,
+      ex: ["+ 把兩個字串直接接起來，中間不會自動加空格：" + f + l + "。", "逗號分隔的項目之間會自動加一個空格：" + f + " " + l + "。", '第 5 行自己加入 " "（空格）及 "!"。'] }; } },
+  // ---- 運算與變量 ----
+  { g: "運算與變量", n: "// 與 %", f: () => { const b = R(2, 9), a = R(b * 2, 99);
+    return { code: J(`a = ${a}`, `b = ${b}`, `print(a // b, a % b)`, `print(b // a, b % a)`), out: `${Math.floor(a / b)} ${a % b}\n0 ${b}\n`,
+      ex: [`${a} ÷ ${b} ＝ ${Math.floor(a / b)} 餘 ${a % b}：// 是整數除法（商），% 是餘數（模數）。`, `${b} ÷ ${a}：因為 ${b} 小於 ${a}，商是 0，餘數是 ${b} 本身。`] }; } },
+  { g: "運算與變量", n: "分鐘換算", f: () => { const t = R(61, 599), h = Math.floor(t / 60), m = t % 60;
+    return { code: J(`total = ${t}`, "hours = total // 60", "minutes = total % 60", 'print(hours, "h", minutes, "min")'), out: `${h} h ${m} min\n`,
+      ex: [`${t} // 60 ＝ ${h}（有多少個完整的 60 分鐘）`, `${t} % 60 ＝ ${m}（餘下的分鐘）`, "print() 的四個項目之間各加一個空格。"] }; } },
+  { g: "運算與變量", n: "拆開數位", f: () => { const n = R(100, 999), a = Math.floor(n / 100), b = Math.floor(n / 10) % 10, c = n % 10;
+    return { code: J(`n = ${n}`, "print(n // 100)", "print(n // 10 % 10)", "print(n % 10)"), out: `${a}\n${b}\n${c}\n`,
+      ex: [`n // 100 ＝ ${a}（百位）`, `// 與 % 優先次序相同，由左至右計算：n // 10 ＝ ${Math.floor(n / 10)}，再 % 10 ＝ ${b}（十位）`, `n % 10 ＝ ${c}（個位）`] }; } },
+  { g: "運算與變量", n: "/ 的結果是浮點數", f: () => { let a, b; if (coin(0.6)) { b = pick([2, 4, 8]); a = R(b + 1, 60); } else { b = pick([3, 5, 6]); a = b * R(2, 12); }
+    return { code: J(`a = ${a}`, `b = ${b}`, "print(a / b)", "print(a // b)", "print(a % b)"), out: `${pyF(a / b)}\n${Math.floor(a / b)}\n${a % b}\n`,
+      ex: [`a / b ＝ ${pyF(a / b)}：「/」的結果一定是浮點數${Number.isInteger(a / b) ? "，即使整除也會寫成 " + pyF(a / b) : ""}。`, `a // b ＝ ${Math.floor(a / b)}（整數除法，只取商）`, `a % b ＝ ${a % b}（餘數）`] }; } },
+  { g: "運算與變量", n: "運算次序", f: () => { const a = R(2, 9), b = R(2, 9), c = R(2, 5);
+    return { code: J(`a = ${a}`, `b = ${b}`, `c = ${c}`, "print(a + b * c)", "print((a + b) * c)", "print(c ** 2 - a)"), out: `${a + b * c}\n${(a + b) * c}\n${c * c - a}\n`,
+      ex: [`先乘後加：${a} + ${b} × ${c} ＝ ${a} + ${b * c} ＝ ${a + b * c}`, `括號先計：(${a} + ${b}) × ${c} ＝ ${a + b} × ${c} ＝ ${(a + b) * c}`, `** 是乘冪，最先計算：${c} ** 2 ＝ ${c * c}，再減 ${a} ＝ ${c * c - a}`] }; } },
+  { g: "運算與變量", n: "交換兩個變量", f: () => { const [x, y] = distinct(2, 1, 20);
+    return { code: J(`x = ${x}`, `y = ${y}`, "temp = x", "x = y", "y = temp", "print(x, y)"), out: `${y} ${x}\n`,
+      ex: [`temp = x：temp 是 ${x}`, `x = y：x 變成 ${y}`, `y = temp：y 變成 ${x}`, "temp 先保存 x 原本的值，交換時才不會遺失。"] }; } },
+  { g: "運算與變量", n: "重新賦值", f: () => { const n0 = R(2, 9), m = R(2, 5), d = R(1, 9), v1 = n0 * m, v2 = v1 - d, v3 = v2 + v2;
+    return { code: J(`n = ${n0}`, `n = n * ${m}`, `n = n - ${d}`, "n = n + n", "print(n)"), out: `${v3}\n`,
+      ex: ["每一行先用 n 的舊值計算右邊，再把結果存回 n：", `n = ${n0} × ${m} ＝ ${v1}`, `n = ${v1} − ${d} ＝ ${v2}`, `n = ${v2} + ${v2} ＝ ${v3}`] }; } },
+  // ---- 數據類型 ----
+  { g: "數據類型", n: '字串 "4" + "5"', f: () => { const x = R(1, 9), y = R(1, 9), xy = Number(`${x}${y}`);
+    return { code: J(`x = "${x}"`, `y = "${y}"`, "print(x + y)", "print(int(x) + int(y))", "print(int(x + y) + 1)"), out: `${x}${y}\n${x + y}\n${xy + 1}\n`,
+      ex: [`x、y 是字串，x + y 是把字串接起來：「${x}${y}」。`, `int() 把字串轉換為整數，才可相加：${x} + ${y} ＝ ${x + y}`, `x + y 先得字串 "${x}${y}"，int() 轉為 ${xy}，再加 1 ＝ ${xy + 1}`] }; } },
+  { g: "數據類型", n: "input() 傳回字串", f: () => { const a = R(10, 49), b = R(10, 49);
+    return { code: J("a = input()", "b = input()", "print(a + b)", "print(int(a) + int(b))"), stdin: [String(a), String(b)], out: `${a}${b}\n${a + b}\n`,
+      ex: ["input() 取得的一定是字串，所以 a + b 是把兩個字串接起來：" + a + b + "。", `轉換為整數後才是數學上的相加：${a} + ${b} ＝ ${a + b}`, "寫程式時要計算，記得 int(input()) 或 float(input())。"] }; } },
+  { g: "數據類型", n: "int() 與 float()", f: () => { const w = R(1, 20), d = R(1, 9);
+    return { code: J(`price = ${w}.${d}`, "whole = int(price)", "print(whole)", "print(whole * 2)", "print(float(whole))"), out: `${w}\n${w * 2}\n${w}.0\n`,
+      ex: [`int(${w}.${d}) ＝ ${w}：把小數部分去掉（這裏是正數，即捨去小數）。`, `whole * 2 ＝ ${w * 2}（整數）`, `float(${w}) ＝ ${w}.0：轉為浮點數，輸出時有 .0`] }; } },
+  { g: "數據類型", n: "type()", f: () => { const a = R(2, 20), b = R(2, 9), k = R(2, 9);
+    const items = [
+      [`${b * k} / ${b}`, "float", pyF(k), "「/」的結果一定是浮點數"], [`${a} // ${b}`, "int", String(Math.floor(a / b)), "「//」兩個整數相除，結果是整數"],
+      [`"${a}"`, "str", String(a), "有引號，是字串；print() 輸出時不會印出引號"], [`${a} > ${b}`, "bool", pyB(a > b), "比較的結果是布爾值 True 或 False"],
+      [`float(${a})`, "float", a + ".0", "float() 轉為浮點數"], [`str(${a}) + str(${b})`, "str", `${a}${b}`, "str() 轉為字串，+ 把字串接起來"],
+      [`int("${a}") + ${b}`, "int", String(a + b), 'int("' + a + '") 轉為整數後才相加']];
+    const [e, t, v, why] = pick(items);
+    return { code: J(`x = ${e}`, "print(type(x))", "print(x)"), out: `<class '${t}'>\n${v}\n`, ex: [`${why}：x 的數據類型是 ${t}，值是 ${v}。`, `type() 的輸出格式是 <class '${t}'>。`] }; } },
+  { g: "數據類型", n: "str() 與字串合併", f: () => { const age = R(10, 18);
+    return { code: J(`age = ${age}`, 'print("I am " + str(age) + " years old")', 'print("Next year:", age + 1)', "print(str(age) + str(1))"), out: `I am ${age} years old\nNext year: ${age + 1}\n${age}1\n`,
+      ex: ["字串與整數不可直接用 + 合併，要先用 str() 轉為字串；字串內已有空格，所以輸出有空格。", `用逗號時毋須轉換：age + 1 ＝ ${age + 1}，前面自動加一個空格。`, `str(${age}) + str(1) 是把字串接起來：${age}1`] }; } },
+  { g: "數據類型", n: "float(input())", f: () => { const k = R(1, 9), w = R(2, 9), L = k + 0.5;
+    return { code: J("length = float(input())", "width = int(input())", "print(length * width)", "print(width / 2)"), stdin: [`${k}.5`, String(w)], out: `${pyF(L * w)}\n${pyF(w / 2)}\n`,
+      ex: [`length 是浮點數 ${k}.5，浮點數 × 整數 ＝ 浮點數：${k}.5 × ${w} ＝ ${pyF(L * w)}`, `width / 2 ＝ ${pyF(w / 2)}（「/」的結果一定是浮點數）`] }; } },
+  // ---- 選擇 ----
+  { g: "選擇", n: "if-elif-else", f: () => { const hi = pick([70, 75, 80]), lo = pick([45, 50, 55]), m = pick([hi - 1, hi, hi + 1, lo - 1, lo, lo + 1, R(0, 100)]);
+    const g = m >= hi ? "A" : m >= lo ? "B" : "C";
+    return { code: J(`mark = ${m}`, `if mark >= ${hi}:`, '    print("A")', `elif mark >= ${lo}:`, '    print("B")', "else:", '    print("C")', 'print("End")'), out: `${g}\nEnd\n`,
+      ex: [`mark >= ${hi}？${pyB(m >= hi)}` + (m >= hi ? " → 輸出 A，其餘分支不再檢查" : ""), ...(m >= hi ? [] : [`mark >= ${lo}？${pyB(m >= lo)}` + (m >= lo ? " → 輸出 B" : " → 執行 else，輸出 C")]), "最後一行不在 if 結構內（沒有縮排），一定執行：End"] }; } },
+  { g: "選擇", n: "and、or、not", f: () => { const v = R(0, 2);
+    if (v === 0) { const age = R(9, 15), h = R(130, 150), ok = age >= 12 && h >= 140;
+      return { code: J(`age = ${age}`, `height = ${h}`, "if age >= 12 and height >= 140:", '    print("Ride OK")', "else:", '    print("Not allowed")'), out: (ok ? "Ride OK" : "Not allowed") + "\n",
+        ex: [`age >= 12：${pyB(age >= 12)}；height >= 140：${pyB(h >= 140)}`, `and 要兩個條件都是 True，結果才是 True → ${pyB(ok)}`] }; }
+    if (v === 1) { const age = pick([R(5, 11), R(12, 64), R(65, 80), 11, 12, 64, 65]), ok = age < 12 || age >= 65;
+      return { code: J(`age = ${age}`, "if age < 12 or age >= 65:", '    print("Discount")', "else:", '    print("Full price")'), out: (ok ? "Discount" : "Full price") + "\n",
+        ex: [`age < 12：${pyB(age < 12)}；age >= 65：${pyB(age >= 65)}`, `or 只要其中一個條件是 True，結果便是 True → ${pyB(ok)}`] }; }
+    const mem = coin(), n = R(2, 9), price = n * 10, pay = mem ? price - 5 : price;
+    return { code: J(`member = ${pyB(mem)}`, `price = ${price}`, "if not member:", '    print("Please join us")', "else:", "    price = price - 5", "print(price)"), out: (mem ? "" : "Please join us\n") + `${pay}\n`,
+      ex: [`member 是 ${pyB(mem)}，not member 是 ${pyB(!mem)}。`, mem ? "條件不成立，執行 else：price 減 5 ＝ " + pay : "條件成立，輸出 Please join us；price 不變", "最後一行沒有縮排，一定執行：輸出 " + pay] }; } },
+  { g: "選擇", n: "以 % 判斷", f: () => { const n = R(10, 60), d = pick([2, 3, 5]), r = n % d;
+    return { code: J(`n = ${n}`, `if n % ${d} == 0:`, `    print(n, "is a multiple of ${d}")`, "else:", `    print(n, "remainder", n % ${d})`), out: r === 0 ? `${n} is a multiple of ${d}\n` : `${n} remainder ${r}\n`,
+      ex: [`${n} % ${d} ＝ ${r}`, r === 0 ? "餘數是 0，即整除，條件成立。" : "餘數不是 0，條件不成立，執行 else。", "逗號分隔的項目之間各加一個空格。"] }; } },
+  { g: "選擇", n: "多個 if 與 if-elif", f: () => { const x = R(0, 9), kw = pick(["if", "elif"]); const outs = [];
+    if (kw === "if") { if (x > 6) outs.push("A"); if (x > 3) outs.push("B"); if (x > 0) outs.push("C"); } else { if (x > 6) outs.push("A"); else if (x > 3) outs.push("B"); else if (x > 0) outs.push("C"); }
+    outs.push("Done");
+    return { code: J(`x = ${x}`, "if x > 6:", '    print("A")', `${kw} x > 3:`, '    print("B")', `${kw} x > 0:`, '    print("C")', 'print("Done")'), out: outs.join("\n") + "\n",
+      ex: [kw === "if" ? "三個都是獨立的 if：每個條件都會檢查，成立便輸出，所以可以輸出多於一行。" : "if-elif：由上而下檢查，只執行第一個成立的分支，其餘不再檢查。",
+        `x > 6：${pyB(x > 6)}；x > 3：${pyB(x > 3)}；x > 0：${pyB(x > 0)}`, "最後的 print 沒有縮排，一定執行。"] }; } },
+  { g: "選擇", n: "嵌套 if", f: () => { const a = R(1, 9), b = coin(0.3) ? a : R(1, 9); const o = a > b ? "a is larger" : a === b ? "same" : "b is larger";
+    return { code: J(`a = ${a}`, `b = ${b}`, "if a > b:", '    print("a is larger")', "else:", "    if a == b:", '        print("same")', "    else:", '        print("b is larger")', "print(a + b)"), out: `${o}\n${a + b}\n`,
+      ex: [`a > b？${pyB(a > b)}`, ...(a > b ? [] : [`進入 else 內的 if：a == b？${pyB(a === b)}`]), `輸出 ${o}；最後一行輸出 a + b ＝ ${a + b}`] }; } },
+  // ---- 循環 ----
+  { g: "循環", n: 'range() 與 end=" "', f: () => { const a = R(0, 5), b = a + R(2, 6), v = rangeVals(a, b);
+    return { code: J(`for i in range(${a}, ${b}):`, '    print(i, end=" ")', 'print("End")'), out: v.map((x) => x + " ").join("") + "End\n",
+      ex: [`range(${a}, ${b}) 由 ${a} 開始，到 ${b} 之前停止（不包括 ${b}）：${v.join("、")}`, 'end=" " 令每個數字後加一個空格而不換行，所以 End 接在同一行。'] }; } },
+  { g: "循環", n: "range() 的遞增量", f: () => { const a = R(0, 5), s = R(2, 4), b = a + s * R(2, 4) + R(0, s - 1), v = rangeVals(a, b, s);
+    return { code: J(`for i in range(${a}, ${b}, ${s}):`, "    print(i)"), out: v.join("\n") + "\n",
+      ex: [`由 ${a} 開始，每次加 ${s}，到達或超過 ${b} 便停止：${v.join("、")}`, `${v[v.length - 1] + s} 已不小於 ${b}，所以不會輸出。`] }; } },
+  { g: "循環", n: "遞減的 range()", f: () => { const a = R(6, 12), s = pick([1, 2, 3]), b = R(-1, a - 4), v = rangeVals(a, b, -s);
+    return { code: J(`for i in range(${a}, ${b}, -${s}):`, '    print(i, end=" ")', 'print("Go!")'), out: v.map((x) => x + " ").join("") + "Go!\n",
+      ex: [`遞增量是 -${s}：由 ${a} 開始，每次減 ${s}，只要仍大於 ${b} 便繼續：${v.join("、")}`, `最終值 ${b} 不包括在內。`] }; } },
+  { g: "循環", n: "累加與計數", f: () => { const a = R(1, 4), b = a + R(3, 6), v = rangeVals(a, b), t = v.reduce((x, y) => x + y, 0);
+    return { code: J("total = 0", "count = 0", `for i in range(${a}, ${b}):`, "    total = total + i", "    count = count + 1", "print(count, total)"), out: `${v.length} ${t}\n`,
+      ex: [`i 的值：${v.join("、")}（共 ${v.length} 個）`, `total ＝ ${v.join(" + ")} ＝ ${t}`, "count 每次循環加 1，即循環次數。"] }; } },
+  { g: "循環", n: "循環後 i 的值", f: () => { const a = R(0, 4), s = R(1, 3), b = a + s * R(2, 5) - R(0, s - 1), v = rangeVals(a, b, s);
+    return { code: J("count = 0", `for i in range(${a}, ${b}, ${s}):`, "    count = count + 1", "print(count)", "print(i)"), out: `${v.length}\n${v[v.length - 1]}\n`,
+      ex: [`i 的值：${v.join("、")}，共 ${v.length} 次。`, `循環完結後，i 保留最後一次的值 ${v[v.length - 1]}（不是 ${b}）。`] }; } },
+  { g: "循環", n: "while 循環（乘）", f: () => { const n0 = R(2, 7), lim = R(30, 120), m = pick([2, 3]); let n = n0, c = 0; const tr = [n0]; while (n < lim) { n *= m; c++; tr.push(n); }
+    return { code: J(`n = ${n0}`, "count = 0", `while n < ${lim}:`, `    n = n * ${m}`, "    count = count + 1", "print(count, n)"), out: `${c} ${n}\n`,
+      ex: [`n 的值：${tr.join(" → ")}`, `${n} 不小於 ${lim}，條件不成立，離開循環；共執行 ${c} 次。`] }; } },
+  { g: "循環", n: "while 循環（輸出）", f: () => { const i0 = R(1, 5), s = R(2, 4), lim = i0 + s * R(2, 4) + R(-1, 1); const v = []; let i = i0; while (i <= lim) { v.push(i); i += s; }
+    return { code: J(`i = ${i0}`, `while i <= ${lim}:`, '    print(i, end=" ")', `    i = i + ${s}`, 'print("End", i)'), out: v.map((x) => x + " ").join("") + `End ${i}\n`,
+      ex: [`i 的值：${v.join("、")}，每個之後加空格不換行。`, `i 變成 ${i} 時，${i} <= ${lim} 不成立，離開循環。`, `最後輸出 End 及 i 的值 ${i}，接在同一行。`] }; } },
+  { g: "循環", n: "while 循環（//）", f: () => { const x0 = R(50, 200); let x = x0, c = 0; const tr = [x0]; while (x > 10) { x = Math.floor(x / 2); c++; tr.push(x); }
+    return { code: J(`x = ${x0}`, "count = 0", "while x > 10:", "    x = x // 2", "    count = count + 1", "print(count, x)"), out: `${c} ${x}\n`,
+      ex: [`x 的值：${tr.join(" → ")}（每次整數除以 2）`, `x 是 ${x}，x > 10 不成立，離開循環；共 ${c} 次。`] }; } },
+  // ---- 列表與字串 ----
+  { g: "列表與字串", n: "列表索引", f: () => { const L = distinct(5, 1, 99), i = R(0, 4), j = R(0, 4), k = R(0, 4);
+    return { code: J(`nums = ${srcList(L)}`, `print(nums[${i}])`, `print(nums[${j}] + nums[${k}])`, "print(nums[len(nums) - 1])"), out: `${L[i]}\n${L[j] + L[k]}\n${L[4]}\n`,
+      ex: ["索引由 0 開始：" + L.map((x, q) => `nums[${q}]＝${x}`).join("，"), `nums[${j}] + nums[${k}] ＝ ${L[j]} + ${L[k]} ＝ ${L[j] + L[k]}`, `len(nums) 是 5，最後一項是 nums[4] ＝ ${L[4]}`] }; } },
+  { g: "列表與字串", n: "更新列表", f: () => { const L = distinct(4, 1, 30), i = R(0, 3), j = R(0, 3), k = R(0, 3), M = L.slice(); M[i] = M[j] * 2; const before = M[k]; M[k] = M[k] + 1;
+    return { code: J(`nums = ${srcList(L)}`, `nums[${i}] = nums[${j}] * 2`, `nums[${k}] = nums[${k}] + 1`, "print(nums)"), out: pyList(M) + "\n",
+      ex: [`第 2 行：nums[${i}] ＝ nums[${j}] × 2 ＝ ${L[j]} × 2 ＝ ${L[j] * 2}`, `第 3 行：nums[${k}] ＝ ${before} + 1 ＝ ${before + 1}（用第 2 行之後的值）`, "print(列表) 會連方括號及逗號一起輸出。"] }; } },
+  { g: "列表與字串", n: "逐項輸出列表", f: () => { const L = shuffle(NAMES).slice(0, R(3, 5)), rev = coin(), n = L.length, idx = rev ? rangeVals(n - 1, -1, -1) : rangeVals(0, n);
+    return { code: J(`names = ${srcList(L)}`, `for i in range(${rev ? "len(names) - 1, -1, -1" : "0, len(names)"}):`, "    print(i, names[i])"), out: idx.map((q) => `${q} ${L[q]}`).join("\n") + "\n",
+      ex: [`len(names) 是 ${n}，${rev ? `range(${n - 1}, -1, -1) 由 ${n - 1} 遞減至 0` : `range(0, ${n}) 是 0 至 ${n - 1}`}。`, "print(i, names[i]) 輸出索引、空格、項目（字串沒有引號）。"] }; } },
+  { g: "列表與字串", n: "總和及平均值", f: () => { const L = Array.from({ length: 4 }, () => R(40, 99)), t = L.reduce((a, b) => a + b, 0);
+    return { code: J(`marks = ${srcList(L)}`, "total = 0", "for i in range(0, len(marks)):", "    total = total + marks[i]", "print(total)", "print(total / len(marks))"), out: `${t}\n${pyF(t / 4)}\n`,
+      ex: [`total ＝ ${L.join(" + ")} ＝ ${t}`, `平均 ＝ ${t} / 4 ＝ ${pyF(t / 4)}（「/」的結果是浮點數）`] }; } },
+  { g: "列表與字串", n: "最大值／最小值", f: () => { const L = distinct(5, 1, 60), big = coin(), op = big ? ">" : "<"; let best = L[0], pos = 0;
+    for (let i = 1; i < 5; i++) if (big ? L[i] > best : L[i] < best) { best = L[i]; pos = i; }
+    return { code: J(`nums = ${srcList(L)}`, "best = nums[0]", "pos = 0", "for i in range(1, len(nums)):", `    if nums[i] ${op} best:`, "        best = nums[i]", "        pos = i", "print(best, pos)"), out: `${best} ${pos}\n`,
+      ex: [`這程式找${big ? "最大" : "最小"}值：先假設 nums[0] 是答案，再逐項比較。`, `${big ? "最大" : "最小"}值是 ${best}，索引是 ${pos}（由 0 開始數）。`] }; } },
+  { g: "列表與字串", n: "點算", f: () => { const L = Array.from({ length: 6 }, () => R(30, 99)), t = pick([50, 60, 70]), c = L.filter((x) => x >= t).length;
+    return { code: J(`marks = ${srcList(L)}`, "count = 0", "for i in range(0, len(marks)):", `    if marks[i] >= ${t}:`, "        count = count + 1", "print(count)"), out: `${c}\n`,
+      ex: [`大於或等於 ${t} 的有：${L.filter((x) => x >= t).join("、") || "（沒有）"}`, `所以 count 是 ${c}（等於 ${t} 也要計算）。`] }; } },
+  { g: "列表與字串", n: "字串索引與長度", f: () => { const w = pick(WORDS), i = R(1, w.length - 1);
+    return { code: J(`word = "${w}"`, `print(word[0], word[${i}])`, "print(len(word))", "print(word[len(word) - 1])"), out: `${w[0]} ${w[i]}\n${w.length}\n${w[w.length - 1]}\n`,
+      ex: [w.split("").map((c, q) => `${q}:${c}`).join(" "), `word[0] ＝ ${w[0]}，word[${i}] ＝ ${w[i]}`, `len(word) ＝ ${w.length}，最後一個字符的索引是 ${w.length - 1}：${w[w.length - 1]}`] }; } },
+  { g: "列表與字串", n: "逐字處理字串", f: () => { const w = pick(WORDS), v = pick([[1, true], [2, false], [2, true]]), [st, rev] = v; let r = "";
+    for (let i = 0; i < w.length; i += st) r = rev ? w[i] + r : r + w[i];
+    return { code: J(`word = "${w}"`, 'result = ""', `for i in range(0, len(word)${st === 2 ? ", 2" : ""}):`, `    result = ${rev ? "word[i] + result" : "result + word[i]"}`, "print(result)"), out: `${r}\n`,
+      ex: [st === 2 ? `range(0, ${w.length}, 2) 只取索引 ${rangeVals(0, w.length, 2).join("、")}。` : `逐個取出 word 的字符。`, rev ? "word[i] + result：新字符放在前面，所以次序倒轉。" : "result + word[i]：新字符放在後面，次序不變。", `結果：${r}`] }; } },
+  { g: "列表與字串", n: "[0] * N 初始化", f: () => { const N = R(3, 5), i = R(0, N - 1), j = R(0, N - 1), v = R(2, 9), d = R(1, 5), M = Array(N).fill(0); M[i] = v; M[j] = M[i] + d;
+    return { code: J(`counts = [0] * ${N}`, `counts[${i}] = ${v}`, `counts[${j}] = counts[${i}] + ${d}`, "print(counts)", "print(len(counts))"), out: `${pyList(M)}\n${N}\n`,
+      ex: [`[0] * ${N} 建立 ${N} 個 0 的列表：${pyList(Array(N).fill(0))}`, `counts[${i}] ＝ ${v}；counts[${j}] ＝ ${v} + ${d} ＝ ${v + d}`, `len(counts) ＝ ${N}`] }; } },
+];
+
+// =================== 2. range() 與索引 ===================
+const IDX_ERR = "IndexError: list index out of range";
+const runIdx = (list, s, e, st) => { const vals = rangeVals(s, e, st), lines = []; let err = null;
+  for (const i of vals) { if (i >= list.length || i < -list.length) { err = i; break; } lines.push(`${i} ${list[i < 0 ? list.length + i : i]}`); }
+  return { vals, lines, err }; };
+const transcript = (r) => (r.lines.length || r.err !== null ? r.lines.join("\n") + (r.err !== null ? (r.lines.length ? "\n" : "") + IDX_ERR : "") : "（沒有輸出）");
+const mkList = (n) => (coin() ? distinct(n, 10, 99) : "ABCDEFGHIJ".slice(0, n).split(""));
+const RQ = {
+  target: () => { const n = R(6, 8), list = mkList(n); const a = R(1, 2), b = R(n - 3, n - 2);
+    const T = pick([
+      ["逐項輸出整個列表（由第一項至最後一項）", rangeVals(0, n), [0, n, 1]],
+      [`輸出索引 ${a} 至 ${b} 的項目（包括 ${a} 及 ${b}）`, rangeVals(a, b + 1), [a, b + 1, 1]],
+      ["由最後一項倒序輸出至第一項", rangeVals(n - 1, -1, -1), [n - 1, -1, -1]],
+      ["只輸出索引是雙數（0、2、4…）的項目", rangeVals(0, n, 2), [0, n, 2]],
+      ["只輸出索引是單數（1、3、5…）的項目", rangeVals(1, n, 2), [1, n, 2]],
+      [`由索引 ${b} 倒序輸出至索引 ${a - 1}`, rangeVals(b, a - 2, -1), [b, a - 2, -1]],
+      ["只輸出最後三項", rangeVals(n - 3, n), [n - 3, n, 1]]]);
+    return { list, text: T[0], seq: T[1], canon: T[2] }; },
+  count: () => { const k = R(0, 9); let s, e, st;
+    if (k < 4) { st = 1; s = R(0, 6); e = s + R(1, 7); } else if (k < 7) { st = R(2, 4); s = R(0, 5); e = s + R(3, 12); } else if (k < 9) { st = -R(1, 3); s = R(5, 12); e = s - R(2, 10); } else { st = pick([1, -1]); s = R(3, 8); e = st > 0 ? s - R(0, 3) : s + R(0, 3); }
+    return { s, e, st, vals: rangeVals(s, e, st) }; },
+  crash: () => { const n = R(4, 6), list = mkList(n);
+    const P = pick([[0, n, 1], [0, n + 1, 1], [1, n + 1, 1], [1, n, 1], [0, n - 1, 1], [n - 1, -1, -1], [n, -1, -1], [n, 0, -1], [n - 1, 0, -1], [2, n + 2, 1]]);
+    const [s, e, st] = P, right = transcript(runIdx(list, s, e, st));
+    const variants = [[s, e - st, st], [s, e + st, st], [s + st, e + st, st], [s - st, e - st, st], [s + st, e, st], [s, e + 2 * st, st]].filter(([a, b, c]) => rangeVals(a, b, c).every((i) => i >= 0));
+    const opts = [right]; for (const [a, b, c] of shuffle(variants)) { const t = transcript(runIdx(list, a, b, c)); if (!opts.includes(t)) opts.push(t); if (opts.length === 4) break; }
+    const r = runIdx(list, s, e, st); if (opts.length < 4 && r.err !== null) { const t = r.lines.join("\n") || "（沒有輸出）"; if (!opts.includes(t)) opts.push(t); }
+    return { list, s, e, st, answer: right, opts: shuffle(opts) }; },
+  value: () => { const n = R(5, 7), list = distinct(n, 10, 99); const k = pick(["k", "k", "k", "last", "len"]); let expr, idx;
+    if (k === "k") { idx = R(0, n); expr = `the_list[${idx}]`; } else if (k === "last") { idx = n - 1; expr = "the_list[len(the_list) - 1]"; } else { idx = n; expr = "the_list[len(the_list)]"; }
+    const ans = idx >= n ? IDX_ERR : String(list[idx]); const opts = [ans];
+    for (const q of shuffle([idx - 1, idx + 1, idx - 2, n - 1])) { if (q >= 0 && q < n && !opts.includes(String(list[q]))) opts.push(String(list[q])); if (opts.length === 3) break; }
+    if (!opts.includes(IDX_ERR)) opts.push(IDX_ERR); else { for (const q of shuffle(rangeVals(0, n))) { if (!opts.includes(String(list[q]))) { opts.push(String(list[q])); break; } } }
+    return { list, expr, idx, answer: ans, opts: shuffle(opts) }; },
+};
+
+// =================== 3. 測試數據 ===================
+const mkScn = (o) => { o.valid = (v) => o.lo === null || (v >= o.lo && v <= o.hi); o.keys = [...new Set(o.consts.flatMap((c) => [c - 1, c, c + 1]))].sort((a, b) => a - b);
+  o.isB = (v) => o.keys.includes(v); o.out = (v) => o.branches[o.run(v)].out; return o; };
+const SCN = {
+  age: () => { const lo = pick([12, 16, 18]), hi = pick([55, 60, 65]);
+    return mkScn({ key: "age", desc: `程式只接受 ${lo} 至 ${hi} 歲（包括 ${lo} 及 ${hi}）的報名者，其他年齡是錯誤數據值。`, lo, hi,
+      code: J("age = int(input())", `if age >= ${lo} and age <= ${hi}:`, '    print("Accepted")', "else:", '    print("Rejected")'),
+      consts: [lo, hi], branches: [{ out: "Accepted" }, { out: "Rejected", bad: true }], run: (v) => (v >= lo && v <= hi ? 0 : 1) }); },
+  mark: () => { const p = pick([40, 50, 60]);
+    return mkScn({ key: "mark", desc: "有效的分數是 0 至 100 的整數，其他分數是錯誤數據值。", lo: 0, hi: 100,
+      code: J("mark = int(input())", "if mark < 0 or mark > 100:", '    print("Invalid")', `elif mark >= ${p}:`, '    print("Pass")', "else:", '    print("Fail")'),
+      consts: [0, 100, p], branches: [{ out: "Invalid", bad: true }, { out: "Pass" }, { out: "Fail" }], run: (v) => (v < 0 || v > 100 ? 0 : v >= p ? 1 : 2) }); },
+  guess: () => { const s = R(20, 80);
+    return mkScn({ key: "guess", desc: "猜數字遊戲：有效的輸入是 1 至 100 的整數，其他數值是錯誤數據值。", lo: 1, hi: 100,
+      code: J("guess = int(input())", "if guess < 1 or guess > 100:", '    print("Out of range")', `elif guess < ${s}:`, '    print("Too small")', `elif guess > ${s}:`, '    print("Too big")', "else:", '    print("Correct")'),
+      consts: [1, 100, s], branches: [{ out: "Out of range", bad: true }, { out: "Too small" }, { out: "Too big" }, { out: "Correct" }], run: (v) => (v < 1 || v > 100 ? 0 : v < s ? 1 : v > s ? 2 : 3) }); },
+  fare: () => { const c = pick([11, 12]), sn = pick([60, 65]);
+    return mkScn({ key: "fare", desc: "有效的年齡是 0 至 120 的整數，其他年齡是錯誤數據值。", lo: 0, hi: 120,
+      code: J("age = int(input())", "if age < 0 or age > 120:", '    print("Invalid")', `elif age <= ${c}:`, '    print("Child")', `elif age >= ${sn}:`, '    print("Senior")', "else:", '    print("Adult")'),
+      consts: [0, 120, c, sn], branches: [{ out: "Invalid", bad: true }, { out: "Child" }, { out: "Senior" }, { out: "Adult" }], run: (v) => (v < 0 || v > 120 ? 0 : v <= c ? 1 : v >= sn ? 2 : 3) }); },
+  qty: () => { const hi = pick([20, 30, 50]), d = pick([5, 10]);
+    return mkScn({ key: "qty", desc: `每次可訂購 1 至 ${hi} 件（整數），其他數量是錯誤數據值。`, lo: 1, hi,
+      code: J("qty = int(input())", `if qty < 1 or qty > ${hi}:`, '    print("Invalid")', `elif qty >= ${d}:`, '    print("Discount")', "else:", '    print("No discount")'),
+      consts: [1, hi, d], branches: [{ out: "Invalid", bad: true }, { out: "Discount" }, { out: "No discount" }], run: (v) => (v < 1 || v > hi ? 0 : v >= d ? 1 : 2) }); },
+  temp: () => { const h = pick([30, 32]), c = pick([10, 12]);
+    return mkScn({ key: "temp", desc: "任何整數溫度都是有效輸入（這程式沒有錯誤數據值）。", lo: null, hi: null,
+      code: J("temp = int(input())", `if temp >= ${h}:`, '    print("Hot")', `elif temp <= ${c}:`, '    print("Cold")', "else:", '    print("Fine")'),
+      consts: [h, c], branches: [{ out: "Hot" }, { out: "Cold" }, { out: "Fine" }], run: (v) => (v >= h ? 0 : v <= c ? 1 : 2) }); },
+};
+// 一個值的類別是否正確：邊界必須判斷正確；分界值兩邊及其他值要分正常／錯誤；分界值本身（條件中的數）可只標「邊界」
+const tagOK = (sc, v, t) => { const valid = sc.valid(v), bd = sc.isB(v);
+  if (t.n && t.e) return false; if (!!t.b !== bd) return false;
+  if (sc.consts.includes(v)) return !(t.n && !valid) && !(t.e && valid);
+  return valid ? !!t.n && !t.e : !!t.e && !t.n; };
+const needTags = (sc, v) => { const valid = sc.valid(v), bd = sc.isB(v); const a = [];
+  if (!(bd && sc.consts.includes(v))) a.push(valid ? "正常" : "錯誤"); if (bd) a.push("邊界"); return a; };
+const reps = (sc) => { const K = sc.keys, out = [K[0] - 10]; for (let i = 0; i + 1 < K.length; i++) if (K[i + 1] - K[i] > 1) out.push(Math.round((K[i] + K[i + 1]) / 2)); out.push(K[K.length - 1] + 10); return out; };
+const fullSet = (sc) => { const s = new Set(sc.keys); const covered = new Set(sc.keys.map(sc.run)); for (const r of reps(sc)) if (!covered.has(sc.run(r))) { s.add(r); covered.add(sc.run(r)); } return [...s].sort((a, b) => a - b); };
+const classifyVals = (sc) => { const keys = shuffle(sc.keys).slice(0, 4), rp = shuffle(reps(sc)).slice(0, 2); return [...new Set([...keys, ...rp])].sort((a, b) => a - b); };
+const setOptions = (sc) => { const B = sc.keys, mids = reps(sc).slice(1, -1), far = reps(sc);
+  const c = pick(sc.consts), side = pick([c - 1, c + 1]); const d1 = B.filter((v) => v !== side); d1.push(pick(mids.length ? mids : far));
+  const d2 = [...sc.consts, pick(far)]; const d3 = far.slice();
+  const fix = (a) => [...new Set(a)].sort((x, y) => x - y);
+  const opts = [{ set: fix(B), ok: true, why: "包括每個分界值及其兩邊的值（" + sc.consts.map((k) => `${k - 1}、${k}、${k + 1}`).join("；") + "）" },
+    { set: fix(d1), ok: false, why: `漏了分界值 ${c} 的一邊 ${side}` }, { set: fix(d2), ok: false, why: "只有分界值本身，沒有分界值兩邊的數據" }, { set: fix(d3), ok: false, why: "沒有任何分界值，只測試了遠離分界的數據" }];
+  return opts; };
+
+// =================== 4. 錯誤類型 ===================
+// kind：syntax 語法、runtime 運行時、logic 邏輯；line：要修改的一行（null 表示不止一行或要加入新的一行）
+const ERR = [
+  { kind: "syntax", line: 2, purpose: "輸入分數，50 分或以上輸出 Pass", code: J("mark = int(input())", "if mark >= 50", '    print("Pass")'), msg: "SyntaxError: expected ':'", fix: J("mark = int(input())", "if mark >= 50:", '    print("Pass")'), why: "if 的條件後漏了冒號。" },
+  { kind: "syntax", line: 2, purpose: "計算 1 至 5 的總和", code: J("total = 0", "for i in range(1, 6)", "    total = total + i", "print(total)"), msg: "SyntaxError: expected ':'", fix: J("total = 0", "for i in range(1, 6):", "    total = total + i", "print(total)"), why: "for 的一行末尾漏了冒號。" },
+  { kind: "syntax", line: 1, purpose: "輸入單價及數量，計算總額", code: J('price = float(input("Price: ")', 'qty = int(input("Quantity: "))', "print(price * qty)"), msg: "SyntaxError: '(' was never closed", fix: J('price = float(input("Price: "))', 'qty = int(input("Quantity: "))', "print(price * qty)"), why: "第 1 行的括號不成對，少了一個右括號。" },
+  { kind: "syntax", line: 3, purpose: "輸入名字並打招呼", code: J('name = input("Name: ")', 'print("Hello", name)', 'print("Welcome)'), msg: "SyntaxError: unterminated string literal (detected at line 3)", fix: J('name = input("Name: ")', 'print("Hello", name)', 'print("Welcome")'), why: "第 3 行的字串只有開頭的引號，引號不成對。" },
+  { kind: "syntax", line: 3, purpose: "判斷輸入的數是否雙數", code: J("n = int(input())", "if n % 2 == 0:", 'print("Even")'), msg: "IndentationError: expected an indented block after 'if' statement on line 2", fix: J("n = int(input())", "if n % 2 == 0:", '    print("Even")'), why: "if 之後的語句欠缺縮排。" },
+  { kind: "syntax", line: 2, purpose: "計算 a + b", code: J("a = 5", "    b = 7", "print(a + b)"), msg: "IndentationError: unexpected indent", fix: J("a = 5", "b = 7", "print(a + b)"), why: "第 2 行不在 if、for 或 while 之內，卻多了縮排。" },
+  { kind: "syntax", line: 2, purpose: "輸入的數是 10 時輸出 Ten", code: J("x = int(input())", "if x = 10:", '    print("Ten")'), msg: "SyntaxError: invalid syntax. Maybe you meant '==' or ':=' instead of '='?", fix: J("x = int(input())", "if x == 10:", '    print("Ten")'), why: "比較要用 ==；= 是賦值，不可用在條件中。" },
+  { kind: "syntax", line: 4, purpose: "判斷是否成年", code: J("age = int(input())", "if age >= 18:", '    print("Adult")', "else", '    print("Child")'), msg: "SyntaxError: expected ':'", fix: J("age = int(input())", "if age >= 18:", '    print("Adult")', "else:", '    print("Child")'), why: "else 之後漏了冒號。" },
+  { kind: "syntax", line: 2, purpose: "輸出 1 至 5", code: J("i = 1", "whlie i <= 5:", "    print(i)", "    i = i + 1"), msg: "SyntaxError: invalid syntax", fix: J("i = 1", "while i <= 5:", "    print(i)", "    i = i + 1"), why: "關鍵字 while 拼寫錯誤。" },
+  { kind: "syntax", line: 1, purpose: "輸出列表的第一項", code: J("nums = [3, 5, 7)", "print(nums[0])"), msg: "SyntaxError: closing parenthesis ')' does not match opening parenthesis '['", fix: J("nums = [3, 5, 7]", "print(nums[0])"), why: "方括號 [ 要配 ]，括號不成對。" },
+  { kind: "runtime", line: null, purpose: "輸入總分及人數，計算平均分", code: J("total = int(input())", "count = int(input())", "average = total / count", "print(average)"), stdin: ["50", "0"], msg: "ZeroDivisionError: division by zero", before: "", why: "人數輸入 0，執行第 3 行時把數字除以零，程式終止。（要更正，可加入輸入驗證。）" },
+  { kind: "runtime", line: null, purpose: "輸入一個數，輸出它的平方根", code: J("import math", "n = int(input())", "print(math.sqrt(n))"), stdin: ["-4"], msg: "ValueError: math domain error", before: "", why: "輸入 -4，計算負數的平方根，程式終止。" },
+  { kind: "runtime", line: 2, purpose: "逐項輸出列表 nums", code: J("nums = [4, 8, 15, 16]", "for i in range(0, 5):", "    print(nums[i])"), msg: IDX_ERR, before: "4\n8\n15\n16\n", fix: J("nums = [4, 8, 15, 16]", "for i in range(0, 4):", "    print(nums[i])"), why: "nums 只有索引 0 至 3；i 是 4 時存取超出範圍的項目，程式終止。第 2 行應為 range(0, 4)。" },
+  { kind: "runtime", line: null, purpose: "輸入年齡，輸出明年的年齡", code: J('age = int(input("Age: "))', "print(age + 1)"), stdin: ["ten"], msg: "ValueError: invalid literal for int() with base 10: 'ten'", before: "Age: ", why: "用家輸入 ten，int() 不能把它轉換為整數，程式終止。" },
+  { kind: "runtime", line: null, purpose: "輸入整數，輸出它的兩倍", code: J("n = int(input())", "print(n * 2)"), stdin: ["3.5"], msg: "ValueError: invalid literal for int() with base 10: '3.5'", before: "", why: "int() 不能轉換 \"3.5\" 這個字串，程式終止（要輸入小數，應用 float()）。" },
+  { kind: "runtime", line: 2, purpose: "輸出 word 的最後一個字母", code: J('word = "CAT"', "print(word[3])"), msg: "IndexError: string index out of range", before: "", fix: J('word = "CAT"', "print(word[2])"), why: "CAT 只有索引 0 至 2，word[3] 超出範圍，程式終止。" },
+  { kind: "runtime", line: 3, purpose: "逐項輸出列表 nums", code: J("nums = [3, 6, 9]", "i = 0", "while i <= 3:", "    print(nums[i])", "    i = i + 1"), msg: IDX_ERR, before: "3\n6\n9\n", fix: J("nums = [3, 6, 9]", "i = 0", "while i < 3:", "    print(nums[i])", "    i = i + 1"), why: "i 是 3 時仍進入循環，nums[3] 超出範圍。第 3 行應為 i < 3。" },
+  { kind: "runtime", line: null, purpose: "計算 n 除以 d 的餘數", code: J("n = 10", "d = 0", "print(n % d)"), msg: "ZeroDivisionError: integer modulo by zero", before: "", why: "% 也是除法運算，除數是 0，程式終止。" },
+  { kind: "logic", line: 2, purpose: "50 分或以上輸出 Pass，否則輸出 Fail", code: J("mark = int(input())", "if mark > 50:", '    print("Pass")', "else:", '    print("Fail")'), stdin: ["50"], expect: "Pass", actual: "Fail", fix: J("mark = int(input())", "if mark >= 50:", '    print("Pass")', "else:", '    print("Fail")'), why: "條件錯了：50 分應該及格，要用 >=。程式能運行，但結果錯。" },
+  { kind: "logic", line: 2, purpose: "計算 1 至 10 的總和（應為 55）", code: J("total = 0", "for i in range(1, 10):", "    total = total + i", "print(total)"), expect: "55", actual: "45", fix: J("total = 0", "for i in range(1, 11):", "    total = total + i", "print(total)"), why: "range(1, 10) 不包括 10，差一次。應為 range(1, 11)。" },
+  { kind: "logic", line: 3, purpose: "計算兩個分數的平均分", code: J("a = 70", "b = 90", "average = a + b / 2", "print(average)"), expect: "80.0", actual: "115.0", fix: J("a = 70", "b = 90", "average = (a + b) / 2", "print(average)"), why: "先除後加，只有 b 被除以 2。要加括號 (a + b) / 2。" },
+  { kind: "logic", line: null, purpose: "輸出 1 至 5，然後輸出 Done", code: J("i = 1", "while i <= 5:", "    print(i)", 'print("Done")'), expect: "1\n2\n3\n4\n5\nDone", actual: "∞", fix: J("i = 1", "while i <= 5:", "    print(i)", "    i = i + 1", 'print("Done")'), why: "循環內沒有改變 i，條件永遠成立，成為無限循環。要在循環體加入 i = i + 1。" },
+  { kind: "logic", line: null, purpose: "計算並輸出總額（應為 60）", code: J("total = 0", "price = 20", "qty = 3", "print(total)", "total = price * qty"), expect: "60", actual: "0", fix: J("total = 0", "price = 20", "qty = 3", "total = price * qty", "print(total)"), why: "序列出錯：先輸出、後計算。第 4、5 行要對調。" },
+  { kind: "logic", line: 2, purpose: "找出最高溫度（應為 -2）", code: J("temps = [-5, -2, -8, -3]", "highest = 0", "for i in range(0, 4):", "    if temps[i] > highest:", "        highest = temps[i]", "print(highest)"), expect: "-2", actual: "0", fix: J("temps = [-5, -2, -8, -3]", "highest = temps[0]", "for i in range(0, 4):", "    if temps[i] > highest:", "        highest = temps[i]", "print(highest)"), why: "初始值 0 比所有溫度都高，所以結果錯。應以 temps[0] 作初始值。" },
+  { kind: "logic", line: null, purpose: "交換 x 和 y 的值（應輸出 8 3）", code: J("x = 3", "y = 8", "x = y", "y = x", "print(x, y)"), expect: "8 3", actual: "8 8", fix: J("x = 3", "y = 8", "temp = x", "x = y", "y = temp", "print(x, y)"), why: "x = y 之後，x 原本的值已遺失。要先用 temp 保存。" },
+  { kind: "logic", line: 2, purpose: "12 至 64 歲輸出 Adult fare，其他年齡輸出 Concession", code: J("age = int(input())", "if age >= 12 or age <= 64:", '    print("Adult fare")', "else:", '    print("Concession")'), stdin: ["70"], expect: "Concession", actual: "Adult fare", fix: J("age = int(input())", "if age >= 12 and age <= 64:", '    print("Adult fare")', "else:", '    print("Concession")'), why: "or 令任何年齡都成立，應用 and。" },
+  { kind: "logic", line: 1, purpose: "由 10 倒數至 1，再輸出 Go!", code: J("for i in range(10, 0, 1):", "    print(i)", 'print("Go!")'), expect: "10\n9\n8\n7\n6\n5\n4\n3\n2\n1\nGo!", actual: "Go!", fix: J("for i in range(10, 0, -1):", "    print(i)", 'print("Go!")'), why: "遞增量是 1，由 10 開始已不小於 0，循環一次也不執行。遞減要用 -1。" },
+  { kind: "logic", line: 2, purpose: "雙數輸出 Even，單數輸出 Odd", code: J("n = int(input())", "if n % 2 == 1:", '    print("Even")', "else:", '    print("Odd")'), stdin: ["4"], expect: "Even", actual: "Odd", fix: J("n = int(input())", "if n % 2 == 0:", '    print("Even")', "else:", '    print("Odd")'), why: "雙數除以 2 的餘數是 0，條件應為 n % 2 == 0。" },
+].map((x, i) => ({ id: i, ...x }));
+
+// =================== 5. 比較次數 ===================
+const CMP = {
+  sFor: J("N = len(the_list)", "found = False", "for i in range(0, N):", "    if target == the_list[i]:", "        found = True", "print(found)"),
+  sWhile: J("N = len(the_list)", "found = False", "i = 0", "while i < N and found == False:", "    if target == the_list[i]:", "        found = True", "    i = i + 1", "print(found)"),
+  ifA: J("mark = int(input())", "if mark >= 80:", '    grade = "A"', "if mark >= 60 and mark < 80:", '    grade = "B"', "if mark >= 40 and mark < 60:", '    grade = "C"', "if mark < 40:", '    grade = "F"', "print(grade)"),
+  ifB: J("mark = int(input())", "if mark >= 80:", '    grade = "A"', "elif mark >= 60:", '    grade = "B"', "elif mark >= 40:", '    grade = "C"', "else:", '    grade = "F"', "print(grade)"),
+  oFor: J("N = len(the_list)", "in_order = True", "for i in range(0, N - 1):", "    if the_list[i] > the_list[i + 1]:", "        in_order = False", "print(in_order)"),
+  oWhile: J("N = len(the_list)", "in_order = True", "i = 0", "while i < N - 1 and in_order == True:", "    if the_list[i] > the_list[i + 1]:", "        in_order = False", "    i = i + 1", "print(in_order)"),
+};
+const COUNTED = { sFor: [4], sWhile: [5], ifA: [2, 4, 6, 8], ifB: [2, 4, 6], oFor: [4], oWhile: [5] };
+// 每步：{ ln 行號, p 指標（列表索引）, c 累計比較次數, m 說明 }
+const TR = {
+  sFor: (L, t) => { const S = [], N = L.length; let c = 0, f = false; const P = (ln, p, m) => S.push({ ln, p, c, m });
+    P(1, null, `N = ${N}`); P(2, null, "found = False");
+    for (let i = 0; i < N; i++) { P(3, i, `i = ${i}`); c++; const r = t === L[i]; P(4, i, `第 ${c} 次比較：${t} == ${L[i]} → ${pyB(r)}`); if (r) { f = true; P(5, i, "found = True（循環仍會繼續）"); } }
+    P(3, null, "range 的值用完，離開循環"); P(6, null, `輸出 ${pyB(f)}`); return { steps: S, count: c, out: pyB(f) }; },
+  sWhile: (L, t) => { const S = [], N = L.length; let c = 0, f = false, i = 0; const P = (ln, p, m) => S.push({ ln, p, c, m });
+    P(1, null, `N = ${N}`); P(2, null, "found = False"); P(3, 0, "i = 0");
+    while (i < N && !f) { P(4, i, `${i} < ${N} and found == False → True`); c++; const r = t === L[i]; P(5, i, `第 ${c} 次比較：${t} == ${L[i]} → ${pyB(r)}`); if (r) { f = true; P(6, i, "found = True"); } i++; P(7, i < N ? i : null, `i = ${i}`); }
+    P(4, null, `${i < N ? "found 是 True" : `${i} < ${N} 是 False`} → 離開循環`); P(8, null, `輸出 ${pyB(f)}`); return { steps: S, count: c, out: pyB(f) }; },
+  ifA: (m) => { const S = [], P = (ln, mm) => S.push({ ln, p: null, c, m: mm }); let c = 0, g = "";
+    P(1, `mark = ${m}`);
+    const conds = [[2, "mark >= 80", m >= 80, 3, "A"], [4, "mark >= 60 and mark < 80", m >= 60 && m < 80, 5, "B"], [6, "mark >= 40 and mark < 60", m >= 40 && m < 60, 7, "C"], [8, "mark < 40", m < 40, 9, "F"]];
+    for (const [ln, txt, r, gl, gv] of conds) { c++; P(ln, `第 ${c} 次判斷：${txt} → ${pyB(r)}`); if (r) { g = gv; P(gl, `grade = "${gv}"`); } }
+    P(10, `輸出 ${g}`); return { steps: S, count: c, out: g }; },
+  ifB: (m) => { const S = [], P = (ln, mm) => S.push({ ln, p: null, c, m: mm }); let c = 0, g = "";
+    P(1, `mark = ${m}`);
+    const conds = [[2, "mark >= 80", m >= 80, 3, "A"], [4, "mark >= 60", m >= 60, 5, "B"], [6, "mark >= 40", m >= 40, 7, "C"]];
+    for (const [ln, txt, r, gl, gv] of conds) { c++; P(ln, `第 ${c} 次判斷：${txt} → ${pyB(r)}`); if (r) { g = gv; P(gl, `grade = "${gv}"，跳過其餘分支`); break; } }
+    if (!g) { g = "F"; P(8, "以上條件都不成立，執行 else（不用判斷）"); P(9, 'grade = "F"'); }
+    P(10, `輸出 ${g}`); return { steps: S, count: c, out: g }; },
+  oFor: (L) => { const S = [], N = L.length; let c = 0, ok = true; const P = (ln, p, m) => S.push({ ln, p, c, m });
+    P(1, null, `N = ${N}`); P(2, null, "in_order = True");
+    for (let i = 0; i < N - 1; i++) { P(3, i, `i = ${i}`); c++; const r = L[i] > L[i + 1]; P(4, i, `第 ${c} 次比較：${L[i]} > ${L[i + 1]} → ${pyB(r)}`); if (r) { ok = false; P(5, i, "in_order = False（循環仍會繼續）"); } }
+    P(3, null, "range 的值用完，離開循環"); P(6, null, `輸出 ${pyB(ok)}`); return { steps: S, count: c, out: pyB(ok) }; },
+  oWhile: (L) => { const S = [], N = L.length; let c = 0, ok = true, i = 0; const P = (ln, p, m) => S.push({ ln, p, c, m });
+    P(1, null, `N = ${N}`); P(2, null, "in_order = True"); P(3, 0, "i = 0");
+    while (i < N - 1 && ok) { P(4, i, `${i} < ${N - 1} and in_order == True → True`); c++; const r = L[i] > L[i + 1]; P(5, i, `第 ${c} 次比較：${L[i]} > ${L[i + 1]} → ${pyB(r)}`); if (r) { ok = false; P(6, i, "in_order = False"); } i++; P(7, i < N ? i : null, `i = ${i}`); }
+    P(4, null, `${i < N - 1 ? "in_order 是 False" : `${i} < ${N - 1} 是 False`} → 離開循環`); P(8, null, `輸出 ${pyB(ok)}`); return { steps: S, count: c, out: pyB(ok) }; },
+};
+const CQ = {
+  search: () => { const n = R(6, 9), L = distinct(n, 10, 99); const absent = coin(0.2); let t;
+    if (absent) { do t = R(10, 99); while (L.includes(t)); } else t = L[R(0, n - 1)];
+    return { L, t, a: TR.sFor(L, t).count, b: TR.sWhile(L, t).count }; },
+  ifs: () => { const m = pick([R(80, 100), R(60, 79), R(40, 59), R(0, 39), 80, 60, 40, 79, 59, 39]); return { m, a: TR.ifA(m).count, b: TR.ifB(m).count }; },
+  order: () => { const n = R(6, 8); let L = distinct(n, 10, 99).sort((x, y) => x - y);
+    if (coin(0.75)) { const k = R(0, n - 2); [L[k], L[k + 1]] = [L[k + 1], L[k]]; }
+    return { L, a: TR.oFor(L).count, b: TR.oWhile(L).count }; },
+};
+/*GEN:END*/
+
+  // =================== 介面工具 ===================
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const KW = /^(if|elif|else|for|in|while|and|or|not|True|False|import)$/;
+  const hl = (line) => { let out = "", last = 0, m; const re = /("[^"]*"?|'[^']*'?)|(#.*$)|([A-Za-z_]\w*)/g;
+    while ((m = re.exec(line))) { out += esc(line.slice(last, m.index)); if (m[1]) out += `<span class="st">${esc(m[1])}</span>`; else if (m[2]) out += `<span class="cm">${esc(m[2])}</span>`; else out += KW.test(m[3]) ? `<span class="kw">${m[3]}</span>` : esc(m[3]); last = re.lastIndex; }
+    return out + esc(line.slice(last)); };
+  const codeHTML = (code, cur) => `<div class="code" role="group" aria-label="Python 程式">${code.split("\n").map((l, i) => `<div class="ln${cur === i + 1 ? " hl" : ""}" data-l="${i + 1}"><span class="no" aria-hidden="true">${i + 1}</span><span class="tx">${hl(l) || " "}</span></div>`).join("")}</div>`;
+  const ioHTML = (txt, lab) => `${lab ? `<p class="iolab">${lab}</p>` : ""}<pre class="io">${txt}</pre>`;
+  const errLine = (s) => `<span class="er">${esc(s)}</span>`;
+  const normOut = (s) => { const a = String(s).replace(/\r/g, "").split("\n").map((l) => l.replace(/[ \t　]+$/, "")); while (a.length && a[0] === "") a.shift(); while (a.length && a[a.length - 1] === "") a.pop(); return a; };
+  const listCells = (list, opts = {}) => { const n = list.length, extra = opts.extra || 0, cells = [];
+    for (let i = 0; i < n + extra; i++) { const ghost = i >= n; const cls = ["cellx"]; if (ghost) cls.push("ghost"); if (opts.hit && opts.hit.has(i)) cls.push("hit"); if (opts.err === i) cls.push("err"); if (opts.p1 === i) cls.push("p1"); if (opts.p2 === i) cls.push("p2");
+      const ord = opts.ord && opts.ord[i] ? `<span class="ord">${opts.ord[i]}</span>` : ""; const pm = opts.p1 === i || opts.p2 === i ? `<span class="p">${opts.p1 === i ? '<span class="ptr1">①</span>' : ""}${opts.p2 === i ? '<span class="ptr2">②</span>' : ""}</span>` : "";
+      cells.push(`<div class="${cls.join(" ")}">${ord}${pm}<div class="vx">${ghost ? "超出" : esc(list[i])}</div><span class="ix">[${i}]</span></div>`); }
+    return `<div class="cells" role="img" aria-label="列表 ${esc(srcList(list))}">${cells.join("")}</div>`; };
+
+  // =================== 1. 輸出預測：題目 ===================
+  const G = {};
+  G.out = OUT.map((t) => ({ group: t.g, name: t.n, fn: () => { const d = t.f();
+    return { prompt: `<p>寫出以下程式的輸出。</p>${codeHTML(d.code)}${d.stdin ? `<p class="small">用家依次輸入 ${d.stdin.map((x) => `<span class="stdin">${esc(x)}</span>`).join(" 及 ")}，每次輸入後按 Enter。只寫 print() 的輸出，用家的輸入不用寫。</p>` : ""}`,
+      input: { kind: "area" }, answer: d.out, show: `<pre class="io">${esc(normOut(d.out).join("\n"))}</pre>`, explain: d.ex, code: d.code }; } }));
+
+  // =================== 2. range() 與索引：互動元件 ===================
+  function RangeBox(box, cfg) {
+    const st = { s: cfg.s, e: cfg.e, st: cfg.st, n: cfg.list.length, list: cfg.list.slice(), locked: !!cfg.locked };
+    const LIM = { s: [0, 12], e: [-1, 12], st: [-3, 3], n: [3, 9] };
+    const lab = { s: "起始值", e: "最終值", st: "遞增量", n: "列表項目數" };
+    const keys = cfg.free ? ["n", "s", "e", "st"] : ["s", "e", "st"];
+    box.innerHTML = `<div class="rx"><div class="rx-code"></div><div class="rx-ctl">${keys.map((k) => `<span class="stepper" data-k="${k}"><span>${lab[k]}</span><button type="button" data-d="-1" aria-label="${lab[k]}減一">−</button><b aria-live="polite"></b><button type="button" data-d="1" aria-label="${lab[k]}加一">+</button></span>`).join("")}</div><div class="rx-cells"></div><div class="ivals rx-iv"></div><div class="rx-out"></div></div>`;
+    const q = (s) => box.querySelector(s);
+    box.querySelectorAll(".stepper button").forEach((b) => b.addEventListener("click", () => { if (st.locked) return; const k = b.closest(".stepper").dataset.k, d = +b.dataset.d; let v = st[k] + d;
+      if (k === "st" && v === 0) v += d; if (v < LIM[k][0] || v > LIM[k][1]) return; st[k] = v;
+      if (k === "n") { const pool = typeof st.list[0] === "string" ? "ABCDEFGHIJ".split("") : null; while (st.list.length < v) st.list.push(pool ? pool[st.list.length] : R(10, 99)); st.list.length = v; }
+      render(); cfg.onChange && cfg.onChange(); }));
+    function render() {
+      box.querySelectorAll(".stepper").forEach((sp) => { const k = sp.dataset.k; sp.querySelector("b").textContent = st[k]; sp.querySelectorAll("button").forEach((b) => { const d = +b.dataset.d; let v = st[k] + d; if (k === "st" && v === 0) v += d; b.disabled = st.locked || v < LIM[k][0] || v > LIM[k][1]; }); });
+      q(".rx-code").innerHTML = codeHTML(J(`the_list = ${srcList(st.list)}`, `for i in range(${st.s}, ${st.e}, ${st.st}):`, "    print(i, the_list[i])"));
+      const r = runIdx(st.list, st.s, st.e, st.st), hit = new Set(), ord = {}; r.vals.forEach((v, k) => { if (r.err === null || k < r.vals.indexOf(r.err)) { hit.add(v); ord[v] = (ord[v] ? ord[v] + "," : "") + (k + 1); } });
+      if (r.err !== null) ord[r.err] = "✗";
+      const extra = Math.max(1, (r.err !== null ? r.err - st.list.length + 1 : 0)); q(".rx-cells").innerHTML = listCells(st.list, { hit, ord, err: r.err, extra: Math.min(extra, 13 - st.list.length) });
+      const ei = r.err === null ? -1 : r.vals.indexOf(r.err);
+      q(".rx-iv").innerHTML = r.vals.length ? `<span>i 的值：</span>${r.vals.map((v, k) => `<span class="iv${k === ei ? " err" : ei >= 0 && k > ei ? " skip" : ""}">${v}</span>`).join("")}${ei >= 0 && ei < r.vals.length - 1 ? '<span class="small">（劃線的值不會執行：程式已終止）</span>' : ""}` : `<span>range(${st.s}, ${st.e}, ${st.st}) 沒有產生任何值，循環體一次也不執行。</span>`;
+      q(".rx-out").innerHTML = `<p class="iolab">輸出${r.vals.length ? `（循環體執行 ${r.err === null ? r.vals.length : ei + 1} 次）` : ""}</p><pre class="io">${r.lines.map(esc).join("\n")}${r.err !== null ? (r.lines.length ? "\n" : "") + errLine(IDX_ERR) : ""}${!r.lines.length && r.err === null ? '<span class="muted">（沒有輸出）</span>' : ""}</pre>`;
+    }
+    render();
+    return { get: () => [st.s, st.e, st.st], lock: () => { st.locked = true; render(); }, set: (s, e, stp) => { st.s = s; st.e = e; st.st = stp; render(); } };
+  }
+
+  G.rng = [
+    () => { const d = RQ.target(); let rb;
+      return { prompt: `<p>the_list 有 ${d.list.length} 個項目。調整 range() 的起始值、最終值及遞增量，令程式<b>${d.text}</b>。</p>`, input: { kind: "custom" },
+        mount(area) { area.innerHTML = '<div id="rbox"></div>'; rb = RangeBox($("rbox"), { list: d.list, s: 0, e: 1, st: 1 }); },
+        value: () => rb.get(), grade(v) { const got = rangeVals(...v); return { ok: got.length === d.seq.length && got.every((x, i) => x === d.seq[i]) }; },
+        after(revealed, res) { if (revealed) rb.set(...d.canon); rb.lock(); },
+        fill(ok) { if (ok) rb.set(...d.canon); else rb.set(d.canon[0] + 1, d.canon[1], d.canon[2]); },
+        show: `<span class="mono">${rangeSrc(...d.canon)}</span>（i 的值：${d.seq.join("、")}）`,
+        explain: [`要得到的 i：${d.seq.join("、")}`, `起始值是第一個 i；最終值不包括在內，所以要${d.canon[2] > 0 ? "比最後一個 i 多 1" : "比最後一個 i 少 1"}${d.canon[1] === -1 ? "（倒序至索引 0 時最終值是 -1）" : ""}。`, "其他寫法只要 i 的值相同亦算對，例如最終值再多走不到一步。"] }; },
+    () => { const d = RQ.count();
+      return { prompt: `<p>以下 for 循環的循環體會執行多少次？</p>${codeHTML(J(`for i in range(${d.s}, ${d.e}, ${d.st}):`, "    print(i)"))}`, input: { kind: "text", ph: "次數" }, answer: String(d.vals.length), show: `${d.vals.length} 次`,
+        explain: [d.vals.length ? `i 的值：${d.vals.join("、")}，共 ${d.vals.length} 個。` : `range(${d.s}, ${d.e}, ${d.st}) 沒有產生任何值：${d.st > 0 ? `起始值 ${d.s} 已不小於最終值 ${d.e}` : `起始值 ${d.s} 已不大於最終值 ${d.e}`}。`, d.st > 0 ? "遞增量是正數：i 小於最終值便繼續。" : "遞增量是負數：i 大於最終值便繼續。", "最終值本身不包括在內。"] }; },
+    () => { const d = RQ.crash(); const code = J(`the_list = ${srcList(d.list)}`, `for i in ${rangeSrc(d.s, d.e, d.st)}:`, "    print(i, the_list[i])"); const r = runIdx(d.list, d.s, d.e, d.st);
+      return { prompt: `<p>以下程式的輸出是甚麼？</p>${codeHTML(code)}`, input: { kind: "choice", opts: d.opts, pre: true }, answer: d.answer, show: `<pre class="io">${esc(d.answer)}</pre>`,
+        explain: [`the_list 有 ${d.list.length} 項，索引是 0 至 ${d.list.length - 1}。`, `i 的值：${r.vals.join("、") || "（沒有）"}`, r.err !== null ? `i 是 ${r.err} 時，the_list[${r.err}] 超出範圍，出現 IndexError，程式立即終止。` : "所有 i 都在範圍內，沒有錯誤。"] }; },
+    () => { const d = RQ.value();
+      return { prompt: `<p>the_list 如下（索引由 0 開始）。執行 <span class="mono">print(${esc(d.expr)})</span> 的結果是甚麼？</p>${codeHTML(`the_list = ${srcList(d.list)}`)}`, input: { kind: "choice", opts: d.opts }, answer: d.answer, show: esc(d.answer),
+        explain: [d.list.map((v, i) => `[${i}]＝${v}`).join("　"), d.expr.includes("len") ? `len(the_list) 是 ${d.list.length}，所以是 the_list[${d.idx}]。` : `the_list[${d.idx}] 是第 ${d.idx + 1} 個項目（不是第 ${d.idx} 個）。`, d.idx >= d.list.length ? `最大的索引是 ${d.list.length - 1}，[${d.idx}] 超出範圍，出現 IndexError。` : `答案：${d.answer}`] }; },
+  ];
+
+  // =================== 3. 測試數據：互動元件 ===================
+  const brCls = (sc, k) => (sc.branches[k].bad ? "brx" : "br" + (sc.branches.slice(0, k).filter((b) => !b.bad).length % 3));
+  function numLine(sc, values, clickable) {
+    const K = sc.keys, segs = [], TAIL = 2.4, GAP = 2.6;
+    segs.push({ t: "tail", rep: K[0] - 10, w: TAIL, lab: "…" });
+    K.forEach((k, i) => { segs.push({ t: "k", v: k, rep: k, w: 1 }); if (i + 1 < K.length && K[i + 1] - k > 1) segs.push({ t: "gap", from: k + 1, to: K[i + 1] - 1, rep: Math.round((k + K[i + 1]) / 2), w: GAP }); });
+    segs.push({ t: "tail", rep: K[K.length - 1] + 10, w: TAIL, lab: "…" });
+    const tot = segs.reduce((a, s) => a + s.w, 0); let x = 0; segs.forEach((s) => { s.x = x; x += s.w; });
+    const pos = (v) => { if (v < K[0]) { const s = segs[0]; return (s.x + s.w * Math.max(0.12, 1 - (K[0] - v) / 30)) / tot * 100; }
+      if (v > K[K.length - 1]) { const s = segs[segs.length - 1]; return (s.x + s.w * Math.min(0.88, (v - K[K.length - 1]) / 30)) / tot * 100; }
+      for (const s of segs) { if (s.t === "k" && s.v === v) return (s.x + 0.5) / tot * 100; if (s.t === "gap" && v >= s.from && v <= s.to) return (s.x + s.w * (v - s.from + 0.5) / (s.to - s.from + 1)) / tot * 100; } return 0; };
+    const tag = clickable ? "button" : "div";
+    const band = segs.map((s, i) => `<${tag} ${clickable ? `type="button" data-v="${s.rep}" aria-label="加入 ${s.rep}"` : ""} class="${s.t === "k" ? "k " : s.t + " "}${brCls(sc, sc.run(s.rep))}" style="flex:${s.w} 1 0">${s.t === "k" ? "" : s.t === "gap" ? "…" : ""}</${tag}>`).join("");
+    const ticks = K.map((k) => `<span class="${sc.consts.includes(k) ? "c" : ""}" style="left:${pos(k)}%">${k}</span>`).join("");
+    const mw = K.length * 26 + 110; let prev = -99, up = false, stag = false;
+    const marks = [...new Set(values)].sort((a, b) => a - b).map((v) => { const x = pos(v); up = x - prev < 3000 / mw * (String(v).length + 1) / 2.4 && !up; if (up) stag = true; prev = x; return `<span class="mk${up ? " up" : ""}" style="left:${x}%">${v}</span>`; }).join("");
+    const legend = sc.branches.map((b, k) => `<span><i class="${brCls(sc, k)}"></i>${esc(b.out)}${b.bad ? "（錯誤數據值）" : ""}</span>`).join("");
+    return `<div class="nlwrap"><div class="nl${stag ? " stag" : ""}" style="min-width:${mw}px"><div class="marks">${marks}</div><div class="band">${band}</div><div class="ticks">${ticks}</div></div></div><div class="legend">${legend}<span>粗體數字＝條件中的分界值</span></div>`;
+  }
+  const tagBtns = (t) => `<span class="tags"><button type="button" class="tg n" data-t="n" aria-pressed="${!!t.n}">正常</button><button type="button" class="tg e" data-t="e" aria-pressed="${!!t.e}">錯誤</button><button type="button" class="tg b" data-t="b" aria-pressed="${!!t.b}">邊界</button></span>`;
+  const scnPrompt = (sc, ask) => `<p>${ask}</p>${codeHTML(sc.code)}<p class="small">${esc(sc.desc)}輸入一定是整數。</p>`;
+  const tagName = (t) => [t.n && "正常", t.e && "錯誤", t.b && "邊界"].filter(Boolean).join("、") || "（未選）";
+  const valNote = (sc, v) => { const near = sc.consts.filter((c) => Math.abs(v - c) <= 1); return `${v}：${needTags(sc, v).join("、")}${near.length ? `（${near.map((c) => (v === c ? `分界值 ${c}` : `分界值 ${c} 的一邊`)).join("；")}）` : ""} → 輸出 ${sc.out(v)}`; };
+
+  G.tst = [
+    () => { const sc = SCN[pick(Object.keys(SCN))](), vals = classifyVals(sc), T = vals.map(() => ({}));
+      const rowsHTML = (done) => vals.map((v, i) => `<tr data-i="${i}"><td class="v">${v}</td><td>${tagBtns(T[i])}</td><td class="o">${done ? esc(sc.out(v)) : ""}</td><td class="r ${done ? (tagOK(sc, v, T[i]) ? "ok" : "no") : ""}">${done ? (tagOK(sc, v, T[i]) ? "✓" : "✗") : ""}</td></tr>`).join("");
+      let area;
+      const draw = (done) => { area.querySelector("table").classList.toggle("pre", !done); area.querySelector("tbody").innerHTML = rowsHTML(done); area.querySelectorAll(".tg").forEach((b) => b.addEventListener("click", () => { if (S.answered) return; const i = +b.closest("tr").dataset.i, k = b.dataset.t; T[i][k] = !T[i][k]; if (k === "n" && T[i].n) T[i].e = false; if (k === "e" && T[i].e) T[i].n = false; draw(false); })); };
+      return { prompt: scnPrompt(sc, "為每個測試值選出類別（可選多於一個）。") + numLine(sc, vals, false), input: { kind: "custom" },
+        mount(a) { area = a; a.innerHTML = `<div class="scroll"><table class="tvt"><thead><tr><th>測試值</th><th>類別</th><th class="o">輸出</th><th></th></tr></thead><tbody></tbody></table></div>`; draw(false); },
+        value: () => (T.some((t) => t.n || t.e || t.b) ? T : null), grade: () => ({ ok: vals.every((v, i) => tagOK(sc, v, T[i])) }),
+        after(revealed) { if (revealed) vals.forEach((v, i) => { const need = needTags(sc, v); T[i] = { n: need.includes("正常"), e: need.includes("錯誤"), b: need.includes("邊界") }; }); draw(true); area.querySelectorAll(".tg").forEach((b) => (b.disabled = true)); },
+        fill(ok) { vals.forEach((v, i) => { const need = needTags(sc, v); T[i] = ok ? { n: need.includes("正常"), e: need.includes("錯誤"), b: need.includes("邊界") } : { n: true }; }); draw(false); if (!ok) { T[0] = { e: true, n: false, b: !sc.isB(vals[0]) }; draw(false); } },
+        show: "見下面的解說及上表",
+        explain: [...vals.map((v) => valNote(sc, v)), "邊界數據值＝條件中的分界值及其兩邊的值；分界值本身只標「邊界」亦可。", "分界值兩邊的值同時是正常或錯誤數據值（例如教科書 6.1：-1 是錯誤數據值及邊界數據值）。"] }; },
+    () => { const sc = SCN[pick(["age", "mark", "guess", "qty", "temp"])](), vals = [], T = new Map(); let area;
+      const coverHTML = () => { const br = sc.branches.map((b, k) => { const hit = vals.filter((v) => sc.run(v) === k); return `<li><span class="${hit.length ? "y" : "n"}">${hit.length ? "✓" : "✗"}</span> ${esc(b.out)}${hit.length ? `：${hit.join("、")}` : "：未測試"}</li>`; }).join("");
+        const bd = sc.consts.map((c) => `<li>分界值 ${c}：${[c - 1, c, c + 1].map((v) => `<span class="${vals.includes(v) ? "y" : "n"}">${v}${vals.includes(v) ? "✓" : "✗"}</span>`).join(" ")}</li>`).join("");
+        return `<div><h4>每個分支（輸出）都測試了嗎？</h4><ul>${br}</ul></div><div><h4>每個分界值及其兩邊都有嗎？</h4><ul>${bd}</ul></div>`; };
+      const draw = (done) => { const sorted = vals.slice().sort((a, b) => a - b);
+        area.querySelector(".nlbox").innerHTML = numLine(sc, vals, !done);
+        area.querySelector(".cov").innerHTML = coverHTML();
+        area.querySelector("tbody").innerHTML = sorted.length ? sorted.map((v) => `<tr data-v="${v}"><td class="v">${v}</td><td>${tagBtns(T.get(v))}</td><td class="o">${esc(sc.out(v))}</td><td class="r ${done ? (tagOK(sc, v, T.get(v)) ? "ok" : "no") : ""}">${done ? (tagOK(sc, v, T.get(v)) ? "✓" : "✗") : `<button type="button" class="rm" aria-label="移除 ${v}">×</button>`}</td></tr>`).join("") : '<tr><td colspan="4" class="small">按數線上的位置或輸入數值，加入測試數據。</td></tr>';
+        if (done) return;
+        area.querySelectorAll(".band button").forEach((b) => b.addEventListener("click", () => add(+b.dataset.v)));
+        area.querySelectorAll(".tg").forEach((b) => b.addEventListener("click", () => { const v = +b.closest("tr").dataset.v, t = T.get(v), k = b.dataset.t; t[k] = !t[k]; if (k === "n" && t.n) t.e = false; if (k === "e" && t.e) t.n = false; draw(false); }));
+        area.querySelectorAll(".rm").forEach((b) => b.addEventListener("click", () => { const v = +b.closest("tr").dataset.v; vals.splice(vals.indexOf(v), 1); T.delete(v); draw(false); })); };
+      const add = (v) => { if (S.answered || !Number.isInteger(v) || vals.includes(v) || vals.length >= 20) return; vals.push(v); T.set(v, {}); draw(false); };
+      const issues = () => { const a = []; sc.branches.forEach((b, k) => { if (!vals.some((v) => sc.run(v) === k)) a.push(`未測試輸出 ${b.out} 的分支`); });
+        sc.consts.forEach((c) => { const miss = [c - 1, c, c + 1].filter((v) => !vals.includes(v)); if (miss.length) a.push(`分界值 ${c}：欠 ${miss.join("、")}`); });
+        vals.slice().sort((x, y) => x - y).forEach((v) => { if (!tagOK(sc, v, T.get(v))) a.push(`${v} 的類別應為：${needTags(sc, v).join("、")}（你選：${tagName(T.get(v))}）`); }); return a; };
+      return { prompt: scnPrompt(sc, "設計一組測試數據：每個分支（輸出）最少一個值，並包括每個分界值及其兩邊的值；再為每個值選出類別。"), input: { kind: "custom" },
+        mount(a) { area = a; a.innerHTML = `<div class="nlbox"></div><div class="addrow"><label class="flab" for="addv">加入數值</label><input type="text" class="sm" id="addv" inputmode="numeric" autocomplete="off"><button type="button" class="btn ghost sm" id="addb">加入</button><span class="small">（最多 20 個）</span></div><div class="cov"></div><div class="scroll"><table class="tvt"><thead><tr><th>測試值</th><th>類別</th><th class="o">輸出</th><th></th></tr></thead><tbody></tbody></table></div>`;
+          const go = () => { const s = $("addv").value.trim(); if (/^-?\d+$/.test(s)) add(parseInt(s, 10)); $("addv").value = ""; $("addv").focus(); };
+          $("addb").addEventListener("click", go); $("addv").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); go(); } }); draw(false); },
+        value: () => (vals.length ? vals : null), grade: () => { const a = issues(); return { ok: !a.length, note: a.length ? `<ul class="steps">${a.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : "" }; },
+        after(revealed) { if (revealed) { vals.length = 0; T.clear(); fullSet(sc).forEach((v) => { vals.push(v); const need = needTags(sc, v); T.set(v, { n: need.includes("正常"), e: need.includes("錯誤"), b: need.includes("邊界") }); }); } draw(true); area.querySelectorAll(".tg,#addb,#addv").forEach((b) => (b.disabled = true)); },
+        fill(ok) { vals.length = 0; T.clear(); if (ok) fullSet(sc).forEach((v) => { vals.push(v); const need = needTags(sc, v); T.set(v, { n: need.includes("正常"), e: need.includes("錯誤"), b: need.includes("邊界") }); }); else { const v = reps(sc)[1]; vals.push(v); T.set(v, { n: true }); } draw(false); },
+        show: `一個參考答案：${fullSet(sc).join("、")}`,
+        explain: [...fullSet(sc).map((v) => valNote(sc, v)), "測試數據的數量要足夠測試所有分支；分界值兩邊都要測試，才知道條件用 < 還是 <= 是否寫對。"] }; },
+    () => { const sc = SCN[pick(["age", "mark", "qty", "temp", "guess"])](), opts = shuffle(setOptions(sc)), right = opts.find((o) => o.ok).set.join(", ");
+      return { prompt: scnPrompt(sc, "下列哪一組測試數據<b>最能</b>測試這程式的所有分界值及分界值兩邊的數據？"), input: { kind: "choice", opts: opts.map((o) => o.set.join(", ")), mono: true }, answer: right, show: right,
+        explain: opts.map((o) => `${o.set.join(", ")}：${o.ok ? "✓ " : "✗ "}${o.why}`).concat(["分界值是條件中的數；每個分界值要測試它本身及兩邊的值。"]) }; },
+  ];
+
+  // =================== 4. 錯誤類型 ===================
+  const KIND = { syntax: "語法錯誤", runtime: "運行時錯誤", logic: "邏輯錯誤" };
+  const errResult = (e) => {
+    if (e.kind === "syntax") return ioHTML(errLine(e.msg), "按「執行」後，互動環境（Shell）顯示：");
+    if (e.kind === "runtime") return `${e.stdin ? `<p class="small">用家輸入 <span class="stdin">${esc(e.stdin.join("、"))}</span></p>` : ""}${ioHTML(esc(e.before) + errLine(e.msg), "執行後，互動環境（Shell）顯示：")}`;
+    return `${e.stdin ? `<p class="small">用家輸入 <span class="stdin">${esc(e.stdin.join("、"))}</span></p>` : ""}<div class="cmp-out"><div>${ioHTML(esc(e.expect), "預期的輸出")}</div><div>${ioHTML(e.actual === "∞" ? '1\n1\n1\n1\n<span class="muted">…不停輸出 1，程式沒有停止</span>' : esc(e.actual), "實際的輸出（沒有錯誤信息）")}</div></div>`; };
+  const errQ = (withLine) => () => { const pool = ERR.filter((e) => !withLine || e.line !== null), e = pick(pool), n = e.code.split("\n").length; const sel = { k: null, l: null }; let area;
+    const ans = KIND[e.kind] + (withLine ? `；第 ${e.line} 行` : "");
+    const draw = (done) => { area.innerHTML = `<div class="qpart"><h3>(1) 這是哪一類錯誤？</h3><div class="choices">${Object.entries(KIND).map(([k, v]) => `<button type="button" class="choice${done ? (k === e.kind ? " ok" : sel.k === k ? " no" : "") : ""}" data-k="${k}" aria-pressed="${sel.k === k}">${v}</button>`).join("")}</div></div>` +
+      (withLine ? `<div class="qpart"><h3>(2) 要修改哪一行來更正錯誤？</h3><div class="choices" style="grid-template-columns:repeat(auto-fit,minmax(90px,1fr))">${Array.from({ length: n }, (_, i) => i + 1).map((l) => `<button type="button" class="choice${done ? (l === e.line ? " ok" : sel.l === l ? " no" : "") : ""}" data-l="${l}" aria-pressed="${sel.l === l}">第 ${l} 行</button>`).join("")}</div></div>` : "");
+      if (done) return; area.querySelectorAll("[data-k]").forEach((b) => b.addEventListener("click", () => { sel.k = b.dataset.k; draw(false); })); area.querySelectorAll("[data-l]").forEach((b) => b.addEventListener("click", () => { sel.l = +b.dataset.l; draw(false); })); };
+    return { prompt: `<p>程式的目的：${esc(e.purpose)}。程式有一個錯誤。</p>${codeHTML(e.code)}${errResult(e)}`, input: { kind: "custom" },
+      mount(a) { area = a; draw(false); }, value: () => (sel.k && (!withLine || sel.l) ? sel : null), grade: () => ({ ok: sel.k === e.kind && (!withLine || sel.l === e.line) }),
+      after() { draw(true); }, fill(ok) { sel.k = ok ? e.kind : e.kind === "logic" ? "syntax" : "logic"; sel.l = e.line; draw(false); },
+      show: ans,
+      explain: [e.why, e.kind === "syntax" ? "語法錯誤：程式違反 Python 的規則，程式根本不能開始執行。" : e.kind === "runtime" ? "運行時錯誤：程式開始執行了，執行到某一行時遇到問題而意外終止，並顯示錯誤信息。" : "邏輯錯誤：程式能執行完畢（或不停執行），沒有錯誤信息，但結果錯誤。",
+        ...(e.fix ? [`更正後：<div class="code" style="margin-top:6px">${e.fix.split("\n").map((l, i, F) => { const O = e.code.split("\n"); return `<div class="ln${l !== O[i] && (!O.includes(l) || O.length === F.length) ? " hl" : ""}"><span class="no">${i + 1}</span><span class="tx">${hl(l) || " "}</span></div>`; }).join("")}</div>`] : [])] }; };
+  G.err = [errQ(false), errQ(true)];
+
+  // =================== 5. 比較次數：逐步執行 ===================
+  function Stepper(box, cfg) { // cfg: { kind: "search"|"ifs"|"order", L, t, m, free, locked }
+    const st = { L: cfg.L, t: cfg.t, m: cfg.m, locked: !!cfg.locked, k: [-1, -1] };
+    const names = { search: ["sFor", "sWhile"], ifs: ["ifA", "ifB"], order: ["oFor", "oWhile"] }[cfg.kind];
+    const titles = { search: ["算法 1：for 全查", "算法 2：while 找到即停"], ifs: ["算法 1：多個獨立的 if", "算法 2：if-elif-else"], order: ["算法 1：for 全查", "算法 2：while 遇到即停"] }[cfg.kind];
+    let tr;
+    const build = () => { tr = cfg.kind === "search" ? [TR.sFor(st.L, st.t), TR.sWhile(st.L, st.t)] : cfg.kind === "ifs" ? [TR.ifA(st.m), TR.ifB(st.m)] : [TR.oFor(st.L), TR.oWhile(st.L)]; st.k = [-1, -1]; };
+    build();
+    const ctl = () => { if (!cfg.free) return cfg.kind === "search" ? `<span>target = <b class="mono">${st.t}</b></span>` : cfg.kind === "ifs" ? `<span>用家輸入 mark = <b class="mono">${st.m}</b></span>` : "";
+      if (cfg.kind === "search") { let miss = 50; while (st.L.includes(miss)) miss++; return `<span>選 target：</span>${[...st.L, miss].map((v, i) => `<button type="button" class="chip" data-t="${v}" aria-pressed="${st.t === v}">${v}${i === st.L.length ? "（不在列表中）" : ""}</button>`).join("")}`; }
+      if (cfg.kind === "ifs") return `<span>選 mark：</span>${[95, 80, 79, 65, 60, 50, 40, 20].map((v) => `<button type="button" class="chip" data-m="${v}" aria-pressed="${st.m === v}">${v}</button>`).join("")}`;
+      return ""; };
+    function render() {
+      const cur = st.k.map((k, j) => (k >= 0 ? tr[j].steps[k] : null));
+      box.innerHTML = `<div class="stp"><div class="stp-ctl">${ctl()}</div>${st.L ? `<div><span class="small">the_list（① 算法 1 正在比較的位置；② 算法 2）</span>${listCells(st.L, { p1: cur[0] ? cur[0].p : null, p2: cur[1] ? cur[1].p : null })}</div>` : ""}
+        <div class="algs">${[0, 1].map((j) => `<div class="alg"><h4><span class="ptr${j + 1}">${j === 0 ? "①" : "②"} ${titles[j]}</span><span class="cnt">${cfg.kind === "ifs" ? "條件判斷" : "比較"}次數 <b>${cur[j] ? cur[j].c : 0}</b></span></h4>${codeHTML(CMP[names[j]], cur[j] ? cur[j].ln : 0)}<div class="msg">${cur[j] ? esc(cur[j].m) + (st.k[j] === tr[j].steps.length - 1 ? "（完）" : "") : "按「下一步」開始。"}</div></div>`).join("")}</div>
+        ${st.locked ? '<p class="lockmsg">核對答案後，可逐步執行兩個算法對照。</p>' : ""}
+        <div class="actions"><button type="button" class="btn ghost sm" data-a="step" ${st.locked ? "disabled" : ""}>下一步</button><button type="button" class="btn ghost sm" data-a="end" ${st.locked ? "disabled" : ""}>執行到底</button><button type="button" class="btn ghost sm" data-a="reset" ${st.locked ? "disabled" : ""}>重新開始</button></div></div>`;
+      box.querySelectorAll("[data-a]").forEach((b) => b.addEventListener("click", () => { const a = b.dataset.a;
+        if (a === "reset") st.k = [-1, -1]; else st.k = st.k.map((k, j) => (a === "end" ? tr[j].steps.length - 1 : Math.min(k + 1, tr[j].steps.length - 1))); render(); }));
+      box.querySelectorAll("[data-t]").forEach((b) => b.addEventListener("click", () => { st.t = +b.dataset.t; build(); render(); }));
+      box.querySelectorAll("[data-m]").forEach((b) => b.addEventListener("click", () => { st.m = +b.dataset.m; build(); render(); }));
+    }
+    render();
+    return { unlock: () => { st.locked = false; render(); } };
+  }
+  const fieldsHTML = (F) => `<div class="scroll"><table class="bw"><thead><tr><th></th>${F.cols.map((c) => `<th>${c}</th>`).join("")}</tr></thead><tbody>${F.rows.map((r, i) => `<tr><th>${r}</th>${F.cols.map((_, j) => `<td><input type="text" class="sm" inputmode="numeric" autocomplete="off" data-f="${i}-${j}" aria-label="${r} ${F.cols[j]}"></td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+  const numQ = (F, ans, extra) => { let area, sp;
+    return { input: { kind: "custom" },
+      mount(a) { area = a; a.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px">${fieldsHTML(F)}<div id="stpbox"></div></div>`; sp = extra.mount($("stpbox")); },
+      value: () => { const v = [...area.querySelectorAll("input[data-f]")].map((i) => i.value.trim()); return v.some((x) => x !== "") ? v : null; },
+      grade(v) { const ok = v.map((x, i) => x !== "" && Number(x) === ans[i]); area.querySelectorAll("input[data-f]").forEach((inp, i) => { inp.classList.add(ok[i] ? "ok" : "no"); inp.disabled = true; }); return { ok: ok.every(Boolean) }; },
+      after(revealed) { area.querySelectorAll("input[data-f]").forEach((inp, i) => { if (revealed) { inp.value = ans[i]; inp.classList.add("ok"); } inp.disabled = true; }); sp && sp.unlock && sp.unlock(); },
+      fill(ok) { area.querySelectorAll("input[data-f]").forEach((inp, i) => { inp.value = ok ? ans[i] : ans[i] + 1; }); } }; };
+  const RULE_CMP = "只計算 if 行內的比較（同教科書例題 6.2 的數法），while 的循環條件不計。";
+  const RULE_IF = "每執行一個 if／elif 的條件計 1 次（複合條件亦計 1 次，同教科書例題 6.2）；else 沒有條件，不計。";
+  G.cmp = [
+    () => { const d = CQ.search();
+      return { prompt: `<p>兩個算法都在 the_list 中搜尋 target = <b class="mono">${d.t}</b>。各要作出多少次比較 <span class="mono">target == the_list[i]</span>？</p><p class="small">${RULE_CMP}</p>`,
+        ...numQ({ rows: ["比較次數"], cols: ["算法 1", "算法 2"] }, [d.a, d.b], { mount: (b) => Stepper(b, { kind: "search", L: d.L, t: d.t, locked: true }) }),
+        show: `算法 1：${d.a} 次；算法 2：${d.b} 次`,
+        explain: [`算法 1 的 for 循環一定檢查全部 ${d.L.length} 項：${d.a} 次。`, d.L.includes(d.t) ? `算法 2 在索引 ${d.L.indexOf(d.t)} 找到 ${d.t}，found 變成 True 後離開循環：${d.b} 次。` : `${d.t} 不在列表中，算法 2 也要檢查全部 ${d.L.length} 項：${d.b} 次。`, "算法 2 找到即停，執行步數通常較少，所以較有效率。"] }; },
+    () => { const d = CQ.search(), n = d.L.length;
+      return { prompt: `<p>the_list 有 <b>${n}</b> 個項目。用下面的逐步執行試不同的 target，然後填寫兩個算法在最好情況及最差情況下的比較次數。</p><p class="small">${RULE_CMP}</p>`,
+        ...numQ({ rows: ["最好情況", "最差情況"], cols: ["算法 1", "算法 2"] }, [n, 1, n, n], { mount: (b) => Stepper(b, { kind: "search", L: d.L, t: d.L[0], free: true }) }),
+        show: `算法 1：最好 ${n}、最差 ${n}；算法 2：最好 1、最差 ${n}`,
+        explain: [`算法 1：不論 target 在哪裏，都檢查全部 ${n} 項 → 最好、最差都是 ${n} 次。`, "算法 2 最好情況：target 在第一項（索引 0），1 次便找到。", `算法 2 最差情況：target 在最後一項或不在列表中 → ${n} 次。`] }; },
+    () => { const d = CQ.ifs();
+      return { prompt: `<p>兩個算法都按分數 mark 給予等級。用家輸入 <b class="mono">${d.m}</b>，各要作出多少次條件判斷？</p><p class="small">${RULE_IF}</p>`,
+        ...numQ({ rows: ["條件判斷次數"], cols: ["算法 1", "算法 2"] }, [d.a, d.b], { mount: (b) => Stepper(b, { kind: "ifs", m: d.m, locked: true }) }),
+        show: `算法 1：${d.a} 次；算法 2：${d.b} 次`,
+        explain: ["算法 1 的四個 if 互相獨立，每個都會判斷：一定 4 次。", d.b === 1 ? `${d.m} >= 80 成立，算法 2 判斷 1 次便跳過其餘分支。` : d.b === 2 ? `${d.m} >= 80 不成立、${d.m} >= 60 成立：算法 2 判斷 2 次。` : `算法 2 要判斷 mark >= 80、mark >= 60、mark >= 40 三次${d.m < 40 ? "，都不成立便執行 else" : ""}。`, "if-elif 找到成立的分支便不再判斷，所以較有效率。"] }; },
+    () => {
+      return { prompt: `<p>兩個算法都按分數 mark 給予等級。用下面的逐步執行試不同的分數，然後填寫最好情況及最差情況的條件判斷次數。</p><p class="small">${RULE_IF}</p>`,
+        ...numQ({ rows: ["最好情況", "最差情況"], cols: ["算法 1", "算法 2"] }, [4, 1, 4, 3], { mount: (b) => Stepper(b, { kind: "ifs", m: 95, free: true }) }),
+        show: "算法 1：最好 4、最差 4；算法 2：最好 1、最差 3",
+        explain: ["算法 1：四個獨立的 if 每次都要判斷 → 一定 4 次。", "算法 2 最好情況：mark >= 80，第 1 個條件已成立 → 1 次。", "算法 2 最差情況：mark 小於 60（等級 C 或 F），要判斷 3 次；else 不用判斷。"] }; },
+    () => { const d = CQ.order(), n = d.L.length;
+      return { prompt: `<p>兩個算法都檢查 the_list 是否由小至大排列。各要作出多少次比較 <span class="mono">the_list[i] &gt; the_list[i + 1]</span>？</p>${codeHTML(`the_list = ${srcList(d.L)}`)}<p class="small">${RULE_CMP}</p>`,
+        ...numQ({ rows: ["比較次數"], cols: ["算法 1", "算法 2"] }, [d.a, d.b], { mount: (b) => Stepper(b, { kind: "order", L: d.L, locked: true }) }),
+        show: `算法 1：${d.a} 次；算法 2：${d.b} 次`,
+        explain: [`${n} 個項目有 ${n - 1} 對相鄰的項目，算法 1 一定比較 ${n - 1} 次。`, d.b < n - 1 ? `算法 2 在第 ${d.b} 次比較發現 ${d.L[d.b - 1]} > ${d.L[d.b]}，in_order 變成 False 後離開循環：${d.b} 次。` : `算法 2 ${d.L.every((v, i) => i === 0 || d.L[i - 1] <= v) ? "要比較所有相鄰的項目才知道已排序" : "直到最後一對才發現次序錯誤"}：${d.b} 次。`, "算法 2 遇到次序錯誤即停，執行步數通常較少（教科書測試站 6.3）。"] }; },
+  ];
+
+  // =================== 提示 ===================
+  const HINTS = {
+    "print 輸出": [["逗號分隔的項目之間自動加一個空格。", "+ 把字串直接接起來，不加空格。", 'print() 完成後換行；end="" 令下一個 print() 接在同一行。'], 'print("A", "B")  → A B\nprint("A" + "B") → AB'],
+    "運算與變量": [["//：整數除法（商）；%：餘數；/：結果一定是浮點數。", "先乘除（* / // %），後加減；** 最先；括號最優先。", "賦值時先計算右邊（用舊值），再存入左邊的變量。"], "17 // 5 → 3\n17 % 5  → 2\n17 / 5  → 3.4"],
+    "數據類型": [["input() 一定傳回字串。", "字串 + 字串＝接起來；要計算先 int() 或 float()。", "int() 去掉小數部分；float() 輸出時有 .0。"], '"1" + "1"   → 11\nint("1") + 1 → 2'],
+    "選擇": [["逐個條件代入數值，寫下 True／False。", "if-elif：只執行第一個成立的分支。", "多個獨立的 if：每個都會檢查。", "沒有縮排的語句不屬 if，一定執行。"], ""],
+    "循環": [["range(起始值, 最終值, 遞增量)：最終值不包括在內。", "遞增量是負數時，i 大於最終值便繼續。", "while：每次先檢查條件，不成立便離開。", "可用追蹤表逐次記下變量的值。"], "range(2, 6)      → 2 3 4 5\nrange(9, 0, -3)  → 9 6 3"],
+    "列表與字串": [["索引由 0 開始，最後一項是 len() - 1。", "print(列表) 會連 [ ] 及逗號輸出，字串項目有引號。", "列表更新後，之後的語句用新的值。"], "nums = [5, 8, 2]\nnums[0] → 5，nums[2] → 2"],
+    "調整 range()": [["先寫出要得到的 i 值。", "起始值＝第一個 i。", "遞增量＝相鄰兩個 i 的差（倒序是負數）。", "最終值要再走一步：遞增時比最後的 i 大，遞減時比最後的 i 小。"], "要 i ＝ 4, 3, 2, 1, 0\n→ range(4, -1, -1)"],
+    "循環執行次數": [["把 i 的值逐個寫出來再數。", "遞增量是 1 時：次數＝最終值 − 起始值。", "起始值已越過最終值：0 次。"], "range(3, 8)     → 5 次\nrange(0, 10, 3) → 0 3 6 9，4 次"],
+    "會否 IndexError": [["列出 i 的值。", "列表有 N 項：有效索引是 0 至 N − 1。", "第一次遇到超出範圍的 i 便出現 IndexError，之後的不會執行。"], ""],
+    "列表索引的值": [["索引由 0 開始：[0] 是第一項。", "len(the_list) 是項目數；最後一項是 [len(the_list) - 1]。", "[len(the_list)] 已超出範圍。"], ""],
+    "分類測試值": [["正常數據值：在有效範圍內。", "錯誤數據值：無效的輸入（不在有效範圍內）。", "邊界數據值：條件中的分界值，及分界值兩邊的值（整數題即 ±1）。", "一個值可同時屬兩類。"], "有效範圍 1 至 100\n0：錯誤、邊界；1：邊界；2：正常、邊界"],
+    "設計測試數據": [["先在條件中找出所有分界值。", "每個分界值加入它本身及兩邊（−1、+1）。", "檢查每個分支（輸出）最少有一個值。", "最後為每個值選類別。"], ""],
+    "選擇測試數據組": [["找出條件中的分界值。", "逐個選項檢查：每個分界值及其兩邊都有嗎？", "只有遠離分界的值，或只有分界值本身，都不足夠。"], ""],
+    "判斷錯誤類型": [["程式不能開始執行，顯示 SyntaxError／IndentationError → 語法錯誤。", "執行到中途終止，顯示其他錯誤信息 → 運行時錯誤。", "沒有錯誤信息，但結果錯或不停執行 → 邏輯錯誤。"], ""],
+    "類型及要修改的行": [["先按錯誤信息或輸出判斷類型。", "語法錯誤：看信息所指的位置。", "邏輯錯誤：代入用家的輸入，逐行找出令結果出錯的一行。"], ""],
+    "搜尋：數比較次數": [["for 全查：一定比較 N 次。", "while 找到即停：數到找到為止（第幾項便是幾次）。", "找不到：兩個都是 N 次。"], ""],
+    "搜尋：最好／最差情況": [["最好情況：目標在第一項。", "最差情況：目標在最後一項，或不在列表中。", "for 全查不論情況都是 N 次。"], ""],
+    "if 與 if-elif：數條件判斷": [["獨立的 if：每個都判斷。", "if-elif：判斷到第一個成立的條件便停。", "else 沒有條件，不計。"], ""],
+    "if 與 if-elif：最好／最差情況": [["最好情況：第一個條件已成立。", "最差情況：要判斷到最後一個 elif。"], ""],
+    "檢查次序：數比較次數": [["N 個項目有 N − 1 對相鄰項目。", "for：一定比較 N − 1 次。", "while：發現第一對次序錯誤便停。"], ""],
+  };
+  const hintHTML = (e) => { const key = HINTS[e.name] ? e.name : e.group; const h = HINTS[key]; if (!h) return "";
+    return `<h4>方法：${esc(key)}</h4><ol>${h[0].map((x) => `<li>${esc(x)}</li>`).join("")}</ol>${h[1] ? `<div class="ex">例：${h[1].includes("\n") ? "\n" : ""}${esc(h[1])}</div>` : ""}`; };
+
+  const named = (names, fns) => fns.map((fn, i) => ({ group: null, name: names[i], fn }));
+  const ENTRIES = {
+    out: G.out,
+    rng: named(["調整 range()", "循環執行次數", "會否 IndexError", "列表索引的值"], G.rng),
+    tst: named(["分類測試值", "設計測試數據", "選擇測試數據組"], G.tst),
+    err: named(["判斷錯誤類型", "類型及要修改的行"], G.err),
+    cmp: named(["搜尋：數比較次數", "搜尋：最好／最差情況", "if 與 if-elif：數條件判斷", "if 與 if-elif：最好／最差情況", "檢查次序：數比較次數"], G.cmp),
+  };
+  const MODES = [
+    { id: "out", name: "輸出預測", note: "讀程式，寫出輸出：print 的逗號與 end=\"\"、// 與 %、數據類型轉換、選擇、循環、列表及字串。", tips: "<b>提示：</b>每行輸出寫一行；行末的空格不影響判分，但項目之間的空格要準確。逗號會自動加空格，+ 不會。" },
+    { id: "rng", name: "range() 與索引", note: "調整 range() 的起始值、最終值及遞增量，觀察 i 的值及列表的哪些項目被存取；超出範圍會出現 IndexError。", tips: "<b>提示：</b>最終值不包括在內；有 N 個項目的列表，索引是 0 至 N − 1。下方的探索器可以自由試。" },
+    { id: "tst", name: "測試數據", note: "正常數據值、錯誤數據值、邊界數據值（邊際個案）：找出分界值，設計能測試所有分支的測試數據。", tips: "<b>提示：</b>整數題中，分界值兩邊即分界值 −1 及 +1。分界值本身只標「邊界」亦可；分界值兩邊的值要同時標正常或錯誤（教科書 6.1）。" },
+    { id: "err", name: "錯誤類型", note: "分辨語法錯誤、運行時錯誤及邏輯錯誤，並找出要修改的一行。", tips: "<b>提示：</b>錯誤信息以 Python 3.11 顯示；Thonny 內置的舊版本 Python 字眼可能不同（例如只寫 invalid syntax），但錯誤的類型相同。" },
+    { id: "cmp", name: "比較次數", note: "逐步執行兩個算法，數比較次數，填寫最好情況及最差情況，比較哪個較有效率。", tips: "<b>答題句式：</b>「算法 2 較有效率，因為它找到目標後便離開循環，比較次數較少。」" },
+  ];
+
+  // =================== 狀態 ===================
+  const S = { hintOpen: false, mode: "out", q: null, entry: null, n: 0, answered: false, right: 0, total: 0, streak: 0, best: 0, sel: null, on: {} };
+  const hsh = location.hash.replace("#", ""); if (MODES.some((x) => x.id === hsh)) S.mode = hsh;
+  MODES.forEach((m) => { S.on[m.id] = new Set(ENTRIES[m.id].map((e) => e.name)); });
+  try { const saved = JSON.parse(localStorage.getItem("pylab-filter") || "{}");
+    Object.keys(saved).forEach((id) => { if (!ENTRIES[id] || !Array.isArray(saved[id])) return; const names = new Set(ENTRIES[id].map((e) => e.name)); const keep = saved[id].filter((n) => names.has(n)); if (keep.length) S.on[id] = new Set(keep); }); } catch (e) {}
+  const saveFilter = () => { try { const o = {}; Object.keys(S.on).forEach((id) => { o[id] = [...S.on[id]]; }); localStorage.setItem("pylab-filter", JSON.stringify(o)); } catch (e) {} };
+
+  const nav = $("modes");
+  MODES.forEach((m) => { const b = document.createElement("button"); b.type = "button"; b.textContent = m.name; b.dataset.id = m.id;
+    b.addEventListener("click", () => { S.mode = m.id; try { history.replaceState(null, "", "#" + m.id); } catch (e) {} renderNav(); renderFilter(); next(); }); nav.appendChild(b); });
+  let explorerBuilt = false;
+  function renderNav() { [...nav.children].forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === S.mode)));
+    const m = MODES.find((x) => x.id === S.mode); $("mode-note").textContent = m.note; $("tips").innerHTML = m.tips;
+    $("explorer").hidden = S.mode !== "rng";
+    if (S.mode === "rng" && !explorerBuilt) { explorerBuilt = true; RangeBox($("explorer-body"), { list: ["A", "B", "C", "D", "E"], s: 0, e: 5, st: 1, free: true }); } }
+  function renderCount() { const all = ENTRIES[S.mode].length, on = S.on[S.mode].size, el = $("fcount"); el.textContent = on === all ? `全部 ${all} 種題型` : `已選 ${on}／${all} 種`; el.classList.toggle("partial", on !== all); }
+  function renderFilter() {
+    const box = $("fchips"); box.innerHTML = ""; const list = ENTRIES[S.mode], groups = [];
+    list.forEach((e) => { let g = groups.find((x) => x.name === e.group); if (!g) { g = { name: e.group, items: [] }; groups.push(g); } g.items.push(e); });
+    groups.forEach((g) => { const wrap = document.createElement("div"); wrap.className = "fgroup";
+      if (g.name) { const h = document.createElement("h3"); h.textContent = g.name; wrap.appendChild(h);
+        if (groups.length > 1) { const only = document.createElement("button"); only.type = "button"; only.className = "mini"; only.textContent = `只練「${g.name}」`;
+          only.addEventListener("click", () => { S.on[S.mode] = new Set(g.items.map((x) => x.name)); saveFilter(); renderFilter(); afterFilter(); }); h.appendChild(only); } }
+      const chips = document.createElement("div"); chips.className = "chips";
+      g.items.forEach((e) => { const c = document.createElement("button"); c.type = "button"; c.className = "chip"; c.textContent = e.name; c.setAttribute("aria-pressed", String(S.on[S.mode].has(e.name)));
+        c.addEventListener("click", () => { const set = S.on[S.mode]; set.has(e.name) ? set.delete(e.name) : set.add(e.name); c.setAttribute("aria-pressed", String(set.has(e.name))); saveFilter(); renderCount(); afterFilter(); }); chips.appendChild(c); });
+      wrap.appendChild(chips); box.appendChild(wrap); });
+    renderCount(); }
+  function afterFilter() { if (!S.on[S.mode].size) { showEmpty(); return; } if (!S.q || !S.entry || !S.on[S.mode].has(S.entry.name)) next(); }
+  $("f-all").addEventListener("click", () => { S.on[S.mode] = new Set(ENTRIES[S.mode].map((e) => e.name)); saveFilter(); renderFilter(); afterFilter(); });
+  $("f-none").addEventListener("click", () => { S.on[S.mode] = new Set(); saveFilter(); renderFilter(); afterFilter(); });
+  function renderScore() { $("sc-right").textContent = S.right; $("sc-total").textContent = S.total; $("sc-streak").textContent = S.streak; $("sc-best").textContent = S.best; }
+  function showEmpty() { S.q = null; S.entry = null; $("qtype").textContent = ""; $("qno").textContent = "";
+    $("prompt").innerHTML = '<p class="empty">請在上方「題型篩選」選擇至少一種題型。</p>'; $("input-area").innerHTML = ""; $("feedback").hidden = true;
+    $("btn-check").disabled = true; $("btn-show").disabled = true; $("btn-next").disabled = true; $("filter").open = true; $("btn-hint").hidden = true; $("hintbox").hidden = true; }
+
+  function next() {
+    const pool = ENTRIES[S.mode].filter((e) => S.on[S.mode].has(e.name)); if (!pool.length) { showEmpty(); return; }
+    let e = pick(pool); if (pool.length > 1 && S.entry && e.name === S.entry.name) e = pick(pool.filter((x) => x.name !== S.entry.name));
+    S.entry = e; S.q = e.fn(); S.n++; S.answered = false; S.sel = null; $("btn-next").disabled = false;
+    const q = S.q; $("qtype").textContent = (e.group ? e.group + " · " : "") + e.name; $("qno").textContent = `第 ${S.n} 題`;
+    $("hintbox").innerHTML = hintHTML(e); $("btn-hint").hidden = !$("hintbox").innerHTML; setHint(false); updNext();
+    $("prompt").innerHTML = q.prompt; const area = $("input-area"); area.innerHTML = ""; $("feedback").hidden = true; $("btn-check").disabled = false; $("btn-show").disabled = false;
+    if (q.input.kind === "text") {
+      area.innerHTML = `<div class="answer-row"><label for="ans">你的答案</label><input id="ans" type="text" autocomplete="off" spellcheck="false" placeholder="${q.input.ph || ""}"></div>`;
+      $("ans").addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); S.answered ? next() : check(); } });
+    } else if (q.input.kind === "area") {
+      area.innerHTML = '<label for="ans" class="flab">你的答案（每行輸出寫一行）</label><textarea id="ans" spellcheck="false" autocomplete="off" autocapitalize="off" rows="4"></textarea>';
+    } else if (q.input.kind === "choice") {
+      const box = document.createElement("div"); box.className = "choices" + (q.input.pre ? " wide" : "");
+      q.input.opts.forEach((o) => { const b = document.createElement("button"); b.type = "button"; b.className = "choice" + (q.input.pre ? " pre" : ""); if (q.input.mono) b.style.fontFamily = "var(--mono)"; b.textContent = o; b.setAttribute("aria-pressed", "false");
+        b.addEventListener("click", () => { if (S.answered) return; S.sel = o; box.querySelectorAll(".choice").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }); box.appendChild(b); });
+      area.appendChild(box);
+    } else q.mount(area);
+  }
+  function current() { const q = S.q; if (q.input.kind === "text" || q.input.kind === "area") return $("ans").value; if (q.input.kind === "choice") return S.sel; return q.value(); }
+  function finish(correct, revealed, res) {
+    S.answered = true; $("btn-check").disabled = true; $("btn-show").disabled = true;
+    if (!revealed) { S.total++; if (correct) { S.right++; S.streak++; if (S.streak > S.best) S.best = S.streak; } else S.streak = 0; } else S.streak = 0;
+    renderScore(); const q = S.q;
+    if (q.input.kind === "choice") $("input-area").querySelectorAll(".choice").forEach((b) => { if (b.textContent === q.answer) b.classList.add("ok"); else if (b.textContent === S.sel) b.classList.add("no"); });
+    if (q.input.kind === "text" || q.input.kind === "area") $("ans").readOnly = true;
+    if (q.after) q.after(revealed, res);
+    const fb = $("feedback"); fb.className = "feedback " + (correct ? "good" : "bad"); fb.hidden = false;
+    const head = revealed ? "答案" : correct ? "答對了" : "未答對";
+    let extra = res && res.note ? res.note : "";
+    if (q.input.kind === "area" && !correct && !revealed) { const mine = normOut($("ans").value), right = normOut(q.answer), n = Math.max(mine.length, right.length);
+      extra = `<p class="iolab">逐行對照（✗ 表示這一行不同）</p><pre class="io diff">${Array.from({ length: n }, (_, i) => { const a = mine[i] === undefined ? "（沒有這一行）" : mine[i], same = mine[i] === right[i]; return `${same ? "✓" : '<span class="x">✗</span>'} ${esc(a)}`; }).join("\n")}</pre>`; }
+    fb.innerHTML = `<div class="verdict">${head}${q.show && q.input.kind !== "area" ? "：" + q.show : ""}</div>${q.input.kind === "area" ? `<p class="iolab">正確輸出</p>${q.show}` : ""}${extra}<ol class="steps">${q.explain.map((x) => `<li>${x}</li>`).join("")}</ol>`;
+    updNext(); $("btn-next").focus({ preventScroll: true });
+  }
+  function warn(msg) { const fb = $("feedback"); fb.className = "feedback bad"; fb.hidden = false; fb.innerHTML = `<div class="verdict">${msg}</div>`; }
+  function check() {
+    if (S.answered || !S.q) return; const a = current(), q = S.q;
+    if (a === null || a === undefined || (typeof a === "string" && a.trim() === "")) { warn("請先作答，或按「顯示答案」。"); return; }
+    let ok, res = null;
+    if (q.input.kind === "text") ok = a.trim().replace(/\s+/g, "") === q.answer;
+    else if (q.input.kind === "area") { const x = normOut(a), y = normOut(q.answer); ok = x.length === y.length && x.every((l, i) => l === y[i]); }
+    else if (q.input.kind === "choice") ok = a === q.answer;
+    else { res = q.grade(a); ok = res.ok; }
+    finish(ok, false, res);
+  }
+  function setHint(open) { $("hintbox").hidden = !open; $("btn-hint").setAttribute("aria-expanded", String(open)); }
+  $("btn-hint").addEventListener("click", () => setHint($("hintbox").hidden));
+  $("btn-check").addEventListener("click", check);
+  $("btn-show").addEventListener("click", () => { if (!S.answered && S.q) finish(false, true, null); });
+  let skipTimer = null;
+  function updNext(confirming) { const b = $("btn-next"); clearTimeout(skipTimer); b.classList.remove("primary", "ghost", "skip", "confirm");
+    if (S.answered) { b.classList.add("primary"); b.textContent = "下一題 →"; }
+    else if (confirming) { b.classList.add("ghost", "confirm"); b.textContent = "再按一次確認跳過"; skipTimer = setTimeout(() => updNext(false), 3000); }
+    else { b.classList.add("ghost", "skip"); b.textContent = "跳過此題"; } }
+  $("btn-next").addEventListener("click", () => { if (S.answered || $("btn-next").classList.contains("confirm")) return next(); updNext(true); });
+
+  // 測試用：以正確或錯誤答案填寫目前的題目（不會自動核對）
+  window.__pylab = { fill(ok) { const q = S.q; if (!q || S.answered) return false;
+      if (q.input.kind === "text" || q.input.kind === "area") $("ans").value = ok ? q.answer : "999\nwrong";
+      else if (q.input.kind === "choice") { const t = ok ? q.answer : q.input.opts.find((o) => o !== q.answer); [...$("input-area").querySelectorAll(".choice")].find((b) => b.textContent === t).click(); }
+      else q.fill(ok); return true; },
+    only(name) { S.on[S.mode] = new Set([name]); renderFilter(); next(); }, entries: () => ENTRIES[S.mode].map((e) => e.name), mode: (m) => [...nav.children].find((b) => b.dataset.id === m).click() };
+
+  renderNav(); renderFilter(); renderScore(); next();
+})();
+</script>
+
+</body></html>

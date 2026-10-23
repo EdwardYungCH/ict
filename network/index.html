@@ -1,0 +1,549 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>網絡練習室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --bg:#EEF2F0; --surface:#FFFFFF; --sunk:#E3E9E6; --ink:#17262A; --muted:#566A6E; --line:#C9D4D0;
+  --accent:#0E7466; --accent-ink:#FFFFFF; --led:#E39B10; --led-glow:rgba(227,155,16,.35); --led-off:#D6DDDA;
+  --good:#1F7A3A; --good-bg:#E3F3E7; --bad:#B3261E; --bad-bg:#FBE7E5;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1618; --surface:#162226; --sunk:#1D2C31; --ink:#E2ECE9; --muted:#95A9AB; --line:#2C3E43;
+    --accent:#35BFA9; --accent-ink:#0B1413; --led:#F4B23C; --led-glow:rgba(244,178,60,.35); --led-off:#2A3A3F;
+    --good:#5BD17E; --good-bg:#15301F; --bad:#FF8A80; --bad-bg:#3A1A18; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1618; --surface:#162226; --sunk:#1D2C31; --ink:#E2ECE9; --muted:#95A9AB; --line:#2C3E43;
+  --accent:#35BFA9; --accent-ink:#0B1413; --led:#F4B23C; --led-glow:rgba(244,178,60,.35); --led-off:#2A3A3F;
+  --good:#5BD17E; --good-bg:#15301F; --bad:#FF8A80; --bad-bg:#3A1A18; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:24px 48px;display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+h1{font-size:30px;font-weight:900;margin:0;letter-spacing:.02em;text-wrap:balance}
+h1 .bits{display:inline-block;white-space:nowrap;font-family:var(--mono);font-weight:600;color:var(--accent);font-size:.7em;margin-left:.4em;letter-spacing:.08em}
+.score{display:flex;gap:16px;font-variant-numeric:tabular-nums}
+.score div{display:flex;flex-direction:column;align-items:flex-end}
+.score b{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1.1}
+.score span{font-size:12px;color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav button{font:inherit;font-size:15px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+nav button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+nav button:focus-visible,.btn:focus-visible,.bit:focus-visible,input:focus-visible,.choice:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.topic-note{font-size:14px;color:var(--muted);margin:-6px 0 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:16px}
+.qhead{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.qtype{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--accent);text-transform:uppercase}
+.qno{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.qright{display:flex;align-items:center;gap:12px;margin-left:auto}
+.hintbtn{font:inherit;font-size:14px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--led);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.hintbtn::before{content:"?";display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--led);color:#1A1204;font-family:var(--mono);font-size:12px}
+.hintbtn[aria-expanded="true"]{background:var(--led);color:#1A1204}
+.hintbtn[aria-expanded="true"]::before{background:#1A1204;color:var(--led)}
+.hintbtn:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.hintbox{border:1px solid var(--led);border-left-width:4px;border-radius:10px;padding:12px 14px;background:var(--sunk);font-size:15px;line-height:1.7;display:flex;flex-direction:column;gap:6px}
+.hintbox h4{margin:0;font-size:13px;letter-spacing:.06em;color:var(--muted)}
+.hintbox ol,.hintbox ul{margin:0;padding-left:1.3em}
+.hintbox .ex{font-family:var(--mono);font-size:14px;background:var(--surface);border-radius:8px;padding:6px 10px;width:fit-content;max-width:100%;overflow-x:auto;white-space:pre}
+.prompt{font-size:18px;line-height:1.7}
+.prompt .num,.mono{font-family:var(--mono);font-weight:600;letter-spacing:.03em}
+sub{font-size:.7em}
+.given{font-family:var(--mono);font-size:26px;font-weight:600;letter-spacing:.08em;background:var(--sunk);border-radius:10px;padding:10px 14px;display:block;width:fit-content;margin-top:6px;overflow-x:auto;max-width:100%}
+.bitrow{display:flex;flex-direction:column;gap:6px;overflow-x:auto;padding-bottom:4px}
+.bits{display:flex;gap:6px}
+.bit{width:44px;height:52px;flex:0 0 auto;border-radius:8px;border:1px solid var(--line);background:var(--led-off);color:var(--muted);font-family:var(--mono);font-size:22px;font-weight:600;cursor:pointer;transition:background .12s,box-shadow .12s}
+.bit.on{background:var(--led);color:#1A1204;border-color:var(--led);box-shadow:0 0 12px var(--led-glow)}
+.bit.gap{margin-left:10px}
+.weights{display:flex;gap:6px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.weights span{width:44px;flex:0 0 auto;text-align:center}
+.weights span.gap{margin-left:10px}
+.bitval{font-size:14px;color:var(--muted)}
+.answer-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:min(260px,100%)}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.choice{font:inherit;text-align:left;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choice[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.btn{font:inherit;font-weight:700;padding:10px 18px;border-radius:10px;border:1px solid var(--accent);cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.feedback{border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.feedback.good{background:var(--good-bg)}
+.feedback.bad{background:var(--bad-bg)}
+.feedback .verdict{font-weight:700}
+.feedback.good .verdict{color:var(--good)}
+.feedback.bad .verdict{color:var(--bad)}
+.steps{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.steps li{line-height:1.6}
+.swatch{display:inline-block;width:1.4em;height:1.4em;border-radius:4px;vertical-align:-.3em;border:1px solid var(--line);margin-left:.3em}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#btn-next{margin-left:auto}
+#btn-next.skip{border-color:var(--line);color:var(--muted);font-weight:500}
+#btn-next.confirm{border-color:var(--bad);color:var(--bad);font-weight:700}
+.tips{font-size:14px;color:var(--muted);border-top:1px dashed var(--line);padding-top:14px}
+.tips b{color:var(--ink)}
+@media (max-width:480px){h1{font-size:24px}.bit{width:34px;height:44px;font-size:18px}.weights span{width:34px}.given{font-size:20px}.prompt{font-size:16px}}
+@media (prefers-reduced-motion:reduce){.bit{transition:none}}
+.filter{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.filter summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:10px 14px;font-weight:700;font-size:15px}
+.filter summary::-webkit-details-marker{display:none}
+.filter summary::after{content:"▾";color:var(--muted);transition:transform .15s}
+.filter[open] summary::after{transform:rotate(180deg)}
+.filter summary:focus-visible{outline:3px solid var(--led);outline-offset:2px;border-radius:12px}
+.fcount{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--muted);margin-left:auto}
+.fcount.partial{color:var(--accent);font-weight:600}
+.fbody{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px}
+.fact{display:flex;flex-wrap:wrap;gap:8px}
+.fgroup{display:flex;flex-direction:column;gap:6px}
+.fgroup h3{margin:0;font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:14px;line-height:1.4;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sunk);border-color:var(--accent);color:var(--ink);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip[aria-pressed="true"]::before{content:"✓ ";color:var(--accent);font-weight:700}
+.chip:focus-visible,.mini:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.mini{font:inherit;font-size:13px;padding:4px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer}
+.fhint{margin:0;font-size:12px;color:var(--muted)}
+.empty{color:var(--muted);font-size:16px}
+.vs{display:grid;width:fit-content;grid-template-columns:auto auto repeat(var(--w),auto) auto;row-gap:2px;align-items:end;font-family:var(--mono);font-weight:600;background:var(--sunk);border-radius:10px;padding:10px 14px;max-width:100%;overflow-x:auto;line-height:1.3}
+.prompt .vs{font-size:22px;margin-top:6px}
+.steps .vs{font-size:16px;margin:4px 0}
+.vs span{min-width:1.25ch;text-align:center}
+.vs span.g{padding-left:.8ch}
+.vs .lab{font-family:var(--sans);font-size:.75em;color:var(--muted);padding-right:.5ch;text-align:right}
+.vs .co{padding-right:.45ch}
+.vs .cy{font-size:.6em;color:var(--bad)}
+.vs .rl{border-top:2px solid var(--ink);padding-top:2px}
+.vs .cut{color:var(--bad);text-decoration:line-through}
+.vs .bad{color:var(--bad)}
+.vs .nt{font-family:var(--sans);font-weight:400;font-size:.7em;color:var(--muted);padding-left:1.2ch;text-align:left;white-space:nowrap}
+.stmts{display:flex;flex-direction:column;gap:4px;margin-top:8px;font-size:16px}
+.choices.monoc{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.bitrow .chunk{display:flex;flex-direction:column;gap:6px}
+.bitrow.wide{gap:12px}
+@media (max-width:480px){.prompt .vs{font-size:18px}.bit{width:30px}.weights span{width:30px;font-size:9px;letter-spacing:-.03em}.bit.gap,.weights span.gap{margin-left:8px}}
+
+.net{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px;font-family:var(--mono);font-size:15px}
+.net .node{border:1.5px solid var(--accent);border-radius:8px;padding:6px 12px;background:var(--surface);font-weight:600;min-width:2.6em;text-align:center}
+.net .node.cloud{border-style:dashed;color:var(--muted);font-family:var(--sans);font-weight:500}
+.net .node.pcs{border-color:var(--line);color:var(--muted);font-family:var(--sans);font-weight:500}
+.net .node.ghost{opacity:.55}
+.net .link{width:26px;height:2px;background:var(--ink);flex:0 0 auto}
+.net .link.wifi{background:repeating-linear-gradient(90deg,var(--ink) 0 4px,transparent 4px 8px)}
+.tree{font-family:var(--mono);font-size:15px;line-height:1.5;background:var(--sunk);border-radius:10px;padding:10px 14px;margin:8px 0 0;overflow-x:auto;max-width:100%;width:fit-content}
+.given.url,.given.list{font-size:17px;letter-spacing:.02em;line-height:1.6;word-break:break-all}
+.choices.monoc .choice{word-break:break-all}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">HKDSE ICT · 必修 C a</span>
+      <h1>網絡練習室<span class="bits">192.168.0.1</span></h1>
+    </div>
+    <div class="score" aria-live="polite">
+      <div><b id="sc-right">0</b><span>答對</span></div>
+      <div><b id="sc-total">0</b><span>已答</span></div>
+      <div><b id="sc-streak">0</b><span>連續答對</span></div>
+      <div><b id="sc-best">0</b><span>最佳紀錄</span></div>
+    </div>
+  </header>
+
+  <nav id="modes" aria-label="練習類別"></nav>
+  <p class="topic-note" id="mode-note"></p>
+
+  <details class="filter" id="filter">
+    <summary><span>題型篩選</span><span class="fcount" id="fcount"></span></summary>
+    <div class="fbody">
+      <div class="fact"><button type="button" class="mini" id="f-all">全選</button><button type="button" class="mini" id="f-none">全部取消</button></div>
+      <div id="fchips"></div>
+      <p class="fhint">點按題型可加入或移除。只會出已選的題型，選擇會記在這部裝置上。</p>
+    </div>
+  </details>
+
+  <section class="card" id="card" aria-live="polite">
+    <div class="qhead"><span class="qtype" id="qtype"></span><div class="qright"><span class="qno" id="qno"></span><button class="hintbtn" id="btn-hint" type="button" aria-expanded="false" aria-controls="hintbox">提示：方法</button></div></div>
+    <div class="prompt" id="prompt"></div>
+    <div class="hintbox" id="hintbox" hidden></div>
+    <div id="input-area"></div>
+    <div class="actions">
+      <button class="btn primary" id="btn-check" type="button">核對答案</button>
+      <button class="btn ghost" id="btn-show" type="button">顯示答案</button>
+      <button class="btn ghost skip" id="btn-next" type="button">跳過此題</button>
+    </div>
+    <div id="feedback" hidden></div>
+    <div class="tips" id="tips"></div>
+  </section>
+  <p class="topic-note">傳輸時間的計算在「位元練習室」的「傳輸時間」類別練習。</p>
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const grp = (s) => s;
+  const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const norm = (s) => String(s).toUpperCase().replace(/[\s​]/g, "").replace(/，/g, ",").replace(/^["「]|["」]$/g, "");
+  const fmt = (n) => n.toLocaleString("en-US");
+  const mono = (s) => `<span class="mono">${esc(s)}</span>`;
+  const COMBOS = ["只有 (1)", "只有 (2)", "只有 (3)", "只有 (1) 和 (2)", "只有 (1) 和 (3)", "只有 (2) 和 (3)", "(1)、(2) 和 (3)"];
+  const comboOf = (t) => { const idx = t.map((x, i) => (x ? i + 1 : 0)).filter(Boolean); return idx.length === 3 ? COMBOS[6] : idx.length === 1 ? `只有 (${idx[0]})` : `只有 (${idx[0]}) 和 (${idx[1]})`; };
+  const comboOpts = (ans) => [ans, ...shuffle(COMBOS.filter((c) => c !== ans)).slice(0, 3)].sort((a, b) => COMBOS.indexOf(a) - COMBOS.indexOf(b));
+
+  // =================== IP 位址 ===================
+  const v4 = () => [R(1, 223), R(0, 255), R(0, 255), R(1, 254)].join(".");
+  const badV4 = (kind) => {
+    const o = [R(1, 223), R(0, 255), R(0, 255), R(1, 254)];
+    if (kind === "big") { o[R(0, 3)] = R(256, 320); return [o.join("."), "有一組大於 255"]; }
+    if (kind === "three") return [o.slice(0, 3).join("."), "只有三組，IPv4 要剛好四組"];
+    if (kind === "five") return [[...o, R(1, 254)].join("."), "有五組，IPv4 要剛好四組"];
+    o[R(1, 3)] = pick(["a", "b", "f", "x"]) + R(1, 9); return [o.join("."), "IPv4 每組是十進制數字，不可以有英文字母"];
+  };
+  const BADK = ["big", "three", "five", "letter"];
+  const h16 = () => R(0, 65535).toString(16);
+  const v6full = () => { const g = Array.from({ length: 8 }, () => (Math.random() < 0.3 ? "0" : h16())); return g.map((x) => x.padStart(4, "0")).join(":"); };
+  const shrink6 = (full) => {
+    const g = full.split(":").map((x) => x.replace(/^0+(?=.)/, ""));
+    let best = [-1, 0], cur = [-1, 0];
+    g.forEach((x, i) => { if (x === "0") { if (cur[0] < 0) cur = [i, 0]; cur[1]++; if (cur[1] > best[1]) best = [...cur]; } else cur = [-1, 0]; });
+    if (best[1] < 2) return g.join(":");
+    const L = g.slice(0, best[0]).join(":"), Rr = g.slice(best[0] + best[1]).join(":");
+    return `${L}::${Rr}`;
+  };
+  const mac = () => Array.from({ length: 6 }, () => R(0, 255).toString(16).padStart(2, "0")).join(pick([":", "-"]));
+  const NAMES = ["sunshine", "happytea", "greenpark", "cityrun", "starlab", "bluebay", "hkmusic", "techclub", "lotus", "harbour"];
+  const SUF = ["com", "org", "net", "hk", "com.hk", "org.hk", "edu.hk", "gov.hk"];
+  const HOSTS = ["www", "shop", "mail", "web", "news", "app", "su", "library"];
+
+  const G = {};
+  G.ip = [
+    () => { const ok = Math.random() < 0.45; let a, why; if (ok) { a = v4(); why = "剛好四組，每組都是 0 至 255 的整數。"; } else [a, why] = badV4(pick(BADK));
+      return { prompt: `以下 IPv4 位址是否有效？<div class="given">${esc(a)}</div>`, input: { kind: "choice", opts: ["有效", "無效"] }, answer: ok ? "有效" : "無效", show: ok ? "有效" : "無效",
+        explain: [ok ? why : `無效：${why}。`, "IPv4 位址是 32 位元，分成四組，每組 8 位元，以十進制寫出時每組是 0 至 255。"] }; },
+    () => { const ok = v4(); const bad = shuffle(BADK).slice(0, 3).map(badV4);
+      return { prompt: "下列哪一個是<b>有效</b>的 IPv4 位址？", input: { kind: "choice", opts: shuffle([ok, ...bad.map((b) => b[0])]), mono: true }, answer: ok, show: ok,
+        explain: [`${ok}：四組，每組 0 至 255 → 有效`, ...bad.map(([a, w]) => `${a}：${w}`)] }; },
+    () => { const h = pick(HOSTS), n = pick(NAMES), s = pick(SUF);
+      const items = [[v4(), "IPv4", "四組十進制數字，以「.」分隔"], [shrink6(v6full()), "IPv6", "以「:」分隔的十六進制，最多八組（可用「::」縮短）"], [mac(), "MAC 位址", "六組兩位十六進制數字，是網絡界面卡的硬件位址"],
+        [`${n}.${s}`, "域名", "登記名稱加頂級域名，是要註冊的部分"], [`${h}.${n}.${s}`, "完整域名", "主機名稱加域名"], [`https://${h}.${n}.${s}/index.html`, "URL", "有網絡協定及路徑，指向互聯網上的資源"]];
+      const [v, ans, why] = pick(items);
+      return { prompt: `以下屬於哪一類？<div class="given">${esc(v)}</div>`, input: { kind: "choice", opts: ["IPv4", "IPv6", "MAC 位址", "域名", "完整域名", "URL"] }, answer: ans, show: ans, explain: [`${ans}：${why}。`] }; },
+    () => { const q = pick([
+        ["IPv4 位址有多少位元？", "32", ["8", "16", "32", "128"], "IPv4：4 組 × 8 位元 ＝ 32 位元。"],
+        ["IPv6 位址有多少位元？", "128", ["32", "64", "128", "256"], "IPv6：8 組 × 16 位元 ＝ 128 位元。"],
+        ["IPv4 位址每一組有多少位元？", "8", ["4", "8", "16", "32"], "每組 8 位元，所以每組是 0 至 255。"],
+        ["IPv6 位址每一組有多少位元？", "16", ["4", "8", "16", "32"], "每組 16 位元，以 4 位十六進制表示（0 至 FFFF）。"],
+        ["IPv4 編址最多可有多少個位址？", "2³²", ["2⁸", "2³²", "4⁸", "2¹²⁸"], "32 位元 → 2³²（約 43 億）。2³² 亦可寫成 16⁸。"],
+        ["IPv6 編址最多可有多少個位址？", "2¹²⁸", ["2³²", "2⁶⁴", "2¹²⁸", "16¹²⁸"], "128 位元 → 2¹²⁸（約 3.4 × 10³⁸）。"],
+        ["IPv4 位址每一組的最大值是多少？", "255", ["99", "255", "256", "999"], "8 位元最大是 1111 1111 ＝ 255。"],
+        ["為甚麼要由 IPv4 轉用 IPv6？", "IPv4 位址不足以應付急增的裝置", ["IPv6 比 IPv4 容易記", "IPv4 位址不足以應付急增的裝置", "IPv6 不需要 DNS", "IPv4 不能用於無線網絡"], "連接互聯網的裝置（包括物聯網裝置）急增，2³² 個位址不夠用。"]]);
+      return { prompt: q[0], input: { kind: "choice", opts: q[2] }, answer: q[1], show: q[1], explain: [q[3]] }; },
+    () => { let full, ans; do { full = v6full(); ans = shrink6(full); } while (!ans.includes("::"));
+      const g = full.split(":");
+      const d1 = g.map((x) => x.replace(/^0+(?=.)/, "").replace(/0+$/, "") || "0").join(":").replace(/(^|:)0(:0)+(:|$)/, "::");
+      const d2 = ans.replace("::", ":");
+      const d3 = ans.replace("::", ":0:");
+      const d4 = ans.replace("::", ":::");
+      const cands = shuffle([...new Set([d1, d2, d3, d4].filter((x) => x && x !== ans))]).slice(0, 3);
+      return { prompt: `（延伸）下列哪一個是以下 IPv6 位址的正確縮寫？<div class="given" style="font-size:18px">${full}</div>`, input: { kind: "choice", opts: shuffle([ans, ...cands]), mono: true }, answer: ans, show: ans,
+        explain: ["① 每組省略前導零（只省左邊的 0，右邊的 0 要保留）。", "② 把一串連續為 0 的組以「::」代替；「::」整個位址只可用一次，通常代替最長的一串。", `答案：${ans}`] }; },
+  ];
+
+  // =================== 域名與 URL ===================
+  const mkURL = () => {
+    const proto = pick(["http", "https", "https"]); const h = pick(HOSTS), n = pick(NAMES), s = pick(SUF);
+    const port = Math.random() < 0.35 ? String(pick([8080, 8443, 80, 443, 3000])) : "";
+    const folders = shuffle(["about", "news", "events", "photos", "2026", "sport", "music", "tc", "en"]).slice(0, R(1, 3));
+    const file = Math.random() < 0.8 ? pick(["index.html", "about.html", "list.html", "photo.jpg", "notice.pdf", "song.mp3"]) : "";
+    const path = "/" + folders.join("/") + "/" + file;
+    return { proto, h, n, s, port, folders, file, path, fqdn: `${h}.${n}.${s}`, reg: `${n}.${s}`, url: `${proto}://${h}.${n}.${s}${port ? ":" + port : ""}${path}` };
+  };
+  G.url = [
+    () => { const u = mkURL(); const asks = [["網絡協定", u.proto], ["完整域名", u.fqdn], ["主機名稱", u.h], ["要註冊的域名", u.reg], ["路徑", u.path], ["最右邊的頂級域名", u.s.split(".").pop()]];
+      if (u.port) asks.push(["埠號碼", u.port]); else asks.push(["埠號碼（沒有寫出，瀏覽器預設使用的）", u.proto === "https" ? "443" : "80"]);
+      if (u.file) asks.push(["檔案名稱", u.file]);
+      const [what, ans] = pick(asks);
+      return { prompt: `寫出以下 URL 的<b>${what}</b>。<div class="given url">${esc(u.url)}</div>`, input: { kind: "text", ph: "照 URL 寫出" }, answer: ans, show: mono(ans),
+        explain: [`網絡協定：${u.proto}`, `完整域名：${u.fqdn}（主機名稱 ${u.h} ＋ 域名 ${u.reg}）`, `埠號碼：${u.port || `沒有寫出，${u.proto} 預設用 ${u.proto === "https" ? 443 : 80}`}`, `路徑：${u.path}${u.file ? "" : "（沒有檔案名稱，伺服器預設找 index.html）"}`] }; },
+    () => { const k = R(2, 4); const regs = []; while (regs.length < k) { const r = `${pick(NAMES)}.${pick(SUF)}`; if (!regs.includes(r)) regs.push(r); }
+      const n = R(Math.max(k + 1, 4), 6); const urls = new Set(regs.map((r) => `${pick(HOSTS)}.${r}`)); let guard = 0;
+      while (urls.size < n && guard++ < 50) urls.add(`${pick(HOSTS)}.${pick(regs)}`);
+      const list = shuffle([...urls]);
+      return { prompt: `某機構想讓用戶以下列任何一個完整域名瀏覽它的網站。它最少要註冊多少個域名？<div class="given list">${list.map(esc).join("<br>")}</div>`, input: { kind: "text", ph: "數目" }, answer: String(k), show: `${k} 個`,
+        explain: ["刪去最左的主機名稱，只看「登記名稱＋頂級域名」：", ...list.map((x) => `${x} → ${x.split(".").slice(1).join(".")}`), `不同的有：${regs.join("、")}，共 ${k} 個。`] }; },
+    () => { const site = `www.${pick(NAMES)}.${pick(["edu.hk", "org.hk", "com"])}`; const [A, B] = shuffle(["news", "img", "docs", "games", "music"]).slice(0, 2); const C = pick(["sport", "2026", "club", "old"]);
+      const fa = pick(["2026.html", "notice.pdf", "list.html"]), fc = pick(["run.jpg", "team.png", "song.mp3"]), fb = pick(["logo.png", "map.png"]);
+      const tree = `/\n├─ index.html\n├─ ${A}/\n│  └─ ${fa}\n└─ ${B}/\n   ├─ ${fb}\n   └─ ${C}/\n      └─ ${fc}`;
+      const ok = [[`/${A}/${fa}`], [`/${B}/${C}/${fc}`], [`/${B}/${fb}`], ["/index.html"]].map((p) => p[0]);
+      const bads = [[`/${C}/${B}/${fc}`, `資料夾次序倒轉了：${C} 在 ${B} 之內`], [`/${fb}`, `${fb} 在 ${B} 資料夾內，不在根目錄`], [`/${A}/${fc}`, `${fc} 在 ${B}/${C} 內，不在 ${A}`], [`/${B}/${fa}`, `${fa} 在 ${A} 資料夾內`]];
+      const [bad, why] = pick(bads); const opts = shuffle([...shuffle(ok).slice(0, 3), bad]).map((p) => `https://${site}${p}`); const ans = `https://${site}${bad}`;
+      return { prompt: `以下是網站 ${mono(site)} 的資料夾結構。下列哪一個 URL <b>無效</b>？<pre class="tree">${esc(tree)}</pre>`, input: { kind: "choice", opts, mono: true, wide: true }, answer: ans, show: esc(ans),
+        explain: [`路徑要由根目錄「/」開始，逐層對應實際的資料夾。`, `${esc(ans)}：${why}。`] }; },
+    () => { const q = pick([
+        ["HTTP 的預設埠號碼是", "80", ["21", "53", "80", "443"], "省略埠號碼時，HTTP 用 80，HTTPS 用 443。"],
+        ["HTTPS 的預設埠號碼是", "443", ["80", "443", "8080", "53"], "HTTPS 用 443；HTTP 用 80。"],
+        ["URL 沒有寫出檔案名稱時，網頁伺服器通常預設送出", "index.html", ["home.htm", "index.html", "main.css", "default.png"], "例如 https://www.abc.hk/news/ 會開啟 news 資料夾內的 index.html。"],
+        ["把域名轉換為 IP 位址的是", "DNS 伺服器", ["網頁伺服器", "DNS 伺服器", "路由器", "交換器"], "這個過程稱為域名解析：輸入域名，輸出 IP 位址。"],
+        ["DNS 伺服器故障時，用戶仍可怎樣瀏覽網站？", "直接輸入網站的 IP 位址", ["改用 HTTPS", "直接輸入網站的 IP 位址", "重新註冊域名", "刪除瀏覽記錄"], "用 IP 位址毋須經 DNS 解析。"],
+        ["HTTPS 比 HTTP 多了甚麼？", "以 SSL（TLS）加密傳送中的數據", ["更快的下載速度", "以 SSL（TLS）加密傳送中的數據", "不需要 DNS", "可傳送電郵"], "HTTPS 加密的是傳送中的數據；它不代表網站內容可信。"],
+        ["（延伸）DNS 服務使用的埠號碼是", "53", ["21", "53", "80", "443"], "選修 B 再詳教：DNS 53、HTTP 80、HTTPS 443。"]]);
+      return { prompt: q[0], input: { kind: "choice", opts: q[2] }, answer: q[1], show: q[1], explain: [q[3]] }; },
+  ];
+
+  // =================== 設備與纜線 ===================
+  const DEV = ["網絡界面卡", "交換器", "路由器", "數據機", "網絡接達點"];
+  const DEVQ = [
+    ["按 MAC 位址把數據送到同一個 LAN 內的目的地裝置", "交換器"], ["把多部電腦連接成一個 LAN", "交換器"],
+    ["連接兩個不同的網絡，例如學校 LAN 與互聯網", "路由器"], ["按 IP 位址為數據包選擇傳送路徑", "路由器"],
+    ["把數碼信號與模擬信號互相轉換，讓用戶連接 ISP", "數據機"], ["通常由 ISP 提供，接上電話線或光纖", "數據機"],
+    ["令一部電腦可以接上網絡，並有獨一無二的 MAC 位址", "網絡界面卡"],
+    ["接上有線 LAN，以 Wi-Fi 為手機及平板電腦提供連接", "網絡接達點"], ["以 SSID 識別，可設定密碼及限制連接人數", "網絡接達點"]];
+  const MED = [
+    ["課室內的電腦接到 10 米外的交換器", "UTP 雙扭線", "成本低、容易安裝，100 米內適用"], ["相距 2 公里的兩幢大廈，要求最高速度及不受電磁干擾", "光纖", "速度最快，不受電磁干擾，可傳送較遠"],
+    ["遠洋輪船或偏遠山區上網", "衛星", "覆蓋範圍最大，可接達沒有有線連接的地方"], ["無線耳機連接手機", "藍牙", "短距離、耗電低，適合周邊裝置"],
+    ["兩幢大廈天台之間不想佈線，兩者在視線範圍內", "微波", "毋須佈線，但發射與接收點要在直線視線範圍內"], ["工廠內有大型機器產生強烈電磁干擾", "光纖", "光纖以光信號傳送，不受電磁干擾"]];
+  const CONN = [
+    ["銀行總部需要固定頻寬及最高保安", "專線"], ["一般家庭上網", "寬頻"], ["記者在郊外直播新聞", "流動數據"], ["遊客在商場免費上網", "Wi-Fi 熱點"],
+    ["公司需要穩定、不與其他用戶共用的線路", "專線"], ["無人機在戶外把畫面傳回控制中心", "流動數據"]];
+  const WTF = [
+    ["5 GHz Wi-Fi 的覆蓋範圍比 2.4 GHz 遠。", false, "2.4 GHz 穿牆能力較強，覆蓋較遠；5 GHz 較快但較近。"],
+    ["微波爐及藍牙可能干擾 2.4 GHz 的 Wi-Fi。", true, "它們使用相近的頻段。"],
+    ["要做到漫遊，同一網絡內各接達點要使用相同的 SSID。", true, "裝置會自動轉接另一個接達點，連接不中斷。"],
+    ["藍牙的傳輸速度比 Wi-Fi 快。", false, "藍牙的速度及距離都不及 Wi-Fi，但耗電低。"],
+    ["同一個接達點連接的人越多，每人分得的頻寬越少。", true, "頻寬由連接的用戶共用。"],
+    ["Wi-Fi 信號滿格代表下載速度一定快。", false, "多人共用頻寬、ISP 線路擠塞時，信號強也會很慢。"],
+    ["有線網絡一般比無線網絡穩定及安全。", true, "不受無線信號干擾，數據亦較難被截取。"],
+    ["交換器可以把學校 LAN 連接到互聯網。", false, "連接不同網絡（LAN 與互聯網）的是路由器。"],
+    ["家用路由器通常包括交換器及無線接達點的功能。", true, "所以家中毋須另外購買交換器及接達點。"]];
+  G.dev = [
+    () => { const [d, a] = pick(DEVQ); return { prompt: `哪一種裝置的功能是：<b>${d}</b>？`, input: { kind: "choice", opts: DEV }, answer: a, show: a,
+        explain: ["交換器：同一 LAN 內按 MAC 位址轉送；路由器：不同網絡之間按 IP 位址轉發；數據機：信號轉換；網絡界面卡：令裝置連上網絡；接達點：提供 Wi-Fi。"] }; },
+    () => { const L = shuffle(["P", "Q", "R", "S"]); const [m, r, s, a] = L; const ask = pick(L);
+      const role = { [m]: "數據機", [r]: "路由器", [s]: "交換器", [a]: "網絡接達點" };
+      const diagram = `<div class="net"><span class="node cloud">互聯網（ISP）</span><span class="link"></span><span class="node">${m}</span><span class="link"></span><span class="node">${r}</span><span class="link"></span><span class="node">${s}</span><span class="link"></span><span class="node pcs">16 部電腦、打印機</span></div>
+        <div class="net"><span class="node ghost">${s}</span><span class="link"></span><span class="node">${a}</span><span class="link wifi"></span><span class="node pcs">平板電腦（Wi-Fi）</span></div>`;
+      return { prompt: `以下是某學校圖書館的網絡圖。<b>${ask}</b> 最可能是甚麼裝置？${diagram}`, input: { kind: "choice", opts: DEV }, answer: role[ask], show: role[ask],
+        explain: [`${m}：接上 ISP 線路 → 數據機`, `${r}：在數據機與內部網絡之間，連接兩個網絡 → 路由器`, `${s}：把多部電腦連成 LAN → 交換器`, `${a}：接上 LAN，以 Wi-Fi 連接平板電腦 → 網絡接達點`] }; },
+    () => { const [s, a, why] = pick(MED); return { prompt: `為以下情況選出最合適的傳輸媒介：<b>${s}</b>。`, input: { kind: "choice", opts: ["UTP 雙扭線", "光纖", "微波", "衛星", "藍牙"] }, answer: a, show: a, explain: [`${a}：${why}。`] }; },
+    () => { const [s, a] = pick(CONN); return { prompt: `為以下情況選出最合適的互聯網接達方法：<b>${s}</b>。`, input: { kind: "choice", opts: ["寬頻", "專線", "流動數據", "Wi-Fi 熱點"] }, answer: a, show: a,
+        explain: ["專線：頻寬固定、最安全，成本最高；寬頻：速度高、成本適中；流動數據：可在戶外使用；Wi-Fi 熱點：成本低，但安全性最低。"] }; },
+    () => { const [t, ok, why] = pick(WTF); return { prompt: `判斷以下句子是對還是錯：<b>${t}</b>`, input: { kind: "choice", opts: ["對", "錯"] }, answer: ok ? "對" : "錯", show: ok ? "對" : "錯", explain: [why] }; },
+  ];
+
+  // =================== 涉及甚麼 ===================
+  const SCN = [
+    { s: "小明在家用手提電腦經 Wi-Fi 瀏覽 https://www.hko.gov.hk", yes: [["DNS", "把域名轉換為 IP 位址"], ["TCP/IP", "以數據包傳送網頁"], ["HTTPS", "向網頁伺服器取得網頁，數據經加密"], ["無線路由器", "以 Wi-Fi 連接手提電腦"], ["數據機", "家中網絡經數據機連接 ISP"]],
+      no: [["SMTP", "沒有傳送電郵"], ["藍牙", "用的是 Wi-Fi，不是藍牙"], ["打印機", "沒有列印"]] },
+    { s: "小欣在街上以手機的流動數據觀看網上串流影片", yes: [["DNS", "要找出影片伺服器的 IP 位址"], ["TCP/IP", "影片以數據包傳送"], ["緩衝", "未播放的部分暫存於緩衝區"]],
+      no: [["家用無線路由器", "她不在家，用的是流動數據"], ["下載整個影片到手機", "串流一邊下載一邊播放，毋須下載整個檔案"], ["SMTP", "沒有傳送電郵"]] },
+    { s: "電腦室的電腦把文件傳送到同一個 LAN 內的網絡打印機", yes: [["交換器", "同一 LAN 內按 MAC 位址轉送數據"], ["網絡界面卡", "電腦及打印機都要接上網絡"]],
+      no: [["數據機", "沒有經互聯網"], ["ISP", "沒有經互聯網"], ["HTTPS", "沒有瀏覽網頁"]] },
+    { s: "（延伸）家明以電郵程式（不是網頁版）寄出一封電郵", yes: [["SMTP", "用來傳送電郵"], ["DNS", "要找出郵件伺服器的 IP 位址"], ["TCP/IP", "電郵以數據包傳送"]],
+      no: [["POP3", "POP3 用於接收電郵，不是寄出"], ["藍牙", "沒有使用藍牙"]] },
+    { s: "子朗以藍牙耳機收聽手機內已下載的歌曲", yes: [["藍牙", "耳機以藍牙連接手機"]],
+      no: [["DNS", "沒有使用互聯網"], ["TCP/IP", "沒有經網絡傳送數據包"], ["網上串流服務", "歌曲已儲存在手機內"], ["數據機", "沒有連接 ISP"]] },
+    { s: "陳太在外以手機程式經互聯網遙控家中的智能冷氣機", yes: [["家中的無線路由器", "指令經互聯網到達家中路由器，再以 Wi-Fi 傳到冷氣機"], ["冷氣機的無線網絡連接", "物聯網裝置要能連接網絡"], ["TCP/IP", "指令以數據包經互聯網傳送"]],
+      no: [["藍牙", "她不在家，藍牙的距離太短"], ["SMTP", "沒有傳送電郵"]] },
+  ];
+  const STEPS = ["把數據分割成數據包並編號", "在每個數據包加上目的地 IP 位址", "路由器為數據包選擇路徑", "在目的地按編號重組數據包"];
+  const TCPIP = [["把數據分割成數據包並編號", "TCP"], ["在數據包加上發送端及目的地 IP 位址", "IP"], ["按編號把數據包重組", "TCP"], ["為數據包選擇經互聯網傳送的路徑", "IP"], ["要求重新傳送損壞的數據包", "TCP"]];
+  G.inv = [
+    () => { const c = pick(SCN); const yes = Math.random() < 0.5 && c.yes.length; const [it, why] = pick(yes ? c.yes : c.no);
+      return { prompt: `${c.s}。這個活動有沒有涉及<b>${it}</b>？`, input: { kind: "choice", opts: ["有", "沒有"] }, answer: yes ? "有" : "沒有", show: yes ? "有" : "沒有",
+        explain: [`${it}：${why}。`, "逐項問自己：這個活動的整個過程有沒有用到它？"] }; },
+    () => { let c, items; do { c = pick(SCN); const pool = shuffle([...c.yes.map((x) => [...x, true]), ...c.no.map((x) => [...x, false])]); items = pool.slice(0, 3); } while (!items.some((x) => x[2]));
+      const ans = comboOf(items.map((x) => x[2]));
+      return { prompt: `${c.s}。下列哪些涉及這個活動？<div class="stmts">${items.map((x, i) => `<div>(${i + 1}) ${x[0]}</div>`).join("")}</div>`, input: { kind: "choice", opts: comboOpts(ans) }, answer: ans, show: ans,
+        explain: items.map((x, i) => `(${i + 1}) ${x[0]}：${x[2] ? "✓ 涉及" : "✗ 不涉及"}，${x[1]}`) }; },
+    () => { const [j, a] = pick(TCPIP); return { prompt: `以下工作由 TCP 還是 IP 負責：<b>${j}</b>？`, input: { kind: "choice", opts: ["TCP", "IP"] }, answer: a, show: a,
+        explain: ["TCP：分割、編號、重組、要求重傳；IP：加上 IP 位址、選擇路徑（由路由器處理）。"] }; },
+    () => { const order = shuffle([0, 1, 2, 3]); const lab = (i) => `(${order.indexOf(i) + 1})`; const ans = [0, 1, 2, 3].map(lab).join(" → ");
+      const set = new Set(); let guard = 0; while (set.size < 3 && guard++ < 60) { const p = shuffle([0, 1, 2, 3]).map(lab).join(" → "); if (p !== ans) set.add(p); }
+      return { prompt: `把以下數據經互聯網傳送的步驟排成正確次序。<div class="stmts">${order.map((k, i) => `<div>(${i + 1}) ${STEPS[k]}</div>`).join("")}</div>`, input: { kind: "choice", opts: shuffle([ans, ...set]), mono: true }, answer: ans, show: ans,
+        explain: STEPS.map((s, i) => `${i + 1}. ${s}`).concat(["乙部「以數據包及 IP 的概念描述傳送過程」，按這四步作答。"]) }; },
+  ];
+
+  const HINTS = {
+    "IPv4 是否有效": [["數一數有幾組：要剛好四組，以「.」分隔。", "每組是 0 至 255 的十進制整數（8 位元）。", "有英文字母、負數、或大於 255 的都無效。"], "192.168.1.255 有效\n192.168.1.256 無效"],
+    "找出有效的 IPv4": [["逐個選項檢查組數及每組的數值。", "剛好四組，每組 0 至 255。"], ""],
+    "辨認位址種類": [["IPv4：四組十進制，以「.」分隔。", "IPv6：十六進制，以「:」分隔，可有「::」。", "MAC 位址：六組兩位十六進制。", "域名：登記名稱＋頂級域名；完整域名：再加主機名稱；URL：有協定及路徑。"], "example.com 域名\nwww.example.com 完整域名\nhttps://www.example.com/ URL"],
+    "位址長度與數目": [["IPv4：32 位元 ＝ 4 組 × 8 位元，共 2³² 個位址。", "IPv6：128 位元 ＝ 8 組 × 16 位元，共 2¹²⁸ 個位址。"], ""],
+    "IPv6 縮寫（延伸）": [["每組省略前導零（只省左邊）。", "一串連續為 0 的組以「::」代替，整個位址只可用一次。"], "2001:0000:0000:0f20:0000:0000:0000:0f10\n→ 2001:0:0:f20::f10"],
+    "URL 拆解": [["協定://完整域名:埠號碼/路徑", "完整域名 ＝ 主機名稱 . 登記名稱 . 頂級域名", "省略埠號碼時：HTTP 80，HTTPS 443。"], "https://www.abc.hk:8080/news/a.html\n協定 https；完整域名 www.abc.hk\n埠號碼 8080；路徑 /news/a.html"],
+    "要註冊多少個域名": [["刪去最左的主機名稱（www、shop、mail…）。", "數「登記名稱＋頂級域名」有幾個不同的組合。", "abc.com 與 abc.com.hk 是兩個不同的域名。"], "www.abc.com、mail.abc.com → abc.com（1 個）"],
+    "資料夾結構與 URL": [["路徑由根目錄「/」開始。", "每一層要是上一層內真的有的資料夾，次序不可倒轉。", "最後的檔案要在最後那個資料夾內。"], ""],
+    "預設設定與 DNS": [["HTTP 80、HTTPS 443；（延伸）DNS 53。", "沒有檔案名稱時，伺服器預設送出 index.html。", "DNS 把域名轉換為 IP 位址。"], ""],
+    "裝置功能": [["交換器：同一 LAN，按 MAC 位址。", "路由器：不同網絡之間，按 IP 位址，選擇路徑。", "數據機：信號轉換，連接 ISP。", "網絡接達點：提供 Wi-Fi。"], ""],
+    "網絡圖": [["由「互聯網」一端向內看。", "接 ISP 線路 → 數據機；接數據機及內部網絡 → 路由器；連接多部電腦 → 交換器；發出 Wi-Fi → 網絡接達點。"], "互聯網 — 數據機 — 路由器 — 交換器 — 電腦"],
+    "傳輸媒介": [["UTP：便宜、易裝，100 米內。", "光纖：最快、不受電磁干擾、可傳送較遠，但貴。", "微波：毋須佈線，要在視線範圍內。", "衛星：覆蓋最大；藍牙：短距離周邊裝置。"], ""],
+    "互聯網接達方法": [["專線：頻寬固定、最安全、最貴。", "寬頻：速度高、成本適中。", "流動數據：戶外、移動中使用。", "Wi-Fi 熱點：成本低、安全性最低。"], ""],
+    "無線網絡概念": [["2.4 GHz：較慢、較遠、干擾較多；5 GHz：較快、較近、干擾較少。", "漫遊：各接達點用相同 SSID。", "多人共用一個接達點，每人分得的頻寬較少。"], ""],
+    "有沒有涉及": [["把整個過程逐步想一次：找伺服器（DNS）→ 分割傳送（TCP/IP）→ 經哪些設備 → 用甚麼應用協定（HTTP、HTTPS、SMTP…）。", "沒有上網的活動，便不涉及 DNS、TCP/IP、ISP。"], ""],
+    "涉及哪些（選擇題）": [["逐項判斷，再選出正確的組合。"], ""],
+    "TCP 還是 IP": [["TCP：分割、編號、重組、重傳。", "IP：加上 IP 位址、選擇路徑。"], ""],
+    "傳送步驟排序": [["分割並編號 → 加上 IP 位址 → 路由器選路徑 → 在目的地重組。"], ""],
+  };
+  const hintHTML = (name) => { const h = HINTS[name]; if (!h) return "";
+    return `<h4>方法：${esc(name)}</h4><ol>${h[0].map(x => `<li>${esc(x)}</li>`).join("")}</ol>${h[1] ? `<div class="ex">例：${h[1].includes("\n") ? "\n" : ""}${esc(h[1])}</div>` : ""}`; };
+
+  const named = (group, names, fns) => fns.map((fn, i) => ({ group, name: names[i], fn }));
+  const ENTRIES = {
+    ip: named(null, ["IPv4 是否有效", "找出有效的 IPv4", "辨認位址種類", "位址長度與數目", "IPv6 縮寫（延伸）"], G.ip),
+    url: named(null, ["URL 拆解", "要註冊多少個域名", "資料夾結構與 URL", "預設設定與 DNS"], G.url),
+    dev: named(null, ["裝置功能", "網絡圖", "傳輸媒介", "互聯網接達方法", "無線網絡概念"], G.dev),
+    inv: named(null, ["有沒有涉及", "涉及哪些（選擇題）", "TCP 還是 IP", "傳送步驟排序"], G.inv),
+  };
+  const MODES = [
+    { id: "ip", name: "IP 位址", note: "判斷 IPv4 位址是否有效、分辨 IPv4／IPv6／MAC 位址／域名／URL，以及位址的長度和數目。", tips: "<b>提示：</b>IPv4 剛好四組，每組 0 至 255；IPv6 以「:」分隔，「::」只可用一次。" },
+    { id: "url", name: "域名與 URL", note: "拆解 URL、數要註冊多少個域名、按資料夾結構判斷 URL 是否有效。", tips: "<b>提示：</b>主機名稱（www、mail）不用另外註冊；路徑要逐層對應真實的資料夾。" },
+    { id: "dev", name: "設備與纜線", note: "網絡裝置的功能、網絡圖、傳輸媒介、互聯網接達方法及無線網絡概念。", tips: "<b>提示：</b>交換器在同一 LAN 內工作；連接不同網絡的是路由器。" },
+    { id: "inv", name: "涉及甚麼", note: "某活動涉及哪些設備及協定；TCP 與 IP 的分工；數據包傳送的步驟。", tips: "<b>提示：</b>把整個過程由頭到尾想一次，再逐個選項問「有沒有用到它」。" },
+  ];
+
+  // ---------- state ----------
+  const S = { hintOpen: false, mode: "ip", q: null, entry: null, n: 0, answered: false, right: 0, total: 0, streak: 0, best: 0, sel: null, bits: [], on: {} };
+  try { S.best = +localStorage.getItem("netlab-best") || 0; } catch (e) {}
+  try { const m = localStorage.getItem("netlab-mode"); if (MODES.some(x => x.id === m)) S.mode = m; } catch (e) {}
+  const hsh = location.hash.replace("#", ""); if (MODES.some(x => x.id === hsh)) S.mode = hsh;
+  // 題型篩選：每個類別各自記住已選的題型名稱
+  MODES.forEach(m => { S.on[m.id] = new Set(ENTRIES[m.id].map(e => e.name)); });
+  try { const saved = JSON.parse(localStorage.getItem("netlab-filter") || "{}");
+    Object.keys(saved).forEach(id => { if (!ENTRIES[id] || !Array.isArray(saved[id])) return; const names = new Set(ENTRIES[id].map(e => e.name));
+      const keep = saved[id].filter(n => names.has(n)); if (keep.length) S.on[id] = new Set(keep); }); } catch (e) {}
+  const saveFilter = () => { try { const o = {}; Object.keys(S.on).forEach(id => { o[id] = [...S.on[id]]; }); localStorage.setItem("netlab-filter", JSON.stringify(o)); } catch (e) {} };
+
+  const nav = $("modes");
+  MODES.forEach(m => { const b = document.createElement("button"); b.type = "button"; b.textContent = m.name; b.dataset.id = m.id;
+    b.addEventListener("click", () => { S.mode = m.id; try { localStorage.setItem("netlab-mode", m.id); } catch (e) {} renderNav(); renderFilter(); next(); }); nav.appendChild(b); });
+  function renderNav() { [...nav.children].forEach(b => b.setAttribute("aria-pressed", String(b.dataset.id === S.mode)));
+    const m = MODES.find(x => x.id === S.mode); $("mode-note").textContent = m.note; $("tips").innerHTML = m.tips; }
+
+  function renderCount() {
+    const all = ENTRIES[S.mode].length, on = S.on[S.mode].size; const el = $("fcount");
+    el.textContent = on === all ? `全部 ${all} 種題型` : `已選 ${on}／${all} 種`; el.classList.toggle("partial", on !== all);
+  }
+  function renderFilter() {
+    const box = $("fchips"); box.innerHTML = ""; const list = ENTRIES[S.mode]; const groups = [];
+    list.forEach(e => { let g = groups.find(x => x.name === e.group); if (!g) { g = { name: e.group, items: [] }; groups.push(g); } g.items.push(e); });
+    groups.forEach(g => {
+      const wrap = document.createElement("div"); wrap.className = "fgroup";
+      if (g.name) { const h = document.createElement("h3"); h.textContent = g.name; wrap.appendChild(h); }
+      const chips = document.createElement("div"); chips.className = "chips";
+      g.items.forEach(e => { const c = document.createElement("button"); c.type = "button"; c.className = "chip"; c.textContent = e.name;
+        c.setAttribute("aria-pressed", String(S.on[S.mode].has(e.name)));
+        c.addEventListener("click", () => { const set = S.on[S.mode]; set.has(e.name) ? set.delete(e.name) : set.add(e.name);
+          c.setAttribute("aria-pressed", String(set.has(e.name))); saveFilter(); renderCount(); afterFilter(); });
+        chips.appendChild(c); });
+      if (g.name && groups.length > 1) { const only = document.createElement("button"); only.type = "button"; only.className = "mini"; only.textContent = `只練「${g.name}」`;
+        only.addEventListener("click", () => { S.on[S.mode] = new Set(g.items.map(x => x.name)); saveFilter(); renderFilter(); afterFilter(); });
+        const head = wrap.querySelector("h3"); head.style.display = "flex"; head.style.alignItems = "center"; head.style.gap = "10px"; head.appendChild(only); }
+      wrap.appendChild(chips); box.appendChild(wrap);
+    });
+    renderCount();
+  }
+  function afterFilter() { // 目前題目的題型被移除、或之前沒有可選題型時，換一題
+    if (!S.on[S.mode].size) { showEmpty(); return; }
+    if (!S.q || !S.entry || !S.on[S.mode].has(S.entry.name)) next();
+  }
+  $("f-all").addEventListener("click", () => { S.on[S.mode] = new Set(ENTRIES[S.mode].map(e => e.name)); saveFilter(); renderFilter(); afterFilter(); });
+  $("f-none").addEventListener("click", () => { S.on[S.mode] = new Set(); saveFilter(); renderFilter(); afterFilter(); });
+
+  function renderScore() { $("sc-right").textContent = S.right; $("sc-total").textContent = S.total; $("sc-streak").textContent = S.streak; $("sc-best").textContent = S.best; }
+
+  function showEmpty() {
+    S.q = null; S.entry = null; $("qtype").textContent = ""; $("qno").textContent = "";
+    $("prompt").innerHTML = `<p class="empty">請在上方「題型篩選」選擇至少一種題型。</p>`; $("input-area").innerHTML = ""; $("feedback").hidden = true;
+    $("btn-check").disabled = true; $("btn-show").disabled = true; $("btn-next").disabled = true; $("filter").open = true;
+    $("btn-hint").hidden = true; $("hintbox").hidden = true;
+  }
+
+  function next() {
+    const pool = ENTRIES[S.mode].filter(e => S.on[S.mode].has(e.name));
+    if (!pool.length) { showEmpty(); return; }
+    let e = pick(pool); if (pool.length > 1 && S.entry && e.name === S.entry.name) e = pick(pool.filter(x => x.name !== S.entry.name));
+    S.entry = e; S.q = e.fn(); S.n++; S.answered = false; S.sel = null; $("btn-next").disabled = false;
+    const q = S.q; $("qtype").textContent = e.name; $("qno").textContent = `第 ${S.n} 題`;
+    $("hintbox").innerHTML = hintHTML(e.name); $("btn-hint").hidden = !HINTS[e.name]; S.hintOpen = false; setHint(false); updNext();
+    $("prompt").innerHTML = q.prompt + (q.note ? `<p style="font-size:14px;color:var(--muted);margin:8px 0 0">${q.note}</p>` : "");
+    const area = $("input-area"); area.innerHTML = ""; $("feedback").hidden = true; $("btn-check").disabled = false; $("btn-show").disabled = false;
+    if (q.input.kind === "text") {
+      const row = document.createElement("div"); row.className = "answer-row";
+      row.innerHTML = `<label for="ans" class="bitval">你的答案</label><input id="ans" type="text" autocomplete="off" spellcheck="false" placeholder="${q.input.ph || ""}">`;
+      area.appendChild(row); const inp = $("ans"); inp.addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); S.answered ? next() : check(); } }); inp.focus({ preventScroll: true });
+    } else if (q.input.kind === "bits") {
+      const w = q.input.w; S.bits = Array(w).fill(0);
+      const wt = q.input.weights || Array.from({ length: w }, (_, i) => String(2 ** (w - 1 - i)));
+      const chunks = []; for (let s0 = 0; s0 < w; s0 += 8) chunks.push([s0, Math.min(w, s0 + 8)]); // 多於 8 位元時分行顯示，每行 8 位
+      const gap = (i, s0) => (i > s0 && (w - i) % 4 === 0 ? " gap" : "");
+      const box = document.createElement("div"); box.className = "bitrow" + (w > 8 ? " wide" : "");
+      box.innerHTML = chunks.map(([s0, e0]) => { const idx = []; for (let i = s0; i < e0; i++) idx.push(i);
+        return `<div class="chunk"><div class="bits" role="group" aria-label="位元開關 ${s0 + 1}–${e0}">${idx.map(i => `<button type="button" class="bit${gap(i, s0)}" data-i="${i}" aria-label="第 ${i + 1} 位" aria-pressed="false">0</button>`).join("")}</div>
+        <div class="weights" aria-hidden="true">${idx.map(i => `<span class="${gap(i, s0).trim()}">${wt[i]}</span>`).join("")}</div></div>`; }).join("") + `<div class="bitval" id="bitval"></div>`;
+      area.appendChild(box);
+      box.querySelectorAll(".bit").forEach(btn => btn.addEventListener("click", () => { if (S.answered) return; const i = +btn.dataset.i; S.bits[i] ^= 1;
+        btn.classList.toggle("on", !!S.bits[i]); btn.textContent = S.bits[i]; btn.setAttribute("aria-pressed", String(!!S.bits[i])); updBits(); }));
+      updBits();
+    } else {
+      const box = document.createElement("div"); box.className = "choices" + (q.input.mono ? " monoc" : "");
+      q.input.opts.forEach(o => { const b = document.createElement("button"); b.type = "button"; b.className = "choice"; if (q.input.mono) b.style.fontFamily = "var(--mono)";
+        b.textContent = o; b.setAttribute("aria-pressed", "false");
+        b.addEventListener("click", () => { if (S.answered) return; S.sel = o; box.querySelectorAll(".choice").forEach(x => x.setAttribute("aria-pressed", String(x === b))); });
+        box.appendChild(b); });
+      area.appendChild(box);
+    }
+  }
+  function updBits() { const s = S.bits.join(""); const el = $("bitval"); if (el) el.textContent = `目前：${grp(s)}`; }
+
+  function current() { const q = S.q; if (q.input.kind === "text") return ($("ans").value || "").trim(); if (q.input.kind === "bits") return S.bits.join(""); return S.sel; }
+
+  function finish(correct, revealed) {
+    S.answered = true; $("btn-check").disabled = true; $("btn-show").disabled = true;
+    if (!revealed) { S.total++; if (correct) { S.right++; S.streak++; if (S.streak > S.best) { S.best = S.streak; try { localStorage.setItem("netlab-best", S.best); } catch (e) {} } } else S.streak = 0; }
+    else S.streak = 0;
+    renderScore();
+    const fb = $("feedback"); fb.className = "feedback " + (correct ? "good" : "bad"); fb.hidden = false;
+    const head = revealed ? "答案" : correct ? "答對了" : "未答對";
+    fb.innerHTML = `<div class="verdict">${head}：${S.q.show}</div><ol class="steps">${S.q.explain.map(x => `<li>${x}</li>`).join("")}</ol>`;
+    updNext(); $("btn-next").focus({ preventScroll: true });
+  }
+  function check() {
+    if (S.answered || !S.q) return; const a = current();
+    if (a === null || a === "") { const fb = $("feedback"); fb.className = "feedback bad"; fb.hidden = false; fb.innerHTML = `<div class="verdict">請先作答，或按「顯示答案」。</div>`; return; }
+    const q = S.q; let ok;
+    if (q.input.kind === "text") { const g = norm(a).replace(/,/g, ""); ok = [q.answer, ...(q.accept || [])].some(x => g === norm(x));
+      if (!ok && q.tol && /^-?\d+(\.\d+)?$/.test(g)) ok = Math.abs(parseFloat(g) - q.num) <= q.tol; } else ok = a === q.answer;
+    finish(ok, false);
+  }
+  function setHint(open) { $("hintbox").hidden = !open; $("btn-hint").setAttribute("aria-expanded", String(open)); }
+  $("btn-hint").addEventListener("click", () => { S.hintOpen = $("hintbox").hidden; setHint(S.hintOpen); });
+  $("btn-check").addEventListener("click", check);
+  $("btn-show").addEventListener("click", () => { if (!S.answered && S.q) finish(false, true); });
+  // 防止誤按：未作答時按鈕是「跳過此題」，要按兩次才會換題；作答後才變成「下一題」
+  let skipTimer = null;
+  function updNext(confirming) {
+    const b = $("btn-next"); clearTimeout(skipTimer); b.classList.remove("primary", "ghost", "skip", "confirm");
+    if (S.answered) { b.classList.add("primary"); b.textContent = "下一題 →"; }
+    else if (confirming) { b.classList.add("ghost", "confirm"); b.textContent = "再按一次確認跳過"; skipTimer = setTimeout(() => updNext(false), 3000); }
+    else { b.classList.add("ghost", "skip"); b.textContent = "跳過此題"; }
+  }
+  $("btn-next").addEventListener("click", () => {
+    if (S.answered) return next();
+    if ($("btn-next").classList.contains("confirm")) return next();
+    updNext(true);
+  });
+
+  renderNav(); renderFilter(); renderScore(); next();
+})();
+</script>
+
+</body></html>

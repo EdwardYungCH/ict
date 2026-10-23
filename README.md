@@ -1,17 +1,14 @@
-# ICT 自學練習室
+# ICT 練習室
 
-HKDSE ICT（中四 · 必修 A a – A c）自學練習網站。
+HKDSE ICT 自學練習網頁（純 HTML，無需伺服器）。
 
-## 內容
+| 資料夾 | 練習室 | 課題 |
+|---|---|---|
+| `bits/` | 位元練習室 | A1 |
+| `network/` | 網絡練習室 | C1 |
+| `dryrun/` | 空運行練習室 | D1、D2 |
+| `python/` | Python 程式練習室 | D2 |
+| `web-security/` | 網頁與保安練習室 | C2 |
+| `algo-ds/` | 算法與數據結構練習室 | 選修 C |
 
-- [`index.html`](index.html) — 主頁，連結至各練習室
-- [`concept-lab.html`](concept-lab.html) — 概念練習室：A a–A c 概念選擇題（每回合 10 題）及中英詞彙卡
-- [`bit-lab.html`](bit-lab.html) — 位元練習室：進制互換、二進制補碼、位元計算、字符編碼、奇偶檢驗及檢查數位。二進制補碼有 17 種題型（包括加法與溢出誤差、4 位元及 8 位元），每個類別都可以篩選題型，每題可按「提示」查看計算方法
-
-題目即時生成，可重複練習，答題後會顯示解說。成績只保存在使用者自己的裝置上（`localStorage`），不會上傳任何資料。
-
-## 技術說明
-
-純靜態 HTML/CSS/JavaScript，無需建構工具，可直接以瀏覽器開啟，或透過 GitHub Pages 發佈：
-
-Settings → Pages → Source 選擇 `Deploy from a branch`，Branch 選擇 `main`，資料夾選擇 `/ (root)`。
+開啟 GitHub Pages（Settings → Pages → Deploy from branch → `main` / root）後，首頁為 `index.html`。

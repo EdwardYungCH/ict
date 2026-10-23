@@ -1,0 +1,1161 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>網頁與保安練習室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --bg:#EEF2F0; --surface:#FFFFFF; --sunk:#E3E9E6; --ink:#17262A; --muted:#566A6E; --line:#C9D4D0;
+  --accent:#0E7466; --accent-ink:#FFFFFF; --led:#E39B10; --led-ink:#1A1204;
+  --hl:rgba(227,155,16,.18); --str:#9A4A06; --tg:#1F5FA8; --at:#7A3E9D;
+  --good:#1F7A3A; --good-bg:#E3F3E7; --bad:#B3261E; --bad-bg:#FBE7E5;
+  --pub:#D6ECF7; --pub-ink:#164A6B; --pub-line:#5C9CC4; --priv:#FBE6C4; --priv-ink:#6E4306; --priv-line:#D39A3A;
+  --paper:#FFFFFF; --warn-bg:#FFF4D9; --warn-line:#E3B04B;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1618; --surface:#162226; --sunk:#1D2C31; --ink:#E2ECE9; --muted:#95A9AB; --line:#2C3E43;
+    --accent:#35BFA9; --accent-ink:#0B1413; --led:#F4B23C; --led-ink:#1A1204;
+    --hl:rgba(244,178,60,.16); --str:#F2B880; --tg:#8CC4F2; --at:#D7A8F0;
+    --good:#5BD17E; --good-bg:#15301F; --bad:#FF8A80; --bad-bg:#3A1A18;
+    --pub:#1E4157; --pub-ink:#CDE7F8; --pub-line:#4F8DB5; --priv:#4A3514; --priv-ink:#FBE0B2; --priv-line:#C08A2E;
+    --paper:#FFFFFF; --warn-bg:#3A3018; --warn-line:#B88A2E; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1618; --surface:#162226; --sunk:#1D2C31; --ink:#E2ECE9; --muted:#95A9AB; --line:#2C3E43;
+  --accent:#35BFA9; --accent-ink:#0B1413; --led:#F4B23C; --led-ink:#1A1204;
+  --hl:rgba(244,178,60,.16); --str:#F2B880; --tg:#8CC4F2; --at:#D7A8F0;
+  --good:#5BD17E; --good-bg:#15301F; --bad:#FF8A80; --bad-bg:#3A1A18;
+  --pub:#1E4157; --pub-ink:#CDE7F8; --pub-line:#4F8DB5; --priv:#4A3514; --priv-ink:#FBE0B2; --priv-line:#C08A2E;
+  --paper:#FFFFFF; --warn-bg:#3A3018; --warn-line:#B88A2E; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;margin:0;overflow-x:hidden}
+.wrap{max-width:900px;margin:0 auto;padding-inline:16px;padding-block:24px 48px;display:flex;flex-direction:column;gap:20px}
+.wrap>*,.card>*{min-width:0}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+h1{font-size:30px;font-weight:900;margin:0;letter-spacing:.02em;text-wrap:balance}
+h1 .bits{display:inline-block;white-space:nowrap;font-family:var(--mono);font-weight:600;color:var(--accent);font-size:.7em;margin-left:.4em;letter-spacing:.04em}
+.score{display:flex;gap:16px;font-variant-numeric:tabular-nums}
+.score div{display:flex;flex-direction:column;align-items:flex-end}
+.score b{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1.1}
+.score span{font-size:12px;color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav button{font:inherit;font-size:15px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+nav button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.topic-note{font-size:14px;color:var(--muted);margin:-6px 0 0}
+.warnbar{border:1px solid var(--warn-line);border-left-width:5px;background:var(--warn-bg);border-radius:10px;padding:10px 14px;font-size:14px;line-height:1.7}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.qhead{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.qtype{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--accent)}
+.qno{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.qright{display:flex;align-items:center;gap:12px;margin-left:auto}
+.hintbtn{font:inherit;font-size:14px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--led);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.hintbtn::before{content:"?";display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--led);color:var(--led-ink);font-family:var(--mono);font-size:12px}
+.hintbtn[aria-expanded="true"]{background:var(--led);color:var(--led-ink)}
+.hintbtn[aria-expanded="true"]::before{background:var(--led-ink);color:var(--led)}
+.hintbox{border:1px solid var(--led);border-left-width:4px;border-radius:10px;padding:12px 14px;background:var(--sunk);font-size:15px;line-height:1.7;display:flex;flex-direction:column;gap:6px}
+.hintbox h4{margin:0;font-size:13px;letter-spacing:.06em;color:var(--muted)}
+.hintbox ol,.hintbox ul{margin:0;padding-left:1.3em}
+.hintbox p{margin:0}
+.prompt{font-size:17px;line-height:1.7;display:flex;flex-direction:column;gap:10px;min-width:0}
+.prompt p{margin:0}
+.mono{font-family:var(--mono);font-weight:600;letter-spacing:.02em}
+.small{font-size:14px;color:var(--muted)}
+.scn{background:var(--sunk);border-radius:10px;padding:12px 14px;line-height:1.75}
+.files{font-size:14px;color:var(--muted)}
+.files{overflow-wrap:anywhere}
+.files code{font-family:var(--mono);color:var(--ink);background:var(--sunk);border-radius:5px;padding:0 5px;white-space:nowrap}
+code.k{font-family:var(--mono);font-size:.92em;background:var(--sunk);border-radius:5px;padding:0 5px}
+/* 程式碼 */
+.code{font-family:var(--mono);font-size:14px;line-height:1.65;background:var(--sunk);border-radius:10px;padding:10px 0;overflow-x:auto;max-width:100%}
+.code .ln{display:flex;white-space:pre;padding-right:14px;min-width:fit-content}
+.code .no{width:2.6em;flex:0 0 auto;text-align:right;padding-right:.9em;color:var(--muted);user-select:none;font-size:12px;opacity:.75;line-height:inherit}
+.tg{color:var(--tg);font-weight:600}.at{color:var(--at)}.st{color:var(--str)}.cm{color:var(--muted);font-style:italic}
+/* 作答 */
+.answer-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.answer-row label,.flab{font-size:14px;color:var(--muted)}
+input[type=text],input[type=number]{font-family:var(--mono);font-size:19px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:min(320px,100%)}
+input.sm{font-size:17px;padding:6px 10px;width:6.5em;text-align:center}
+input.ok{border-color:var(--good);background:var(--good-bg)}
+input.no{border-color:var(--bad);background:var(--bad-bg)}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:8px}
+.choices.one{grid-template-columns:1fr}
+.choice{font:inherit;text-align:left;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;min-width:0;line-height:1.55}
+.choice[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.choice.pre{font-family:var(--mono);font-size:13px;white-space:pre;overflow-x:auto;line-height:1.5}
+.choice.ok{border-color:var(--good);background:var(--good-bg)}
+.choice.no{border-color:var(--bad);background:var(--bad-bg)}
+.choices.wide{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.qpart{display:flex;flex-direction:column;gap:8px}
+.qpart h3{margin:0;font-size:15px}
+.btn{font:inherit;font-weight:700;padding:10px 18px;border-radius:10px;border:1px solid var(--accent);cursor:pointer}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#btn-next{margin-left:auto}
+#btn-next.skip{border-color:var(--line);color:var(--muted);font-weight:500}
+#btn-next.confirm{border-color:var(--bad);color:var(--bad);font-weight:700}
+.feedback{border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.feedback.good{background:var(--good-bg)}
+.feedback.bad{background:var(--bad-bg)}
+.feedback .verdict{font-weight:700}
+.feedback.good .verdict{color:var(--good)}
+.feedback.bad .verdict{color:var(--bad)}
+.feedback p{margin:0}
+.feedback .code{background:var(--surface)}
+.iolab{font-size:13px;color:var(--muted);margin:0 0 2px}
+.steps{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.steps li{line-height:1.65}
+.why{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:3px;font-size:15px}
+.tips{font-size:14px;color:var(--muted);border-top:1px dashed var(--line);padding-top:14px}
+.tips b{color:var(--ink)}
+/* 篩選 */
+.filter{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.filter summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:10px 14px;font-weight:700;font-size:15px}
+.filter summary::-webkit-details-marker{display:none}
+.filter summary::after{content:"▾";color:var(--muted);transition:transform .15s}
+.filter[open] summary::after{transform:rotate(180deg)}
+.fcount{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--muted);margin-left:auto}
+.fcount.partial{color:var(--accent);font-weight:600}
+.fbody{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.fact{display:flex;flex-wrap:wrap;gap:8px}
+.fgroup{display:flex;flex-direction:column;gap:6px}
+.fgroup h3{margin:0;font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:14px;line-height:1.4;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sunk);border-color:var(--accent);color:var(--ink);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip[aria-pressed="true"]::before{content:"✓ ";color:var(--accent);font-weight:700}
+.mini{font:inherit;font-size:13px;padding:4px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer}
+.mini:disabled{opacity:.45;cursor:default}
+.fhint{margin:0;font-size:12px;color:var(--muted)}
+.empty{color:var(--muted);font-size:16px}
+/* HTML 實驗枱 */
+.lab{display:grid;grid-template-columns:1fr;gap:12px;min-width:0}
+@media (min-width:760px){.lab{grid-template-columns:1fr 1fr}}
+.ed-wrap{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ed-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
+textarea.ed{display:block;font-family:var(--mono);font-size:14px;line-height:1.6;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;min-height:300px;resize:vertical;white-space:pre;overflow-x:auto;tab-size:4}
+.pv{display:flex;flex-direction:column;min-width:0}
+.pvbar{display:flex;align-items:center;gap:10px;background:var(--sunk);border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;padding:6px 10px;font-size:12px;color:var(--muted);min-height:31px}
+.dots{display:inline-flex;gap:4px}.dots i{width:9px;height:9px;border-radius:50%;background:var(--line);display:block}
+.pv iframe,.ropt iframe,.shot iframe{display:block;width:100%;border:1px solid var(--line);background:var(--paper)}
+.pv iframe{height:300px;border-radius:0 0 10px 10px}
+.pvnote{margin:6px 0 0;font-size:12px;color:var(--muted);line-height:1.5}
+.shot{max-width:100%}
+.shot iframe{border-radius:10px}
+/* 看代碼選顯示 */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:10px}
+.ropt{border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:8px;cursor:pointer;display:flex;flex-direction:column;gap:6px;min-width:0}
+.ropt .lt{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--muted)}
+.ropt iframe{pointer-events:none;border-radius:6px}
+.ropt[aria-checked="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.ropt[aria-checked="true"] .lt{color:var(--accent)}
+.ropt.ok{border-color:var(--good);background:var(--good-bg)}
+.ropt.no{border-color:var(--bad);background:var(--bad-bg)}
+/* 密碼匙 */
+.keys{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));gap:8px}
+.kc{font:inherit;font-size:14px;line-height:1.35;display:flex;align-items:center;gap:8px;text-align:left;padding:9px 10px;border-radius:10px;cursor:grab;border:1px solid;min-width:0}
+.kc.pub{background:var(--pub);color:var(--pub-ink);border-color:var(--pub-line)}
+.kc.priv{background:var(--priv);color:var(--priv-ink);border-color:var(--priv-line)}
+.kc[aria-pressed="true"]{box-shadow:0 0 0 3px var(--led)}
+.kc.used{opacity:.5}
+.kc svg{flex:0 0 auto}
+.slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px}
+.slot{font:inherit;display:flex;flex-direction:column;gap:6px;align-items:stretch;text-align:left;padding:10px;border-radius:12px;border:2px dashed var(--line);background:var(--bg);color:var(--ink);cursor:pointer;min-height:88px}
+.slot .sl{font-size:13px;font-weight:700;color:var(--muted)}
+.slot .sv{font-size:14px;color:var(--muted)}
+.slot.drag{border-color:var(--accent);background:var(--sunk)}
+.slot .kc{cursor:pointer}
+.slot.ok{border-style:solid;border-color:var(--good);background:var(--good-bg)}
+.slot.no{border-style:solid;border-color:var(--bad);background:var(--bad-bg)}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:14px;color:var(--muted)}
+.flow b{color:var(--ink)}
+/* 次序 */
+.seq{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;counter-reset:s}
+.seq li button{font:inherit;width:100%;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--accent);background:var(--sunk);color:var(--ink);cursor:pointer;line-height:1.55}
+.seq li button::before{counter-increment:s;content:counter(s);flex:0 0 auto;display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-family:var(--mono);font-weight:700;font-size:13px}
+.seq .ph{font-size:14px;color:var(--muted);border:1px dashed var(--line);border-radius:10px;padding:10px 12px}
+.seq li.ok button{border-color:var(--good);background:var(--good-bg)}
+.seq li.no button{border-color:var(--bad);background:var(--bad-bg)}
+.pool{display:flex;flex-direction:column;gap:6px}
+.pool .choice:disabled{opacity:.4;cursor:default}
+/* 能／不能、規則 */
+.tg-rows{display:flex;flex-direction:column;gap:8px}
+.tg-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;justify-content:space-between;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.tg-row .tx{flex:1 1 220px;min-width:0;line-height:1.55}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;flex:0 0 auto}
+.seg button{font:inherit;font-size:14px;padding:5px 14px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.tg-row.ok{border-color:var(--good);background:var(--good-bg)}
+.tg-row.no{border-color:var(--bad);background:var(--bad-bg)}
+.tg-row .rs{font-size:13px;color:var(--muted);flex-basis:100%}
+.pwdbox{font-family:var(--mono);font-size:20px;font-weight:600;background:var(--sunk);border-radius:8px;padding:4px 12px;width:fit-content;max-width:100%;overflow-wrap:anywhere}
+.prof{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:15px}
+.prof b{font-family:var(--mono)}
+/* 工具 */
+.tool{display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);border-radius:12px;padding:12px;min-width:0}
+.tool h4{margin:0;font-size:15px}
+.trow{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.trow label{font-size:14px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tool textarea{font-family:var(--mono);font-size:16px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;min-height:3.2em;resize:vertical}
+.out{font-family:var(--mono);font-size:16px;background:var(--sunk);border-radius:8px;padding:8px 12px;overflow-wrap:anywhere;min-height:2.4em;white-space:pre-wrap}
+.stepper{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--muted)}
+.stepper button{font:inherit;font-family:var(--mono);font-size:18px;font-weight:600;width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.stepper b{font-family:var(--mono);font-size:18px;color:var(--ink);min-width:2ch;text-align:center}
+.atab{overflow-x:auto;max-width:100%}
+.atab table{border-collapse:collapse;font-family:var(--mono);font-size:13px}
+.atab td,.atab th{border:1px solid var(--line);padding:2px 5px;text-align:center;min-width:1.7em}
+.atab th{background:var(--sunk);font-weight:500;color:var(--muted);font-family:var(--sans);font-size:12px;white-space:nowrap}
+.res{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:15px;align-items:baseline}
+.res dt{color:var(--muted);font-size:14px}
+.res dd{margin:0;font-family:var(--mono);overflow-wrap:anywhere}
+.rlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.rlist li{display:flex;gap:10px;align-items:baseline;line-height:1.55}
+.rlist .mk{flex:0 0 auto;font-family:var(--mono);font-weight:700;width:1.4em;text-align:center}
+.rlist .y{color:var(--good)}.rlist .n{color:var(--bad)}.rlist .z{color:var(--muted)}
+.habits{margin:0;padding-left:1.2em;font-size:14px;color:var(--muted)}
+.sci{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:15px;color:var(--muted)}
+@media (max-width:480px){h1{font-size:24px}.prompt{font-size:16px}.card{padding:18px 14px 16px}.score{gap:12px}.score b{font-size:19px}textarea.ed{min-height:220px}.pv iframe{height:240px}}
+@media (prefers-reduced-motion:reduce){.filter summary::after{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">HKDSE ICT · 必修 C c / C d</span>
+      <h1>網頁與保安練習室<span class="bits">&lt;html&gt;</span></h1>
+    </div>
+    <div class="score" aria-live="polite">
+      <div><b id="sc-right">0</b><span>答對</span></div>
+      <div><b id="sc-total">0</b><span>已答</span></div>
+      <div><b id="sc-streak">0</b><span>連續答對</span></div>
+      <div><b id="sc-best">0</b><span>最佳紀錄</span></div>
+    </div>
+  </header>
+
+  <nav id="modes" aria-label="練習類別"></nav>
+  <p class="topic-note" id="mode-note"></p>
+  <div class="warnbar" id="pwd-warn" hidden><b>只用虛構的密碼練習。</b>不要輸入你真正使用的任何密碼。本頁不會儲存、記錄或傳送你輸入的內容；重新載入頁面後內容便會消失。</div>
+
+  <details class="filter" id="filter">
+    <summary><span>題型篩選</span><span class="fcount" id="fcount"></span></summary>
+    <div class="fbody">
+      <div class="fact"><button type="button" class="mini" id="f-all">全選</button><button type="button" class="mini" id="f-none">全部取消</button></div>
+      <div id="fchips"></div>
+      <p class="fhint">點按題型可加入或移除。只會出已選的題型，選擇會記在這部裝置上。每題的情境及數值都是隨機產生的。</p>
+    </div>
+  </details>
+
+  <section class="card" id="card">
+    <div class="qhead"><span class="qtype" id="qtype"></span><div class="qright"><span class="qno" id="qno"></span><button class="hintbtn" id="btn-hint" type="button" aria-expanded="false" aria-controls="hintbox">提示：方法</button></div></div>
+    <div class="hintbox" id="hintbox" hidden></div>
+    <div class="prompt" id="prompt"></div>
+    <div id="input-area"></div>
+    <div class="actions">
+      <button class="btn primary" id="btn-check" type="button">核對答案</button>
+      <button class="btn ghost" id="btn-show" type="button">顯示答案</button>
+      <button class="btn ghost skip" id="btn-next" type="button">跳過此題</button>
+    </div>
+    <div id="feedback" aria-live="polite" hidden></div>
+    <div class="tips" id="tips"></div>
+  </section>
+
+  <details class="filter" id="explorer" hidden>
+    <summary><span id="ex-title"></span></summary>
+    <div class="fbody" id="explorer-body"></div>
+  </details>
+
+  <p class="topic-note">本頁的 HTML 寫法：標記及屬性用小寫、屬性值用雙引號、每層縮排 4 個空格、長度寫單位 px。DSE 不考默寫 HTML，要讀得懂、會預測顯示效果。HTTP／HTTPS、URL 在「網絡練習室」練習。</p>
+</div>
+
+<script>
+(() => {
+/*GEN:BEGIN*/
+const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const coin = (p = 0.5) => Math.random() < p;
+const J = (...a) => a.join("\n");
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const I4 = "    ";
+const NAMES = ["小敏", "志强", "小麗", "小明", "家明", "一心", "嘉欣", "詠詩", "俊傑", "子晴", "芝芝", "志健"];
+const two = () => { const a = shuffle(NAMES); return [a[0], a[1]]; };
+const kc = (s) => `<code class="k">${esc(s)}</code>`;
+
+// =================== 虛擬資料夾（網頁與這些檔案放在同一資料夾） ===================
+const svgURI = (s) => "data:image/svg+xml," + encodeURIComponent(s);
+const FILES = {
+  "orange.png": svgURI('<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="110" r="80" fill="#f59a1b"/><circle cx="72" cy="84" r="16" fill="#ffc46b" opacity=".7"/><rect x="96" y="20" width="8" height="18" rx="3" fill="#6b4a1e"/><path d="M104 34c8-14 24-20 38-15-7 13-23 20-38 15z" fill="#3a8a2e"/></svg>'),
+  "apple.png": svgURI('<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" width="200" height="200" viewBox="0 0 200 200"><path d="M100 62c-20-14-72-12-72 42 0 50 34 82 56 82 8 0 10-4 16-4s8 4 16 4c22 0 56-32 56-82 0-54-52-56-72-42z" fill="#d93a2b"/><path d="M100 62c0-16 4-30 14-42" stroke="#6b4a1e" stroke-width="7" fill="none"/><path d="M106 40c10-18 30-22 44-16-8 16-28 22-44 16z" fill="#3a8a2e"/></svg>'),
+  "logo.png": svgURI('<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" width="240" height="120" viewBox="0 0 240 120"><rect width="240" height="120" rx="18" fill="#1f5fa8"/><text x="120" y="80" font-family="Arial,sans-serif" font-size="54" font-weight="700" fill="#ffffff" text-anchor="middle">ICT</text></svg>'),
+};
+const PAGES = {
+  "A.html": J("<h1>這是第一個HTML檔案</h1>", "<p>第一行</p>", "<p>第二行</p>", "<p>第三行</p>"),
+  "B.html": J("<h1>This is the second HTML file</h1>", "<p>First Row</p>", "<p>Second Row</p>", "<p>Third Row</p>"),
+};
+const FILE_NAMES = ["orange.png", "apple.png", "logo.png", "A.html", "B.html"];
+const filesNote = () => `<p class="files">與網頁放在同一資料夾的檔案：${FILE_NAMES.map((f) => `<code>${f}</code>`).join(" ")}</p>`;
+
+// =================== 預覽：把代碼變成 sandbox iframe 的 srcdoc ===================
+// 不執行 script；不載入外部資源；只有「同一頁的鎖定點」超連結會跳轉。
+const HEADX = "<base href=\"about:srcdoc\"><meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; img-src data:; style-src 'unsafe-inline'; frame-src about:\">";
+const URL_ATTRS = ["src", "href", "data", "action", "formaction", "poster", "background", "xlink:href", "ping", "cite", "longdesc", "manifest", "codebase", "archive", "usemap", "lowsrc", "dynsrc", "icon"];
+function subDoc(name) { return PAGES[name] ? buildDoc(PAGES[name]).doc : buildDoc('<p style="font-family:sans-serif;color:#666666">找不到網頁：' + esc(name) + "</p>").doc; }
+function sanitize(code) {
+  let c = String(code); const notes = [];
+  if (/<script\b/i.test(c)) notes.push("已略去 <script>：本課不教 JavaScript，預覽亦不會執行程式。");
+  c = c.replace(/<script\b[\s\S]*?(?:<\/script\s*>|$)/gi, "");
+  c = c.replace(/<\/?(?:link|meta|base|object|embed|applet|param|portal)\b[^>]*>/gi, "");
+  c = c.replace(/@import/gi, "@x-import").replace(/url\s*\(/gi, "x-url(");
+  let ext = false;
+  c = c.replace(/<([a-zA-Z][\w-]*)(\s[^>]*)?>/g, (m, tag, attrs) => {
+    if (!attrs) return m; const t = tag.toLowerCase();
+    attrs = attrs.replace(/(\s)([^\s"'<>\/=]+)(\s*=\s*)("[^"]*"|'[^']*'|[^\s"'>]+)/g, (mm, sp, name, eq, val) => {
+      const n = name.toLowerCase(), v = (/^["']/.test(val) ? val.slice(1, -1) : val).trim();
+      if (n === "srcdoc" || n === "srcset" || /^on/.test(n)) return sp + "data-x-" + n + eq + val;
+      if (n === "href" && (t === "a" || t === "area")) { if (v.startsWith("#")) return mm; ext = true; return sp + 'href="#__link" data-x-href' + eq + val; }
+      if (n === "src" && (t === "img" || t === "image" || t === "input")) { if (FILES[v]) return sp + 'src="' + FILES[v] + '"'; return /^[a-z][\w+.-]*:|^\/\//i.test(v) ? sp + 'src="x-blocked.png"' : mm; }
+      if (n === "src" && (t === "iframe" || t === "frame")) return sp + 'srcdoc="' + esc(subDoc(v)) + '"';
+      if (URL_ATTRS.includes(n)) return sp + "data-x-" + n + eq + val;
+      return mm;
+    });
+    return "<" + tag + attrs + ">";
+  });
+  if (ext) notes.push("預覽中只有連到同一頁鎖定點（#…）的超連結會跳轉；連到其他網頁或網站的超連結不會開啟。");
+  return { code: c, notes };
+}
+function buildDoc(code) {
+  const s = sanitize(code); let c = s.code, mode;
+  const hasDT = /<!doctype/i.test(c), full = hasDT || /<html[\s>]/i.test(c);
+  if (!full) { mode = "snippet"; c = "<!DOCTYPE html>\n<html><head>" + HEADX + "</head><body>\n" + c + "\n</body></html>"; }
+  else {
+    mode = hasDT ? "std" : "quirks";
+    if (/<head(\s[^>]*)?>/i.test(c)) c = c.replace(/<head(\s[^>]*)?>/i, (m) => m + HEADX);
+    else if (/<html(\s[^>]*)?>/i.test(c)) c = c.replace(/<html(\s[^>]*)?>/i, (m) => m + HEADX);
+    else c = c.replace(/<!doctype[^>]*>/i, (m) => m + HEADX);
+  }
+  return { doc: c, mode, notes: s.notes };
+}
+
+// =================== 看代碼選顯示：模板 ===================
+// 每個模板傳回 { codes：[答案, 干擾項 ×3]（全部由瀏覽器渲染）, h：預覽高度, explain }
+const FMT = { b: "粗體", i: "斜體", u: "底線", sup: "上標", sub: "下標" };
+function seeSpace() {
+  if (coin()) {
+    const [a, b, c, d] = pick([["天氣", "晴朗", "溫度", "28 度"], ["Good", "morning", "Class", "4A"], ["ICT", "真好玩", "我們", "一起學"], ["Hello", "World", "HTML", "is fun"]]);
+    const s1 = " ".repeat(R(4, 7)), s2 = " ".repeat(R(3, 5));
+    return { h: 84, codes: [`<p>${a}${s1}${b}\n${c}${s2}${d}</p>`, `<pre>${a}${s1}${b}\n${c}${s2}${d}</pre>`, `<p>${a} ${b}<br>\n${c} ${d}</p>`, `<p>${a}${b}${c}${d}</p>`],
+      explain: ["在 <p> 內，連續多個空格只顯示為一個空格，換行（Enter）亦只顯示為一個空格（教科書 4.2B）。", `所以全部在同一行：「${a} ${b} ${c} ${d}」，字與字之間只有一個空格。`, "要保留空格及換行要用 <pre>（會以等寬字體顯示）；只要換行可用 <br>。"] };
+  }
+  const [l0, l1, l2] = pick([["這是第一行", "這是第二行", "這也是第二行"], ["床前明月光", "疑是地上霜", "舉頭望明月"], ["Name: Amy", "Class: 4A", "No.: 12"]]);
+  const P = (x, y) => `<p>\n${I4}${l0}${x}\n${I4}${l1}${y}\n${I4}${l2}\n</p>`;
+  return { h: 84, codes: [P("<br>", ""), P("<br>", "<br>"), P("", ""), P("", "<br>")],
+    explain: ["<br> 才會換行；代碼中的換行（Enter）只顯示為一個空格。", `「${l0}」後面有 <br>，所以「${l1}」在第二行。`, `「${l1}」後面沒有 <br>，所以「${l2}」接在同一行，中間只有一個空格。`] };
+}
+function seeFormat() {
+  const [t1, t2, t3] = shuffle(Object.keys(FMT));
+  const [w0, w1, w2, w3] = pick([["今天", "測驗", "，明天", "交功課"], ["請帶", "計算機", "和", "課本"], ["這是", "重要", "的", "通告"], ["Bring", "a pen", " and ", "a ruler"]]);
+  const nested = coin(0.35);
+  const C = (x, y) => nested ? `<p>${w0}<${x}>${w1}<${y}>${w2}</${y}>${w3}</${x}></p>` : `<p>${w0}<${x}>${w1}</${x}>${w2}<${y}>${w3}</${y}></p>`;
+  const ex = nested
+    ? [`<${t1}> 是${FMT[t1]}：「${w1}${w2}${w3}」都在 <${t1}>…</${t1}> 之內。`, `<${t2}> 是${FMT[t2]}，嵌套在 <${t1}> 之內，所以只有「${w2}」同時是${FMT[t1]}及${FMT[t2]}。`, "嵌套結構：內層的標記要先結束（教科書 4.2C）。"]
+    : [`<${t1}>…</${t1}> 是${FMT[t1]}：「${w1}」。`, `<${t2}>…</${t2}> 是${FMT[t2]}：「${w3}」。`, "其餘文字是一般文字。b 粗體、i 斜體、u 底線、sup 上標、sub 下標。"];
+  return { h: 70, codes: [C(t1, t2), C(t2, t1), C(t1, t3), C(t3, t2)], explain: ex };
+}
+function seeList() {
+  const [title, items] = pick([["上課科目", ["中文", "英文", "數學"]], ["建立網頁的步驟", ["打開記事本", "輸入 HTML 代碼", "儲存為 .html 檔"]], ["Fruits", ["Apple", "Banana", "Cherry"]], ["社員名單", ["陳大文", "李小明", "黃美美"]]]);
+  const typ = pick(["ul", "ol"]), other = typ === "ul" ? "ol" : "ul";
+  const L = (t, head) => J(`<h3>${title}</h3>`, `<${t}>`, ...(head ? [`${I4}<li>${title}</li>`] : []), ...items.map((x) => `${I4}<li>${x}</li>`), `</${t}>`);
+  const lst = (t) => L(t, false).replace(`<h3>${title}</h3>\n`, "");
+  return { h: 170, codes: [L(typ, false), L(other, false), J(`<h3>${title}</h3>`, "<p>", ...items.map((x, i) => `${I4}${x}${i < items.length - 1 ? "<br>" : ""}`), "</p>"), lst(typ).replace(`<${typ}>`, `<${typ}>\n${I4}<li>${title}</li>`)],
+    explain: [`<${typ}> 是${typ === "ul" ? "無序號清單：每個項目前有黑色小圓點" : "有序號清單：項目以 1、2、3 標示"}。`, "<li> 定義清單項目，每個 <li> 自成一行。", `<h3> 是標題，不屬於清單，所以「${title}」以粗體標題顯示，前面沒有${typ === "ul" ? "圓點" : "數字"}。`] };
+}
+const MERGES = (() => { const a = []; for (let r = 0; r < 3; r++) for (let c = 0; c < 2; c++) a.push({ type: "col", r, c }); for (let r = 0; r < 2; r++) for (let c = 0; c < 3; c++) a.push({ type: "row", r, c }); return a; })();
+const covered = (m, r, c) => m && (m.type === "col" ? r === m.r && c === m.c + 1 : c === m.c && r === m.r + 1);
+function tableCode(m) {
+  let k = 0; const rows = [];
+  for (let r = 0; r < 3; r++) {
+    const cells = [];
+    for (let c = 0; c < 3; c++) { if (covered(m, r, c)) continue; const at = m && m.r === r && m.c === c ? (m.type === "col" ? ' colspan="2"' : ' rowspan="2"') : ""; cells.push(`${I4}${I4}<td${at}>${"ABCDEFGHI"[k++]}</td>`); }
+    rows.push(J(`${I4}<tr>`, ...cells, `${I4}</tr>`));
+  }
+  return J('<table border="1" style="width:220px">', ...rows, "</table>");
+}
+const mergeText = (m) => m.type === "col" ? `第 ${m.r + 1} 列的一個儲存格有 colspan="2"，向右橫跨兩欄，所以這一列只寫兩個 <td>` : `第 ${m.r + 1} 列的一個儲存格有 rowspan="2"，向下橫跨兩列，所以第 ${m.r + 2} 列只寫兩個 <td>`;
+function seeTable() {
+  const m = pick(MERGES), key = (x) => x ? x.type + x.r + x.c : "none";
+  const cand = [];
+  const twin = MERGES.find((x) => x.type !== m.type && x.r === m.r && x.c === m.c); if (twin) cand.push(twin);
+  shuffle(MERGES.filter((x) => x.type === m.type && key(x) !== key(m))).slice(0, 2).forEach((x) => cand.push(x));
+  cand.push(null);
+  const ds = []; for (const x of shuffle(cand)) { if (ds.length < 3 && !ds.some((y) => key(y) === key(x))) ds.push(x); }
+  return { h: 110, codes: [tableCode(m), ...ds.map(tableCode)],
+    explain: ["每個 <tr> 是一列，每個 <td> 是一個儲存格；儲存格按代碼次序 A、B、C… 由左至右、由上至下排列。", mergeText(m) + "。", "colspan＝橫跨的欄數（水平合併）；rowspan＝橫跨的列數（垂直合併）。"] };
+}
+function seeStyle() {
+  const VAL = { "text-align": ["center", "right", "left"], color: ["red", "blue", "black"], "background-color": ["yellow", "orange", null], "font-size": ["28px", "12px", null] };
+  const ZH = { "text-align": { center: "置中", right: "靠右", left: "靠左" }, color: { red: "紅色", blue: "藍色", black: "黑色" }, "background-color": { yellow: "黃色背景", orange: "橙色背景" }, "font-size": { "28px": "28 像素大字", "12px": "12 像素小字" } };
+  const [p1, p2] = shuffle(Object.keys(VAL)).slice(0, 2);
+  const a1 = VAL[p1].slice(0, 2), a2 = VAL[p2].slice(0, 2);
+  const v1 = pick(a1), v2 = pick(a2), o1 = a1.find((x) => x !== v1), o2 = a2.find((x) => x !== v2);
+  const txt = pick(["歡迎來到 ICT 學會", "今日午膳：意粉", "運動會報名", "Welcome to our club"]);
+  const S = (x, y) => { const st = [[p1, x], [p2, y]].filter((q) => q[1] !== null).map((q) => q[0] + ":" + q[1]).join(";"); return J("<p>普通文字</p>", `<p${st ? ` style="${st}"` : ""}>${txt}</p>`); };
+  const desc = (p, v) => v === null ? "沒有設定" : ZH[p][v];
+  return { h: 110, codes: [S(v1, v2), S(o1, v2), S(v1, o2), S(o1, o2)],
+    explain: [`style 內兩個屬性值以「;」分隔：${p1}:${v1} 及 ${p2}:${v2}。`, `${p1}:${v1} → ${desc(p1, v1)}；${p2}:${v2} → ${desc(p2, v2)}。`, "第一段「普通文字」沒有 style，以預設樣式顯示，可用來比較。"] };
+}
+function seeImage() {
+  const f = pick(["orange.png", "apple.png"]), other = f === "orange.png" ? "apple.png" : "orange.png", alt = f === "orange.png" ? "橙子" : "蘋果";
+  const typo = f === "orange.png" ? pick(["ornage.png", "orange.jpg", "images/orange.png"]) : pick(["aple.png", "apple.jpg", "images/apple.png"]);
+  const C = (src, wh) => J(`<p>這是一個${alt}</p>`, `<img src="${src}" alt="${alt}" ${wh}>`);
+  const cOK = C(f, 'width="100"'), cTypo = C(typo, 'width="100"'), cDist = C(f, 'width="160" height="60"'), cOther = C(other, 'width="100"');
+  const v = pick(["ok", "typo", "distort"]);
+  const ans = v === "ok" ? cOK : v === "typo" ? cTypo : cDist;
+  const ex = v === "ok" ? [`src="${f}" 與資料夾內的檔案名稱完全相同，所以圖像正常顯示。`, '只設定 width="100"、沒有設定 height，瀏覽器按原來的長寬比縮放，圖像不會變形。']
+    : v === "typo" ? [`資料夾內沒有「${typo}」這個檔案（${typo.startsWith("images/") ? "圖像不在 images 資料夾內，路徑錯了" : "檔名或副檔名錯了"}），所以圖像未能顯示。`, `瀏覽器顯示破圖圖示及 alt 的替代文字「${alt}」（DSE 2013 甲25、2025 甲23）。`]
+    : ['width="160" height="60" 與圖像原來的長寬比（1:1）不同，所以圖像被壓扁，出現失真（DSE 2025 乙4(a)(ii)）。', "改 width／height 只改變顯示大小，下載的仍是同一個圖像檔案。"];
+  return { h: 150, files: true, codes: [ans, ...[cOK, cTypo, cDist, cOther].filter((x) => x !== ans)], explain: [...ex, "<img> 只是把圖像「連結」到網頁，圖像檔案本身不在 HTML 檔內。"] };
+}
+function seePad() {
+  const [h1, h2, c1, c2] = pick([["姓名", "分數", "陳大文", "85"], ["科目", "教室", "ICT", "電腦室"], ["日期", "活動", "5 月 3 日", "旅行"]]);
+  const n = pick([15, 20, 25]);
+  const tb = (ts, ths, trs) => J(`<table border="1"${ts ? ` style="${ts}"` : ""}>`, `${I4}<tr${trs ? ` style="${trs}"` : ""}>`, `${I4}${I4}<th${ths ? ` style="${ths}"` : ""}>${h1}</th>`, `${I4}${I4}<th>${h2}</th>`, `${I4}</tr>`, `${I4}<tr>`, `${I4}${I4}<td>${c1}</td>`, `${I4}${I4}<td>${c2}</td>`, `${I4}</tr>`, "</table>");
+  const V = [tb(`border-spacing:${n}px`), tb(null, `padding:${n}px`), tb(null, null, "height:60px;vertical-align:top"), tb("width:320px")];
+  const i = coin(0.8) ? R(0, 1) : R(2, 3);
+  const EX = [`border-spacing:${n}px 設在 <table>：儲存格與儲存格之間（及與表格外框之間）的間距變大。`, `padding:${n}px 設在「${h1}」的 <th>：這個儲存格的內容與儲存格邊框之間的間距變大，所以這一格（及同一列、同一欄）變大。`, "height:60px 設在第一個 <tr>：第一列變高；vertical-align:top 令內容靠儲存格頂部。", "width:320px 設在 <table>：整個表格變闊，儲存格之間的間距不變。"];
+  return { h: 170, codes: [V[i], ...V.filter((_, k) => k !== i)], explain: [EX[i], "padding＝內容與儲存格邊框之間；border-spacing＝儲存格與儲存格之間（教科書 4.2F 提示）。"] };
+}
+function seeLink() {
+  const pg = pick(["page2.html", "news.html", "club.html"]), [a1, a2] = pick([["part1", "part2"], ["intro", "detail"], ["top", "end"]]);
+  const targets = [`#${a1}`, `#${a2}`, pg, `${pg}#${a2}`];
+  const order = shuffle([0, 1, 2, 3]);
+  const lines = order.map((t, k) => `<a href="${targets[t]}">連結 ${k + 1}</a><br>`);
+  const code = J(...lines, "", `<h2><a name="${a1}">第一部分</a></h2>`, "<p>……</p>", `<h2><a name="${a2}">第二部分</a></h2>`, "<p>……</p>");
+  const k = R(0, 3), t = order[k];
+  const OPTS = [`同一網頁內名為「${a1}」的鎖定點（第一部分）`, `同一網頁內名為「${a2}」的鎖定點（第二部分）`, `另一網頁 ${pg} 的頂部`, `另一網頁 ${pg} 內名為「${a2}」的鎖定點`];
+  const EX = [`href="#${a1}"：「#」後面是鎖定點名稱，跳到同一網頁 <a name="${a1}"> 的位置。`, `href="#${a2}"：跳到同一網頁 <a name="${a2}"> 的位置。`, `href="${pg}"：沒有「#」，開啟另一網頁 ${pg}，由頂部開始顯示。`, `href="${pg}#${a2}"：開啟另一網頁 ${pg}，並跳到該網頁名為「${a2}」的鎖定點。`];
+  return { code, k, opts: OPTS, answer: OPTS[t], explain: [EX[t], '<a name="…"> 定義鎖定點；<a href="…"> 定義超連結。連到同一網頁的鎖定點，名稱前要加「#」（教科書 4.2H）。'] };
+}
+
+// =================== HTML 實驗枱：任務 ===================
+// 每個任務傳回 { prompt, starter, solution, check(doc, ctx) → { ok, msg }, explain }
+const textOf = (el) => el ? el.textContent.replace(/\s+/g, " ").trim() : "";
+function tableGrid(table) {
+  const rows = [...table.rows], occ = rows.map(() => []); let overlap = false;
+  rows.forEach((tr, r) => { let c = 0;
+    [...tr.cells].forEach((td) => { while (occ[r][c]) c++; const cs = Math.max(1, td.colSpan || 1), rs = Math.max(1, td.rowSpan || 1);
+      for (let i = 0; i < rs && r + i < rows.length; i++) for (let j = 0; j < cs; j++) { if (occ[r + i][c + j]) overlap = true; occ[r + i][c + j] = td; } c += cs; }); });
+  const widths = occ.map((row) => { let n = 0; for (let i = 0; i < row.length; i++) if (row[i]) n++; return n === row.length ? n : -1; });
+  return { overlap, widths, ok: !overlap && widths.every((w) => w === widths[0] && w > 0) };
+}
+const LAB = [
+  { g: "圖像", n: "修正圖像檔名", f: () => {
+    const it = pick([{ f: "orange.png", alt: "橙子", t: "這是一個橙" }, { f: "apple.png", alt: "蘋果", t: "這是一個蘋果" }, { f: "logo.png", alt: "ICT 學會標誌", t: "歡迎來到 ICT 學會" }]);
+    const base = it.f.replace(".png", ""), kind = pick(["typo", "ext", "dir"]);
+    const wrong = kind === "typo" ? (base === "orange" ? "ornage.png" : base === "apple" ? "aple.png" : "lgoo.png") : kind === "ext" ? base + ".jpg" : "images/" + it.f;
+    const mk = (s) => J(`<p>${it.t}</p>`, `<img src="${s}" alt="${it.alt}" height="150">`);
+    const why = { typo: "檔名串錯了", ext: "副檔名錯了（資料夾內的檔案是 .png）", dir: "圖像與網頁在同一資料夾，不在 images 資料夾內，路徑錯了" }[kind];
+    return { prompt: `<p>預覽中的圖像未能顯示，只見破圖圖示及替代文字。修改代碼，令圖像正確顯示。</p>${filesNote()}`, starter: mk(wrong), solution: mk(it.f),
+      check: (d) => { const im = d.querySelectorAll("img"); if (im.length !== 1) return { ok: false, msg: "網頁內要剛好有一個 <img>。" }; const s = (im[0].getAttribute("src") || "").trim();
+        if (s === it.f) return { ok: true }; if (FILES[s]) return { ok: false, msg: `「${s}」是另一張圖像，不是原來要顯示的圖像。` }; return { ok: false, msg: `資料夾內沒有「${s}」這個檔案，圖像仍未能顯示。` }; },
+      explain: [`原來的 src="${wrong}"：${why}。改為 src="${it.f}"。`, "圖像與網頁在同一資料夾時，src 只寫檔名及副檔名；檔名要完全相同。", `圖像未能顯示時，瀏覽器顯示破圖圖示及 alt 的替代文字「${it.alt}」（DSE 2013 甲25、2025 甲23）。`] }; } },
+  { g: "圖像", n: "加入替代文字", f: () => {
+    const it = pick([{ f: "orange.png", alt: "橙子" }, { f: "apple.png", alt: "蘋果" }, { f: "logo.png", alt: "ICT 學會標誌" }]);
+    return { prompt: `<p>視障人士用讀屏軟件瀏覽網頁時，圖像要有替代文字。為圖像加入替代文字（例如「${it.alt}」），但不要改動圖像檔名。</p>`, starter: J("<h2>我們的作品</h2>", `<img src="${it.f}" width="120">`), solution: J("<h2>我們的作品</h2>", `<img src="${it.f}" alt="${it.alt}" width="120">`),
+      check: (d) => { const im = d.querySelector("img"); if (!im) return { ok: false, msg: "找不到 <img>。" }; if ((im.getAttribute("src") || "").trim() !== it.f) return { ok: false, msg: "不要改動圖像的 src。" }; if (!(im.getAttribute("alt") || "").trim()) return { ok: false, msg: `要加入屬性 alt，例如 alt="${it.alt}"。` }; return { ok: true }; },
+      explain: [`在 <img> 內加入 alt="${it.alt}"：屬性寫在開始標記內，屬性值放在雙引號內。`, "圖像無法顯示時會顯示 alt 的文字；讀屏軟件亦會讀出替代文字（無障礙設計，教科書 4.4E）。"] }; } },
+  { g: "空白與換行", n: "保留空格及換行", f: () => {
+    const ch = pick(["*", "#", "+", "o"]);
+    const shapes = [["    X", "   XXX", "  XXXXX", " XXXXXXX"], ["X       X", " X     X", "  X   X", "   X X", "    X"], ["XXXXXXX", "X     X", "X     X", "XXXXXXX"]];
+    const lines = pick(shapes).map((l) => l.split("X").join(ch));
+    return { prompt: "<p>代碼內的圖案在預覽中擠成一行，空格亦不見了。修改代碼，令圖案按代碼中的空格及換行顯示。</p>", starter: J("<p>", ...lines, "</p>"), solution: J("<pre>", ...lines, "</pre>"),
+      check: (d) => { const pre = [...d.querySelectorAll("pre")].find((p) => p.textContent.includes(ch)); if (!pre) return { ok: false, msg: "圖案仍在 <p> 內：多個空格及換行只顯示為一個空格。要用另一個標記。" };
+        const got = pre.textContent.replace(/^\n/, "").replace(/\n+$/, "").split("\n").map((l) => l.replace(/\s+$/, "")); if (got.join("\n") !== lines.join("\n")) return { ok: false, msg: "已用 <pre>，但圖案的空格或換行與原來不同，請檢查。" }; return { ok: true }; },
+      explain: ["在 <p> 內，連續多個空格及換行只顯示為一個空格。", "把 <p>…</p> 改為 <pre>…</pre>：<pre> 內的文字完全按源碼中的空格及換行顯示（教科書活動 4.1）。"] }; } },
+  { g: "空白與換行", n: "用 <br> 換行", f: () => {
+    const lines = pick([["陳大文", "九龍彌敦道 100 號", "電話：2345 6789"], ["床前明月光", "疑是地上霜", "舉頭望明月", "低頭思故鄉"], ["班別：4A", "學號：12", "姓名：李小明"]]);
+    return { prompt: "<p>預覽中所有文字擠在同一行。只加入 <code class=\"k\">&lt;br&gt;</code>，令每一項各佔一行（不要改用 &lt;pre&gt;，也不要加入新的 &lt;p&gt;）。</p>", starter: J("<p>", ...lines.map((l) => I4 + l), "</p>"), solution: J("<p>", ...lines.map((l, i) => I4 + l + (i < lines.length - 1 ? "<br>" : "")), "</p>"),
+      check: (d) => { if (d.querySelector("pre")) return { ok: false, msg: "這題要用 <br>，不要用 <pre>。" }; const ps = d.querySelectorAll("p"); if (ps.length !== 1) return { ok: false, msg: "只保留一個 <p>，用 <br> 換行。" };
+        const segs = ps[0].innerHTML.split(/<br\s*\/?>/i).map((s) => s.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim()).filter((s) => s);
+        return segs.join("|") === lines.join("|") ? { ok: true } : { ok: false, msg: `要有 ${lines.length - 1} 個 <br>，分別放在每一項的後面（最後一項後面可以不放）。` }; },
+      explain: ["代碼中的換行只顯示為一個空格；要在顯示時換行，要加入 <br>。", "<br> 是空元件，不用結束標記。"] }; } },
+  { g: "清單及表格", n: "改為有序號清單", f: () => {
+    const [title, items] = pick([["建立網頁的步驟", ["打開記事本", "輸入 HTML 代碼", "以 .html 為副檔名儲存", "用瀏覽器開啟"]], ["上載網站的步驟", ["登入網頁寄存服務", "上載 HTML 檔及圖像", "預覽網站", "發佈網站"]], ["做實驗的次序", ["戴上護目鏡", "量度溫度", "記錄結果"]]]);
+    const L = (t) => J(`<h2>${title}</h2>`, `<${t}>`, ...items.map((x) => `${I4}<li>${x}</li>`), `</${t}>`);
+    return { prompt: "<p>這些步驟有先後次序。把清單改為以數字（1、2、3…）標示的清單，項目內容不變。</p>", starter: L("ul"), solution: L("ol"),
+      check: (d) => { if (d.querySelector("ul")) return { ok: false, msg: "仍有 <ul>（無序號清單，以圓點標示）。" }; const ol = d.querySelector("ol"); if (!ol) return { ok: false, msg: "找不到有序號清單。" };
+        return [...ol.querySelectorAll("li")].map(textOf).join("|") === items.join("|") ? { ok: true } : { ok: false, msg: "清單項目要與原來相同。" }; },
+      explain: ["把 <ul> 及 </ul> 改為 <ol> 及 </ol>；<li> 不用改。", "<ul> 無序號清單：黑色小圓點；<ol> 有序號清單：數字（教科書 4.2E）。"] }; } },
+  { g: "清單及表格", n: "合併儲存格（colspan）", f: () => {
+    const [d1, d2] = pick([["星期一", "星期二"], ["上學期", "下學期"], ["4A", "4B"]]), ev = pick(["小息", "午膳", "週會"]), [s1, s2] = pick([["中文", "英文"], ["數學", "ICT"], ["物理", "化學"]]);
+    const t0 = pick(["8:30", "9:00"]), t1 = pick(["10:00", "12:45", "11:15"]);
+    const head = [`${I4}<tr>`, `${I4}${I4}<th>時間</th>`, `${I4}${I4}<th>${d1}</th>`, `${I4}${I4}<th>${d2}</th>`, `${I4}</tr>`, `${I4}<tr>`, `${I4}${I4}<td>${t0}</td>`, `${I4}${I4}<td>${s1}</td>`, `${I4}${I4}<td>${s2}</td>`, `${I4}</tr>`, `${I4}<tr>`, `${I4}${I4}<td>${t1}</td>`];
+    const starter = J('<table border="1">', ...head, `${I4}${I4}<td>${ev}</td>`, `${I4}${I4}<td></td>`, `${I4}</tr>`, "</table>");
+    const solution = J('<table border="1">', ...head, `${I4}${I4}<td colspan="2">${ev}</td>`, `${I4}</tr>`, "</table>");
+    return { prompt: `<p>令「${ev}」儲存格向右橫跨「${d1}」及「${d2}」兩欄，並刪去多出的空儲存格。</p>`, starter, solution,
+      check: (d) => { const t = d.querySelector("table"); if (!t) return { ok: false, msg: "找不到表格。" }; const cell = [...t.querySelectorAll("td,th")].find((c) => textOf(c) === ev); if (!cell) return { ok: false, msg: `找不到「${ev}」儲存格。` };
+        if ((cell.colSpan || 1) !== 2) return { ok: false, msg: `「${ev}」要橫跨兩欄：在它的 <td> 加入 colspan="2"。` }; if ([...t.querySelectorAll("td,th")].some((c) => !textOf(c))) return { ok: false, msg: "還有空儲存格：合併後要刪去多出的 <td></td>。" };
+        return tableGrid(t).ok ? { ok: true } : { ok: false, msg: "每一列的欄數不一致，請檢查。" }; },
+      explain: [`在「${ev}」的 <td> 加入 colspan="2"（橫跨兩欄），並刪去後面的 <td></td>。`, "合併後，這一列只有兩個 <td>：時間及合併了的儲存格（教科書 4.2F）。"] }; } },
+  { g: "清單及表格", n: "合併儲存格（rowspan）", f: () => {
+    const sj = pick(["ICT", "數學", "體育"]), other = pick(["中文", "英文", "歷史"]), day = pick(["星期一", "星期三", "星期五"]);
+    const times = pick([["8:30", "9:10", "9:50"], ["11:00", "11:40", "12:20"]]);
+    const row = (t, cell) => J(`${I4}<tr>`, `${I4}${I4}<td>${t}</td>`, ...(cell === null ? [] : [`${I4}${I4}${cell}`]), `${I4}</tr>`);
+    const head = J(`${I4}<tr>`, `${I4}${I4}<th>時間</th>`, `${I4}${I4}<th>${day}</th>`, `${I4}</tr>`);
+    const starter = J('<table border="1">', head, row(times[0], `<td>${sj}</td>`), row(times[1], `<td>${sj}</td>`), row(times[2], `<td>${other}</td>`), "</table>");
+    const solution = J('<table border="1">', head, row(times[0], `<td rowspan="2">${sj}</td>`), row(times[1], null), row(times[2], `<td>${other}</td>`), "</table>");
+    return { prompt: `<p>「${sj}」是連堂。把上下兩個「${sj}」儲存格合併成一個向下橫跨兩列的儲存格。</p>`, starter, solution,
+      check: (d) => { const t = d.querySelector("table"); if (!t) return { ok: false, msg: "找不到表格。" }; const cells = [...t.querySelectorAll("td,th")].filter((c) => textOf(c) === sj);
+        if (cells.length !== 1) return { ok: false, msg: `要只剩一個「${sj}」儲存格：刪去第二個。` }; if ((cells[0].rowSpan || 1) !== 2) return { ok: false, msg: `在第一個「${sj}」的 <td> 加入 rowspan="2"。` };
+        return tableGrid(t).ok ? { ok: true } : { ok: false, msg: "表格的列與欄對不上，請檢查。" }; },
+      explain: [`在第一個「${sj}」的 <td> 加入 rowspan="2"（向下橫跨兩列）。`, `刪去下一列的「${sj}」<td>：那一列只剩下時間一格（教科書 4.2F rowspan 例子）。`] }; } },
+  { g: "清單及表格", n: "表格邊框及背景顏色", f: () => {
+    const bg = pick([["yellow", "黃色"], ["orange", "橙色"]]), [a, b] = pick([["產品", "價錢"], ["姓名", "班別"], ["日期", "地點"]]), [x, y] = pick([["鉛筆", "$5"], ["陳大文", "4A"], ["5 月 3 日", "大埔"]]);
+    const mk = (tb, tr) => J(`<table${tb}>`, `${I4}<tr${tr}>`, `${I4}${I4}<th>${a}</th>`, `${I4}${I4}<th>${b}</th>`, `${I4}</tr>`, `${I4}<tr>`, `${I4}${I4}<td>${x}</td>`, `${I4}${I4}<td>${y}</td>`, `${I4}</tr>`, "</table>");
+    return { prompt: `<p>為表格加上邊框，並把標題列（第一個 &lt;tr&gt;）的背景設為${bg[1]}。</p>`, starter: mk("", ""), solution: mk(' border="1"', ` style="background-color:${bg[0]}"`),
+      check: (d, ctx) => { const t = d.querySelector("table"); if (!t) return { ok: false, msg: "找不到表格。" }; if (!(parseInt(t.getAttribute("border"), 10) > 0)) return { ok: false, msg: '表格要有邊框：在 <table> 加入 border="1"。' };
+        const tr = t.rows[0], want = ctx.color(bg[0]); const okBg = ctx.color(tr.style.backgroundColor) === want || [...tr.cells].every((c) => ctx.color(c.style.backgroundColor) === want);
+        return okBg ? { ok: true } : { ok: false, msg: `標題列的背景未是${bg[1]}：在第一個 <tr> 加入 style="background-color:${bg[0]}"。` }; },
+      explain: ['border="1" 設定表格邊框的粗幼度。', `style="background-color:${bg[0]}" 設定背景顏色；放在 <tr> 會令整列變色。`, "表格可設定邊框、背景顏色、對齊、闊度、高度、間距（DSE 2014 甲29、2019 甲25）。"] }; } },
+  { g: "超連結", n: "回到頂部的鎖定點", f: () => {
+    const nm = pick(["top", "start", "home"]), title = pick(["ICT 學會通訊", "運動會消息", "旅行日營安排"]);
+    const paras = Array.from({ length: 10 }, (_, i) => `<p>第 ${i + 1} 段：……</p>`);
+    const mk = (a) => J(`<h1><a name="${nm}">${title}</a></h1>`, ...paras, a);
+    return { prompt: `<p>網頁很長，讀者要捲動回到頂部。令頁尾的「回到頂部」變成超連結，按下後跳到頁頂名為「${nm}」的鎖定點。改好後可在預覽中按連結試試。</p>`, starter: mk("<a>回到頂部</a>"), solution: mk(`<a href="#${nm}">回到頂部</a>`),
+      check: (d) => { const a = [...d.querySelectorAll("a")].find((x) => textOf(x) === "回到頂部"); if (!a) return { ok: false, msg: "找不到「回到頂部」。" }; const h = (a.getAttribute("href") || "").trim();
+        if (h === "#" + nm) return { ok: true }; if (h === nm) return { ok: false, msg: "連到同一網頁的鎖定點，名稱前要加「#」。" }; return { ok: false, msg: `在「回到頂部」的 <a> 加入 href="#${nm}"。` }; },
+      explain: [`<a name="${nm}"> 定義鎖定點；<a href="#${nm}"> 跳到這個鎖定點。`, "鎖定點名稱前要加「#」（教科書 4.2H）。舊卷二 2012 C 1(d)(i) 考過以鎖定點解決長網頁回到頂部的問題。"] }; } },
+  { g: "屬性", n: "置中及顏色", f: () => {
+    const col = pick([["red", "紅色"], ["blue", "藍色"], ["orange", "橙色"]]), al = pick([["center", "置中"], ["right", "靠右"]]), title = pick(["ICT 學會", "我的網頁", "運動會"]), txt = pick(["歡迎參觀。", "下星期五舉行。", "請準時出席。"]);
+    return { prompt: `<p>只修改標題「${title}」：令它${al[1]}，並以${col[1]}顯示。</p>`, starter: J(`<h1>${title}</h1>`, `<p>${txt}</p>`), solution: J(`<h1 style="text-align:${al[0]};color:${col[0]}">${title}</h1>`, `<p>${txt}</p>`),
+      check: (d, ctx) => { const h = d.querySelector("h1"); if (!h) return { ok: false, msg: "找不到 <h1>。" }; const st = h.getAttribute("style") || "";
+        if (/colour/i.test(st)) return { ok: false, msg: "要用美式拼法 color；拼成 colour 不會改變樣式。" }; if (/cent(re|er)/i.test(st) && h.style.textAlign !== "center" && al[0] === "center") return { ok: false, msg: "要用美式拼法 center。" };
+        if (h.style.textAlign !== al[0]) return { ok: false, msg: `對齊未正確：用 text-align:${al[0]}。` }; if (ctx.color(h.style.color) !== ctx.color(col[0])) return { ok: false, msg: `顏色未正確：用 color:${col[0]}。` }; return { ok: true }; },
+      explain: [`在 <h1> 加入 style="text-align:${al[0]};color:${col[0]}"。`, "style 內多於一個屬性值以「;」分隔；要用美式拼法 center、color（教科書 4.2D）。"] }; } },
+];
+const LAB_EXAMPLES = [
+  ["第一個網頁", J("<!DOCTYPE html>", "<html>", `${I4}<head>`, `${I4}${I4}<title>我的第一個網頁</title>`, `${I4}</head>`, `${I4}<body>`, `${I4}${I4}<h1>Hello World!</h1>`, `${I4}${I4}<p>這是第一段。</p>`, `${I4}</body>`, "</html>")],
+  ["空白與 <pre>（活動 4.1）", J("<p>", "***********<br>", "***** *****<br>", "***     ***<br>", "**       **", "</p>", "<pre>", "**       **", "***     ***", "***** *****", "***********", "</pre>")],
+  ["標題、段落、水平線", J("<!-- 這是註解，不會顯示 -->", "<h1>Morning Timetable</h1>", "<p>Chinese</p>", "<p>Mathematics</p>", "<p>ICT</p>", "<hr>", "<h2>Afternoon Timetable</h2>", "<p>English</p>", "<p>Physics</p>")],
+  ["文字格式及嵌套", J("<p>這是<b>粗體</b>，這是<i>斜體</i>，這是<u>底線</u></p>", "<p>x<sup>2</sup> 及 H<sub>2</sub>O</p>", "<p>這是<b><i>粗體加斜體</i></b></p>", "<p>也可以<i>斜體<u>加部分底線</u>的</i></p>")],
+  ["style 屬性", J('<h1 style="color:red">這是紅色標題</h1>', '<p style="color:#0000ff">這也是藍色的字</p>', '<p style="text-align:center;background-color:yellow">置中、黃色背景</p>', '<p style="font-family:Arial;font-size:30px">Arial 30 像素</p>')],
+  ["清單", J("<ul>", `${I4}<li>項目 1</li>`, `${I4}<li>項目 2</li>`, "</ul>", "<ol>", `${I4}<li>項目 1</li>`, `${I4}<li>項目 2</li>`, "</ol>")],
+  ["表格（colspan）", J('<table border="1">', `${I4}<tr>`, `${I4}${I4}<td>1</td>`, `${I4}${I4}<td colspan="2">2+3</td>`, `${I4}</tr>`, `${I4}<tr>`, `${I4}${I4}<td>4</td>`, `${I4}${I4}<td>5</td>`, `${I4}${I4}<td>6</td>`, `${I4}</tr>`, `${I4}<tr>`, `${I4}${I4}<td colspan="3">7+8+9</td>`, `${I4}</tr>`, "</table>")],
+  ["表格（rowspan）", J('<table border="1">', `${I4}<tr>`, `${I4}${I4}<td>1</td>`, `${I4}${I4}<td>2</td>`, `${I4}${I4}<td rowspan="3">3+6+9</td>`, `${I4}</tr>`, `${I4}<tr>`, `${I4}${I4}<td rowspan="2">4+7</td>`, `${I4}${I4}<td>5</td>`, `${I4}</tr>`, `${I4}<tr>`, `${I4}${I4}<td>8</td>`, `${I4}</tr>`, "</table>")],
+  ["padding 與 border-spacing", J('<table border="1" style="border-spacing:30px">', `${I4}<tr style="height:50px;vertical-align:top">`, `${I4}${I4}<th>標題1</th>`, `${I4}${I4}<td>列1儲存格1</td>`, `${I4}</tr>`, `${I4}<tr>`, `${I4}${I4}<th style="padding:20px">標題2</th>`, `${I4}${I4}<td>列2儲存格1</td>`, `${I4}</tr>`, "</table>")],
+  ["圖像及替代文字", J("<p>這是一個橙</p>", '<img src="orange.png" alt="橙子" height="150">', "<p>檔名錯了：</p>", '<img src="ornage.png" alt="橙子" height="150">')],
+  ["超連結及鎖定點", J('<a href="#part1">前往第一部分</a><br>', '<a href="#part2">前往第二部分</a><br>', '<a href="A.html">前往另一網頁</a>', '<h2><a name="part1">主頁的第一部分</a></h2>', "<p>……</p><p>……</p><p>……</p><p>……</p><p>……</p><p>……</p>", '<h2><a name="part2">主頁的第二部分</a></h2>', "<p>……</p><p>……</p><p>……</p><p>……</p><p>……</p><p>……</p>")],
+  ["框架 <iframe>", J("<h1>這是主頁</h1>", '<iframe src="A.html" width="200" height="150"></iframe>', '<iframe src="B.html" width="200" height="150"></iframe>')],
+];
+
+// =================== 用哪一把密碼匙：情境 ===================
+const SCHOOLS = ["青山中學", "海濱中學"], SHOPS = ["好物網店", "樂購網店", "運動用品網店"];
+const KEY_SCN = {
+  conf: [
+    () => { const A = pick(["陳老師", "李老師", "黃老師"]), B = pick(NAMES); return { A, B, txt: `${A}要把考試成績經互聯網傳給學生${B}。成績涉及私隱，要確保只有${B}本人能讀取。` }; },
+    () => { const A = pick(NAMES), B = pick(SHOPS); return { A, B, txt: `學生${A}以預付信用卡在${B}購物，要經互聯網把信用卡資料傳給${B}，防止資料被竊聽。` }; },
+    () => { const A = "義工" + pick(NAMES), B = "愛心機構"; return { A, B, txt: `${A}把收回的健康問卷經互聯網傳回${B}作進一步處理，問卷內容不可被其他人閱讀。` }; },
+    () => { const [A, B] = two(); return { A, B, txt: `${A}寄給${B}一個文件檔，要確保只有${B}能夠開啟及閱讀此檔案。` }; },
+    () => { const A = pick(NAMES), B = pick(["林醫生", "張醫生"]); return { A, B, txt: `${A}要經公共 Wi-Fi 把體檢報告傳給${B}，要防止竊聽和資訊攔截。` }; },
+  ],
+  sign: [
+    () => { const A = pick(SCHOOLS), B = "學生"; return { A, B, txt: `${A}向學生發出重要通告，學生要能驗證通告確實由${A}發出，以免有人偽造。` }; },
+    () => { const [A, B] = two(); return { A, B, txt: `${A}計劃透過互聯網傳送一個重要訊息給${B}，要保證訊息是由${A}發出的。` }; },
+    () => { const A = pick(["陳太", "李先生", "何太"]), B = pick(SCHOOLS); return { A, B, txt: `家長${A}以電子方式簽署回條，然後發送回${B}。` }; },
+    () => { const A = pick(SCHOOLS), B = "海濱大學"; return { A, B, txt: `${A}要把已確認的學生課外活動紀錄發送給${B}；${B}要能確認紀錄確實由${A}發出，而且沒有被修改。` }; },
+    () => { const A = pick(SHOPS), B = pick(NAMES); return { A, B, txt: `${A}以電子方式發出收據給顧客${B}；${B}要能核實收據由${A}發出，${A}事後亦不能否認。` }; },
+  ],
+  both: [
+    () => { const A = pick(["何律師", "周律師"]), B = pick(NAMES); return { A, B, txt: `${A}要把合約經互聯網傳給客戶${B}：合約內容只有${B}能閱讀，而且${B}要能核實合約由${A}發出、沒有被修改。` }; },
+    () => { const A = pick(NAMES), B = pick(["大成建築公司", "新星科技公司"]); return { A, B, txt: `${A}要把投標文件傳給${B}：文件內容要保密，${B}亦要能確認文件確實由${A}發出。` }; },
+  ],
+};
+const KEY_ANS = { conf: ["Bpub", "Bpriv"], sign: ["Apriv", "Apub"], both: ["Bpub", "Apriv", "Apub", "Bpriv"] };
+function keyScn(purpose) { const s = pick(KEY_SCN[purpose])(); return { ...s, purpose, ans: KEY_ANS[purpose].slice() }; }
+const keyName = (id, A, B) => (id[0] === "A" ? A : B) + "的" + (id.endsWith("pub") ? "公開" : "私人") + "密碼匙";
+
+// =================== 加密計算 ===================
+const caesar = (s, k, dollar = true) => [...s].map((ch) => { const c = ch.charCodeAt(0);
+  if (c >= 65 && c <= 90) return String.fromCharCode(((c - 65 + k) % 26 + 26) % 26 + 65);
+  if (c >= 97 && c <= 122) return String.fromCharCode(((c - 97 + k) % 26 + 26) % 26 + 97);
+  if (dollar && ch === " ") return "$"; return ch; }).join("");
+const uncaesar = (s, k, dollar = true) => [...s].map((ch) => (dollar && ch === "$" ? " " : caesar(ch, 26 - (k % 26), false))).join("");
+const PHRASES = ["I love ICT so much", "MEET AT NOON", "HELLO WORLD", "OPEN THE DOOR", "Send the file", "SAFE KEY", "Good luck", "SEE YOU AT SIX", "Top secret", "PAY TODAY", "BRING YOUR PEN", "Lunch at one"];
+const WORDS6 = ["APPLE", "TIGER", "CLOUD", "RIVER", "SECRET", "PIZZA", "ROBOT", "HTML", "WATER", "MOUSE"];
+const shiftK = () => (coin(0.35) ? 3 : R(1, 25));
+const CALC = {
+  enc: () => { const plain = pick(PHRASES), k = shiftK(); return { plain, k, cipher: caesar(plain, k) }; },
+  dec: () => { const plain = pick(PHRASES), k = shiftK(); return { plain, k, cipher: caesar(plain, k) }; },
+  find: () => { const plain = pick(WORDS6), k = R(1, 25); return { plain, k, cipher: caesar(plain, k) }; },
+  combos: () => { const n = pick([4, 6, 8, 10, 12, 16, 20, 24, 32]); return { n, ans: (2n ** BigInt(n)).toString() }; },
+  sec: () => { const n = R(16, 40), rate = pick([1000, 2000, 4000, 5000, 8000, 10000, 100000, 1000000]); return { n, rate, sec: 2 ** n / rate }; },
+  yrs: () => { for (;;) { const n = pick([56, 64, 80, 128, 256]), rate = pick([2000, 1e6, 1e9, 95e15]); const y = 2 ** n / rate / 31536000; if (y >= 1) return { n, rate, sec: 2 ** n / rate, yrs: y }; } },
+  more: () => { const n = pick([40, 56, 64, 128]), k = R(1, 10); return { n, k, ans: String(2 ** k) }; },
+};
+function sci(x, sf = 3) { if (!(x > 0)) return { m: 0, e: 0, ms: "0" }; const [ms, es] = x.toExponential(sf - 1).split("e"); return { m: parseFloat(ms), e: parseInt(es, 10), ms }; }
+const RATE_TXT = (r) => r === 95e15 ? "95 × 10<sup>15</sup>" : r === 1e9 ? "10<sup>9</sup>（十億）" : r === 1e6 ? "10<sup>6</sup>（一百萬）" : r.toLocaleString("en-US");
+
+// =================== 密碼檢查 ===================
+const WORST10 = ["123456", "123456789", "picture1", "password", "12345678", "111111", "123123", "12345", "1234567890", "senha"];
+const COMMON = ["password", "passward", "qwerty", "admin", "welcome", "iloveyou", "letmein", "abc123"];
+const RULES = [
+  ["len", "至少有 8 個字符"], ["up", "包含大寫字母"], ["low", "包含小寫字母"], ["dig", "包含數字"], ["sym", "包含符號（特殊字符，例如 ! @ # $）"],
+  ["user", "不包含用戶名稱"], ["pers", "不包含出生日期等個人資料"], ["common", "不是常見或過度簡單的密碼（例如 123456、password、1234、aaaa）"],
+];
+function simplePattern(s) { for (let i = 0; i + 3 < s.length; i++) { const c = [0, 1, 2, 3].map((j) => s.charCodeAt(i + j)); const cls = (x) => (x >= 48 && x <= 57 ? 1 : x >= 97 && x <= 122 ? 2 : 0); const k = cls(c[0]);
+    if (!k || c.some((x) => cls(x) !== k)) continue; const d = c[1] - c[0]; if ((d === 1 || d === -1 || d === 0) && c[2] - c[1] === d && c[3] - c[2] === d) return true; } return false; }
+function bdayParts(b) { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(b || "").trim()); if (!m) return []; const [, y, mo, d] = m; return [y, mo + d, d + mo, y + mo + d, d + mo + y]; }
+function pwdRules(pwd, user, bday) {
+  const low = pwd.toLowerCase(), u = String(user || "").trim().toLowerCase(), parts = bdayParts(bday);
+  const r = { len: pwd.length >= 8, up: /[A-Z]/.test(pwd), low: /[a-z]/.test(pwd), dig: /[0-9]/.test(pwd), sym: /[^A-Za-z0-9\s]/.test(pwd),
+    user: u.length < 3 ? null : !low.includes(u), pers: parts.length ? !parts.some((x) => pwd.includes(x)) : null,
+    common: !(WORST10.includes(low) || COMMON.some((w) => low.includes(w)) || simplePattern(low)) };
+  return RULES.map(([id]) => ({ id, ok: r[id] }));
+}
+const pwdPass = (p, u, b) => pwdRules(p, u, b).every((x) => x.ok !== false);
+const PROFILES = [{ name: "陳大文", user: "chantaiman", bday: "2008-03-15" }, { name: "李小美", user: "kellylee", bday: "2009-11-02" }, { name: "黃志明", user: "wongcm", bday: "2008-07-28" }, { name: "張嘉欣", user: "cheungkayan", bday: "2009-05-19" }];
+const PWWORDS = ["sunlight", "rainbow", "tiger", "orange", "river", "cloud", "pencil", "rocket", "forest", "window", "garden", "planet"];
+const SYMS = ["!", "@", "#", "$", "%", "&", "*", "?"];
+const cap = (w) => w[0].toUpperCase() + w.slice(1);
+const rndDigits = (n) => { for (;;) { let s = ""; for (let i = 0; i < n; i++) s += R(0, 9); if (!simplePattern(s)) return s; } };
+function genPwd(pf) {
+  let parts = [];
+  const w = pick(PWWORDS), cs = pick(["lower", "cap", "cap", "upper"]); parts.push(cs === "lower" ? w : cs === "cap" ? cap(w) : w.toUpperCase());
+  if (coin(0.75)) parts.push(pick([rndDigits(2), rndDigits(3), pf.bday.slice(0, 4), "1234", pf.bday.slice(5, 7) + pf.bday.slice(8, 10)]));
+  if (coin(0.55)) parts.push(pick(SYMS));
+  if (coin(0.2)) parts.splice(R(0, parts.length), 0, pf.user);
+  if (coin(0.12)) parts = [pick(["password", "Password", "qwerty", "iloveyou"]), ...parts.slice(1)];
+  let p = parts.join(""); if (coin(0.15)) p = p.slice(0, R(5, 7)); return p;
+}
+function strongPwd(pf) { for (;;) { const p = cap(pick(PWWORDS)).slice(0, R(4, 6)) + pick(SYMS) + rndDigits(2) + pick(PWWORDS).slice(0, R(3, 4)); if (pwdPass(p, pf.user, pf.bday) && p.length >= 10) return p; } }
+const MUT = {
+  len: (p) => p.slice(0, 4) + p.slice(-2), up: (p) => p.toLowerCase(), low: (p) => p.toUpperCase(), dig: (p) => p.replace(/[0-9]/g, ""), sym: (p) => p.replace(/[^A-Za-z0-9]/g, ""),
+  user: (p, pf) => p.slice(0, 5) + pf.user, pers: (p, pf) => p.replace(/[0-9]+/, pf.bday.slice(0, 4)), common: (p) => p.replace(/[0-9]+/, "1234"),
+};
+const PW_GIVEN = ["至少有 8 個字符", "包含大寫字母、小寫字母、數字及符號", "不可使用字典中的字詞或容易猜到的資料", "不可以用戶名稱作為密碼的一部分", "不同系統要使用不同的密碼", "不可重用最近三個密碼", "要定期更改密碼"];
+const PW_NOT = [["輸入密碼時以 ● 遮蔽密碼欄", "遮蔽密碼欄防止旁人偷看，但不是對密碼本身的規定"], ["登入失敗 5 次便鎖定帳戶", "限制登入次數是帳戶保安措施，不是密碼規則（DSE 2017 乙5(c)(i) 不接受）"], ["網站使用保密插口層（SSL）", "SSL 加密傳送中的數據，不是密碼規則（DSE 2017 不接受）"], ["登入時要使用保安權標", "權標是另一種認證方法，不是密碼規則（DSE 2017 不接受）"], ["使用多重要素認證", "多重要素認證不是密碼規則（DSE 2017 不接受）"], ["網站要取得數碼證書", "數碼證書用於認證網站身份，不是密碼規則"]];
+const ACCT = [
+  ["首次登入時，強制用戶更改密碼", "確保密碼個人化，避免因預設密碼洩漏而被入侵（DSE 2019 乙2(a)(ii)）"],
+  ["每次登入後，顯示上次登入的日期、時間及狀態", "用戶可檢查上次登入是否由自己進行，並知道有沒有人試圖登入（DSE 2019 乙2(a)(ii)）"],
+  ["登入後閒置一段時間便自動登出", "用戶離開而沒有登出時，減低他人盜用帳戶的機會（DSE 2012 乙2(a)(i)）"],
+  ["登入時要輸入保安權標產生的一次性密碼", "鑑定用戶身份：即使密碼被盜，沒有權標的人仍難以登入（DSE 2015 甲35）"],
+  ["登入頁面加入人機驗證（Captcha）", "鑑別登入者是否真人，防止程式自動嘗試登入；它不是驗證身份的方法（DSE 2022 乙4(c)(ii)）"],
+];
+const PWQ = {
+  check() { const pf = pick(PROFILES); let p = genPwd(pf); for (let i = 0; i < 5 && pwdPass(p, pf.user, pf.bday); i++) p = genPwd(pf); return { pf, p, ans: pwdRules(p, pf.user, pf.bday).map((r) => r.ok) }; },
+  best() { const pf = pick(PROFILES); let good, bads;
+    for (;;) { good = strongPwd(pf); const ids = shuffle(Object.keys(MUT)).slice(0, 3); bads = ids.map((id) => MUT[id](good, pf)); if (bads.every((b) => !pwdPass(b, pf.user, pf.bday)) && new Set([good, ...bads]).size === 4) break; }
+    return { pf, good, bads }; },
+};
+/*GEN:END*/
+
+  // =================== 介面工具 ===================
+  const $ = (id) => document.getElementById(id);
+  function hlHTML(code) {
+    const out = []; let st = 0;
+    for (const line of String(code).split("\n")) {
+      let i = 0, h = "";
+      while (i < line.length) {
+        if (st === 2) { const k = line.indexOf("-->", i), end = k < 0 ? line.length : k + 3; h += `<span class="cm">${esc(line.slice(i, end))}</span>`; i = end; if (k >= 0) st = 0; continue; }
+        const rest = line.slice(i); let m;
+        if (st === 0) {
+          if (rest.startsWith("<!--")) { st = 2; continue; }
+          if ((m = /^<\/?[A-Za-z!][\w-]*/.exec(rest))) { h += `<span class="tg">${esc(m[0])}</span>`; i += m[0].length; st = 1; continue; }
+          const k = line.indexOf("<", i + 1), end = k < 0 ? line.length : k; h += esc(line.slice(i, end)); i = end; continue;
+        }
+        if ((m = /^\/?>/.exec(rest))) { h += `<span class="tg">${esc(m[0])}</span>`; i += m[0].length; st = 0; continue; }
+        if ((m = /^("[^"]*"?|'[^']*'?)/.exec(rest))) { h += `<span class="st">${esc(m[0])}</span>`; i += m[0].length; continue; }
+        if ((m = /^[\w:-]+/.exec(rest))) { h += `<span class="at">${esc(m[0])}</span>`; i += m[0].length; continue; }
+        h += esc(rest[0]); i++;
+      }
+      out.push(h);
+    }
+    return out;
+  }
+  const codeHTML = (code) => `<div class="code" role="group" aria-label="HTML 代碼">${hlHTML(code).map((l, i) => `<div class="ln"><span class="no" aria-hidden="true">${i + 1}</span><span class="tx">${l || " "}</span></div>`).join("")}</div>`;
+  const pre = (s) => esc(s);
+  const colorSpan = document.createElement("span"); colorSpan.hidden = true; document.body.appendChild(colorSpan);
+  const CTX = { color(v) { colorSpan.style.color = ""; colorSpan.style.color = v || ""; if (!colorSpan.style.color) return ""; colorSpan.hidden = false; const c = getComputedStyle(colorSpan).color; colorSpan.hidden = true; return c; } };
+  const parseHTML = (s) => new DOMParser().parseFromString(String(s), "text/html");
+  const KEY_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="7" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M11 12h10M17 12v4M20.5 12v3" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>';
+  const MODE_TXT = { snippet: "片段：已放入 &lt;body&gt; 內預覽", std: "完整文件（有 &lt;!DOCTYPE html&gt;）", quirks: "沒有 &lt;!DOCTYPE html&gt;：瀏覽器用相容模式" };
+  function setFrame(fr, code, info, note) { const b = buildDoc(code); fr.srcdoc = b.doc; if (info) info.innerHTML = MODE_TXT[b.mode]; if (note) note.textContent = b.notes.join(" "); return b; }
+  function frameEl(code, h, title) { const fr = document.createElement("iframe"); fr.setAttribute("sandbox", ""); fr.setAttribute("referrerpolicy", "no-referrer"); fr.setAttribute("tabindex", "-1"); fr.title = title || "預覽"; fr.style.height = h + "px"; setFrame(fr, code); return fr; }
+
+  function Editor(host, code, opts = {}) {
+    host.innerHTML = `<div class="lab"><div class="ed-wrap"><div class="ed-head"><span>HTML 代碼（可修改）</span>${opts.reset ? '<button type="button" class="mini" data-a="reset">還原起始代碼</button>' : ""}</div><textarea class="ed" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="HTML 代碼"></textarea></div><div class="pv"><div class="pvbar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="pvmode"></span></div><iframe sandbox="" referrerpolicy="no-referrer" title="瀏覽器預覽"></iframe><p class="pvnote"></p></div></div>`;
+    const ta = host.querySelector("textarea"), fr = host.querySelector("iframe"), info = host.querySelector(".pvmode"), note = host.querySelector(".pvnote");
+    let t = null, escTab = false; const upd = () => { clearTimeout(t); setFrame(fr, ta.value, info, note); };
+    ta.value = code; upd();
+    ta.addEventListener("input", () => { clearTimeout(t); t = setTimeout(upd, 250); });
+    ta.addEventListener("keydown", (e) => { if (e.key === "Escape") { escTab = true; return; }
+      if (e.key === "Tab" && !e.shiftKey && !escTab && !ta.readOnly) { e.preventDefault(); const s = ta.selectionStart, en = ta.selectionEnd; ta.value = ta.value.slice(0, s) + I4 + ta.value.slice(en); ta.selectionStart = ta.selectionEnd = s + 4; upd(); } escTab = false; });
+    const rb = host.querySelector('[data-a="reset"]'); if (rb) rb.addEventListener("click", () => { if (!ta.readOnly) { ta.value = code; upd(); } });
+    return { get: () => ta.value, set: (v) => { ta.value = v; upd(); }, lock: () => { ta.readOnly = true; if (rb) rb.disabled = true; } };
+  }
+
+  // 可重用的「選項」框
+  function choiceBox(host, opts, { pre: isPre = false, one = false, label = "" } = {}) {
+    const wrap = document.createElement("div"); wrap.className = "qpart"; if (label) wrap.innerHTML = `<h3>${label}</h3>`;
+    const box = document.createElement("div"); box.className = "choices" + (isPre ? " wide" : "") + (one ? " one" : ""); let sel = null;
+    opts.forEach((o) => { const b = document.createElement("button"); b.type = "button"; b.className = "choice" + (isPre ? " pre" : ""); b.textContent = o; b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", () => { if (S.answered) return; sel = o; box.querySelectorAll(".choice").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }); box.appendChild(b); });
+    wrap.appendChild(box); host.appendChild(wrap);
+    return { get: () => sel, set: (o) => { const b = [...box.children].find((x) => x.textContent === o); if (b) b.click(); },
+      mark: (ans) => box.querySelectorAll(".choice").forEach((b) => { if (b.textContent === ans) b.classList.add("ok"); else if (b.textContent === sel) b.classList.add("no"); }) };
+  }
+  function toggleRows(host, rows, labels) {
+    const box = document.createElement("div"); box.className = "tg-rows"; const val = rows.map(() => null);
+    rows.forEach((r, i) => { const row = document.createElement("div"); row.className = "tg-row"; row.innerHTML = `<span class="tx">${r}</span><span class="seg" role="group">${labels.map((l, k) => `<button type="button" aria-pressed="false" data-v="${k}">${l}</button>`).join("")}</span>`;
+      row.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => { if (S.answered) return; val[i] = b.dataset.v === "0"; row.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); })); box.appendChild(row); });
+    host.appendChild(box);
+    return { get: () => val.slice(), set: (arr) => arr.forEach((v, i) => box.children[i].querySelector(`[data-v="${v ? 0 : 1}"]`).click()),
+      mark: (ans, why) => [...box.children].forEach((row, i) => { row.classList.add(val[i] === ans[i] ? "ok" : "no"); if (why && why[i]) { const p = document.createElement("span"); p.className = "rs"; p.innerHTML = why[i]; row.appendChild(p); } }) };
+  }
+
+  // =================== 1. HTML 實驗枱 ===================
+  const labQ = (t) => () => { const d = t.f(); let ed;
+    return { prompt: d.prompt, input: { kind: "custom" }, explain: d.explain, post: `<p class="iolab">參考答案</p>${codeHTML(d.solution)}`,
+      mount(area) { ed = Editor(area, d.starter, { reset: true }); }, value: () => ed.get(),
+      grade(v) { const r = d.check(parseHTML(v), CTX); return { ok: r.ok, note: r.ok ? "" : `<p>${esc(r.msg)}</p>` }; },
+      after(revealed) { if (revealed) ed.set(d.solution); ed.lock(); }, fill(ok) { ed.set(ok ? d.solution : d.starter); } }; };
+
+  // =================== 2. 看代碼選顯示 ===================
+  const LT = "ABCD";
+  const seeRender = (gen, pr) => () => { const g = gen(), order = shuffle([0, 1, 2, 3]); let sel = null, grid;
+    return { prompt: `<p>${pr || "以下 HTML 代碼放在 <body> 內。瀏覽器會怎樣顯示？"}</p>${g.files ? filesNote() : ""}${codeHTML(g.codes[0])}`.replace("<body>", "&lt;body&gt;"), input: { kind: "custom" }, explain: g.explain, show: `選項 ${LT[order.indexOf(0)]}`,
+      mount(area) { grid = document.createElement("div"); grid.className = "rgrid"; grid.setAttribute("role", "radiogroup"); grid.setAttribute("aria-label", "四個顯示選項");
+        order.forEach((ci, k) => { const o = document.createElement("div"); o.className = "ropt"; o.tabIndex = 0; o.setAttribute("role", "radio"); o.setAttribute("aria-checked", "false"); o.innerHTML = `<span class="lt">${LT[k]}</span>`;
+          o.appendChild(frameEl(g.codes[ci], g.h, "選項 " + LT[k] + " 的顯示")); const choose = () => { if (S.answered) return; sel = k; grid.querySelectorAll(".ropt").forEach((x, j) => x.setAttribute("aria-checked", String(j === k))); };
+          o.addEventListener("click", choose); o.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); choose(); } }); grid.appendChild(o); });
+        area.appendChild(grid); },
+      value: () => sel, grade: (v) => ({ ok: order[v] === 0 }), fill(ok) { const k = ok ? order.indexOf(0) : order.findIndex((x) => x !== 0); grid.children[k].click(); },
+      after() { [...grid.children].forEach((o, k) => { if (order[k] === 0) o.classList.add("ok"); else if (k === sel) o.classList.add("no"); }); },
+      docs: () => ({ docs: order.map((i) => buildDoc(g.codes[i]).doc), ans: order.indexOf(0) }) }; };
+  const SEE_SUBS = [seeSpace, seeFormat, seeList, seeTable, seeStyle, seeImage];
+  const seeCode = (gen) => () => { const g = (gen || pick(SEE_SUBS))(), opts = shuffle(g.codes); let cb;
+    return { prompt: `<p>瀏覽器顯示如下（代碼放在 &lt;body&gt; 內）。哪一段是這個網頁的 HTML 代碼？</p>${g.files ? filesNote() : ""}<div class="shot" id="shot"></div>`, input: { kind: "custom" }, explain: g.explain,
+      mount(area) { $("shot").appendChild(frameEl(g.codes[0], g.h, "網頁的顯示")); cb = choiceBox(area, opts, { pre: true }); }, value: () => cb.get(), grade: (v) => ({ ok: v === g.codes[0] }),
+      fill(ok) { cb.set(ok ? g.codes[0] : opts.find((o) => o !== g.codes[0])); }, after() { cb.mark(g.codes[0]); },
+      docs: () => ({ docs: opts.map((c) => buildDoc(c).doc), ans: opts.indexOf(g.codes[0]) }) }; };
+  const seeLinkQ = () => { const g = seeLink(), opts = shuffle(g.opts); let cb;
+    return { prompt: `<p>以下代碼放在 &lt;body&gt; 內。按「連結 ${g.k + 1}」後，會去到哪裏？</p>${codeHTML(g.code)}`, input: { kind: "custom" }, explain: g.explain,
+      mount(area) { cb = choiceBox(area, opts, { one: true }); }, value: () => cb.get(), grade: (v) => ({ ok: v === g.answer }), fill(ok) { cb.set(ok ? g.answer : opts.find((o) => o !== g.answer)); }, after() { cb.mark(g.answer); } }; };
+
+  // =================== 3. 用哪一把密碼匙 ===================
+  const PURPOSE_TXT = { conf: "保密：只讓收件人閱讀（防止竊聽及資訊攔截）", sign: "認證：證明由發件人發出（數碼簽署）", both: "保密及認證兩者都要" };
+  function keyExplain(s) { const { A, B } = s;
+    if (s.purpose === "conf") return [`目的是保密（只讓${B}閱讀）→ 公開密碼匙加密的「加密模式」。`, `${A}使用${B}的公開密碼匙加密；${B}使用自己（${B}）的私人密碼匙解密。`, "任何人都可以取得收件人的公開密碼匙來加密，但只有收件人有對應的私人密碼匙，所以只有收件人能解密。", "答題時寫明「誰的」密碼匙；「寄出」不等於加密，「讀取／開啟」才是解密（DSE 2025 乙2(b) 評卷參考）。"];
+    if (s.purpose === "sign") return [`目的是證明訊息由${A}發出 → 「認證模式」（數碼簽署）。`, `${A}使用自己（${A}）的私人密碼匙簽署；${B}使用${A}的公開密碼匙核實。`, `只有${A}擁有${A}的私人密碼匙；能用${A}的公開密碼匙核實，即證明由${A}簽署，而且訊息沒有被修改（DSE 2024 乙3(b)）。`];
+    return [`兩個目的都要：${A}以${B}的公開密碼匙加密，並以自己（${A}）的私人密碼匙簽署。`, `${B}以${A}的公開密碼匙核實，並以自己（${B}）的私人密碼匙解密（教科書圖 6.7）。`, "保密用收件人的一對密碼匙；簽署用發件人的一對密碼匙。"]; }
+  const slotLabels = (s) => s.purpose === "conf" ? [`加密（由${s.A}使用）`, `解密（由${s.B}使用）`] : s.purpose === "sign" ? [`簽署（由${s.A}使用）`, `核實（由${s.B}使用）`] : [`加密（由${s.A}使用）`, `簽署（由${s.A}使用）`, `核實（由${s.B}使用）`, `解密（由${s.B}使用）`];
+  const keyPlace = (purpose) => () => { const s = keyScn(purpose === "any" ? pick(["conf", "sign"]) : purpose), ids = ["Apub", "Apriv", "Bpub", "Bpriv"], labs = slotLabels(s); let val = labs.map(() => null), held = null, keysEl, slotsEl;
+    const chip = (id) => `<span class="kc ${id.endsWith("pub") ? "pub" : "priv"}">${KEY_SVG}<span>${esc(keyName(id, s.A, s.B))}</span></span>`;
+    const render = () => { [...slotsEl.children].forEach((sl, i) => { sl.querySelector(".sv").innerHTML = val[i] ? chip(val[i]) : "按密碼匙，再按這裏；或把密碼匙拖到這裏"; });
+      [...keysEl.children].forEach((k) => { k.classList.toggle("used", val.includes(k.dataset.k)); k.setAttribute("aria-pressed", String(k.dataset.k === held)); }); };
+    const place = (i, id) => { val = val.map((v) => (v === id ? null : v)); val[i] = id; held = null; render(); };
+    return { prompt: `<div class="scn">${esc(s.txt)}</div><p>${s.ans.length === 4 ? "把四把密碼匙分別放到四格。" : "把正確的密碼匙放到兩格。"}</p>`, input: { kind: "custom" }, explain: keyExplain(s), show: s.ans.map((id, i) => `${labs[i]}：${keyName(id, s.A, s.B)}`).join("；"),
+      mount(area) { keysEl = document.createElement("div"); keysEl.className = "keys";
+        shuffle(ids).forEach((id) => { const b = document.createElement("button"); b.type = "button"; b.className = "kc " + (id.endsWith("pub") ? "pub" : "priv"); b.dataset.k = id; b.draggable = true; b.innerHTML = `${KEY_SVG}<span>${esc(keyName(id, s.A, s.B))}</span>`; b.setAttribute("aria-pressed", "false");
+          b.addEventListener("click", () => { if (S.answered) return; held = held === id ? null : id; render(); });
+          b.addEventListener("dragstart", (e) => { if (S.answered) { e.preventDefault(); return; } e.dataTransfer.setData("text/plain", id); e.dataTransfer.effectAllowed = "move"; }); keysEl.appendChild(b); });
+        slotsEl = document.createElement("div"); slotsEl.className = "slots";
+        labs.forEach((l, i) => { const sl = document.createElement("button"); sl.type = "button"; sl.className = "slot"; sl.innerHTML = `<span class="sl">${esc(l)}</span><span class="sv"></span>`;
+          sl.addEventListener("click", () => { if (S.answered) return; if (held) place(i, held); else if (val[i]) { val[i] = null; render(); } });
+          sl.addEventListener("dragover", (e) => { if (!S.answered) { e.preventDefault(); sl.classList.add("drag"); } }); sl.addEventListener("dragleave", () => sl.classList.remove("drag"));
+          sl.addEventListener("drop", (e) => { e.preventDefault(); sl.classList.remove("drag"); const id = e.dataTransfer.getData("text/plain"); if (ids.includes(id) && !S.answered) place(i, id); }); slotsEl.appendChild(sl); });
+        const h1 = document.createElement("p"); h1.className = "flab"; h1.textContent = "四把密碼匙（藍色＝公開密碼匙，橙色＝私人密碼匙）"; const h2 = document.createElement("p"); h2.className = "flab"; h2.textContent = "放到：";
+        area.append(h1, keysEl, h2, slotsEl); render(); },
+      value: () => (val.some((v) => !v) ? null : val.slice()), grade: (v) => ({ ok: v.every((id, i) => id === s.ans[i]) }),
+      fill(ok) { const a = s.ans.slice(); if (!ok) { if (a.length === 2) a.reverse(); else [a[0], a[1]] = [a[1], a[0]]; } a.forEach((id, i) => place(i, id)); },
+      after() { [...slotsEl.children].forEach((sl, i) => sl.classList.add(val[i] === s.ans[i] ? "ok" : "no")); } }; };
+  const keyPurpose = () => { const p = pick(["conf", "conf", "sign", "sign", "both"]), s = keyScn(p), opts = ["conf", "sign", "both"].map((x) => PURPOSE_TXT[x]); let cb;
+    return { prompt: `<div class="scn">${esc(s.txt)}</div><p>使用公開密碼匙加密的目的是甚麼？</p>`, input: { kind: "custom" }, explain: keyExplain(s),
+      mount(area) { cb = choiceBox(area, opts, { one: true }); }, value: () => cb.get(), grade: (v) => ({ ok: v === PURPOSE_TXT[p] }), fill(ok) { cb.set(ok ? PURPOSE_TXT[p] : opts.find((o) => o !== PURPOSE_TXT[p])); }, after() { cb.mark(PURPOSE_TXT[p]); } }; };
+  const keyFirst = () => { const s = keyScn(pick(["conf", "sign"])), opts = shuffle(["Apub", "Apriv", "Bpub", "Bpriv"].map((id) => keyName(id, s.A, s.B))), ans = keyName(s.ans[0], s.A, s.B); let cb;
+    return { prompt: `<div class="scn">${esc(s.txt)}</div><p>${esc(s.A)}應該用哪一把密碼匙處理訊息（加密或簽署）？</p>`, input: { kind: "custom" }, explain: keyExplain(s),
+      mount(area) { cb = choiceBox(area, opts); }, value: () => cb.get(), grade: (v) => ({ ok: v === ans }), fill(ok) { cb.set(ok ? ans : opts.find((o) => o !== ans)); }, after() { cb.mark(ans); } }; };
+  const SYM = [["加密和解密都使用同一把密碼匙", 0], ["發件人和接收者要事先交換密碼匙，並把它保密", 0], ["要與很多人通訊時，要管理大量密碼匙，十分困難", 0], ["每個用戶都有一對密碼匙：一把對所有人公開，另一把要保密", 1], ["用一把密碼匙加密的訊息，必須由同一對內的另一把密碼匙解密", 1], ["是數碼簽署的基礎", 1], ["任何人都可以用接收者的公開密碼匙加密，但只有接收者能解密", 1]];
+  const keySym = () => { const [t, a] = pick(SYM), opts = ["私人密碼匙加密（對稱密碼匙加密）", "公開密碼匙加密（不對稱密碼匙加密）"]; let cb;
+    return { prompt: `<p>以下描述屬於哪一種加密系統？</p><div class="scn">${esc(t)}</div>`, input: { kind: "custom" },
+      explain: ["私人密碼匙加密（對稱）：加密和解密使用相同的密碼匙；密碼匙要事先交換並保密；密碼匙多時管理困難（教科書 6.1B）。", "公開密碼匙加密（不對稱）：每個用戶有一對密碼匙（公開、私人），一把加密，另一把解密（教科書 6.1C）。"],
+      mount(area) { cb = choiceBox(area, opts); }, value: () => cb.get(), grade: (v) => ({ ok: v === opts[a] }), fill(ok) { cb.set(opts[ok ? a : 1 - a]); }, after() { cb.mark(opts[a]); } }; };
+  const PAIN = [["私隱（Privacy）", ["用接收者的公開密碼匙加密訊息，只有指定接收者才能解密", "即使訊息被攔截，沒有接收者私人密碼匙的人也不能讀取內容"]], ["認證（Authentication）", ["訊息能用某人的公開密碼匙核實，即代表由該密碼匙的擁有者簽署，可證實發件人的真確性"]], ["完整性（Integrity）", ["發件人簽署後如有人修改訊息，便無法再以發件人的公開密碼匙核實；能成功核實即代表訊息未被修改"]], ["不可否認性（Non-repudiation）", ["發件人身份已被認證，訊息亦證實未被修改，所以發件人不能否認曾發送並簽署該訊息"]]];
+  const keyPain = () => { const k = R(0, 3), t = pick(PAIN[k][1]), opts = PAIN.map((x) => x[0]); let cb;
+    return { prompt: `<p>公開密碼匙基礎建設（PKI）可解決「PAIN」問題。以下描述的是哪一項？</p><div class="scn">${esc(t)}</div>`, input: { kind: "custom" },
+      explain: ["P 私隱：以接收者的公開密碼匙加密，只有接收者能解密。", "A 認證：能以公開密碼匙核實，即由該密碼匙擁有者簽署。", "I 完整性：簽署後被修改便不能核實。", "N 不可否認性：認證及完整性的結果，發件人不能否認（教科書 6.1C）。"],
+      mount(area) { cb = choiceBox(area, opts); }, value: () => cb.get(), grade: (v) => ({ ok: v === opts[k] }), fill(ok) { cb.set(opts[ok ? k : (k + 1) % 4]); }, after() { cb.mark(opts[k]); } }; };
+
+  // =================== 4. 威脅與對策 ===================
+  const W = {
+    vpn: ["使用 VPN 連接互聯網", "VPN 只加密裝置與 VPN 伺服器之間傳送的數據並隱藏 IP 位址，解決不了這個問題。"],
+    ssid: ["關閉無線路由器的 SSID 廣播", "隱藏 Wi-Fi 名稱只令其他人較難找到你的無線網絡，與這個問題無關。"],
+    priv: ["使用私密瀏覽（無痕模式）", "私密瀏覽只是不在裝置留下瀏覽紀錄、cookies 及輸入的資料，解決不了這個問題。"],
+    dnc: ["在《拒收訊息登記冊》登記電話號碼", "拒收訊息登記冊只用於拒收商業電子訊息（例如推銷短訊）。"],
+    backup: ["定期備份檔案", "備份只能在檔案損毀或被加密後還原，不能阻止這個威脅發生（DSE 2020 甲36：備份不能防止私隱被黑客攻擊）。"],
+    encf: ["把電腦內所有檔案加密", "加密檔案只令內容不能被讀取，不能阻止惡意程式執行，亦不能阻止受騙（教科書測試站 5.7）。"],
+    tfa: ["為帳戶啟用雙重認證", "雙重認證加強登入時的身份認證，解決不了這個問題。"],
+    captcha: ["在登入頁面加入人機驗證（Captcha）", "人機驗證只鑑別登入者是否真人，解決不了這個問題。"],
+    av: ["安裝防毒軟件", "這個情境沒有惡意軟件，是用戶自己被騙交出資料或金錢；防毒軟件針對惡意軟件，不能阻止用戶自己洩露資料（樣本試卷乙2(a)）。"],
+    fw: ["安裝防火牆", "防火牆過濾進出的數據包、阻止未經授權的存取；但資料是用戶自己交出的，防火牆阻止不了。"],
+    https: ["只要網址以 https 開首，便可放心輸入資料", "https 只代表通訊已加密，不代表網站沒有詐騙成份（教科書常見錯誤）。"],
+    clear: ["清除瀏覽紀錄及 cookies", "清除瀏覽紀錄及 cookies 保護瀏覽私隱，解決不了這個問題。"],
+  };
+  const MS = "最合適的措施是甚麼？";
+  const THREATS = [
+    { n: "電腦病毒", g: "惡意軟件", s: [(N) => `${N}在電腦執行了同學 USB 手指內的一個遊戲程式。之後電腦內很多文件被刪除或損壞，電腦內其他程式檔案也被感染。這個惡意程式依附在遊戲程式內，會自我複製到其他檔案。`],
+      ok: ["安裝防毒軟件並啟用自動更新，執行外來檔案前先掃描", "防毒軟件以病毒識別碼比對檔案，找出並隔離已知的電腦病毒；要自動更新才能識別最新的惡意軟件（教科書 5.2A）。"], w: [W.vpn, W.ssid, W.priv, W.dnc], x: [],
+      why: "依附在檔案內、執行後破壞檔案並自我複製到其他檔案，是電腦病毒的特徵；它不會自行在網絡中傳播。" },
+    { n: "蠕蟲", g: "惡意軟件", s: [(N) => `${N}打開一封電郵的附件後，通訊錄內所有聯絡人都收到一封附有相同附件的電郵。這個惡意程式無須依附其他檔案，能自我複製，並自行在電腦網絡中傳播。`],
+      ok: ["刪除附有不明附件的電郵；有需要開啟附件時，先用防毒軟件掃描", "蠕蟲經常以電郵附件傳播；不開啟來歷不明的附件（特別是 exe、vbs、bat），開啟前先掃描（教科書 5.1A、5.4C）。"], w: [W.vpn, W.encf, W.captcha, W.priv], x: [],
+      why: "無須依附檔案、能自我複製並自行在網絡中傳播（例如自動寄給通訊錄內所有人），是蠕蟲的特徵。" },
+    { n: "木馬程式", g: "惡意軟件", s: [(N) => `${N}下載了一個免費的「相片濾鏡」應用程式。它看似實用，但暗中建立了後門程式，黑客可以遙距控制${N}的電腦並偷看視像鏡頭。這個程式不會自我複製。`],
+      ok: ["只從官方或信譽良好的來源下載應用程式，並留意它要求的權限", "木馬程式偽裝成實用的程式吸引用戶下載；只安裝可信來源的程式，並了解所要求的權限是否合理（教科書活動 5.2）。"], w: [W.backup, W.https, W.ssid, W.dnc], x: ["間諜軟件"],
+      why: "偽裝成實用的程式、建立後門讓黑客遙距控制、不會自我複製，是木馬程式的特徵。" },
+    { n: "間諜軟件", g: "惡意軟件", s: [(N) => `${N}的網上帳戶密碼不斷被盜。技術人員發現電腦內有一個程式暗中記錄鍵盤輸入及瀏覽紀錄，再把資料傳送出去；它沒有破壞任何檔案，而且善於隱藏。`],
+      ok: ["用防毒（反間諜）軟件掃描並移除該程式，並保持軟件更新", "要先找出並移除暗中記錄資料的程式（DSE 2019 乙4(d) 評卷參考：使用反間諜軟件）。"], w: [["把密碼改得更長、更複雜", "程式記錄的是鍵盤輸入，密碼再長也會被記錄；要先移除間諜軟件。"], W.backup, ["使用代理伺服器", "代理伺服器只隱藏 IP 位址，間諜軟件仍在電腦內記錄資料。"], W.captcha], x: ["廣告軟件", "木馬程式"],
+      why: "暗中竊取用戶資料（用戶名稱、密碼、鍵盤輸入、瀏覽紀錄），但不作破壞、善於隱藏，是間諜軟件的特徵。" },
+    { n: "廣告軟件", g: "惡意軟件", s: [(N) => `${N}安裝了一個免費軟件後，電腦不斷以彈出視窗及橫幅顯示廣告，瀏覽器的預設首頁亦被改為另一個網站。`],
+      ok: ["移除該免費軟件並用防毒軟件掃描，並在瀏覽器啟用「阻擋顯示彈出式視窗」", "廣告軟件通常嵌在免費軟件中；移除它，並啟用瀏覽器阻擋彈出式視窗及重新導向的功能（教科書 5.2F）。"], w: [W.vpn, W.tfa, W.encf, W.ssid], x: ["間諜軟件"],
+      why: "嵌在免費軟件中、不斷顯示廣告以獲利，是廣告軟件的特徵。" },
+    { n: "勒索軟件", g: "惡意軟件", mq: "要減低這類攻擊造成的損失，最合適的措施是甚麼？", s: [(N) => `${N}公司的電腦突然出現訊息：所有文件已被加密，要在三天內以比特幣交付「贖金」才能取得解密的密碼匙，否則檔案會被刪除。`, (N) => `${N}開啟電腦後，發現所有相片及文件都不能開啟，畫面要求交付贖金以解密檔案。`],
+      ok: ["定期備份檔案，並把備份存放在不連接電腦的地方", "檔案被加密後，可由備份還原，毋須交贖金（DSE 2017 甲38、教科書活動 5.3）。"], w: [["交付贖金以取得解密密碼匙", "交贖金不保證取回檔案，亦助長罪行；應向警方報案（DSE 2019 甲38）。"], ["把被加密的檔案複製到另一部電腦開啟", "檔案已被加密，複製到另一部電腦仍然無法開啟（教科書測試站 5.2）。"], W.https, W.priv], x: [],
+      why: "把電腦內的檔案加密，再要求受害者交付贖金以解密，是勒索軟件的特徵。" },
+    { n: "中間人攻擊", g: "攻擊與入侵", s: [(N) => `${N}在咖啡店連接了一個名為「Free_Cafe_WiFi」、無需密碼的 Wi-Fi 熱點進行網上購物。原來熱點由黑客設置，黑客在${N}與網站之間轉發數據，暗中攔截了${N}輸入的信用卡資料。`, (N) => `${N}在機場找到一個與機場同名、無需密碼的 Wi-Fi 熱點並連接上網。黑客藉這個熱點攔截及監視${N}傳送的所有資料，${N}完全察覺不到。`],
+      ok: ["避免用公共 Wi-Fi 傳送敏感資料；無法避免時，使用 VPN 加密數據", "VPN 加密傳送的數據包，即使被攔截也不能被讀取；網上銀行等涉及私隱的活動應避免用公共 Wi-Fi（教科書 5.2E）。"], w: [["安裝防毒軟件", "攔截發生在網絡上，電腦沒有感染惡意軟件；防毒軟件不能阻止攔截。"], W.backup, ["關閉自己家中無線路由器的 SSID 廣播", "隱藏自己家中的 Wi-Fi 名稱，與連接公共熱點被攔截無關。"], W.clear], x: ["黑客入侵"],
+      why: "黑客在發送者與接收者之間攔截、轉發甚至竄改通訊，雙方都以為直接連線，是中間人攻擊；以同名 Wi-Fi 熱點誘騙連線亦稱雙面惡魔攻擊。" },
+    { n: "拒絕服務攻擊", g: "攻擊與入侵", noM: true, s: [() => "演唱會門票開售時，售票網站突然癱瘓。調查發現大量分布在不同地方、已被黑客遙距控制的電腦同時向網站伺服器發送大量網絡請求，耗盡伺服器的資源，令正常用戶無法使用。", () => "某學校的網上學習平台在測驗期間不能使用。原來黑客利用很多被入侵的「殭屍電腦」同時向平台伺服器發出大量請求，令伺服器無法回應正常用戶。"],
+      w: [], x: [], why: "令目標伺服器無法為用戶提供服務，是拒絕服務攻擊；利用分布在不同地方的殭屍電腦（殭屍網絡）同時攻擊，稱為分布式拒絕服務攻擊（DDoS）。" },
+    { n: "黑客入侵", g: "攻擊與入侵", s: [() => "某公司伺服器的操作系統多年沒有更新。黑客利用一個已公布的保安漏洞擅自存取伺服器，盜取了客戶資料，並更改了公司網站的內容。"],
+      ok: ["定期更新操作系統及軟件，安裝修補程式堵塞保安漏洞", "黑客經常利用舊版本軟件的保安漏洞入侵；更新可修復保安漏洞（DSE 2023 甲40）。"], w: [W.clear, W.priv, W.dnc, W.captcha], x: ["中間人攻擊"],
+      why: "攻擊網絡保安、擅自存取電腦或系統內的資料，甚至更改網站內容（塗鴉），是黑客入侵。" },
+    { n: "餌誘", g: "社交工程", s: [(N) => `${N}在停車場拾到一支寫着「年終獎金名單」的 USB 手指，出於好奇把它插入公司電腦，惡意軟件隨即自動安裝到電腦。`],
+      ok: ["不要把來歷不明的 USB 手指或光碟插入電腦", "餌誘利用好奇心，把帶惡意軟件的儲存設備遺留在公眾場所（教科書 5.3C）。"], w: [W.vpn, W.tfa, W.priv, W.dnc], x: [],
+      why: "以光碟或 USB 作誘餌、利用受害者的好奇心，是餌誘。" },
+    { n: "等價交換", g: "社交工程", s: [() => "一個遊戲網站聲稱：只要輸入你的電郵地址及電郵密碼，便可獲得額外遊戲積分及禮品。", () => "有人在社交平台宣稱：提供你的網上銀行用戶名稱及密碼，便可免費獲得一部智能電話。"],
+      ok: ["不要提供密碼或個人資料來換取服務或禮品", "等價交換聲稱提供服務或商品，要求受害者以個人資料交換（教科書 5.3C）。"], w: [W.https, W.fw, W.backup, W.av], x: ["仿冒詐騙"],
+      why: "聲稱提供服務或商品，要求以個人資料（例如電郵及密碼）交換，是等價交換。" },
+    { n: "交友詐騙", g: "社交工程", s: [(N) => `${N}在社交平台認識一位自稱在外國工作的工程師。對方從不視像通話或見面，最近以生意周轉不靈為由，多次要求${N}匯款。`],
+      ok: ["不要匯款，先核實對方身份；有懷疑可致電反詐騙協調中心 18222", "交友詐騙以假身份博取同情要求匯款；騙徒會以奇怪藉口拒絕視像通話或見面（教科書活動 5.6）。"], w: [W.av, W.fw, W.vpn, W.backup], x: ["假託"],
+      why: "利用虛假的社交媒體帳號及假身份，編造故事博取同情並要求金錢，是交友詐騙。" },
+    { n: "假託", g: "社交工程", s: [(N) => `${N}收到一個自稱是朋友的 WhatsApp 訊息：「我的電話壞了，收不到驗證碼，請幫我看看你收到的 6 位數字。」`, (N) => `${N}的媽媽收到訊息，對方自稱是「特務」，說${N}在外地干犯了刑事罪行，要求她立即繳交保證金。`],
+      ok: ["絕不向他人提供驗證碼或匯款；直接致電親友或有關機構核實對方身份", "假託以虛構的故事或冒充角色博取信任；不要提供驗證碼，應直接致電親友核實（教科書活動 5.7）。"], w: [W.av, ["把密碼改得更長、更複雜", "騙徒要的是驗證碼或金錢，改密碼不能阻止受騙。"], W.vpn, W.backup], x: ["交友詐騙", "仿冒詐騙"],
+      why: "虛構故事情節甚至冒充角色（朋友、特務）以博取信任，誘騙受害人提供資料或匯款，是假託。" },
+    { n: "仿冒詐騙", g: "社交工程", s: [(N) => `${N}收到一封自稱「香港郵政」的電郵，說包裹因地址不正確未能派遞，要${N}按電郵內的超連結到網站輸入信用卡資料。該網站外觀與官方網站十分相似。`, (N) => `${N}收到一封來自「天空銀行 &lt;sky@gmail.com&gt;」的電郵，標題是「您的帳戶已被凍結」，要求${N}在兩日內按連結登入驗證帳戶。`],
+      ok: ["不要按電郵內的超連結；直接輸入官方網址或致電機構核實，輸入資料前檢查網站的數碼證書", "仿冒詐騙以偽造的網站騙取資料；不要按可疑超連結，輸入個人資料前先檢查網站的數碼證書（教科書 5.3C、活動 5.9）。"], w: [W.https, W.fw, W.backup, W.priv], x: ["等價交換", "假託", "濫發電子訊息"],
+      why: "偽造官方網站，再以電郵或短訊內的超連結把受害人誘騙到偽造網站輸入資料，是仿冒詐騙。" },
+    { n: "濫發電子訊息", g: "私隱威脅", s: [(N) => `${N}每天收到大量推銷補習服務的手機短訊，他從未同意接收這些訊息。`, (N) => `${N}的電郵信箱每天收到大量廣告郵件，信箱快要超出容量。`],
+      ok: [null, "最簡單有效的方法是立刻刪除、切勿回覆可疑訊息；市民可在拒收訊息登記冊登記，拒收商業電子訊息（《非應邀電子訊息條例》，教科書 5.4C）。"],
+      oks: ["在《拒收訊息登記冊》登記電話號碼，拒收商業電子訊息", "啟用郵箱的垃圾郵件過濾功能，並立刻刪除、切勿回覆可疑訊息"], w: [W.vpn, W.encf, W.priv, W.backup], x: ["仿冒詐騙"],
+      why: "未經收件人同意，大量發出多餘的訊息（大部分是商業廣告），是濫發電子訊息（垃圾郵件）。" },
+    { n: "第三方 cookies 追蹤", g: "私隱威脅", s: [(N) => `${N}在購物網站搜尋了球鞋，之後瀏覽社交平台時不斷出現同款球鞋的廣告。原來由其他網站產生的 cookies 跨網站追蹤他的瀏覽紀錄。`],
+      ok: ["拒絕或封鎖第三方 cookies，並定期清除 cookies", "第三方 cookies 由其他網站產生，用於跨網站追蹤用戶以顯示個人化廣告；接受後個人資訊可能被收集（DSE 2023 甲21）。"], w: [["安裝防火牆", "防火牆過濾進出的數據包，不會刪除瀏覽器內的 cookies。"], W.tfa, W.backup, W.ssid], x: ["過度收集資料"],
+      why: "由用戶目前瀏覽網站以外的網站產生、跨網站追蹤活動紀錄的，是第三方 cookies。" },
+    { n: "過度收集資料", g: "私隱威脅", s: [(N) => `${N}安裝了一個二維碼掃描器應用程式。首次啟動時，程式要求存取相機、通訊錄及位置。`, () => "一個網上問卷平台要求用戶註冊時填寫身份證號碼、住址及婚姻狀況，但這些資料與問卷服務毫無關係。"],
+      ok: [null, "只提供服務必需的資料；資料一旦儲存在服務提供者的數據庫，可能被轉移給第三者或外洩（教科書 5.3F、測試站 5.4）。"],
+      oks: ["只允許服務必需的權限（相機），拒絕其他權限", "想清楚是否有必要填寫，只提供必需的個人資料，並細閱私隱政策"], w: [W.av, W.vpn, W.backup, W.tfa], x: ["第三方 cookies 追蹤"],
+      why: "要求用戶提供與服務本質無關的個人資料或權限，是過度收集資料。" },
+    { n: "個人資料過度曝光", g: "私隱威脅", s: [(N) => `${N}在公開的社交平台個人檔案寫上電話號碼、住址及就讀學校，任何人都能看到。`],
+      ok: ["更改預設的私隱設定，只讓朋友閱覽，並避免公開過多個人資料", "應更改預設私隱設定、小心選擇哪些資料公開（教科書 5.4D；DSE 2013 甲37：使用預設私隱設定是錯的）。"], w: [["使用強密碼並定期更改", "強密碼保護帳戶不被入侵，但已公開的資料任何人都看到。"], W.av, W.vpn, W.backup], x: [],
+      why: "在公開平台顯示過多個人資料，可能導致身份被盜用，是個人資料過度曝光。" },
+  ];
+  const threatQ = (grp) => () => {
+    const t = pick(THREATS.filter((x) => x.g === grp)), si = R(0, t.s.length - 1), N = pick(NAMES), scn = t.s[si](N);
+    const others = THREATS.filter((x) => x !== t && !t.x.includes(x.n) && !x.x.includes(t.n));
+    const same = shuffle(others.filter((x) => x.g === t.g)).slice(0, 2), names = shuffle([t.n, ...same.map((x) => x.n), ...shuffle(others.filter((x) => !same.includes(x))).slice(0, 3 - same.length).map((x) => x.n)]);
+    const okM = t.noM ? null : (t.oks ? t.oks[si] : t.ok[0]), wr = t.noM ? [] : shuffle(t.w).slice(0, 3), mOpts = t.noM ? [] : shuffle([okM, ...wr.map((x) => x[0])]);
+    let c1, c2;
+    const ex = [`威脅：${t.n}。${t.why}`]; if (!t.noM) ex.push(`措施：${okM}。${t.ok[1]}`);
+    return { prompt: `<div class="scn">${scn}</div>`, input: { kind: "custom" }, explain: ex,
+      mount(area) { c1 = choiceBox(area, names, { label: "(a) 這是哪一種威脅？" }); if (!t.noM) c2 = choiceBox(area, mOpts, { one: true, label: "(b) " + (t.mq || MS) }); },
+      value: () => { const a = c1.get(), b = t.noM ? "-" : c2.get(); return a && b ? [a, b] : null; },
+      grade: (v) => { const ok = v[0] === t.n && (t.noM || v[1] === okM); return { ok, note: wr.length ? `<p class="iolab">其他措施為甚麼不合適</p><ul class="why">${wr.map((x) => `<li><b>${esc(x[0])}</b>：${esc(x[1])}</li>`).join("")}</ul>` : "" }; },
+      fill(ok) { c1.set(ok ? t.n : names.find((x) => x !== t.n)); if (!t.noM) c2.set(ok ? okM : mOpts.find((x) => x !== okM)); },
+      after(revealed, res) { c1.mark(t.n); if (!t.noM) c2.mark(okM); if (revealed && wr.length) $("feedback").insertAdjacentHTML("beforeend", `<p class="iolab">其他措施為甚麼不合適</p><ul class="why">${wr.map((x) => `<li><b>${esc(x[0])}</b>：${esc(x[1])}</li>`).join("")}</ul>`); } };
+  };
+  const RAN_OK = ["立即中斷網絡連接（拔除網線、關閉 Wi-Fi），並關閉電腦", "通知負責人（例如公司資訊科技部）及向警方報案", "清除勒索軟件後，由備份還原檔案"];
+  const RAN_BAD = [["交付贖金，取得解密密碼匙", "不要交贖金：交了也不保證取回檔案，更助長罪行（DSE 2019 甲38）。"], ["先執行防毒軟件掃描，之後才中斷網絡", "先掃毒是錯的：勒索軟件可能繼續經網絡加密或感染其他電腦，要先中斷網絡（DSE 2024 甲18，53%）。"], ["把被加密的檔案複製到另一部電腦或伺服器開啟", "檔案已被加密，複製到另一部電腦仍然無法開啟，還可能把問題擴散（DSE 2019 甲38）。"], ["立即格式化硬碟", "立即格式化不是第一步：先中斷網絡、通知負責人；格式化亦會刪去調查所需的資料（DSE 2022 甲35 的干擾項）。"], ["啟用防火牆", "受感染後才啟用防火牆不能解密檔案，也不是立即要做的事（DSE 2022 甲35 的干擾項）。"]];
+  const ransomQ = () => { const N = pick(["志明", "芝芝", "李小姐", "陳先生"]), bad = shuffle(RAN_BAD).slice(0, 3), pool = shuffle([...RAN_OK, ...bad.map((x) => x[0])]); let seq = [], seqEl, poolEl;
+    const render = () => { seqEl.innerHTML = seq.length ? seq.map((t, i) => `<li><button type="button" data-i="${i}">${esc(t)}</button></li>`).join("") : '<li class="ph">按下面的行動，按次序加入（再按一次可移除）</li>';
+      seqEl.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => { if (S.answered) return; seq.splice(+b.dataset.i, 1); render(); }));
+      poolEl.querySelectorAll(".choice").forEach((b) => { b.disabled = seq.includes(b.textContent) || S.answered; }); };
+    return { prompt: `<div class="scn">${N}發現辦公室內一部電腦受到勒索軟件攻擊，一些重要檔案已被加密而不能開啟，畫面要求交付贖金。</div><p>選出應做的行動，並按先後次序排列（只選應做的；不應做的不要選）。</p>`, input: { kind: "custom" },
+      explain: ["① 立即中斷網絡連接：防止勒索軟件經網絡擴散到其他電腦（DSE 2022 甲35，46%；2024 甲18，53%）。", "② 通知負責人及向警方報案（教科書測試站 5.2；DSE 2019 甲38）。", "③ 清除勒索軟件後由備份還原：所以平日要定期備份（DSE 2017 甲38）。", "不要交付贖金。"],
+      mount(area) { const h = document.createElement("p"); h.className = "flab"; h.textContent = "你的次序："; seqEl = document.createElement("ol"); seqEl.className = "seq"; const h2 = document.createElement("p"); h2.className = "flab"; h2.textContent = "可選的行動：";
+        poolEl = document.createElement("div"); poolEl.className = "pool"; pool.forEach((t) => { const b = document.createElement("button"); b.type = "button"; b.className = "choice"; b.textContent = t; b.addEventListener("click", () => { if (S.answered || seq.includes(t)) return; seq.push(t); render(); }); poolEl.appendChild(b); });
+        area.append(h, seqEl, h2, poolEl); render(); },
+      value: () => (seq.length ? seq.slice() : null), grade: (v) => ({ ok: v.length === 3 && v.every((t, i) => t === RAN_OK[i]), note: `<p class="iolab">不應做的行動</p><ul class="why">${bad.map((x) => `<li><b>${esc(x[0])}</b>：${esc(x[1])}</li>`).join("")}</ul>` }),
+      fill(ok) { seq = ok ? RAN_OK.slice() : [RAN_OK[1], RAN_OK[0], RAN_OK[2]]; render(); },
+      after(revealed) { [...seqEl.children].forEach((li, i) => { if (li.classList.contains("ph")) return; li.classList.add(seq[i] === RAN_OK[i] ? "ok" : "no"); }); poolEl.querySelectorAll(".choice").forEach((b) => { b.disabled = true; if (RAN_OK.includes(b.textContent)) b.classList.add("ok"); });
+        if (revealed) $("feedback").insertAdjacentHTML("beforeend", `<p class="iolab">正確次序</p><ol class="why">${RAN_OK.map((t) => `<li>${esc(t)}</li>`).join("")}</ol>`); } }; };
+  const CAN = [
+    ["防火牆", [["按預先定義的規則，允許或封鎖進出的數據包", 1, "防火牆檢查數據包的 IP 位址、類型、連接埠等（教科書 5.2B）。"], ["阻止未經授權的存取", 1, "DSE 2021 乙1(d)(i) 評卷參考。"], ["以病毒識別碼掃描電腦內的檔案", 0, "這是防毒軟件的工作。"], ["加密經互聯網傳送的數據", 0, "這是 SSL／VPN 的工作。"], ["阻止用戶自己在仿冒詐騙網站輸入信用卡資料", 0, "資料是用戶自己輸入的，防火牆阻止不了。"]]],
+    ["防毒軟件", [["把檔案內容與病毒識別碼比較，找出已知的惡意軟件", 1, "病毒識別碼就像「指紋」（教科書 5.2A）。"], ["實時掃描新進入電腦的檔案，即時隔離或移除受感染檔案", 1, "這是主動式功能。"], ["在沒有更新的情況下，識別最新的惡意軟件", 0, "要啟用自動更新，才能識別最新的惡意軟件（DSE 2018 乙2(a)(i)：更新病毒定義檔案）。"], ["阻止用戶自己向騙徒洩露個人資料", 0, "防毒軟件只針對惡意軟件（樣本試卷乙2(a)）。"], ["過濾進出網絡的數據包", 0, "這是防火牆的工作。"]]],
+    ["保密插口層（SSL）／HTTPS", [["加密客戶端與伺服器之間傳送的數據，例如密碼及信用卡號碼", 1, "DSE 2021 乙1(d)(ii)。"], ["令傳送途中被攔截的數據無法被讀取", 1, "黑客只取得密文（教科書圖 6.21）。"], ["保護已儲存在網站數據庫中的數據", 0, "SSL 只適用於數據傳輸過程（教科書常見錯誤）。"], ["證明網站不是仿冒詐騙網站", 0, "https 只代表通訊已加密（教科書常見錯誤）。"], ["提高數據傳輸率", 0, "DSE 2023 甲38。"], ["隱藏網站的 IP 位址", 0, "DSE 2023 甲38。"]]],
+    ["數據加密", [["令被攔截的數據無法被讀取", 1, "DSE 2018 甲38：主要好處是黑客不能輕易讀取資料。"], ["即使數據被非法存取，數據私隱仍受保障", 1, "教科書 6.1。"], ["阻止數據被攔截", 0, "加密本身無法阻止資訊被攔截（教科書 6.1）。"], ["阻止黑客刪除數據", 0, "DSE 2018 甲38 的干擾項。"], ["令加密和解密不需要額外時間", 0, "加密需要時間；密碼匙越長，運算時間越長（DSE 2017 乙1(a)）。"]]],
+    ["虛擬私有網絡（VPN）", [["在裝置與 VPN 伺服器之間建立加密的「隧道」", 1, "教科書 5.2D。"], ["隱藏用戶的真實 IP 位址", 1, "網站只看到 VPN 伺服器的 IP 位址。"], ["讓在外工作的員工安全地連接公司內部網絡", 1, "遠程存取 VPN。"], ["提高連線速度", 0, "缺點是會減低連線速度（教科書測試站 5.5）。"], ["清除電腦內的惡意軟件", 0, "這是防毒軟件的工作。"]]],
+    ["私密瀏覽（無痕模式）", [["關閉所有無痕視窗後，不在裝置留下瀏覽紀錄及 cookies", 1, "教科書 5.4A。"], ["不儲存在表單中輸入的資料", 1, "教科書圖 5.22。"], ["令你造訪的網站、學校或互聯網服務供應商看不到你的活動", 0, "這些仍可能看到你的活動（教科書圖 5.22）。"], ["在瀏覽期間完全不使用 cookies", 0, "關閉所有無痕視窗後 cookies 才會被刪除（教科書常見錯誤）。"]]],
+    ["代理伺服器", [["隱藏用戶的 IP 位址", 1, "網站只記錄代理伺服器的 IP 位址（教科書 5.4A）。"], ["過濾網頁並封鎖指定的網站", 1, "DSE 2014 甲26。"], ["暫存曾瀏覽的網頁，加快再次載入", 1, "高速緩衝儲存。"], ["加密用戶與網站之間的連線", 0, "代理伺服器的連線並無加密，這是它與 VPN 的分別。"], ["增加互聯網連接的頻寬", 0, "教科書測試站 5.10 的干擾項。"]]],
+    ["定期備份", [["檔案被勒索軟件加密後，可由備份還原", 1, "DSE 2017 甲38。"], ["防止個人資料被黑客竊取", 0, "DSE 2020 甲36：備份不能保障私隱免被黑客攻擊。"], ["防止電腦感染惡意軟件", 0, "備份只是另存一份副本。"]]],
+    ["雙重認證（2FA）", [["黑客即使竊取了密碼，沒有用戶的手機或權標仍難以登入", 1, "「你擁有的東西」難以透過互聯網竊取（教科書 6.2F）。"], ["結合「你知道的東西」和「你擁有的東西」兩個認證要素", 1, "教科書 6.2F。"], ["輸入兩個不同的密碼也屬於雙重認證", 0, "兩個密碼都是「你知道的東西」（教科書常見錯誤）。"], ["人機驗證（Captcha）可作為第二個認證要素", 0, "人機驗證只鑑別是否真人，不驗證身份（教科書試想想）。"]]],
+    ["一次性密碼（OTP）", [["只能使用一次，並在短時間內失效", 1, "DSE 2025 乙2(a)。"], ["可經 SMS、電郵、權標或手機應用程式取得", 1, "DSE 2025 乙2(a) 評卷參考。"], ["保安權標內的一次性密碼由伺服器匯入權標", 0, "OTP 由權標在本機產生（教科書常見錯誤）。"], ["可以重複使用，方便用戶記憶", 0, "每個 OTP 只能使用一次。"]]],
+  ];
+  const canQ = () => { const [m, list] = pick(CAN), yes = shuffle(list.filter((x) => x[1])), no = shuffle(list.filter((x) => !x[1])); const ny = Math.min(yes.length, R(1, 2)), items = shuffle([...yes.slice(0, ny), ...no.slice(0, Math.min(no.length, 4 - ny))]); let tg;
+    return { prompt: `<p>以下各項，<b>${esc(m)}</b>能做到還是不能做到？</p>`, input: { kind: "custom" }, explain: ["DSE 常考「這項措施保護甚麼、不保護甚麼」：防火牆與防毒軟件的分別、SSL 不保護已儲存的數據、加密不能阻止攔截。"],
+      mount(area) { tg = toggleRows(area, items.map((x) => esc(x[0])), ["能", "不能"]); }, value: () => { const v = tg.get(); return v.includes(null) ? null : v; },
+      grade: (v) => ({ ok: v.every((x, i) => x === !!items[i][1]) }), fill(ok) { tg.set(items.map((x, i) => (ok || i ? !!x[1] : !x[1]))); },
+      after() { tg.mark(items.map((x) => !!x[1]), items.map((x) => `${x[1] ? "能" : "不能"}：${esc(x[2])}`)); } }; };
+
+  // =================== 5. 加密計算 ===================
+  const alphaTable = (k) => { const A = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; return `<div class="atab"><table><tr><th>明文</th>${[...A].map((c) => `<td>${c}</td>`).join("")}<td>空格</td></tr><tr><th>密文</th>${[...A].map((c) => `<td>${caesar(c, k)}</td>`).join("")}<td>$</td></tr></table></div>`; };
+  const RULE_TXT = (k) => `每個字母向後移 ${k} 位（Z 之後回到 A，小寫字母同樣移位），空格換成「$」`;
+  const textQ = (o) => ({ prompt: o.prompt, input: { kind: "text", ph: o.ph || "" }, answer: o.answer, show: o.show || esc(o.answer), explain: o.explain, cmp: o.cmp, hint: o.hint });
+  const parseNum = (s) => { const t = String(s).replace(/[,\s，]/g, "").replace(/秒|年|倍|個/g, ""); let m = /^([+-]?\d*\.?\d+)(?:[eE]([+-]?\d+)|[x×*]10\^?([+-]?\d+))?$/.exec(t); if (m) return parseFloat(m[1]) * 10 ** +(m[2] || m[3] || 0); m = /^2\^(\d+)$/.exec(t); return m ? 2 ** +m[1] : NaN; };
+  const calcEnc = () => { const d = CALC.enc(); return textQ({ prompt: `<p>用凱撒密碼加密以下明文：${RULE_TXT(d.k)}。</p><div class="pwdbox">${esc(d.plain)}</div>`, answer: d.cipher, ph: "密文", cmp: (a) => a.trim() === d.cipher,
+    explain: [`移位數 ${d.k}：${[...new Set(d.plain.toUpperCase().replace(/ /g, ""))].slice(0, 4).map((c) => `${c} → ${caesar(c, d.k)}`).join("、")}……`, "空格換成「$」；大小寫保持不變（教科書活動 6.1）。", `密文：${d.cipher}`], hint: "<h4>移位對照表</h4>" + alphaTable(d.k) }); };
+  const calcDec = () => { const d = CALC.dec(); return textQ({ prompt: `<p>以下密文用凱撒密碼加密（${RULE_TXT(d.k)}）。把它解密。</p><div class="pwdbox">${esc(d.cipher)}</div>`, answer: d.plain, ph: "明文", cmp: (a) => a.trim().replace(/\s+/g, " ") === d.plain,
+    explain: [`解密是加密的反向：每個字母向前移 ${d.k} 位，「$」換回空格。`, `明文：${d.plain}`, "收件人要事先知道解密方法（移位數），其他人看到密文也不能解讀。"], hint: "<h4>移位對照表</h4>" + alphaTable(d.k) }); };
+  const calcFind = () => { const d = CALC.find(); return textQ({ prompt: `<p>某人用凱撒密碼把明文「${d.plain}」加密成「${d.cipher}」。每個字母向後移了多少位？（1 至 25）</p>`, answer: String(d.k), ph: "移位數", cmp: (a) => parseInt(a, 10) === d.k,
+    explain: [`${d.plain[0]} → ${d.cipher[0]}：由 ${d.plain[0]} 數到 ${d.cipher[0]}，向後移 ${d.k} 位（超過 Z 便回到 A 再數）。`, `用其他字母核對：${d.plain[1]} → ${d.cipher[1]}，同樣移 ${d.k} 位。`] }); };
+  const calcCombos = () => { const d = CALC.combos(); return textQ({ prompt: `<p>一把 ${d.n} 位元的加密密碼匙，最多有多少個可能的密碼匙組合？（寫出整數）</p>`, answer: d.ans, show: Number(d.ans).toLocaleString("en-US"), ph: "組合數目", cmp: (a) => { const t = a.replace(/[,\s，個]/g, ""); return t === d.ans || t === "2^" + d.n; },
+    explain: [`n 位元的密碼匙有 2<sup>n</sup> 個組合（每個位元有 0、1 兩個可能）。`, `2<sup>${d.n}</sup> ＝ ${Number(d.ans).toLocaleString("en-US")}`] }); };
+  const calcSec = () => { const d = CALC.sec(), sx = sci(d.sec); const exact = Number.isInteger(d.sec) ? d.sec.toLocaleString("en-US") : String(+d.sec.toPrecision(12));
+    return textQ({ prompt: `<p>黑客的程式每秒可嘗試 ${RATE_TXT(d.rate)} 個密碼匙組合。破解一段以 ${d.n} 位元密碼匙加密的訊息，最長需時多少秒？（答案準確至三位有效數字）</p>`, answer: exact, show: `${exact} 秒（約 ${sx.ms} × 10<sup>${sx.e}</sup> 秒）`, ph: "秒", cmp: (a) => { const v = parseNum(a); return isFinite(v) && Math.abs(v - d.sec) / d.sec <= 0.005; },
+      explain: [`最大組合數 ＝ 2<sup>${d.n}</sup> ＝ ${(2 ** d.n).toLocaleString("en-US")}`, `最長需時 ＝ 2<sup>${d.n}</sup> ÷ ${d.rate.toLocaleString("en-US")} ＝ ${exact} 秒`, "可輸入小數或科學記數法（例如 1.10e9）。"] }); };
+  const calcYrs = () => { const d = CALC.yrs(), s = sci(d.sec), y = sci(d.yrs); let mi, ei;
+    return { prompt: `<p>一部電腦每秒可嘗試 ${RATE_TXT(d.rate)} 個密碼匙組合。破解以 ${d.n} 位元密碼匙加密的訊息，最長需時多少<b>年</b>？（一年按 365 日計；係數準確至三位有效數字）</p>`, input: { kind: "custom" }, show: `${y.ms} × 10<sup>${y.e}</sup> 年`,
+      explain: [`最大組合數 ＝ 2<sup>${d.n}</sup> ≈ ${sci(2 ** d.n).ms} × 10<sup>${sci(2 ** d.n).e}</sup>`, `最長需時 ＝ 2<sup>${d.n}</sup> ÷ ${RATE_TXT(d.rate)} ≈ ${s.ms} × 10<sup>${s.e}</sup> 秒`, `一年 ＝ 365 × 24 × 60 × 60 ＝ 31,536,000 秒；${s.ms} × 10<sup>${s.e}</sup> ÷ 31,536,000 ≈ ${y.ms} × 10<sup>${y.e}</sup> 年`, "密碼匙越長，可能組合越多，破解需時越長，所以越安全（教科書例題 6.1）。"],
+      mount(area) { area.innerHTML = `<div class="sci"><input type="text" class="sm" id="sci-m" inputmode="decimal" aria-label="係數" autocomplete="off"> × 10 的 <input type="text" class="sm" id="sci-e" inputmode="numeric" aria-label="指數" autocomplete="off"> 次方 年</div>`; mi = $("sci-m"); ei = $("sci-e"); },
+      value: () => (mi.value.trim() && ei.value.trim() ? [mi.value, ei.value] : null),
+      grade: (v) => { const val = parseFloat(v[0]) * 10 ** parseInt(v[1], 10); return { ok: isFinite(val) && Math.abs(val - d.yrs) / d.yrs <= 0.005 }; },
+      fill(ok) { mi.value = ok ? y.ms : (y.m + 1).toFixed(2); ei.value = String(y.e); }, after(rv, res) { mi.readOnly = ei.readOnly = true; mi.classList.add(res && res.ok ? "ok" : "no"); ei.classList.add(res && res.ok ? "ok" : "no"); } }; };
+  const calcMore = () => { const d = CALC.more(); return textQ({ prompt: `<p>某系統把加密密碼匙由 ${d.n} 位元增加至 ${d.n + d.k} 位元。用同一部電腦逐一嘗試，最長破解時間會變成原來的多少倍？</p>`, answer: d.ans, ph: "倍數", cmp: (a) => { const v = parseNum(a); return v === Number(d.ans); },
+    explain: [`組合數由 2<sup>${d.n}</sup> 增至 2<sup>${d.n + d.k}</sup>。`, `2<sup>${d.n + d.k}</sup> ÷ 2<sup>${d.n}</sup> ＝ 2<sup>${d.k}</sup> ＝ ${d.ans} 倍：每多 1 位元，組合數及最長破解時間加倍。`] }); };
+
+  // =================== 6. 密碼檢查 ===================
+  const profHTML = (pf) => `<div class="prof"><span>姓名：<b>${pf.name}</b></span><span>用戶名稱：<b>${pf.user}</b></span><span>出生日期：<b>${pf.bday}</b></span></div><p class="small">（虛構人物）</p>`;
+  const ruleExplain = (pwd, pf) => pwdRules(pwd, pf.user, pf.bday).map((r, i) => `${r.ok ? "✓" : "✗"} ${RULES[i][1]}`);
+  const pwdCheckQ = () => { const { pf, p, ans } = PWQ.check(); let tg;
+    return { prompt: `${profHTML(pf)}<p>這位用戶想用以下密碼。逐條判斷它是否符合規則。</p><div class="pwdbox">${esc(p)}</div>`, input: { kind: "custom" }, explain: ["密碼規則（教科書 5.4B；DSE 2014 乙4(b)(iii)、2017 乙5(c)(i)、2019 乙2(a)(i)、2024 乙2(c) 評卷參考）：長度 8 個或以上；大寫、小寫、數字及符號；不用用戶名稱、個人資料或容易猜到的字詞。", `這個密碼${ans.every((x) => x) ? "符合所有規則" : "不符合的規則：" + RULES.filter((_, i) => !ans[i]).map((r) => r[1].replace(/（.*$/, "")).join("、")}。`],
+      mount(area) { tg = toggleRows(area, RULES.map((r) => esc(r[1])), ["符合", "不符合"]); }, value: () => { const v = tg.get(); return v.includes(null) ? null : v; },
+      grade: (v) => ({ ok: v.every((x, i) => x === ans[i]) }), fill(ok) { tg.set(ans.map((x, i) => (ok || i ? x : !x))); },
+      after() { const pr = pwdRules(p, pf.user, pf.bday); tg.mark(ans, pr.map((r) => esc(detail(r.id, p, pf)))); } }; };
+  function detail(id, p, pf) { const n = p.length;
+    if (id === "len") return `有 ${n} 個字符`; if (id === "up") return /[A-Z]/.test(p) ? "有大寫字母" : "沒有大寫字母"; if (id === "low") return /[a-z]/.test(p) ? "有小寫字母" : "沒有小寫字母";
+    if (id === "dig") return /[0-9]/.test(p) ? "有數字" : "沒有數字"; if (id === "sym") return /[^A-Za-z0-9\s]/.test(p) ? "有符號" : "沒有符號";
+    if (id === "user") return p.toLowerCase().includes(pf.user.toLowerCase()) ? `包含用戶名稱「${pf.user}」` : "沒有包含用戶名稱";
+    if (id === "pers") { const hit = bdayParts(pf.bday).find((x) => p.includes(x)); return hit ? `包含出生日期的「${hit}」` : "沒有包含出生日期"; }
+    const low = p.toLowerCase(); if (WORST10.includes(low)) return "在教科書「最差密碼」排行榜內"; const w = COMMON.find((x) => low.includes(x)); if (w) return `包含常見字詞「${w}」`; return simplePattern(low) ? "有 1234、abcd、aaaa 一類的簡單規律" : "不是常見或過度簡單的密碼"; }
+  const pwdBestQ = () => { const { pf, good, bads } = PWQ.best();
+    const opts = shuffle([good, ...bads]); let cb;
+    return { prompt: `${profHTML(pf)}<p>以下哪一個密碼符合所有規則（至少 8 個字符；大寫、小寫、數字及符號；不含用戶名稱、出生日期及常見字詞或簡單規律）？</p>`, input: { kind: "custom" },
+      explain: [`${good}：${ruleExplain(good, pf).every((x) => x[0] === "✓") ? "全部規則都符合。" : ""}`, ...bads.map((b) => `${b}：${pwdRules(b, pf.user, pf.bday).map((r, i) => (r.ok === false ? RULES[i][1].replace(/（.*$/, "") : null)).filter(Boolean).map((t) => "不符合「" + t + "」").join("、")}`)],
+      mount(area) { cb = choiceBox(area, opts, { pre: true }); }, value: () => cb.get(), grade: (v) => ({ ok: v === good }), fill(ok) { cb.set(ok ? good : bads[0]); }, after() { cb.mark(good); } }; };
+  const pwdGivenQ = () => { const g = shuffle(PW_GIVEN), given = g.slice(0, R(1, 2)), okR = g[given.length], again = given[0], nots = shuffle(PW_NOT).slice(0, 2); const opts = shuffle([okR, again, ...nots.map((x) => x[0])]); let cb;
+    return { prompt: `<p>某網上系統已規定用戶的密碼：</p><ul class="why">${given.map((x) => `<li>${esc(x)}</li>`).join("")}</ul><p>如要再加一條<b>密碼規則</b>，以下哪一項最合適？</p>`, input: { kind: "custom" },
+      explain: [`「${okR}」是 DSE 評卷參考接受的密碼規則，而且題目未有給出。`, `「${again}」題目已給出，再寫不會得分（DSE 2022、2024 評卷提示）。`, ...nots.map((x) => `「${x[0]}」：${x[1]}。`)],
+      mount(area) { cb = choiceBox(area, opts, { one: true }); }, value: () => cb.get(), grade: (v) => ({ ok: v === okR }), fill(ok) { cb.set(ok ? okR : opts.find((o) => o !== okR)); }, after() { cb.mark(okR); } }; };
+  const acctQ = () => { const k = R(0, ACCT.length - 1), opts = shuffle([ACCT[k][1], ...shuffle(ACCT.filter((_, i) => i !== k)).slice(0, 3).map((x) => x[1])]); let cb;
+    return { prompt: `<p>某網上系統加入了以下帳戶保安措施。它的主要好處是甚麼？</p><div class="scn">${esc(ACCT[k][0])}</div>`, input: { kind: "custom" }, explain: [`${ACCT[k][0]} → ${ACCT[k][1]}。`, "答題時要寫出措施如何保障帳戶，不要只寫「更安全」。"],
+      mount(area) { cb = choiceBox(area, opts, { one: true }); }, value: () => cb.get(), grade: (v) => ({ ok: v === ACCT[k][1] }), fill(ok) { cb.set(ok ? ACCT[k][1] : opts.find((o) => o !== ACCT[k][1])); }, after() { cb.mark(ACCT[k][1]); } }; };
+
+  // =================== 自由工具（探索區） ===================
+  const EXPLORERS = {
+    lab(host) {
+      host.innerHTML = `<div class="trow"><label for="ex-sel">載入教科書例子</label><select id="ex-sel" class="mini" style="font-size:15px;padding:6px 10px;max-width:100%"></select></div>${filesNote()}<div id="ex-ed"></div>`;
+      const sel = $("ex-sel"); LAB_EXAMPLES.forEach(([n], i) => { const o = document.createElement("option"); o.value = i; o.textContent = n; sel.appendChild(o); });
+      const ed = Editor($("ex-ed"), LAB_EXAMPLES[0][1]); sel.addEventListener("change", () => ed.set(LAB_EXAMPLES[+sel.value][1]));
+    },
+    calc(host) {
+      host.innerHTML = `<div class="tool"><h4>凱撒密碼工具（教科書活動 6.1）</h4><textarea id="cz-in" spellcheck="false" aria-label="輸入文字">I love ICT so much</textarea>
+        <div class="trow"><span class="stepper">移位數 <button type="button" id="cz-m" aria-label="減少">−</button><b id="cz-k">3</b><button type="button" id="cz-p" aria-label="增加">+</button></span><label><input type="checkbox" id="cz-d" checked> 空格換成 $</label><button type="button" class="mini" id="cz-enc">加密 →</button><button type="button" class="mini" id="cz-dec">← 解密</button></div>
+        <div class="out" id="cz-out" aria-live="polite"></div><div id="cz-tab"></div></div>
+        <div class="tool"><h4>破解時間計算器（教科書例題 6.1）</h4><div class="trow"><label>密碼匙長度 <input type="number" class="sm" id="kt-n" value="16" min="1" max="4096"> 位元</label><label>每秒嘗試 <input type="text" class="sm" id="kt-r" value="2000" style="width:8em"> 個組合</label></div>
+        <dl class="res" id="kt-out" aria-live="polite"></dl><p class="fhint">每秒嘗試次數可寫 2000、1e9、95e15 等。一年按 365 日計。</p></div>`;
+      let k = 3; const run = (dec) => { const s = $("cz-in").value, d = $("cz-d").checked; $("cz-out").textContent = dec ? uncaesar(s, k, d) : caesar(s, k, d); };
+      const tab = () => { $("cz-k").textContent = k; $("cz-tab").innerHTML = alphaTable(k); };
+      $("cz-m").addEventListener("click", () => { k = k > 1 ? k - 1 : 25; tab(); }); $("cz-p").addEventListener("click", () => { k = k < 25 ? k + 1 : 1; tab(); });
+      $("cz-enc").addEventListener("click", () => run(false)); $("cz-dec").addEventListener("click", () => run(true)); tab(); run(false);
+      const kt = () => { const n = parseInt($("kt-n").value, 10), r = parseNum($("kt-r").value), out = $("kt-out");
+        if (!(n >= 1 && n <= 4096) || !(r > 0)) { out.innerHTML = "<dt>結果</dt><dd>請輸入 1 至 4096 位元及正數的每秒嘗試次數。</dd>"; return; }
+        const c = 2n ** BigInt(n), cs = n <= 128 ? c.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "", sec = 2 ** n / r, f = (x) => { if (!isFinite(x)) return "超出可計算範圍"; const q = sci(x); return x >= 0.01 && x < 1e6 ? x.toLocaleString("en-US", { maximumSignificantDigits: 6 }) : `${q.ms} × 10<sup>${q.e}</sup>`; };
+        out.innerHTML = `<dt>組合數目</dt><dd>2<sup>${n}</sup>${cs ? " ＝ " + cs : " ≈ " + f(2 ** n)}</dd><dt>最長需時</dt><dd>${f(sec)} 秒</dd><dt>約</dt><dd>${f(sec / 31536000)} 年</dd>`; };
+      $("kt-n").addEventListener("input", kt); $("kt-r").addEventListener("input", kt); kt();
+    },
+    pwd(host) {
+      host.innerHTML = `<div class="warnbar">只輸入<b>虛構</b>的資料及密碼。本檢查器在你的瀏覽器內運算，不會儲存、記錄或傳送任何輸入。</div>
+        <div class="trow"><label>用戶名稱（虛構）<input type="text" id="pc-u" autocomplete="off" spellcheck="false" value="chantaiman" style="width:11em;font-size:16px"></label><label>出生日期（虛構，可留空）<input type="text" id="pc-b" autocomplete="off" placeholder="2008-03-15" value="2008-03-15" style="width:9em;font-size:16px"></label></div>
+        <div class="trow"><label>密碼（虛構）<input type="text" id="pc-p" autocomplete="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore placeholder="例如 Tiger2008!" style="width:14em"></label></div>
+        <ul class="rlist" id="pc-out" aria-live="polite"></ul>
+        <p class="flab">程式未能檢查、但同樣要做到的良好習慣（教科書 5.4B）：</p>
+        <ul class="habits"><li>定期更改密碼</li><li>不要重用最近使用的三組密碼</li><li>不同系統使用不同的密碼</li><li>不要用紙張或電子裝置記錄密碼；不要把密碼發送給他人或與他人共用</li><li>不要使用字典中的字詞（本頁只檢查一個小字詞表）</li></ul>`;
+      const run = () => { const p = $("pc-p").value, u = $("pc-u").value, b = $("pc-b").value.trim(), out = $("pc-out");
+        if (!p) { out.innerHTML = '<li><span class="mk z">—</span><span>輸入一個虛構密碼，便會逐條顯示是否符合規則。</span></li>'; return; }
+        const pf = { user: u.trim(), bday: b };
+        out.innerHTML = pwdRules(p, u, b).map((r, i) => { const m = r.ok === null ? ["z", "—"] : r.ok ? ["y", "✓"] : ["n", "✗"]; const extra = r.ok === null ? (r.id === "user" ? "（未有用戶名稱）" : "（未有有效的出生日期，格式 2008-03-15）") : `：${esc(detail(r.id, p, pf))}`;
+          return `<li><span class="mk ${m[0]}">${m[1]}</span><span>${RULES[i][1]}${extra}</span></li>`; }).join(""); };
+      ["pc-u", "pc-b", "pc-p"].forEach((id) => $(id).addEventListener("input", run)); run();
+    },
+  };
+
+  // =================== 模式及題型 ===================
+  const H = (...a) => `<h4>方法</h4><ol>${a.map((x) => `<li>${esc(x).replace(/&lt;(\/?(?:b|sup|sub))&gt;/g, "<$1>")}</li>`).join("")}</ol>`;
+  const E = (g, n, fn, hint) => ({ group: g, name: n, fn, hint });
+  const LABHINT = H("先看預覽，找出與要求不同的地方。", '只改需要改的標記或屬性；屬性寫在開始標記內：名稱="值"。', "改好後預覽會即時更新，滿意後按「核對答案」。");
+  const ENTRIES = {
+    lab: LAB.map((t) => E(t.g, t.n, labQ(t), LABHINT)),
+    see: [
+      E("看代碼選顯示", "空白與 <br>", seeRender(seeSpace), H("在 <p> 內，多個空格及換行只顯示為一個空格。", "<br> 換行；<pre> 保留所有空格及換行（等寬字體）。")),
+      E("看代碼選顯示", "文字格式標記", seeRender(seeFormat), H("b 粗體、i 斜體、u 底線、sup 上標、sub 下標。", "留意每個標記包住哪幾個字；嵌套時內層先結束。")),
+      E("看代碼選顯示", "清單", seeRender(seeList), H("<ul> 圓點；<ol> 數字。", "<h3> 等標題不屬於清單。")),
+      E("看代碼選顯示", "表格合併儲存格", seeRender(seeTable), H("逐列數 <td>：每列應佔滿相同欄數。", "colspan 向右合併；rowspan 向下合併，下面那列要少寫一格。")),
+      E("看代碼選顯示", "style 屬性", seeRender(seeStyle), H("style 內各屬性值以「;」分隔。", "text-align 對齊、color 文字顏色、background-color 背景、font-size 字體大小。")),
+      E("看代碼選顯示", "圖像", seeRender(seeImage), H("src 要與資料夾內的檔名完全相同。", "未能顯示時出現破圖及 alt 文字；width 與 height 的比例與原圖不同便會變形。")),
+      E("看顯示選代碼", "看顯示選代碼", seeCode(null), H("先看顯示有甚麼特徵（換行、粗體、清單符號、合併儲存格、顏色…）。", "逐個選項預測顯示，刪去不符合的。")),
+      E("看顯示選代碼", "padding 與 border-spacing", seeCode(seePad), H("padding：內容與儲存格邊框之間。", "border-spacing：儲存格與儲存格之間。")),
+      E("看代碼選顯示", "超連結去向", seeLinkQ, H("href 以「#」開首 → 同一網頁的鎖定點。", "href 只有檔名 → 另一網頁的頂部；檔名#名稱 → 另一網頁的鎖定點。")),
+    ],
+    key: [
+      E("放密碼匙", "保密：加密及解密", keyPlace("conf"), H("目的是保密 → 用<b>收件人</b>的一對密碼匙。", "收件人的公開密碼匙加密，收件人的私人密碼匙解密。")),
+      E("放密碼匙", "簽署：簽署及核實", keyPlace("sign"), H("目的是證明由發件人發出 → 用<b>發件人</b>的一對密碼匙。", "發件人的私人密碼匙簽署，發件人的公開密碼匙核實。")),
+      E("放密碼匙", "保密及簽署", keyPlace("both"), H("保密用收件人的一對；簽署用發件人的一對。", "發件人：收件人公開（加密）＋自己私人（簽署）；收件人：發件人公開（核實）＋自己私人（解密）。")),
+      E("判斷", "判斷目的", keyPurpose, H("「只有某人能閱讀」「防止竊聽」→ 保密。", "「證明由某人發出」「沒有被修改」「不能否認」→ 認證（簽署）。")),
+      E("判斷", "發件人用哪一把", keyFirst, H("先判斷目的。", "保密 → 收件人的公開密碼匙；簽署 → 發件人的私人密碼匙（教科書活動 6.2）。")),
+      E("概念", "對稱與不對稱", keySym, H("同一把密碼匙 → 私人密碼匙（對稱）加密。", "一對密碼匙 → 公開密碼匙（不對稱）加密。")),
+      E("概念", "PKI 的作用（PAIN）", keyPain, H("P 私隱、A 認證、I 完整性、N 不可否認性。")),
+    ],
+    threat: [
+      E("威脅與對策", "惡意軟件", threatQ("惡意軟件"), H("病毒：依附檔案、自我複製。蠕蟲：無須依附、自行在網絡傳播。木馬：偽裝實用程式、不自我複製。", "間諜軟件：暗中竊取資料。廣告軟件：不斷顯示廣告。勒索軟件：加密檔案要求贖金。")),
+      E("威脅與對策", "攻擊與入侵", threatQ("攻擊與入侵"), H("中間人攻擊：在雙方之間攔截、轉發或竄改。", "拒絕服務攻擊：大量請求令伺服器癱瘓。黑客入侵：擅自存取系統。")),
+      E("威脅與對策", "社交工程", threatQ("社交工程"), H("餌誘：USB／光碟誘餌。等價交換：以資料換禮品。交友詐騙：假身份要求匯款。", "假託：虛構故事、冒充角色。仿冒詐騙：偽造網站及連結。")),
+      E("威脅與對策", "私隱威脅", threatQ("私隱威脅"), H("濫發電子訊息、第三方 cookies、過度收集資料、個人資料過度曝光。", "措施要針對該威脅：拒收訊息登記冊、封鎖第三方 cookies、只給必需權限、更改私隱設定。")),
+      E("勒索軟件", "勒索軟件：立即要做的次序", ransomQ, H("第一步要阻止擴散。", "不要交贖金；平日定期備份。")),
+      E("措施", "措施能做到甚麼", canQ, H("想清楚這項措施的作用範圍：保護傳送中的數據？已儲存的數據？檢查檔案？過濾數據包？")),
+    ],
+    calc: [
+      E("凱撒密碼", "凱撒密碼：加密", calcEnc, ""),
+      E("凱撒密碼", "凱撒密碼：解密", calcDec, ""),
+      E("凱撒密碼", "凱撒密碼：找出移位數", calcFind, H("由明文第一個字母數到密文第一個字母。", "超過 Z 便由 A 再數。")),
+      E("密碼匙長度", "密碼匙組合數目", calcCombos, H("n 位元 → 2<sup>n</sup> 個組合。")),
+      E("密碼匙長度", "最長破解時間（秒）", calcSec, H("最長需時 ＝ 2<sup>n</sup> ÷ 每秒嘗試次數。")),
+      E("密碼匙長度", "最長破解時間（年）", calcYrs, H("先計秒數：2<sup>n</sup> ÷ 每秒嘗試次數。", "再 ÷ 31,536,000（365 × 24 × 60 × 60）得年數。", "寫成 a × 10<sup>b</sup>，a 介乎 1 與 10 之間。")),
+      E("密碼匙長度", "增加位元的效果", calcMore, H("每多 1 位元，組合數加倍。", "多 k 位元 → 2<sup>k</sup> 倍。")),
+    ],
+    pwd: [
+      E("密碼規則", "逐條檢查密碼", pwdCheckQ, H("數字符數。", "逐類檢查大寫、小寫、數字、符號。", "找有沒有用戶名稱、出生日期（年份、月日）、常見字詞或 1234、aaaa 一類規律。")),
+      E("密碼規則", "哪個密碼符合所有規則", pwdBestQ, H("逐個密碼按規則刪去。")),
+      E("答題技巧", "題目已給的規則不能再寫", pwdGivenQ, H("先刪去題目已給的規則。", "屏蔽密碼欄、限制登入次數、SSL、權標、多重要素認證都不是「密碼規則」（DSE 2017 評卷參考）。")),
+      E("答題技巧", "帳戶保安措施的好處", acctQ, H("想想這項措施防止了甚麼情況。")),
+    ],
+  };
+  const MODES = [
+    { id: "lab", name: "HTML 實驗枱", note: "左邊改 HTML 代碼，右邊即時預覽瀏覽器的顯示。每題一個任務：修改代碼令網頁符合要求。", tips: "<b>提示：</b>預覽在沙盒內顯示，不會執行 script，亦不會開啟外部網站。代碼片段會自動放入 &lt;body&gt; 內預覽。下方「自由實驗枱」可載入教科書 4.2 的例子自由修改。", ex: "自由實驗枱：教科書例子" },
+    { id: "see", name: "看代碼選顯示", note: "讀 HTML 代碼，選出瀏覽器的顯示；或看顯示選代碼。四個預覽全部由瀏覽器即時渲染。對應 DSE 2013 甲25、2015 甲25、2016 甲29、2019 甲25。", tips: "<b>提示：</b>DSE 只要求讀懂 HTML、預測顯示效果，不考默寫標記。標記沒有大小寫之分，屬性值用單引號或雙引號效果相同。" },
+    { id: "key", name: "用哪一把密碼匙", note: "按情境把四把密碼匙放到「加密（簽署）」及「解密（核實）」格。可按密碼匙再按格子，或直接拖放。", tips: "<b>答題句式：</b>「小芬使用志强的公開密碼匙加密文件；志强使用自己的私人密碼匙解密文件。」每把密碼匙要寫明是<b>誰的</b>（DSE 乙部常考，每題 2 分）。" },
+    { id: "threat", name: "威脅與對策", note: "讀情境，認出威脅的名稱，再選最合適的措施；另有勒索軟件「立即要做」的次序題，及「措施能做到甚麼」。", tips: "<b>提示：</b>措施要針對情境中的威脅。防火牆過濾數據包、阻止未經授權存取；防毒軟件以病毒識別碼找出惡意軟件；SSL／HTTPS 只加密傳送中的數據。" },
+    { id: "calc", name: "加密計算", note: "凱撒密碼的加密及解密（教科書活動 6.1），以及密碼匙長度與最長破解時間（教科書例題 6.1）。", tips: "<b>提示：</b>最長破解時間 ＝ 2<sup>n</sup> ÷ 每秒嘗試次數（秒）；一年按 365 日（31,536,000 秒）計。下方有凱撒密碼工具及破解時間計算器。", ex: "工具：凱撒密碼及破解時間計算器", exOpen: true },
+    { id: "pwd", name: "密碼檢查", note: "按 DSE 評卷參考的密碼規則逐條檢查。下方的密碼檢查器可自由試，但只可用虛構的密碼。", tips: "<b>提示：</b>題目已給的規則不能再寫；屏蔽密碼欄、限制登入次數、SSL、權標不是「密碼規則」（DSE 2017 乙5(c)(i)）。", ex: "密碼檢查器（只用虛構密碼）", exOpen: true },
+  ];
+
+  // =================== 狀態 ===================
+  const S = { mode: "lab", q: null, entry: null, n: 0, answered: false, right: 0, total: 0, streak: 0, best: 0, on: {} };
+  const hsh = location.hash.replace("#", ""); if (MODES.some((x) => x.id === hsh)) S.mode = hsh;
+  MODES.forEach((m) => { S.on[m.id] = new Set(ENTRIES[m.id].map((e) => e.name)); });
+  try { const saved = JSON.parse(localStorage.getItem("wslab-filter") || "{}");
+    Object.keys(saved).forEach((id) => { if (!ENTRIES[id] || !Array.isArray(saved[id])) return; const names = new Set(ENTRIES[id].map((e) => e.name)); const keep = saved[id].filter((n) => names.has(n)); if (keep.length) S.on[id] = new Set(keep); }); } catch (e) {}
+  const saveFilter = () => { try { const o = {}; Object.keys(S.on).forEach((id) => { o[id] = [...S.on[id]]; }); localStorage.setItem("wslab-filter", JSON.stringify(o)); } catch (e) {} };
+
+  const nav = $("modes"); const built = {};
+  MODES.forEach((m) => { const b = document.createElement("button"); b.type = "button"; b.textContent = m.name; b.dataset.id = m.id;
+    b.addEventListener("click", () => { S.mode = m.id; try { history.replaceState(null, "", "#" + m.id); } catch (e) {} renderNav(); renderFilter(); next(); }); nav.appendChild(b); });
+  function renderNav() { [...nav.children].forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === S.mode)));
+    const m = MODES.find((x) => x.id === S.mode); $("mode-note").textContent = m.note; $("tips").innerHTML = m.tips; $("pwd-warn").hidden = S.mode !== "pwd";
+    const ex = $("explorer"); ex.hidden = !m.ex;
+    if (m.ex) { $("ex-title").textContent = m.ex; const body = $("explorer-body"); body.innerHTML = "";
+      if (!built[m.id]) { built[m.id] = document.createElement("div"); built[m.id].className = "fbody"; built[m.id].style.padding = "0"; body.appendChild(built[m.id]); EXPLORERS[m.id](built[m.id]); } else body.appendChild(built[m.id]); ex.open = !!m.exOpen || ex.dataset.mode === m.id && ex.open; ex.dataset.mode = m.id; } }
+  function renderCount() { const all = ENTRIES[S.mode].length, on = S.on[S.mode].size, el = $("fcount"); el.textContent = on === all ? `全部 ${all} 種題型` : `已選 ${on}／${all} 種`; el.classList.toggle("partial", on !== all); }
+  function renderFilter() {
+    const box = $("fchips"); box.innerHTML = ""; const list = ENTRIES[S.mode], groups = [];
+    list.forEach((e) => { let g = groups.find((x) => x.name === e.group); if (!g) { g = { name: e.group, items: [] }; groups.push(g); } g.items.push(e); });
+    groups.forEach((g) => { const wrap = document.createElement("div"); wrap.className = "fgroup";
+      if (g.name) { const h = document.createElement("h3"); h.textContent = g.name; wrap.appendChild(h);
+        if (groups.length > 1) { const only = document.createElement("button"); only.type = "button"; only.className = "mini"; only.textContent = `只練「${g.name}」`;
+          only.addEventListener("click", () => { S.on[S.mode] = new Set(g.items.map((x) => x.name)); saveFilter(); renderFilter(); afterFilter(); }); h.appendChild(only); } }
+      const chips = document.createElement("div"); chips.className = "chips";
+      g.items.forEach((e) => { const c = document.createElement("button"); c.type = "button"; c.className = "chip"; c.textContent = e.name; c.setAttribute("aria-pressed", String(S.on[S.mode].has(e.name)));
+        c.addEventListener("click", () => { const set = S.on[S.mode]; set.has(e.name) ? set.delete(e.name) : set.add(e.name); c.setAttribute("aria-pressed", String(set.has(e.name))); saveFilter(); renderCount(); afterFilter(); }); chips.appendChild(c); });
+      wrap.appendChild(chips); box.appendChild(wrap); });
+    renderCount(); }
+  function afterFilter() { if (!S.on[S.mode].size) { showEmpty(); return; } if (!S.q || !S.entry || !S.on[S.mode].has(S.entry.name)) next(); }
+  $("f-all").addEventListener("click", () => { S.on[S.mode] = new Set(ENTRIES[S.mode].map((e) => e.name)); saveFilter(); renderFilter(); afterFilter(); });
+  $("f-none").addEventListener("click", () => { S.on[S.mode] = new Set(); saveFilter(); renderFilter(); afterFilter(); });
+  function renderScore() { $("sc-right").textContent = S.right; $("sc-total").textContent = S.total; $("sc-streak").textContent = S.streak; $("sc-best").textContent = S.best; }
+  function showEmpty() { S.q = null; S.entry = null; $("qtype").textContent = ""; $("qno").textContent = "";
+    $("prompt").innerHTML = '<p class="empty">請在上方「題型篩選」選擇至少一種題型。</p>'; $("input-area").innerHTML = ""; $("feedback").hidden = true;
+    $("btn-check").disabled = true; $("btn-show").disabled = true; $("btn-next").disabled = true; $("filter").open = true; $("btn-hint").hidden = true; $("hintbox").hidden = true; }
+
+  function next() {
+    const pool = ENTRIES[S.mode].filter((e) => S.on[S.mode].has(e.name)); if (!pool.length) { showEmpty(); return; }
+    let e = pick(pool); if (pool.length > 1 && S.entry && e.name === S.entry.name) e = pick(pool.filter((x) => x.name !== S.entry.name));
+    S.entry = e; S.q = e.fn(); S.n++; S.answered = false; $("btn-next").disabled = false;
+    const q = S.q; $("qtype").textContent = (e.group ? e.group + " · " : "") + e.name; $("qno").textContent = `第 ${S.n} 題`;
+    $("hintbox").innerHTML = q.hint || e.hint || ""; $("btn-hint").hidden = !$("hintbox").innerHTML; setHint(false); updNext();
+    $("prompt").innerHTML = q.prompt; const area = $("input-area"); area.innerHTML = ""; $("feedback").hidden = true; $("btn-check").disabled = false; $("btn-show").disabled = false;
+    if (q.input.kind === "text") {
+      area.innerHTML = `<div class="answer-row"><label for="ans">你的答案</label><input id="ans" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${q.input.ph || ""}"></div>`;
+      $("ans").addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); S.answered ? next() : check(); } });
+    } else q.mount(area);
+  }
+  function current() { const q = S.q; return q.input.kind === "text" ? $("ans").value : q.value(); }
+  function finish(correct, revealed, res) {
+    S.answered = true; $("btn-check").disabled = true; $("btn-show").disabled = true;
+    if (!revealed) { S.total++; if (correct) { S.right++; S.streak++; if (S.streak > S.best) S.best = S.streak; } else S.streak = 0; } else S.streak = 0;
+    renderScore(); const q = S.q;
+    if (q.input.kind === "text") { $("ans").readOnly = true; if (!revealed) $("ans").classList.add(correct ? "ok" : "no"); }
+    const fb = $("feedback"); fb.className = "feedback " + (correct ? "good" : "bad"); fb.hidden = false;
+    const head = revealed ? "答案" : correct ? "答對了" : "未答對";
+    fb.innerHTML = `<div class="verdict">${head}${q.show ? "：" + q.show : ""}</div>${res && res.note ? res.note : ""}${q.post && !correct ? q.post : ""}<ol class="steps">${q.explain.map((x) => `<li>${esc(x).replace(/&lt;(\/?su[bp])&gt;/g, "<$1>")}</li>`).join("")}</ol>`;
+    if (q.after) q.after(revealed, res);
+    updNext(); $("btn-next").focus({ preventScroll: true });
+  }
+  function warn(msg) { const fb = $("feedback"); fb.className = "feedback bad"; fb.hidden = false; fb.innerHTML = `<div class="verdict">${msg}</div>`; }
+  function check() {
+    if (S.answered || !S.q) return; const a = current(), q = S.q;
+    if (a === null || a === undefined || (typeof a === "string" && a.trim() === "")) { warn("請先完成作答，或按「顯示答案」。"); return; }
+    let ok, res = null;
+    if (q.input.kind === "text") ok = q.cmp ? q.cmp(a) : a.trim() === q.answer;
+    else { res = q.grade(a); ok = res.ok; }
+    finish(ok, false, res);
+  }
+  function setHint(open) { $("hintbox").hidden = !open; $("btn-hint").setAttribute("aria-expanded", String(open)); }
+  $("btn-hint").addEventListener("click", () => setHint($("hintbox").hidden));
+  $("btn-check").addEventListener("click", check);
+  $("btn-show").addEventListener("click", () => { if (!S.answered && S.q) finish(false, true, null); });
+  let skipTimer = null;
+  function updNext(confirming) { const b = $("btn-next"); clearTimeout(skipTimer); b.classList.remove("primary", "ghost", "skip", "confirm");
+    if (S.answered) { b.classList.add("primary"); b.textContent = "下一題 →"; }
+    else if (confirming) { b.classList.add("ghost", "confirm"); b.textContent = "再按一次確認跳過"; skipTimer = setTimeout(() => updNext(false), 3000); }
+    else { b.classList.add("ghost", "skip"); b.textContent = "跳過此題"; } }
+  $("btn-next").addEventListener("click", () => { if (S.answered || $("btn-next").classList.contains("confirm")) return next(); updNext(true); });
+
+  // 測試用：以正確或錯誤答案填寫目前的題目（不會自動核對）
+  window.__wslab = { fill(ok) { const q = S.q; if (!q || S.answered) return false; if (q.input.kind === "text") $("ans").value = ok ? q.answer : "999 wrong"; else q.fill(ok); return true; },
+    only(name) { S.on[S.mode] = new Set([name]); renderFilter(); next(); }, entries: () => ENTRIES[S.mode].map((e) => e.name), mode: (m) => [...nav.children].find((b) => b.dataset.id === m).click(),
+    docs: () => (S.q && S.q.docs ? S.q.docs() : null) };
+
+  renderNav(); renderFilter(); renderScore(); next();
+})();
+</script>
+
+</body></html>

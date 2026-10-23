@@ -1,0 +1,1233 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>空運行練習室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --bg:#EEF2F0; --surface:#FFFFFF; --sunk:#E3E9E6; --ink:#17262A; --muted:#566A6E; --line:#C9D4D0;
+  --accent:#0E7466; --accent-ink:#FFFFFF; --led:#E39B10; --led-ink:#1A1204; --led-glow:rgba(227,155,16,.35);
+  --hl:rgba(227,155,16,.18); --str:#9A4A06; --cur:#F6F1E4;
+  --good:#1F7A3A; --good-bg:#E3F3E7; --bad:#B3261E; --bad-bg:#FBE7E5;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1618; --surface:#162226; --sunk:#1D2C31; --ink:#E2ECE9; --muted:#95A9AB; --line:#2C3E43;
+    --accent:#35BFA9; --accent-ink:#0B1413; --led:#F4B23C; --led-ink:#1A1204; --led-glow:rgba(244,178,60,.35);
+    --hl:rgba(244,178,60,.16); --str:#F2B880; --cur:#232B22;
+    --good:#5BD17E; --good-bg:#15301F; --bad:#FF8A80; --bad-bg:#3A1A18; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1618; --surface:#162226; --sunk:#1D2C31; --ink:#E2ECE9; --muted:#95A9AB; --line:#2C3E43;
+  --accent:#35BFA9; --accent-ink:#0B1413; --led:#F4B23C; --led-ink:#1A1204; --led-glow:rgba(244,178,60,.35);
+  --hl:rgba(244,178,60,.16); --str:#F2B880; --cur:#232B22;
+  --good:#5BD17E; --good-bg:#15301F; --bad:#FF8A80; --bad-bg:#3A1A18; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:24px 48px;display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+h1{font-size:30px;font-weight:900;margin:0;letter-spacing:.02em;text-wrap:balance}
+h1 .bits{display:inline-block;white-space:nowrap;font-family:var(--mono);font-weight:600;color:var(--accent);font-size:.7em;margin-left:.4em;letter-spacing:.04em}
+.score{display:flex;gap:16px;font-variant-numeric:tabular-nums}
+.score div{display:flex;flex-direction:column;align-items:flex-end}
+.score b{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1.1}
+.score span{font-size:12px;color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav button{font:inherit;font-size:15px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+nav button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+nav button:focus-visible,.btn:focus-visible,input:focus-visible,select:focus-visible,.seg button:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.topic-note{font-size:14px;color:var(--muted);margin:-6px 0 0}
+.typebar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;font-size:14px;color:var(--muted)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.seg button{font:inherit;font-size:14px;padding:6px 14px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.wrap>*,.card>*{min-width:0}
+.qhead{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.qtype{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--accent);text-transform:uppercase}
+.qtype .kind{font-family:var(--sans);letter-spacing:.04em;color:var(--muted);margin-left:.6em}
+.qno{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.qright{display:flex;align-items:center;gap:12px;margin-left:auto}
+.hintbtn{font:inherit;font-size:14px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--led);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.hintbtn::before{content:"?";display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--led);color:var(--led-ink);font-family:var(--mono);font-size:12px}
+.hintbtn[aria-expanded="true"]{background:var(--led);color:var(--led-ink)}
+.hintbtn[aria-expanded="true"]::before{background:var(--led-ink);color:var(--led)}
+.hintbtn:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.hintbox{border:1px solid var(--led);border-left-width:4px;border-radius:10px;padding:12px 14px;background:var(--sunk);font-size:15px;line-height:1.7;display:flex;flex-direction:column;gap:6px}
+.hintbox h4{margin:0;font-size:13px;letter-spacing:.06em;color:var(--muted)}
+.hintbox ol,.hintbox ul{margin:0;padding-left:1.3em}
+.hintbox .ex{font-family:var(--mono);font-size:14px;background:var(--surface);border-radius:8px;padding:6px 10px;width:fit-content;max-width:100%;overflow-x:auto;white-space:pre}
+.prompt{font-size:17px;line-height:1.7;display:flex;flex-direction:column;gap:10px;min-width:0}
+.prompt p{margin:0}
+.prompt .ask{font-weight:700}
+.mono{font-family:var(--mono);font-weight:600;letter-spacing:.02em}
+.given{font-size:15px;color:var(--ink);display:flex;flex-direction:column;gap:6px}
+.scroll{overflow-x:auto;max-width:100%}
+table.arr{border-collapse:collapse;font-family:var(--mono);font-size:15px}
+.arr th,.arr td{border:1px solid var(--line);padding:3px 10px;text-align:center;min-width:2.6em}
+.arr th{background:var(--sunk);font-weight:500;color:var(--muted);font-size:12px;font-family:var(--sans)}
+.arr td{font-weight:600}
+.code{font-family:var(--mono);font-size:15px;line-height:1.7;background:var(--sunk);border-radius:10px;padding:10px 0;overflow-x:auto;max-width:100%}
+.code .ln{display:flex;white-space:pre;padding-right:14px;border-left:3px solid transparent;min-width:fit-content}
+.code .no{width:2.6em;flex:0 0 auto;text-align:right;padding-right:.9em;color:var(--muted);user-select:none;font-size:12px;opacity:.75}
+.code .ln.hl{background:var(--hl);border-left-color:var(--led)}
+.code .kw{color:var(--accent);font-weight:600}
+.code .st{color:var(--str)}
+.howto{font-size:14px;color:var(--muted);margin:0;line-height:1.6}
+.answer-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.answer-row label{font-size:14px;color:var(--muted)}
+input[type=text]{font-family:var(--mono);font-size:20px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:min(320px,100%)}
+.btn{font:inherit;font-weight:700;padding:10px 18px;border-radius:10px;border:1px solid var(--accent);cursor:pointer}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#btn-next{margin-left:auto}
+#btn-next.skip{border-color:var(--line);color:var(--muted);font-weight:500}
+#btn-next.confirm{border-color:var(--bad);color:var(--bad);font-weight:700}
+.feedback{border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.feedback.good{background:var(--good-bg)}
+.feedback.bad{background:var(--bad-bg)}
+.feedback.info{background:var(--sunk);border-left:4px solid var(--led)}
+.feedback .verdict{font-weight:700}
+.feedback.good .verdict{color:var(--good)}
+.feedback.bad .verdict{color:var(--bad)}
+.feedback .mist{background:var(--surface);border-left:4px solid var(--led);border-radius:8px;padding:8px 12px;font-size:15px}
+.feedback .mist b{color:var(--ink)}
+.steps{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.steps li{line-height:1.6}
+.desc{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:2px;font-family:var(--mono);font-size:14px}
+.desc li{line-height:1.6;word-break:break-word}
+.tips{font-size:14px;color:var(--muted);border-top:1px dashed var(--line);padding-top:14px}
+.tips b{color:var(--ink)}
+.filter{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.filter summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:10px 14px;font-weight:700;font-size:15px}
+.filter summary::-webkit-details-marker{display:none}
+.filter summary::after{content:"▾";color:var(--muted);transition:transform .15s}
+.filter[open] summary::after{transform:rotate(180deg)}
+.filter summary:focus-visible{outline:3px solid var(--led);outline-offset:2px;border-radius:12px}
+.fcount{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--muted);margin-left:auto}
+.fcount.partial{color:var(--accent);font-weight:600}
+.fbody{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px}
+.fact{display:flex;flex-wrap:wrap;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:14px;line-height:1.4;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sunk);border-color:var(--accent);color:var(--ink);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip[aria-pressed="true"]::before{content:"✓ ";color:var(--accent);font-weight:700}
+.chip:focus-visible,.mini:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.mini{font:inherit;font-size:13px;padding:4px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer}
+.fhint{margin:0;font-size:12px;color:var(--muted)}
+.empty{color:var(--muted);font-size:16px}
+/* 追蹤表 */
+.tracewrap{position:relative;overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table.trace{border-collapse:collapse;font-size:14px;width:100%}
+.trace th,.trace td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:center;white-space:nowrap}
+.trace th+th,.trace td+td{border-left:1px solid var(--line)}
+.trace thead th{background:var(--sunk);font-family:var(--mono);font-weight:600;font-size:13px}
+.trace thead th.lab{font-family:var(--sans);font-weight:500;color:var(--muted);text-align:left}
+.trace thead th.cond{color:var(--accent);white-space:normal;min-width:7.5em;max-width:12em;line-height:1.35}
+.trace thead th.out{font-family:var(--sans)}
+.trace tbody tr:last-child td{border-bottom:0}
+.trace td.lab{text-align:left;font-size:13px;color:var(--muted)}
+.trace td.lab.m{font-family:var(--mono);color:var(--ink);font-size:13px}
+.trace td.v{font-family:var(--mono);font-weight:600}
+.trace td.v.same{color:var(--muted);font-weight:400}
+.trace td.v.off{background:repeating-linear-gradient(135deg,transparent 0 6px,var(--sunk) 6px 8px)}
+.trace td.st{font-size:12px;font-weight:700;width:3em}
+.trace td.st.ok{color:var(--good)}
+.trace td.st.retry{color:var(--led)}
+.trace td.st.rev{color:var(--bad)}
+.trace tr.cur{background:var(--cur)}
+.trace tr.cur td.lab{color:var(--ink);font-weight:700}
+.cell{font-family:var(--mono);font-size:16px;padding:4px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);text-align:center;width:4.4em}
+.cell.wide{width:7.5em}
+select.cell{width:6.2em;text-align:left;font-size:14px}
+.cell.ok{border-color:var(--good);background:var(--good-bg)}
+.cell.no{border-color:var(--bad);background:var(--bad-bg)}
+.legend{font-size:12px;color:var(--muted);margin:0}
+.full-trace{margin-top:4px}
+.full-trace summary{cursor:pointer;font-size:14px;font-weight:700;color:var(--accent)}
+.full-trace .tracewrap{margin-top:8px}
+@media (max-width:480px){h1{font-size:24px}.prompt{font-size:16px}.card{padding:18px 14px 16px}.code{font-size:14px}.score{gap:12px}.score b{font-size:19px}}
+@media (prefers-reduced-motion:reduce){.filter summary::after{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">HKDSE ICT · 必修 D b</span>
+      <h1>空運行練習室<span class="bits">X ← X + 1</span></h1>
+    </div>
+    <div class="score" aria-live="polite">
+      <div><b id="sc-right">0</b><span>答對</span></div>
+      <div><b id="sc-total">0</b><span>已答</span></div>
+      <div><b id="sc-streak">0</b><span>連續答對</span></div>
+      <div><b id="sc-best">0</b><span>最佳紀錄</span></div>
+    </div>
+  </header>
+
+  <nav id="modes" aria-label="練習類別"></nav>
+  <p class="topic-note" id="mode-note"></p>
+
+  <div class="typebar"><span>題型</span><div class="seg" id="types" role="group" aria-label="題型"></div></div>
+
+  <details class="filter" id="filter">
+    <summary><span>算法篩選</span><span class="fcount" id="fcount"></span></summary>
+    <div class="fbody">
+      <div class="fact"><button type="button" class="mini" id="f-all">全選</button><button type="button" class="mini" id="f-none">全部取消</button></div>
+      <div class="chips" id="fchips"></div>
+      <p class="fhint">點按可加入或移除。只會出已選的算法，選擇會記在這部裝置上。每題的數值都是隨機產生的。</p>
+    </div>
+  </details>
+
+  <section class="card" id="card">
+    <div class="qhead"><span class="qtype" id="qtype"></span><div class="qright"><span class="qno" id="qno"></span><button class="hintbtn" id="btn-hint" type="button" aria-expanded="false" aria-controls="hintbox">提示：方法</button></div></div>
+    <div class="hintbox" id="hintbox" hidden></div>
+    <div class="prompt" id="prompt"></div>
+    <div id="input-area"></div>
+    <div id="rowmsg" aria-live="polite" hidden></div>
+    <div class="actions">
+      <button class="btn primary" id="btn-check" type="button">核對答案</button>
+      <button class="btn ghost" id="btn-show" type="button">顯示答案</button>
+      <button class="btn ghost skip" id="btn-next" type="button">跳過此題</button>
+    </div>
+    <div id="feedback" aria-live="polite" hidden></div>
+    <div class="tips" id="tips"></div>
+  </section>
+  <p class="topic-note">偽代碼寫法跟 DSE 中文卷：賦值用 ←，「不等於」寫作 &lt;&gt;，陣列由 A[1] 開始。</p>
+</div>
+
+<script>
+(() => {
+/*CORE-START*/
+const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const coin = (p = 0.5) => Math.random() < p;
+
+// =================== 直譯器（只支援本頁用到的偽代碼語句） ===================
+const DR = (() => {
+  class DRError extends Error { constructor(m, kind) { super(m); this.kind = kind || 'run'; } }
+  const REL = { '=': '=', '<>': '<>', '≠': '<>', '<': '<', '>': '>', '<=': '<=', '≤': '<=', '>=': '>=', '≥': '>=' };
+  const KWS = { AND: 1, OR: 1, NOT: 1, TRUE: 1, FALSE: 1 };
+  const fmt = (v) => typeof v === 'boolean' ? (v ? 'TRUE' : 'FALSE') : typeof v === 'number' ? (Number.isInteger(v) ? String(v) : String(Math.round(v * 10000) / 10000)) : v === undefined || v === null ? '' : String(v);
+  const fmtB = (v) => (v ? 'TRUE' : 'FALSE');
+
+  function tokenize(s) {
+    const t = []; let i = 0;
+    while (i < s.length) {
+      const c = s[i];
+      if (/\s/.test(c)) { i++; continue; }
+      if (s.startsWith('的整數部分', i)) { t.push({ k: 'post', v: 'idiv', p: i, e: i + 5 }); i += 5; continue; }
+      if (s.startsWith('的餘數', i)) { t.push({ k: 'post', v: 'mod', p: i, e: i + 3 }); i += 3; continue; }
+      if (/[0-9]/.test(c)) { let j = i; while (j < s.length && /[0-9.]/.test(s[j])) j++; t.push({ k: 'num', v: parseFloat(s.slice(i, j)), p: i, e: j }); i = j; continue; }
+      if (c === "'" || c === '"' || c === '「') { const cl = c === '「' ? '」' : c; const j = s.indexOf(cl, i + 1); if (j < 0) throw new DRError('字串缺少引號', 'parse'); t.push({ k: 'str', v: s.slice(i + 1, j), p: i, e: j + 1 }); i = j + 1; continue; }
+      if (/[A-Za-z_]/.test(c)) { let j = i; while (j < s.length && /[A-Za-z0-9_]/.test(s[j])) j++; const w = s.slice(i, j), u = w.toUpperCase(); t.push(KWS[u] ? { k: 'kw', v: u, p: i, e: j } : { k: 'id', v: w, p: i, e: j }); i = j; continue; }
+      if (c === '與' || c === '或') { t.push({ k: 'kw', v: c === '與' ? 'AND' : 'OR', p: i, e: i + 1 }); i++; continue; }
+      const two = s.slice(i, i + 2);
+      if (two === '<=' || two === '>=' || two === '<>') { t.push({ k: 'op', v: two, p: i, e: i + 2 }); i += 2; continue; }
+      if ('<>=≤≥≠+-*×/()[],'.includes(c)) { t.push({ k: 'op', v: c === '×' ? '*' : c, p: i, e: i + 1 }); i++; continue; }
+      throw new DRError(`無法理解的符號「${c}」`, 'parse');
+    }
+    return t;
+  }
+
+  function parseExpr(src) {
+    const tk = tokenize(src); let p = 0;
+    const peek = () => tk[p];
+    const isOp = (v) => tk[p] && tk[p].k === 'op' && tk[p].v === v;
+    const isKw = (v) => tk[p] && tk[p].k === 'kw' && tk[p].v === v;
+    const sp = (node, a, b) => { node.p = a; node.e = b; node.src = src.slice(a, b); return node; };
+    const need = (v) => { const t = tk[p++]; if (!t || t.v !== v) throw new DRError(`算式「${src}」缺少「${v}」`, 'parse'); return t; };
+    function or() { let l = and(); while (isKw('OR')) { p++; const r = and(); l = sp({ t: 'or', a: l, b: r }, l.p, r.e); } return l; }
+    function and() { let l = not(); while (isKw('AND')) { p++; const r = not(); l = sp({ t: 'and', a: l, b: r }, l.p, r.e); } return l; }
+    function not() { if (isKw('NOT')) { const s = tk[p++]; const a = not(); return sp({ t: 'not', a }, s.p, a.e); } return cmp(); }
+    function cmp() { const l = add(); const t = peek(); if (t && t.k === 'op' && REL[t.v]) { p++; const r = add(); return sp({ t: 'cmp', op: REL[t.v], a: l, b: r }, l.p, r.e); } return l; }
+    function add() { let l = mul(); while (isOp('+') || isOp('-')) { const op = tk[p++].v; const r = mul(); l = sp({ t: 'bin', op, a: l, b: r }, l.p, r.e); } return l; }
+    function mul() { let l = un(); while (isOp('*') || isOp('/')) { const op = tk[p++].v; const r = un(); l = sp({ t: 'bin', op, a: l, b: r }, l.p, r.e); } return l; }
+    function un() { if (isOp('-')) { const s = tk[p++]; const a = un(); return sp({ t: 'neg', a }, s.p, a.e); } return post(); }
+    function post() {
+      const t = peek();
+      if (t && t.k === 'op' && t.v === '(') {
+        p++; const inner = or(); const c = need(')'); let node = sp({ t: 'paren', a: inner }, t.p, c.e);
+        if (peek() && peek().k === 'post') {
+          const pt = tk[p++];
+          if (inner.t !== 'bin' || inner.op !== '/') throw new DRError('「的餘數」「的整數部分」前面要是 (a / b)', 'parse');
+          node = sp({ t: pt.v, a: inner.a, b: inner.b }, t.p, pt.e);
+        }
+        return node;
+      }
+      return prim();
+    }
+    function prim() {
+      const t = tk[p++]; if (!t) throw new DRError(`算式「${src}」不完整`, 'parse');
+      if (t.k === 'num') return sp({ t: 'num', v: t.v }, t.p, t.e);
+      if (t.k === 'str') return sp({ t: 'str', v: t.v }, t.p, t.e);
+      if (t.k === 'kw' && (t.v === 'TRUE' || t.v === 'FALSE')) return sp({ t: 'bool', v: t.v === 'TRUE' }, t.p, t.e);
+      if (t.k === 'id') {
+        if (isOp('[')) { p++; const i = or(); const c = need(']'); return sp({ t: 'idx', n: t.v, i }, t.p, c.e); }
+        return sp({ t: 'var', n: t.v }, t.p, t.e);
+      }
+      throw new DRError(`算式「${src}」無法理解`, 'parse');
+    }
+    const node = or(); if (p < tk.length) throw new DRError(`算式「${src}」有多餘部分`, 'parse');
+    return node;
+  }
+
+  function splitArgs(s) { const out = []; let d = 0, q = null, cur = '';
+    for (const c of s) { if (q) { cur += c; if (c === q) q = null; continue; } if (c === "'" || c === '"') { q = c; cur += c; continue; }
+      if (c === '(' || c === '[') d++; if (c === ')' || c === ']') d--; if (c === ',' && d === 0) { out.push(cur.trim()); cur = ''; continue; } cur += c; }
+    if (cur.trim()) out.push(cur.trim()); return out; }
+
+  function parseProgram(code) {
+    const L = code.split('\n').map((s, i) => ({ i, ind: s.match(/^ */)[0].length, s: s.trim() })).filter((l) => l.s);
+    let p = 0;
+    const fail = (l, m) => { throw new DRError(`第 ${l.i + 1} 行：${m}`, 'parse'); };
+    const ex = (src, l) => { try { return parseExpr(src); } catch (e) { fail(l, e.message); } };
+    const target = (src, l) => { const n = ex(src, l); if (n.t !== 'var' && n.t !== 'idx') fail(l, '左邊要是變量或陣列元素'); return n; };
+    function block(ind) {
+      const out = [];
+      while (p < L.length) { const l = L[p]; if (l.ind < ind) break; if (l.ind > ind) fail(l, '縮排不正確'); if (/^(否則|直至)/.test(l.s)) break; out.push(stmt(l)); }
+      return out;
+    }
+    function body(h) { if (p >= L.length || L[p].ind <= h.ind) fail(h, '下面缺少要執行的語句（要縮排）'); return block(L[p].ind); }
+    function stmt(l) {
+      p++; const s = l.s; let m; const base = { line: l.i, text: s };
+      if ((m = s.match(/^如果\s*(.+?)\s*則$/)) || (m = s.match(/^如果\s*(.+)$/))) {
+        const first = { cond: ex(m[1], l), line: l.i, text: s }; first.body = body(l); const br = [first]; let els = null;
+        while (p < L.length && L[p].ind === l.ind && /^否則/.test(L[p].s)) {
+          const e = L[p];
+          if ((m = e.s.match(/^否則如果\s*(.+?)\s*則$/)) || (m = e.s.match(/^否則如果\s*(.+)$/))) { p++; const b = { cond: ex(m[1], e), line: e.i, text: e.s }; b.body = body(e); br.push(b); }
+          else if (e.s === '否則') { p++; els = { line: e.i, text: e.s }; els.body = body(e); break; }
+          else fail(e, '無法理解');
+        }
+        return { ...base, t: 'if', br, els, end: L[p - 1].i };
+      }
+      if ((m = s.match(/^設\s*([A-Za-z_]\w*)\s*由\s*(.+?)\s*(?:遞減至|下至)\s*(.+?)(?:\s*執行)?$/))) { const b = body(l); return { ...base, t: 'for', v: m[1], from: ex(m[2], l), to: ex(m[3], l), down: true, body: b, end: L[p - 1].i }; }
+      if ((m = s.match(/^設\s*([A-Za-z_]\w*)\s*由\s*(.+?)\s*至\s*(.+?)(?:\s*執行)?$/))) { const b = body(l); return { ...base, t: 'for', v: m[1], from: ex(m[2], l), to: ex(m[3], l), down: false, body: b, end: L[p - 1].i }; }
+      if (s === '重複') { const b = body(l); const u = L[p]; if (!u || u.ind !== l.ind || !(m = u.s.match(/^直至\s*(.+)$/))) fail(l, '「重複」缺少「直至」'); p++; return { ...base, t: 'repeat', body: b, cond: ex(m[1], u), condSrc: m[1].trim(), condLine: u.i, end: u.i }; }
+      if (s === '執行') { const b = body(l); const u = L[p]; if (!u || u.ind !== l.ind || !(m = u.s.match(/^當\s*(.+?)$/))) fail(l, '「執行」缺少「當」'); p++; return { ...base, t: 'dowhile', body: b, cond: ex(m[1], u), condSrc: m[1].trim(), condLine: u.i, end: u.i }; }
+      if ((m = s.match(/^當\s*(.+?)(?:\s*執行)?$/))) { const c = ex(m[1], l); const b = body(l); return { ...base, t: 'while', cond: c, condSrc: m[1].trim(), body: b, end: L[p - 1].i }; }
+      if ((m = s.match(/^輸入\s*(.+)$/))) return { ...base, t: 'input', target: target(m[1], l) };
+      if ((m = s.match(/^輸出\s*(.+)$/))) return { ...base, t: 'output', args: splitArgs(m[1]).map((a) => ex(a, l)) };
+      const k = s.indexOf('←');
+      if (k > 0) return { ...base, t: 'assign', lhs: target(s.slice(0, k), l), rhs: ex(s.slice(k + 1), l) };
+      fail(l, `無法理解「${s}」`);
+    }
+    const prog = block(0);
+    if (p < L.length) fail(L[p], '無法理解（「否則」「直至」位置不正確？）');
+    return prog;
+  }
+
+  const num = (v) => { if (typeof v !== 'number') throw new DRError(`「${fmt(v)}」不是數值`); return v; };
+  const bool = (v) => { if (typeof v !== 'boolean') throw new DRError(`「${fmt(v)}」不是布爾值`); return v; };
+  const toInt = (v) => { num(v); if (!Number.isInteger(v)) throw new DRError(`索引 ${fmt(v)} 不是整數`); return v; };
+  function evalNode(n, env) {
+    switch (n.t) {
+      case 'num': case 'str': case 'bool': return n.v;
+      case 'var': if (!(n.n in env.v)) throw new DRError(`變量 ${n.n} 未有值`); return env.v[n.n];
+      case 'idx': { const i = toInt(evalNode(n.i, env)); const A = env.a[n.n]; if (!A || !(i in A)) throw new DRError(`${n.n}[${i}] 未有值`); return A[i]; }
+      case 'paren': return evalNode(n.a, env);
+      case 'neg': return -num(evalNode(n.a, env));
+      case 'bin': { const a = num(evalNode(n.a, env)), b = num(evalNode(n.b, env));
+        if (n.op === '+') return a + b; if (n.op === '-') return a - b; if (n.op === '*') return a * b;
+        if (b === 0) throw new DRError('除以 0'); return a / b; }
+      case 'mod': case 'idiv': { const a = num(evalNode(n.a, env)), b = num(evalNode(n.b, env)); if (b === 0) throw new DRError('除以 0');
+        const q = Math.floor(a / b); return n.t === 'idiv' ? q : a - b * q; }
+      case 'cmp': { const a = evalNode(n.a, env), b = evalNode(n.b, env);
+        if (n.op === '=') return a === b; if (n.op === '<>') return a !== b;
+        if (typeof a !== typeof b || typeof a === 'boolean') throw new DRError(`不能比較「${n.src}」`);
+        if (n.op === '<') return a < b; if (n.op === '>') return a > b; if (n.op === '<=') return a <= b; return a >= b; }
+      case 'and': return bool(evalNode(n.a, env)) ? bool(evalNode(n.b, env)) : false;
+      case 'or': return bool(evalNode(n.a, env)) ? true : bool(evalNode(n.b, env));
+      case 'not': return !bool(evalNode(n.a, env));
+    }
+    throw new DRError('未支援的算式');
+  }
+  const isBoolNode = (n) => ['cmp', 'and', 'or', 'not'].includes(n.t) || (n.t === 'paren' && isBoolNode(n.a));
+  function leaves(n, acc) { if (n.t === 'var' || n.t === 'idx') { acc.push(n); return acc; } for (const k of ['a', 'b']) if (n[k]) leaves(n[k], acc); return acc; }
+  function subst(n, env) {
+    let s = n.src; const off = n.p;
+    for (const l of leaves(n, []).sort((x, y) => y.p - x.p)) {
+      let v; try { v = evalNode(l, env); } catch (e) { continue; }
+      const t = typeof v === 'string' ? `'${v}'` : fmt(v);
+      s = s.slice(0, l.p - off) + t + s.slice(l.e - off);
+    }
+    return s;
+  }
+  function condDesc(n, env) {
+    const steps = [];
+    (function walk(x) {
+      if (x.t === 'var' || x.t === 'idx') return;
+      for (const k of ['a', 'b']) if (x[k]) walk(x[k]);
+      if (['cmp', 'and', 'or', 'not'].includes(x.t)) {
+        let v; try { v = evalNode(x, env); } catch (e) { return; }
+        const direct = [x.a, x.b].some((c) => c && (c.t === 'var' || c.t === 'idx'));
+        steps.push(`${x.src}${x.t === 'cmp' || direct ? `（${subst(x, env)}）` : ''} 是 ${fmtB(v)}`);
+      }
+    })(n);
+    if (!steps.length) { try { return `${n.src} 是 ${fmt(evalNode(n, env))}`; } catch (e) { return ''; } }
+    return steps.join('；');
+  }
+
+  function run(code, init = {}, opt = {}) {
+    const prog = typeof code === 'string' ? parseProgram(code) : code;
+    const env = { v: Object.assign({}, init.vars || {}), a: {} };
+    for (const [k, arr] of Object.entries(init.arrays || {})) { env.a[k] = {}; arr.forEach((x, j) => { if (x !== null && x !== undefined) env.a[k][j + (init.base === 0 ? 0 : 1)] = x; }); }
+    const inputs = (init.inputs || []).slice(); const out = []; const counts = new Map(); const events = []; let steps = 0;
+    const max = opt.maxSteps || 4000, tr = !!opt.trace;
+    const snap = () => ({ v: Object.assign({}, env.v), a: Object.fromEntries(Object.entries(env.a).map(([k, o]) => [k, Object.assign({}, o)])) });
+    const initSnap = snap();
+    const emit = (e) => { if (tr) { e.snap = snap(); e.outN = out.length; events.push(e); } };
+    const tick = (n) => { counts.set(n, (counts.get(n) || 0) + 1); if (++steps > max) throw new DRError('執行步驟太多（可能是無限循環）', 'loop'); };
+    const ev = (n) => evalNode(n, env);
+    const cond = (n) => { const v = ev(n); if (typeof v !== 'boolean') throw new DRError(`條件「${n.src}」不是布爾值`); return v; };
+    const store = (t, val) => { if (t.t === 'var') env.v[t.n] = val; else { const i = toInt(ev(t.i)); (env.a[t.n] = env.a[t.n] || {})[i] = val; } };
+    const lhsName = (t) => (t.t === 'var' ? t.n : `${t.n}[${fmt(ev(t.i))}]`);
+    const assignDesc = (n, name, val) => {
+      if (isBoolNode(n.rhs)) return `${n.text}　→　${condDesc(n.rhs, env)}，所以 ${name} = ${fmt(val)}`;
+      if (['num', 'str', 'bool'].includes(n.rhs.t)) return `${n.text}　→　${name} = ${fmt(val)}`;
+      const sub = subst(n.rhs, env); return `${n.text}　→　${name} = ${sub}${sub !== fmt(val) ? ' = ' + fmt(val) : ''}`;
+    };
+    function exec(list) { for (const n of list) one(n); }
+    function one(n) {
+      switch (n.t) {
+        case 'assign': { tick(n); const val = ev(n.rhs); const name = lhsName(n.lhs); const d = tr ? assignDesc(n, name, val) : ''; store(n.lhs, val); emit({ k: 'stmt', n, desc: d }); return; }
+        case 'input': { tick(n); if (!inputs.length) throw new DRError('沒有更多輸入數值'); const val = inputs.shift(); const name = lhsName(n.target); store(n.target, val); emit({ k: 'stmt', n, desc: `${n.text}　→　${name} = ${fmt(val)}` }); return; }
+        case 'output': { tick(n); const vals = n.args.map((a) => fmt(ev(a))); out.push(vals.join(' ')); emit({ k: 'stmt', n, desc: `${n.text}　→　輸出 ${vals.join(' ')}` }); return; }
+        case 'if': {
+          for (const b of n.br) { tick(b); const d = tr ? condDesc(b.cond, env) : ''; const v = cond(b.cond); emit({ k: 'cond', n: b, val: v, desc: `${b.text}　→　${d}` }); if (v) { exec(b.body); return; } }
+          if (n.els) { tick(n.els); exec(n.els.body); } return;
+        }
+        case 'while': {
+          emit({ k: 'loopstart', n });
+          for (;;) { tick(n); const d = tr ? condDesc(n.cond, env) : ''; const v = cond(n.cond); emit({ k: 'check', n, val: v, desc: `檢查 ${n.condSrc}　→　${d}` }); if (!v) break; exec(n.body); emit({ k: 'iterend', n }); }
+          emit({ k: 'loopexit', n }); return;
+        }
+        case 'repeat': case 'dowhile': {
+          emit({ k: 'loopstart', n });
+          for (;;) { exec(n.body); emit({ k: 'iterend', n }); tick(n); const d = tr ? condDesc(n.cond, env) : ''; const v = cond(n.cond); emit({ k: 'check', n, val: v, desc: `${n.t === 'repeat' ? '直至' : '當'} ${n.condSrc}　→　${d}` }); if (n.t === 'repeat' ? v : !v) break; }
+          emit({ k: 'loopexit', n }); return;
+        }
+        case 'for': {
+          const a = toInt(ev(n.from)), b = toInt(ev(n.to));
+          const iter = (v) => { tick(n); env.v[n.v] = v; emit({ k: 'iter', n, v, desc: `${n.v} = ${v}` }); exec(n.body); emit({ k: 'iterend', n }); };
+          emit({ k: 'loopstart', n });
+          if (n.down) { for (let v = a; v >= b; v--) iter(v); } else { for (let v = a; v <= b; v++) iter(v); }
+          emit({ k: 'loopexit', n }); return;
+        }
+      }
+      throw new DRError('未支援的語句');
+    }
+    exec(prog); emit({ k: 'end' });
+    return { prog, out, counts, events, env, initSnap, steps };
+  }
+
+  const countLine = (res, line) => { let c = 0; for (const [n, k] of res.counts) if (n.line === line) c += k; return c; };
+  const walkProg = (list, f) => { for (const n of list) { f(n); if (n.t === 'if') { n.br.forEach((b) => walkProg(b.body, f)); if (n.els) walkProg(n.els.body, f); } else if (n.body) walkProg(n.body, f); } };
+  const progHas = (prog, t) => { let h = false; walkProg(prog, (n) => { if (n.t === t) h = true; }); return h; };
+  const isLoop = (n) => ['while', 'repeat', 'dowhile', 'for'].includes(n.t);
+  const valIn = (snap, ast) => { try { return fmt(evalNode(ast, snap)); } catch (e) { return ''; } };
+  const idents = (ast) => { const s = new Set(); (function w(x) { if (x.t === 'var' || x.t === 'idx') s.add(x.n); for (const k of ['a', 'b', 'i']) if (x[k]) w(x[k]); })(ast); return s; };
+
+  // 由執行記錄產生追蹤表：stmt＝每句一行；iter＝每次迭代一行
+  function buildTrace(res, spec) {
+    const prog = res.prog, out = res.out, nLines = Math.max(...res.events.map((e) => (e.n && e.n.end != null ? e.n.end : e.n ? e.n.line : 0)), 0);
+    const vcols = (spec.cols || []).map((src) => ({ key: src, label: src, kind: 'var', ast: parseExpr(src) }));
+    const hasOut = progHas(prog, 'output');
+    const outCol = { key: '?out', label: '輸出', kind: 'out' };
+    const slice = (a, b) => out.slice(a, b).join(' ');
+    const rows = [];
+    if (spec.mode === 'stmt') {
+      const hasIf = progHas(prog, 'if');
+      const cols = [...vcols, ...(hasIf ? [{ key: '?cond', label: '條件', kind: 'cond' }] : []), ...(hasOut ? [outCol] : [])];
+      let prev = res.initSnap, prevOut = 0;
+      for (const e of res.events) {
+        if (e.k !== 'stmt' && e.k !== 'cond') continue;
+        const cells = {};
+        for (const c of cols) {
+          if (c.kind === 'var') cells[c.key] = { exp: valIn(e.snap, c.ast), prev: valIn(prev, c.ast), on: e.k === 'stmt' && e.n.t !== 'output' };
+          else if (c.kind === 'cond') cells[c.key] = { exp: e.k === 'cond' ? fmtB(e.val) : '', on: e.k === 'cond' };
+          else cells[c.key] = { exp: slice(prevOut, e.outN), on: e.k === 'stmt' && e.n.t === 'output' };
+        }
+        rows.push({ label: e.n.text, mono: true, lines: [e.n.line], cells, desc: [e.desc] });
+        prev = e.snap; prevOut = e.outN;
+      }
+      return { mode: 'stmt', cols, rows };
+    }
+    const M = spec.loopLine != null ? (() => { let f = null; walkProg(prog, (n) => { if (isLoop(n) && n.line === spec.loopLine) f = f || n; }); return f; })() : prog.find(isLoop);
+    if (!M) throw new DRError('找不到循環');
+    const condCol = M.t === 'for' ? null : { key: '?cond', label: M.condSrc, kind: 'cond', post: M.t !== 'while', loopT: M.t };
+    const cols = [...(condCol && !condCol.post ? [condCol] : []), ...vcols, ...(condCol && condCol.post ? [condCol] : []), ...(hasOut ? [outCol] : [])];
+    const loopDep = (c) => M.t === 'for' && c.kind === 'var' && idents(c.ast).has(M.v);
+    let stage = 'pre', prev = res.initSnap, prevOut = 0, seg = [], k = 0, post = false;
+    const range = (a, b) => { const r = []; for (let i = a; i <= b; i++) r.push(i); return r; };
+    const mk = (label, e, condVal, kind) => {
+      const cells = {};
+      for (const c of cols) {
+        if (c.kind === 'var') cells[c.key] = { exp: valIn(e.snap, c.ast), prev: valIn(prev, c.ast), on: !((kind === 'pre' || kind === 'final') && loopDep(c)) };
+        else if (c.kind === 'cond') cells[c.key] = { exp: condVal == null ? '' : fmtB(condVal), on: condVal != null };
+        else cells[c.key] = { exp: slice(prevOut, e.outN), on: true };
+      }
+      const lines = kind === 'pre' ? range(0, M.line - 1) : kind === 'final' ? range(M.end + 1, nLines) : range(M.line, M.end);
+      rows.push({ label, mono: false, lines, cells, desc: seg }); prev = e.snap; prevOut = e.outN; seg = [];
+    };
+    for (const e of res.events) {
+      if (stage === 'pre') { if (e.n === M && e.k === 'loopstart') { mk('進入循環前', e, null, 'pre'); stage = 'loop'; } else if (e.desc) seg.push(e.desc); continue; }
+      if (stage === 'loop') {
+        if (e.n === M) {
+          if (e.k === 'loopexit') { stage = 'post'; continue; }
+          if (M.t === 'while') {
+            if (e.k === 'check') { seg.push(e.desc); if (!e.val) { k++; mk(`第 ${k} 次循環`, e, false, 'loop'); } }
+            else if (e.k === 'iterend') { k++; mk(`第 ${k} 次循環`, e, true, 'loop'); }
+          } else if (M.t === 'for') {
+            if (e.k === 'iter') seg.push(e.desc); else if (e.k === 'iterend') { k++; mk(`第 ${k} 次循環後（${M.v} = ${e.snap.v[M.v]}）`, e, null, 'loop'); }
+          } else if (e.k === 'check') { seg.push(e.desc); k++; mk(`第 ${k} 次循環後`, e, e.val, 'loop'); }
+          continue;
+        }
+        if (e.desc) seg.push(e.desc); continue;
+      }
+      if (e.k === 'end') { if (post) mk('算法完結', e, null, 'final'); }
+      else if (e.desc) { seg.push(e.desc); post = true; }
+      else if (e.k === 'loopstart') post = true;
+    }
+    return { mode: 'iter', loop: M, cols, rows };
+  }
+
+  // 答案比較：忽略空格、逗號、引號；容許把輸出連在一起寫（例如 1001）
+  const toks = (s) => String(s == null ? '' : s).normalize('NFKC').toUpperCase().replace(/[，、,;；]/g, ' ').replace(/['"「」‘’“”]/g, '').trim().split(/\s+/).filter(Boolean)
+    .map((t) => ({ '真': 'TRUE', '假': 'FALSE' }[t] || (/^-?\d+(\.\d+)?$/.test(t) ? String(Number(t)) : t)));
+  const same = (a, e) => { const A = toks(a), E = toks(e); if (A.join(' ') === E.join(' ')) return true; return (A.length === 1 && E.length > 1 && A[0] === E.join('')) || (E.length === 1 && A.length > 1 && E[0] === A.join('')); };
+
+  return { DRError, parseExpr, parseProgram, run, evalNode, fmt, fmtB, countLine, buildTrace, progHas, same, toks, valIn };
+})();
+
+// =================== 題目模板（數值隨機；答案一律由直譯器執行得出） ===================
+const C = (...ls) => ls.flat().join('\n');
+const I = '    ', I2 = I + I;
+const TF = (b) => (b ? 'TRUE' : 'FALSE');
+const distinct = (n, lo, hi) => { const s = new Set(); while (s.size < n) s.add(R(lo, hi)); return [...s]; };
+const sorted = (n, lo, hi) => distinct(n, lo, hi).sort((a, b) => a - b);
+const TPL = [];
+const add = (cat, name, gen) => TPL.push({ cat, name, gen });
+const OFF1 = (lv, s, n) => `「設 ${lv} 由 ${s} 至 ${n}」包括 ${n} 本身，循環體共執行 ${n} − ${s} + 1 = ${n - s + 1} 次。你的答案差了一次迭代。`;
+
+// ---------- 序列與賦值 ----------
+add('seq', '賦值次序', () => {
+  const a = R(1, 6), b = R(2, 9);
+  const s3 = pick(['C ← A + B', 'C ← A * B', 'C ← B - A']), s4 = pick(['A ← B + C', 'A ← C - B', 'A ← C * 2']), s5 = pick(['B ← C + A', 'B ← A - B', 'B ← A + B']);
+  return { code: C(`A ← ${a}`, `B ← ${b}`, s3, s4, s5, '輸出 A, B, C'), asks: [{ k: 'output' }, { k: 'var', e: 'A' }, { k: 'var', e: 'B' }],
+    trace: { mode: 'stmt', cols: ['A', 'B', 'C'] },
+    explain: ['逐句執行：每一句右邊用的是「執行那一刻」各變量的值。', '變量被賦予新值後，舊值便被取代（簡化追蹤表上把舊值刪去）。'] };
+});
+add('seq', '賦值是複製', () => {
+  const [X, Y, Z] = pick([['LENGTH', 'HEIGHT', 'AREA'], ['PRICE', 'QTY', 'TOTAL'], ['W', 'H', 'P']]);
+  const e = Z === 'P' ? `2 * (${X} + ${Y})` : `${X} * ${Y}`;
+  const a = R(3, 9), b = R(2, 8), c = R(2, 9), d = R(2, 9);
+  const build = (late) => C(`${X} ← ${a}`, `${Y} ← ${b}`, late ? [] : [`${Z} ← ${e}`], `${X} ← ${c}`, `${Y} ← ${d}`, late ? [`${Z} ← ${e}`] : [], `輸出 ${Z}`);
+  return { code: build(false), asks: [{ k: 'output' }], trace: { mode: 'stmt', cols: [X, Y, Z] },
+    mistakes: [{ code: build(true), msg: `${Z} 只在第 3 行計算了一次。之後改變 ${X}、${Y}，${Z} 不會自動更新——賦值是把「當時」的值複製過去，不是建立一條公式。` }],
+    explain: [`第 3 行執行時，${X} = ${a}、${Y} = ${b}，所以 ${Z} 得到當時計算出來的值。`, `之後 ${X}、${Y} 的新值不會影響已儲存在 ${Z} 的值。`] };
+});
+add('seq', '交換兩個變量', () => {
+  const x = R(2, 9); let y = R(2, 9); while (y === x) y = R(2, 9);
+  const v = pick(['temp', 'none', 'arith']);
+  const body = { temp: ['T ← X', 'X ← Y', 'Y ← T'], none: ['X ← Y', 'Y ← X'], arith: ['X ← X + Y', 'Y ← X - Y', 'X ← X - Y'] }[v];
+  return { code: C(`X ← ${x}`, `Y ← ${y}`, body, '輸出 X, Y'), asks: [{ k: 'output' }], trace: { mode: 'stmt', cols: v === 'temp' ? ['X', 'Y', 'T'] : ['X', 'Y'] },
+    mistakes: v === 'none' ? [{ ans: `${y} ${x}`, msg: '沒有暫存變量：執行 X ← Y 後，X 原來的值已被覆蓋，所以 Y ← X 只是把 Y 自己的值抄回 Y，兩個變量變成相同。' }]
+      : [{ ans: `${x} ${y}`, msg: '這幾句把 X 和 Y 的值交換了。要逐句追蹤，不要只看最後一句。' }],
+    explain: v === 'temp' ? ['先把 X 的值複製到暫存變量 T，X 被覆蓋後仍可由 T 取回原值。'] : v === 'none' ? ['沒有暫存變量的「交換」會失敗：兩個變量最後都是 Y 原本的值。'] : ['以加減法交換：X ← X + Y 先記下總和，再由總和減出原本的值。'] };
+});
+add('seq', '餘數與整數部分', () => {
+  if (coin()) {
+    const n = R(102, 987), oe = pick(['A + B + N', 'A * 100 + B * 10 + N']);
+    const build = (sw) => { const [r, q] = sw ? ['的整數部分', '的餘數'] : ['的餘數', '的整數部分']; return C(`N ← ${n}`, `A ← (N / 10) ${r}`, `N ← (N / 10) ${q}`, `B ← (N / 10) ${r}`, `N ← (N / 10) ${q}`, `輸出 ${oe}`); };
+    return { code: build(false), asks: [{ k: 'output' }, { k: 'var', e: 'B' }], trace: { mode: 'stmt', cols: ['N', 'A', 'B'] },
+      mistakes: [{ code: build(true), msg: '「(N / 10) 的餘數」是除剩的部分（個位）；「(N / 10) 的整數部分」是商（刪去個位）。你把兩者調轉了。' }],
+      explain: ['(N / 10) 的餘數 → 取出最右一位；(N / 10) 的整數部分 → 刪去最右一位。', '留意 N 本身在第 3、5 行被改變。'] };
+  }
+  const t = R(61, 299);
+  const build = (sw) => C(`T ← ${t}`, `H ← (T / 60) ${sw ? '的餘數' : '的整數部分'}`, `M ← (T / 60) ${sw ? '的整數部分' : '的餘數'}`, '輸出 H, M');
+  return { code: build(false), asks: [{ k: 'output' }], trace: { mode: 'stmt', cols: ['T', 'H', 'M'] },
+    mistakes: [{ code: build(true), msg: '整數部分是商（有多少個完整的 60），餘數是除剩的部分。你把兩者調轉了。' }],
+    explain: [`${t} ÷ 60 = ${Math.floor(t / 60)} 餘 ${t % 60}。`, '這個算法把分鐘數轉換為「小時」和「分鐘」。'] };
+});
+
+// ---------- 選擇與布爾算式 ----------
+add('sel', '嵌套選擇', () => {
+  const p = R(3, 15), q = R(2, 12), r = R(1, 6);
+  const c1 = pick(['P > Q + R', 'P + Q > 3 * R', 'P - Q < R']), c2 = pick(['Q > 2 * R', 'Q <= P', 'R * 3 >= P']);
+  const w = (c, n) => (n ? `NOT (${c})` : c);
+  const build = (n1, n2) => C(`P ← ${p}`, `Q ← ${q}`, `R ← ${r}`, `如果 ${w(c1, n1)} 則`, `${I}如果 ${w(c2, n2)} 則`, `${I2}X ← 10`, `${I}否則`, `${I2}X ← 20`, '否則', `${I}如果 ${w(c2, n2)} 則`, `${I2}X ← 30`, `${I}否則`, `${I2}X ← 40`, '輸出 X');
+  return { code: build(0, 0), asks: [{ k: 'output' }], trace: { mode: 'stmt', cols: ['P', 'Q', 'R', 'X'] },
+    mistakes: [{ code: build(1, 0), msg: '外層條件判斷錯了：先把 P、Q、R 代入外層條件。留意「>」在相等時不成立。' }, { code: build(0, 1), msg: '內層條件判斷錯了，或把「否則」配錯了「如果」：同一縮排的「否則」屬於同一縮排的「如果」。' }, { code: build(1, 1), msg: '兩層條件都判斷錯了：逐層代入數值計算。' }],
+    explain: ['先判斷外層條件，決定進入哪一個分支；再判斷該分支內的內層條件。', '嵌套選擇只會執行其中一個 X ← … 。'] };
+});
+add('sel', '多向選擇與邊界值', () => {
+  const t1 = pick([70, 75, 80, 85]), t2 = t1 - pick([10, 15]), t3 = t2 - pick([10, 15]);
+  const m = coin(0.6) ? pick([t1, t2, t3]) - pick([0, 0, 1]) : R(t3 - 15, 99), asc = coin(0.3);
+  const build = (up, op) => { const ts = up ? [[t3, 'C'], [t2, 'B'], [t1, 'A']] : [[t1, 'A'], [t2, 'B'], [t3, 'C']];
+    return C('輸入 M', `如果 M ${op} ${ts[0][0]} 則`, `${I}G ← '${ts[0][1]}'`, `否則如果 M ${op} ${ts[1][0]} 則`, `${I}G ← '${ts[1][1]}'`, `否則如果 M ${op} ${ts[2][0]} 則`, `${I}G ← '${ts[2][1]}'`, '否則', `${I}G ← 'F'`, '輸出 G'); };
+  return { code: build(asc, '>='), init: { inputs: [m] }, asks: [{ k: 'output' }], trace: { mode: 'stmt', cols: ['M', 'G'] },
+    mistakes: asc ? [{ code: build(false, '>='), msg: '多向選擇由上而下檢查，第一個成立的條件便執行，其後的「否則如果」不會再檢查。這個算法把條件的次序排錯了，所以結果不合理。' }]
+      : [{ code: build(false, '>'), msg: `邊界值：「>=」包括相等，例如 M = ${t2} 時「M >= ${t2}」成立。` }],
+    explain: ['由第一個條件開始逐個檢查；找到第一個成立的條件，執行它下面的語句，然後跳到整個選擇結構之後。', asc ? '這個算法的條件由小至大排列，分數高的學生也會先符合第一個條件——這是邏輯錯誤。' : '用邊界值（剛好等於分界）測試，最容易找出 > 與 >= 的錯誤。'] };
+});
+add('sel', 'NOT 布爾算式', () => {
+  const k = pick([20, 30, 50]), x = pick([k - 10, k, k + 10, k + R(1, 9), k - R(1, 9)]), y = coin(), z = coin();
+  const f = pick([`NOT (X > ${k} OR (Y AND Z))`, `NOT (X > ${k}) AND (Y OR Z)`, `(X <= ${k}) AND NOT (Y AND Z)`, `NOT (Y OR Z) OR (X = ${k})`, `NOT ((X >= ${k}) AND Y) AND NOT Z`]);
+  const build = (c) => C(`X ← ${x}`, `Y ← ${TF(y)}`, `Z ← ${TF(z)}`, `如果 ${c} 則`, `${I}輸出 '***'`, '否則', `${I}輸出 '###'`);
+  return { code: build(f), asks: [{ k: 'output' }], trace: { mode: 'stmt', cols: ['X', 'Y', 'Z'] },
+    mistakes: [{ code: build(f.replace(/NOT /g, '')), msg: '忘記 NOT：先計算 NOT 後面（括號內）的結果，再把它反轉（TRUE ↔ FALSE）。' }],
+    explain: ['運算次序：括號 → NOT → AND → OR。', 'NOT (P OR Q) 等於 (NOT P) AND (NOT Q)；NOT (X > k) 等於 X <= k。'] };
+});
+add('sel', '布爾算式求值', () => {
+  const x = R(1, 9), y = R(1, 9), z = R(1, 9), nr = (v) => v + pick([-1, 0, 0, 1]);
+  const a = nr(x), b = nr(y), c = nr(z);
+  const P = pick([
+    [`((X < ${a}) OR (Y >= ${b})) AND (Z > ${c})`, `(X < ${a}) OR ((Y >= ${b}) AND (Z > ${c}))`],
+    [`((X = ${a}) AND (Y > ${b})) OR (Z > ${c})`, `(X = ${a}) AND ((Y > ${b}) OR (Z > ${c}))`],
+    [`(X < ${a}) AND ((Y <= ${b}) OR (Z > ${c}))`, `((X < ${a}) AND (Y <= ${b})) OR (Z > ${c})`],
+    [`NOT (X > ${a}) OR ((Y > ${b}) AND (Z < ${c}))`, `NOT ((X > ${a}) OR (Y > ${b})) AND (Z < ${c})`]]);
+  const build = (e) => C(`X ← ${x}`, `Y ← ${y}`, `Z ← ${z}`, `R ← ${e}`, '輸出 R');
+  return { code: build(P[0]), asks: [{ k: 'output' }], trace: { mode: 'stmt', cols: ['X', 'Y', 'Z', 'R'] },
+    mistakes: [{ code: build(P[1]), msg: '括號決定先計算哪一部分：先計算最內層的括號，再按 NOT → AND → OR 的次序。' }],
+    explain: ['把 X、Y、Z 的值代入每一個關係算式，得出 TRUE／FALSE，再按括號合併。', 'AND：兩邊都是 TRUE 才是 TRUE；OR：只要一邊是 TRUE 便是 TRUE。'] };
+});
+add('sel', '餘數與條件', () => {
+  const k = pick([10, 15, 20]), n = R(2, 40);
+  const build = (op) => C('輸入 N', `如果 ((N / 2) 的餘數 = 0) ${op} (N > ${k}) 則`, `${I}輸出 'P'`, '否則如果 (N / 3) 的餘數 = 0 則', `${I}輸出 'Q'`, '否則', `${I}輸出 'R'`);
+  return { code: build('AND'), init: { inputs: [n] }, asks: [{ k: 'output' }], trace: { mode: 'stmt', cols: ['N'] },
+    mistakes: [{ code: build('OR'), msg: 'AND 要兩邊都成立才是 TRUE；只有一邊成立時，要繼續檢查「否則如果」。' }],
+    explain: ['(N / 2) 的餘數 = 0 表示 N 是雙數；(N / 3) 的餘數 = 0 表示 N 是 3 的倍數。', '第一個條件成立便不會再檢查「否則如果」。'] };
+});
+add('sel', '對分選擇改變變量', () => {
+  const x = R(2, 9), y = R(x + 1, 16), c = R(8, 20);
+  const P = pick([`(X + Y < ${c}) OR (X > Y)`, `(X * 2 > Y) AND (Y < ${c})`, `NOT (X > Y) AND (X + Y >= ${c})`]);
+  const build = (cd) => C(`X ← ${x}`, `Y ← ${y}`, `如果 ${cd} 則`, `${I}Y ← Y - X`, '否則', `${I}X ← Y - X`, '輸出 X, Y');
+  return { code: build(P), asks: [{ k: 'output' }], trace: { mode: 'stmt', cols: ['X', 'Y'] },
+    mistakes: [{ code: build(P.replace(/ (AND|OR) /, (m) => (m.includes('AND') ? ' OR ' : ' AND '))), msg: 'AND：兩邊都要成立；OR：只要一邊成立。你把兩者的意思調轉了。' }],
+    explain: ['先計算條件，決定執行「則」還是「否則」的部分，只會執行其中一句。'] };
+});
+
+// ---------- 計數循環 ----------
+add('for', '累加與累乘', () => {
+  const v = pick(['sq', 'sum', 'mul', 'nest']); let n, s = 1, init, body, V, lv = 'i';
+  if (v === 'sq') { n = R(3, 6); init = 'K ← 0'; V = 'K'; lv = 'N'; body = 'K ← K + N * N'; }
+  else if (v === 'sum') { s = R(2, 5); n = s + R(2, 5); init = 'S ← 0'; V = 'S'; body = 'S ← S + i'; }
+  else if (v === 'mul') { n = R(3, 6); init = 'P ← 1'; V = 'P'; body = pick([`P ← P * ${R(2, 3)}`, 'P ← P * i']); }
+  else { n = R(3, 5); init = 'N ← 0'; V = 'N'; body = 'N ← N * i + 1'; }
+  const build = (e) => C(init, `設 ${lv} 由 ${s} 至 ${e} 執行`, I + body, `輸出 ${V}`);
+  return { code: build(n), asks: [{ k: 'output' }, { k: 'count', t: body }], trace: { mode: 'iter', cols: [lv, V] },
+    mistakes: [{ code: build(n - 1), msg: OFF1(lv, s, n) }, { code: build(n + 1), msg: `你的答案多做了一次迭代：最後一次是 ${lv} = ${n}。` }],
+    explain: [`循環體共執行 ${n - s + 1} 次（${lv} = ${s} 至 ${n}）。`, `${V} 是${v === 'mul' ? '累乘器，初始值是 1' : '累加器'}：每次迭代在舊值上計算出新值。`] };
+});
+add('for', '循環內外的語句', () => {
+  const a = R(1, 3), b = a + R(2, 4), inside = coin(0.4);
+  const build = (ins) => C('S ← 0', `設 J 由 ${a} 至 ${b} 執行`, `${I}輸出 J`, `${I}S ← S + J`, ins ? `${I}輸出 S` : '輸出 S');
+  return { code: build(inside), asks: [{ k: 'output' }, { k: 'count', t: '輸出 S' }], trace: { mode: 'iter', cols: ['J', 'S'] },
+    mistakes: [{ code: build(!inside), msg: inside ? '「輸出 S」有縮排，在循環內，每次迭代都會執行。' : '「輸出 S」沒有縮排，在循環外，只在循環完結後執行一次。' }],
+    explain: ['以縮排判斷哪些語句屬於循環體。', inside ? '每次迭代先輸出 J，再更新 S 並輸出 S。' : '循環內只輸出 J；最後才輸出總和 S。'] };
+});
+add('for', '遞減循環', () => {
+  if (coin()) {
+    const n = R(3, 5), t = R(n * (n + 1) / 2, 30);
+    const build = (down) => C(`T ← ${t}`, down ? `設 i 由 ${n} 遞減至 1 執行` : `設 i 由 1 至 ${n} 執行`, `${I}T ← T - i`, `${I}輸出 T`);
+    return { code: build(true), asks: [{ k: 'output' }], trace: { mode: 'iter', cols: ['i', 'T'] },
+      mistakes: [{ code: build(false), msg: `遞減循環：i 由 ${n} 開始，每次減 1，直至 1。你把次序當成由 1 開始了。` }],
+      explain: [`i 依次是 ${Array.from({ length: n }, (_, j) => n - j).join('、')}。`, '輸出在循環內，每次迭代輸出一次。'] };
+  }
+  const n = R(4, 6), m = R(1, n - 2);
+  const build = (down) => C('X ← 0', down ? `設 i 由 ${n} 遞減至 ${m} 執行` : `設 i 由 ${m} 至 ${n} 執行`, `${I}X ← X * 10 + i`, '輸出 X');
+  return { code: build(true), asks: [{ k: 'output' }, { k: 'count', t: 'X ← X * 10 + i' }], trace: { mode: 'iter', cols: ['i', 'X'] },
+    mistakes: [{ code: build(false), msg: `遞減循環：i 由 ${n} 開始，每次減 1，直至 ${m}。` }],
+    explain: ['X ← X * 10 + i 把 i 加到 X 的最右邊（每次多一位數）。', `i 依次是 ${Array.from({ length: n - m + 1 }, (_, j) => n - j).join('、')}。`] };
+});
+add('for', '數列更新（暫存變量）', () => {
+  const a = R(0, 2), b = R(1, 3), n = R(3, 6), ov = pick(['Y', 'X']);
+  const build = (e, wrong) => C(`X ← ${a}`, `Y ← ${b}`, `設 i 由 1 至 ${e} 執行`, wrong ? [`${I}X ← Y`, `${I}Y ← X + Y`] : [`${I}T ← X + Y`, `${I}X ← Y`, `${I}Y ← T`], `輸出 ${ov}`);
+  return { code: build(n), asks: [{ k: 'output' }], trace: { mode: 'iter', cols: ['i', 'T', 'X', 'Y'] },
+    mistakes: [{ code: build(n - 1), msg: OFF1('i', 1, n) }, { code: build(n, true), msg: 'T ← X + Y 用的是 X、Y 的舊值；X ← Y 之後 X 才改變。計算時不可以先用 X 的新值。' }],
+    explain: ['T 是暫存變量：先保存 X + Y，再把 Y 移到 X，最後把 T 放入 Y。', '每次迭代後，新的 Y 是之前兩個數的和（類似費氏數列）。'] };
+});
+add('for', '嵌套循環的次數', () => {
+  const m = R(2, 4), n = R(m, 5), tri = coin(0.4);
+  const per = Array.from({ length: m }, (_, i) => (tri ? n - i : n));
+  return { code: C('C ← 0', `設 i 由 1 至 ${m} 執行`, `${I}設 j 由 ${tri ? 'i' : 1} 至 ${n} 執行`, `${I2}C ← C + 1`, '輸出 C'),
+    asks: [{ k: 'output' }, { k: 'count', t: 'C ← C + 1' }], trace: { mode: 'iter', cols: ['i', 'C'] },
+    mistakes: [{ ans: String(m + n), for: ['output', 'count'], msg: '嵌套循環：外層每執行一次，內層都由頭到尾執行一次，次數要相乘（或逐次相加），不是把兩個數相加。' },
+      ...(tri ? [{ ans: String(m * n), for: ['output', 'count'], msg: `內層由 j = i 開始，所以外層每次的內層次數都不同（${per.join('、')}），要逐次加起來。` }] : [])],
+    explain: [`外層 i = 1 至 ${m}；內層每次執行 ${per.join('、')} 次。`, `C 共增加 ${per.join(' + ')} = ${per.reduce((x, y) => x + y, 0)} 次。`] };
+});
+add('for', '循環內的選擇', () => {
+  if (coin()) {
+    const n = R(4, 6); let inp; do inp = Array.from({ length: n }, () => pick(['Y', 'N'])); while (!inp.includes('Y') || !inp.includes('N'));
+    const build = (ins) => C('S ← 0', `設 i 由 1 至 ${n} 執行`, `${I}輸入 CH`, `${I}如果 CH = 'Y' 則`, `${I2}S ← S + 1`, `${I}否則`, `${I2}輸出 '#'`, ins ? `${I}輸出 S` : '輸出 S');
+    return { code: build(false), init: { inputs: inp }, asks: [{ k: 'output' }], trace: { mode: 'iter', cols: ['i', 'CH', 'S'] },
+      mistakes: [{ code: build(true), msg: '「輸出 S」沒有縮排，在循環外，只在最後執行一次。' }],
+      explain: ['每次迭代讀入一個字符：是 \'Y\' 便把 S 加 1，否則輸出 \'#\'。', '最後輸出 S（\'Y\' 的數目）。'] };
+  }
+  const n = R(5, 8), d = R(2, 3);
+  const build = (op) => C('S ← 0', `設 i 由 1 至 ${n} 執行`, `${I}如果 (i / ${d}) 的餘數 ${op} 0 則`, `${I2}輸出 i`, `${I}否則`, `${I2}S ← S + i`, '輸出 S');
+  return { code: build('='), asks: [{ k: 'output' }, { k: 'count', t: 'S ← S + i' }], trace: { mode: 'iter', cols: ['i', 'S'] },
+    mistakes: [{ code: build('<>'), msg: `(i / ${d}) 的餘數 = 0 表示 i 是 ${d} 的倍數，這時執行「輸出 i」，否則才加入 S。你把兩個分支調轉了。` }],
+    explain: [`i 是 ${d} 的倍數時輸出 i，否則把 i 加入 S。`, '最後的「輸出 S」在循環外，只執行一次。'] };
+});
+
+// ---------- 前測／後測循環 ----------
+add('loop', '當循環的次數', () => {
+  const a = R(0, 5), c = R(2, 4), op = pick(['<', '<=']), b = coin() ? a + c * R(2, 4) : a + R(4, 12);
+  const build = (o) => C(`N ← ${a}`, `當 N ${o} ${b} 執行`, `${I}輸出 '*'`, `${I}N ← N + ${c}`);
+  return { code: build(op), asks: [{ k: 'count', t: "輸出 '*'" }, { k: 'var', e: 'N' }], trace: { mode: 'iter', cols: ['N'] },
+    mistakes: [{ code: build(op === '<' ? '<=' : '<'), msg: op === '<' ? `邊界值：N = ${b} 時「N < ${b}」不成立，不會再執行。` : `邊界值：N = ${b} 時「N <= ${b}」仍然成立，要再執行一次。` }],
+    explain: ['前測循環：每次執行循環體之前先檢查條件。', '用追蹤表逐次記下 N 的值，直至條件不成立；最後一次檢查（FALSE）不會執行循環體。'] };
+});
+add('loop', '前測與後測', () => {
+  const pre = coin(), dbl = coin(), b = R(10, 30);
+  const a = coin(0.4) ? b + R(0, 5) : dbl ? R(1, 4) : R(0, 6), d = R(3, 6), upd = dbl ? 'X ← X * 2' : `X ← X + ${d}`;
+  const build = (p) => (p ? C(`X ← ${a}`, 'C ← 0', `當 X < ${b} 執行`, I + upd, `${I}C ← C + 1`, '輸出 C') : C(`X ← ${a}`, 'C ← 0', '重複', I + upd, `${I}C ← C + 1`, `直至 X >= ${b}`, '輸出 C'));
+  return { code: build(pre), asks: [{ k: 'output' }, { k: 'var', e: 'X' }], trace: { mode: 'iter', cols: ['X', 'C'] },
+    mistakes: [{ code: build(!pre), msg: '前測循環（當…執行）先檢查條件，條件一開始不成立便一次也不執行；後測循環（重複…直至）先執行循環體才檢查，最少執行一次。' }],
+    explain: [pre ? '這是前測循環：先檢查 X < ' + b + '。' : '這是後測循環：先執行循環體，再檢查 X >= ' + b + '。', '「當 X < b」與「直至 X >= b」的條件剛好相反（一個繼續、一個停止）。'] };
+});
+add('loop', '重複…直至', () => {
+  if (coin()) {
+    const a = R(1, 3), d = R(1, 3), lim = R(6, 14), op = pick(['>', '>=']);
+    const build = (o) => C('S ← 0', `N ← ${a}`, '重複', `${I}S ← S + N`, `${I}N ← N + ${d}`, `直至 N ${o} ${lim}`, '輸出 S');
+    return { code: build(op), asks: [{ k: 'output' }, { k: 'count', t: 'S ← S + N' }], trace: { mode: 'iter', cols: ['S', 'N'] },
+      mistakes: [{ code: build(op === '>' ? '>=' : '>'), msg: `「直至」條件一成立便停止；留意 N 剛好等於 ${lim} 時「>」與「>=」的分別。` }],
+      explain: ['後測循環：先執行循環體，再檢查「直至」的條件；條件成立便停止。'] };
+  }
+  const j0 = R(10, 16), d = R(2, 3), lim = R(1, 4), op = pick(['<=', '<']);
+  const build = (o) => C('sum ← 0', `j ← ${j0}`, '重複', `${I}sum ← sum + 1`, `${I}j ← j - ${d}`, `直至 j ${o} ${lim}`, '輸出 sum');
+  return { code: build(op), asks: [{ k: 'output' }, { k: 'var', e: 'j' }], trace: { mode: 'iter', cols: ['sum', 'j'] },
+    mistakes: [{ code: build(op === '<' ? '<=' : '<'), msg: `留意 j 剛好等於 ${lim} 時「<」與「<=」的分別。` }],
+    explain: ['後測循環：先執行循環體，再檢查「直至」的條件；條件成立便停止。', 'sum 數算循環體執行了多少次。'] };
+});
+add('loop', '執行…當（後測）', () => {
+  if (coin()) {
+    const a = R(3, 6), b = R(1, a - 1), lim = R(8, 20);
+    const build = (rep) => C(`X ← ${a}`, `Y ← ${b}`, rep ? '重複' : '執行', `${I}Y ← X - Y`, `${I}X ← X + Y`, `${I}輸出 X`, rep ? `直至 Y < ${lim}` : `當 Y < ${lim}`);
+    return { code: build(false), asks: [{ k: 'output' }, { k: 'count', t: '輸出 X' }], trace: { mode: 'iter', cols: ['X', 'Y'] },
+      mistakes: [{ code: build(true), msg: '「執行…當」是條件「成立」便再做一次；「重複…直至」才是條件成立便停止。' }],
+      explain: ['後測循環：先執行循環體，再檢查「當」的條件；條件成立便再執行。', 'Y ← X - Y 用的是 X 的舊值；X ← X + Y 用的是 Y 的新值。'] };
+  }
+  const n = R(8, 20), k = R(2, 5);
+  const build = (rep) => C(`N ← ${n}`, rep ? '重複' : '執行', `${I}輸出 N`, `${I}N ← N - ${k}`, rep ? '直至 N > 0' : '當 N > 0');
+  return { code: build(false), asks: [{ k: 'output' }, { k: 'count', t: '輸出 N' }], trace: { mode: 'iter', cols: ['N'] },
+    mistakes: [{ code: build(true), msg: '「執行…當」是條件「成立」便再做一次；「重複…直至」才是條件成立便停止。' }],
+    explain: ['後測循環：先輸出 N 及更新 N，再檢查 N > 0；成立便再執行。'] };
+});
+add('loop', '標記值', () => {
+  const nums = Array.from({ length: R(3, 5) }, () => R(1, 20)), extra = coin(0.4) ? [R(1, 20)] : [], cnt = coin(0.4);
+  const sum = nums.reduce((a, b) => a + b, 0), V = cnt ? 'C' : 'j';
+  const code = cnt ? C('C ← 0', '輸入 N', '當 N <> 888 執行', `${I}C ← C + 1`, `${I}輸入 N`, '輸出 C') : C('j ← 0', '輸入 N', '當 N <> 888 執行', `${I}j ← j + N`, `${I}輸入 N`, '輸出 j');
+  const sm = '讀到 888 時循環已停止，888 之後的數值不會被讀入。';
+  const mistakes = cnt ? [{ ans: String(nums.length + 1), msg: '888 是標記值，只用來終止輸入，本身不計算在內。' }, ...(extra.length ? [{ ans: String(nums.length + 2), msg: sm }] : [])]
+    : [{ ans: String(sum + 888), msg: '888 是標記值，只用來終止輸入，不會加入 j。' }, ...(extra.length ? [{ ans: String(sum + extra[0]), msg: sm }, { ans: String(sum + 888 + extra[0]), msg: sm }] : [])];
+  return { code, init: { inputs: [...nums, 888, ...extra] }, asks: [{ k: 'output' }, { k: 'count', t: cnt ? 'C ← C + 1' : 'j ← j + N' }], trace: { mode: 'iter', cols: ['N', V] }, mistakes,
+    explain: ['標記值（888）是終止輸入的特別值，不是要處理的數據。', '先在循環前讀入第一個數值；循環體最後再讀入下一個，然後回到條件檢查。', cnt ? '這個算法數算輸入了多少個數值。' : '這個算法計算輸入數值的總和。'] };
+});
+add('loop', '條件中的 NOT', () => {
+  const v = pick([1, 2, 3]); const a = R(0, 4);
+  if (v === 1) { const d = R(1, 3), b = a + R(4, 9);
+    const build = (c) => C(`M ← ${a}`, '重複', `${I}M ← M + ${d}`, `直至 ${c}`, '輸出 M');
+    return { code: build(`NOT (M < ${b})`), asks: [{ k: 'output' }, { k: 'count', t: `M ← M + ${d}` }], trace: { mode: 'iter', cols: ['M'] },
+      mistakes: [{ code: build(`M < ${b}`), msg: `忘記 NOT：NOT (M < ${b}) 即 M >= ${b}。` }], explain: [`「直至 NOT (M < ${b})」即「直至 M >= ${b}」。`, '後測循環：最少執行一次。'] };
+  }
+  if (v === 2) { const b = a + R(2, 5);
+    const build = (c) => C(`M ← ${a}`, '重複', `${I}M ← M + 1`, `直至 ${c}`, '輸出 M');
+    return { code: build(`NOT (M <> ${b})`), asks: [{ k: 'output' }, { k: 'count', t: 'M ← M + 1' }], trace: { mode: 'iter', cols: ['M'] },
+      mistakes: [{ code: build(`M <> ${b}`), msg: `忘記 NOT：NOT (M <> ${b}) 即 M = ${b}。` }], explain: [`「直至 NOT (M <> ${b})」即「直至 M = ${b}」。`, '<> 是「不等於」（亦寫作 ≠）。'] };
+  }
+  const d = R(2, 4), b = a + R(5, 10);
+  const build = (c) => C(`M ← ${a}`, `當 ${c} 執行`, `${I}M ← M + ${d}`, '輸出 M');
+  return { code: build(`NOT (M >= ${b})`), asks: [{ k: 'output' }, { k: 'count', t: `M ← M + ${d}` }], trace: { mode: 'iter', cols: ['M'] },
+    mistakes: [{ code: build(`M >= ${b}`), msg: `忘記 NOT：NOT (M >= ${b}) 即 M < ${b}。` }], explain: [`「當 NOT (M >= ${b})」即「當 M < ${b}」。`, '前測循環：條件成立才執行循環體。'] };
+});
+add('loop', '除二取餘', () => {
+  const n = R(5, 40), bin = n.toString(2), rev = [...bin].reverse().join('');
+  return { code: C(`X ← ${n}`, '重複', `${I}輸出 (X / 2) 的餘數`, `${I}X ← (X / 2) 的整數部分`, '直至 X = 0'),
+    asks: [{ k: 'output' }, { k: 'count', t: '輸出 (X / 2) 的餘數' }], trace: { mode: 'iter', cols: ['X'] },
+    mistakes: rev !== bin ? [{ ans: [...bin].join(' '), msg: `輸出次序：這個算法先輸出最低位。${n} 的二進制是 ${bin}，但算法由右至左輸出，結果是 ${rev}。` }] : [],
+    explain: ['每次輸出 X 除以 2 的餘數（0 或 1），再把 X 變成商。', `把輸出倒轉來讀，便是 ${n} 的二進制 ${bin}。`] };
+});
+
+// ---------- 循環內改變變量 ----------
+add('chg', '兩個變量同時改變', () => {
+  const a = R(0, 4), b = R(14, 30), p = R(1, 3), q = R(1, 3);
+  const build = (useY) => C(`X ← ${a}`, `Y ← ${b}`, '當 X < Y 執行', `${I}輸出 'A'`, `${I}X ← X + ${p}`, useY ? [`${I}Y ← Y - ${q}`] : []);
+  return { code: build(true), asks: [{ k: 'count', t: "輸出 'A'" }, { k: 'var', e: 'X' }], trace: { mode: 'iter', cols: ['X', 'Y'] },
+    mistakes: [{ code: build(false), msg: 'Y 在循環內亦每次減少，X 和 Y 同時在拉近，所以次數比只看 X 少。' }],
+    explain: [`每次迭代 X 增加 ${p}、Y 減少 ${q}，兩者的差距每次縮小 ${p + q}。`, '用追蹤表同時記下 X 和 Y，直至 X < Y 不成立。'] };
+});
+add('chg', '控制變量被重新設定', () => {
+  const a = R(2, 8), b = R(5, 15), c = R(6, 9), [s, e] = pick([[2, 3], [1, 3], [3, 5], [2, 4]]), n = e - s + 1;
+  return { code: C(`A ← ${a}`, `B ← ${b}`, `C ← ${c}`, `設 C 由 ${s} 至 ${e} 執行`, `${I}B ← A + B`, '輸出 (A + B)'), asks: [{ k: 'output' }], trace: { mode: 'iter', cols: ['C', 'B'] },
+    mistakes: [{ ans: String(a + b), msg: `「設 C 由 ${s} 至 ${e}」會把 C 重新設為 ${s}，C 原本的值 ${c} 沒有影響；循環照樣執行 ${n} 次。` },
+      { ans: String(a + b + a * (n - 1)), msg: `循環共執行 ${n} 次（C = ${s} 至 ${e}），你少做了一次。` }, { ans: String(a + b + a * (n + 1)), msg: `循環共執行 ${n} 次，你多做了一次。` }],
+    explain: [`計數循環開始時把 C 設為 ${s}，C ← ${c} 被覆蓋。`, `循環體執行 ${n} 次，每次 B 增加 A（${a}）；最後輸出 A + B。`] };
+});
+add('chg', '每次增加的量在改變', () => {
+  const s = R(1, 6), lim = R(10, 25), ov = pick(['C', 'S']);
+  const build = (sw, o) => C(`S ← ${s}`, 'C ← 0', `當 S ${o} ${lim} 執行`, sw ? [`${I}S ← S + C`, `${I}C ← C + 1`] : [`${I}C ← C + 1`, `${I}S ← S + C`], `輸出 ${ov}`);
+  return { code: build(false, '<='), asks: [{ k: 'output' }, { k: 'count', t: 'C ← C + 1' }], trace: { mode: 'iter', cols: ['S', 'C'] },
+    mistakes: [{ code: build(true, '<='), msg: '次序：先執行 C ← C + 1，S 才加上「新的」C。' }, { code: build(false, '<'), msg: `邊界值：S = ${lim} 時「S <= ${lim}」仍然成立。` }],
+    explain: ['C 每次加 1，S 每次加上新的 C，所以 S 增加的幅度越來越大。'] };
+});
+add('chg', '循環內的選擇改變變量', () => {
+  const a = R(1, 5), lim = R(9, 20);
+  const build = (sw) => C('S ← 0', `A ← ${a}`, `當 A <= ${lim} 執行`, `${I}S ← S + A`, `${I}如果 (A / 2) 的餘數 = ${sw ? 0 : 1} 則`, `${I2}A ← A + 1`, `${I}否則`, `${I2}A ← 2 * A + 1`, '輸出 S');
+  return { code: build(false), asks: [{ k: 'output' }, { k: 'count', t: 'S ← S + A' }], trace: { mode: 'iter', cols: ['A', 'S'] },
+    mistakes: [{ code: build(true), msg: '(A / 2) 的餘數 = 1 表示 A 是單數：單數時 A ← A + 1，雙數時 A ← 2 * A + 1。你把兩個分支調轉了。' }],
+    explain: ['每次迭代先把 A 加入 S，再按 A 是單數還是雙數更新 A。'] };
+});
+add('chg', '最後一次輸出超過界限', () => {
+  const a = R(1, 3), lim = R(10, 40), m = pick(['A + A', 'A * 3']);
+  let A = a; const outs = []; while (A < lim) { A = m === 'A + A' ? A * 2 : A * 3; outs.push(A); }
+  const below = outs.filter((x) => x < lim).join(' ');
+  const build = (o) => C(`A ← ${a}`, `當 A ${o} ${lim} 執行`, `${I}A ← ${m}`, `${I}輸出 A`);
+  return { code: build('<'), asks: [{ k: 'output' }, { k: 'count', t: '輸出 A' }], trace: { mode: 'iter', cols: ['A'] },
+    mistakes: [...(below ? [{ ans: below, msg: `條件只在每次循環「開始前」檢查：最後一次進入循環時 A 仍小於 ${lim}，更新後的 A 雖已超過 ${lim}，仍會被輸出。` }] : []), { code: build('<='), msg: `邊界值：A = ${lim} 時「A < ${lim}」不成立。` }],
+    explain: ['前測循環的條件只在每次執行循環體之前檢查。', '所以最後輸出的數值可以大於界限。'] };
+});
+add('chg', '互相影響的更新', () => {
+  const a = R(1, 3), b = R(1, 3), lim = R(8, 30);
+  const build = (o) => C(`A ← ${a}`, `B ← ${b}`, `當 B ${o} ${lim} 執行`, `${I}A ← A + B`, `${I}B ← A - B`, `${I}輸出 B`);
+  return { code: build('<'), asks: [{ k: 'output' }, { k: 'var', e: 'A' }, { k: 'count', t: '輸出 B' }], trace: { mode: 'iter', cols: ['A', 'B'] },
+    mistakes: [{ code: build('<='), msg: `邊界值：B = ${lim} 時「B < ${lim}」不成立。` }],
+    explain: ['B ← A - B 用的是「已更新」的 A，所以新的 B 等於 A 原本的值。', '條件中的 B 在循環體內改變，要逐次追蹤。'] };
+});
+
+// ---------- 陣列 ----------
+const SHOWA = (n) => [`設 j 由 1 至 ${n} 執行`, `${I}輸出 A[j]`];
+const ACOLS = (n, name = 'A') => Array.from({ length: n }, (_, i) => `${name}[${i + 1}]`);
+add('arr', '累加與點算', () => {
+  const n = R(5, 6), A = Array.from({ length: n }, () => R(1, 20)), v = pick(['sum', 'cnt', 'even']);
+  if (v === 'sum') {
+    const build = (s) => C('S ← 0', `設 i 由 ${s} 至 ${n} 執行`, `${I}S ← S + A[i]`, '輸出 S');
+    return { code: build(1), init: { arrays: { A } }, asks: [{ k: 'output' }], trace: { mode: 'iter', cols: ['i', 'A[i]', 'S'] },
+      mistakes: [{ code: build(2), msg: 'i 由 1 開始，A[1] 也要加入。' }], explain: ['S 是累加器：逐一把 A[1] 至 A[' + n + '] 加入 S。'] };
+  }
+  if (v === 'cnt') {
+    const k = pick(A), op = pick(['>', '>=']);
+    const build = (o) => C('C ← 0', `設 i 由 1 至 ${n} 執行`, `${I}如果 A[i] ${o} ${k} 則`, `${I2}C ← C + 1`, '輸出 C');
+    return { code: build(op), init: { arrays: { A } }, asks: [{ k: 'output' }], trace: { mode: 'iter', cols: ['i', 'A[i]', 'C'] },
+      mistakes: [{ code: build(op === '>' ? '>=' : '>'), msg: op === '>' ? `A[i] = ${k} 時「A[i] > ${k}」不成立，不計算在內。` : `A[i] = ${k} 時「A[i] >= ${k}」成立，要計算在內。` }],
+      explain: ['C 是計數器：符合條件便加 1。'] };
+  }
+  const build = (c) => C('S ← 0', `設 i 由 1 至 ${n} 執行`, `${I}如果 ${c} 的餘數 = 0 則`, `${I2}S ← S + A[i]`, '輸出 S');
+  return { code: build('(i / 2)'), init: { arrays: { A } }, asks: [{ k: 'output' }], trace: { mode: 'iter', cols: ['i', 'A[i]', 'S'] },
+    mistakes: [{ code: build('(A[i] / 2)'), msg: 'i 是索引（位置），A[i] 才是數值。這裏檢查的是位置 i 是否雙數，不是數值是否雙數。' }],
+    explain: ['只把雙數位置（A[2]、A[4]…）的數值加入 S。'] };
+});
+add('arr', '最大值與最小值', () => {
+  const n = R(5, 6), v = pick(['max', 'min', 'pos', 'while']); const A = distinct(n, 1, 40);
+  if (v === 'max' || v === 'min') {
+    const op = v === 'max' ? '>' : '<';
+    const build = (o) => C('M ← A[1]', `設 i 由 2 至 ${n} 執行`, `${I}如果 A[i] ${o} M 則`, `${I2}M ← A[i]`, '輸出 M');
+    return { code: build(op), init: { arrays: { A } }, asks: [{ k: 'output' }, { k: 'count', t: 'M ← A[i]' }], trace: { mode: 'iter', cols: ['i', 'A[i]', 'M'] },
+      mistakes: [{ code: build(op === '>' ? '<' : '>'), msg: '「A[i] > M」找最大值；「A[i] < M」找最小值。' }],
+      explain: [`先假設 A[1] 是最${v === 'max' ? '大' : '小'}值，再逐一與其餘的數值比較。`] };
+  }
+  if (v === 'pos') {
+    const op = pick(['>', '<']); const ext = op === '>' ? Math.max(...A) : Math.min(...A); const e = A.indexOf(ext) + 1;
+    if (e < n && coin(0.6)) A[R(e + 1, n) - 1] = ext;
+    const build = (o) => C('P ← 1', `設 i 由 2 至 ${n} 執行`, `${I}如果 A[i] ${o} A[P] 則`, `${I2}P ← i`, '輸出 P');
+    return { code: build(op), init: { arrays: { A } }, asks: [{ k: 'output' }], trace: { mode: 'iter', cols: ['i', 'A[i]', 'P'] },
+      mistakes: [{ code: build(op + '='), msg: `有兩個相同的最${op === '>' ? '大' : '小'}值：用「${op}」時，相等不會更新 P，所以保留第一個的位置。` }, { ans: String(ext), msg: '輸出的是位置 P（索引），不是數值 A[P]。' }],
+      explain: ['P 記錄目前最' + (op === '>' ? '大' : '小') + '值的位置（索引）。', '比較時用 A[P] 取出該位置的數值。'] };
+  }
+  const build = (o) => C('i ← 1', 'M ← A[i]', `當 i < ${n} 執行`, `${I}i ← i + 1`, `${I}如果 A[i] ${o} M 則`, `${I2}M ← A[i]`, '輸出 M');
+  return { code: build('>'), init: { arrays: { A } }, asks: [{ k: 'output' }], trace: { mode: 'iter', cols: ['i', 'A[i]', 'M'] },
+    mistakes: [{ code: build('<'), msg: '「A[i] > M」找最大值；「A[i] < M」找最小值。' }], explain: ['先把 i 加 1，再比較 A[i]；所以 A[1] 至 A[' + n + '] 全部都會被檢查。'] };
+});
+add('arr', '線性搜尋（旗標）', () => {
+  const n = 6, A = distinct(n, 1, 30), r = Math.random(); let N, pos = 0, dup = 0;
+  if (r < 0.35) { do N = R(1, 30); while (A.includes(N)); }
+  else { pos = R(1, n); N = A[pos - 1]; if (r > 0.75 && pos < n) { dup = R(pos + 1, n); A[dup - 1] = N; } }
+  const code = C('i ← 1', 'FLAG ← FALSE', '輸入 N', `當 (i <= ${n}) AND NOT FLAG 執行`, `${I}如果 A[i] = N 則`, `${I2}FLAG ← TRUE`, `${I}否則`, `${I2}i ← i + 1`, '如果 FLAG 則', `${I}輸出 i`, '否則', `${I}輸出 '沒有出現'`);
+  const mistakes = pos ? [...(dup ? [{ ans: String(dup), msg: '找到第一個後 FLAG 變成 TRUE，循環便停止，不會再找後面相同的數值。' }] : []), { ans: String(pos + 1), msg: '找到時執行的是 FLAG ← TRUE，i 不會再加 1。' }]
+    : [{ ans: String(n + 1), msg: '沒有找到時 FLAG 仍是 FALSE，執行的是「否則」部分。' }];
+  return { code, init: { arrays: { A }, inputs: [N] }, asks: [{ k: 'output' }, { k: 'count', t: '如果 A[i] = N 則' }], trace: { mode: 'iter', cols: ['i', 'FLAG'] }, mistakes,
+    explain: ['FLAG 是旗標：找到後設為 TRUE，令循環條件不成立，提早離開循環。', '條件 (i <= ' + n + ') AND NOT FLAG：未查完而且未找到，才繼續。'] };
+});
+add('arr', '在已排序陣列加入項目', () => {
+  const n = 5, A = sorted(n, 1, 40); let K; do K = R(1, A[n - 1] + 6); while (A.includes(K));
+  const pos = A.filter((x) => x < K).length + 1, p = R(Math.max(1, pos - 1), n + 1);
+  const code = C(`K ← ${K}`, `i ← ${n + 1}`, '當 (i > 1) AND (A[i - 1] > K) 執行', `${I}A[i] ← A[i - 1]`, `${I}i ← i - 1`, 'A[i] ← K', `輸出 A[${p}]`);
+  const fwd = C(`K ← ${K}`, `i ← ${pos}`, pos <= n ? [`設 j 由 ${pos} 至 ${n} 執行`, `${I}A[j + 1] ← A[j]`] : [], 'A[i] ← K', `輸出 A[${p}]`);
+  return { code, init: { arrays: { A } }, intro: `陣列 A 的 A[1] 至 A[${n}] 已按由小至大的次序儲存了 ${n} 個數值。空運行以下算法。`,
+    asks: [{ k: 'output' }, { k: 'var', e: 'i' }, { k: 'count', t: 'A[i] ← A[i - 1]' }], trace: { mode: 'iter', cols: ['i', ...ACOLS(n + 1)] },
+    mistakes: [{ code: fwd, for: ['output'], msg: '移位方向：要由最後一項開始，逐項向後移一格；由前面開始移，會覆蓋未移動的項目。' }, ...(p <= n ? [{ ans: String(A[p - 1]), msg: `A[${p}] 原本的數值已向後移了一格（或被 K 取代）。` }] : [])],
+    explain: ['由最後一項開始，把比 K 大的項目逐一向後移一格，騰出位置。', `遇到不大於 K 的項目（或已到 A[1]）便停止，把 K 放入 A[i]。K 最後放在 A[${pos}]。`] };
+});
+add('arr', '刪除陣列項目', () => {
+  const n = R(5, 6), A = distinct(n, 1, 30), P = R(1, n);
+  const build = (mode) => C('輸入 P', mode === 'rev' ? ['設 K 由 N - 1 遞減至 P 執行', `${I}A[K] ← A[K + 1]`] : ['K ← P', '當 K <= N - 1 執行', `${I}A[K] ← A[K + 1]`, `${I}K ← K + 1`], mode === 'noN' ? [] : ['N ← N - 1'], '設 j 由 1 至 N 執行', `${I}輸出 A[j]`);
+  return { code: build(''), init: { vars: { N: n }, arrays: { A }, inputs: [P] }, intro: `A 是一個陣列，以 A[1] 至 A[N] 儲存 N 個數值，N = ${n}。空運行以下算法。`,
+    asks: [{ k: 'output' }, { k: 'count', t: 'A[K] ← A[K + 1]' }], trace: { mode: 'iter', cols: ['K', 'N', ...ACOLS(n)] },
+    mistakes: [{ code: build('rev'), for: ['output'], msg: '移位方向：刪除時要由 A[P] 開始，逐項把後一項移前（K 遞增）；由後面開始，會把同一個數值一直複製到前面。' }, { code: build('noN'), for: ['output'], msg: '最後要 N ← N − 1：項目少了一個。原本最後一項仍留在 A[N]，但已不屬於陣列。' }],
+    explain: [`這個算法刪除 A 內第 P 個（第 ${P} 個）數值（DSE 2017 甲33）。`, '由 A[P] 開始，把後面每一項向前移一格，最後 N 減 1。'] };
+});
+add('arr', '調動項目', () => {
+  const n = R(5, 6), A = distinct(n, 1, 30), v = pick(['rev', 'rotl', 'rotr', 'pass']), show = SHOWA(n), cols = ['i', 'T', ...ACOLS(n)], ask2 = { k: 'var', e: `A[${R(1, n)}]` };
+  if (v === 'rev') { const h = Math.floor(n / 2);
+    const build = (e) => C(`設 i 由 1 至 ${e} 執行`, `${I}T ← A[i]`, `${I}A[i] ← A[${n + 1} - i]`, `${I}A[${n + 1} - i] ← T`, show);
+    return { code: build(h), init: { arrays: { A } }, asks: [{ k: 'output' }, ask2], trace: { mode: 'iter', cols },
+      mistakes: [{ code: build(n), msg: `倒轉只需交換一半（i 由 1 至 ${h}）；做到 ${n} 會把已交換的項目再換回原位。` }],
+      explain: [`每次把 A[i] 與 A[${n + 1} - i] 交換（首尾對調），T 是暫存變量。`, '結果：陣列的次序倒轉。'] };
+  }
+  if (v === 'rotl') {
+    const build = (useT) => C(useT ? ['T ← A[1]'] : [], `設 i 由 1 至 ${n - 1} 執行`, `${I}A[i] ← A[i + 1]`, useT ? `A[${n}] ← T` : `A[${n}] ← A[1]`, show);
+    return { code: build(true), init: { arrays: { A } }, asks: [{ k: 'output' }, ask2], trace: { mode: 'iter', cols },
+      mistakes: [{ code: build(false), msg: 'A[1] 在循環中已被覆蓋，所以要先把它存入暫存變量 T。' }],
+      explain: ['先把 A[1] 存入 T；其餘每一項向前移一格；最後把 T 放到最後一格。', '結果：所有項目循環向左移一位。'] };
+  }
+  if (v === 'rotr') {
+    const build = (down) => C(`T ← A[${n}]`, down ? `設 i 由 ${n} 遞減至 2 執行` : `設 i 由 2 至 ${n} 執行`, `${I}A[i] ← A[i - 1]`, 'A[1] ← T', show);
+    return { code: build(true), init: { arrays: { A } }, asks: [{ k: 'output' }, ask2], trace: { mode: 'iter', cols },
+      mistakes: [{ code: build(false), msg: '向後移位要由最後一項開始（i 遞減）；由前面開始，會把 A[1] 一直複製下去。' }],
+      explain: ['先把最後一項存入 T；由後至前，每一項向後移一格；最後把 T 放到 A[1]。', '結果：所有項目循環向右移一位。'] };
+  }
+  return { code: C(`設 i 由 1 至 ${n - 1} 執行`, `${I}如果 A[i] > A[i + 1] 則`, `${I2}T ← A[i]`, `${I2}A[i] ← A[i + 1]`, `${I2}A[i + 1] ← T`, show), init: { arrays: { A } },
+    asks: [{ k: 'output' }, ask2], trace: { mode: 'iter', cols },
+    mistakes: [{ ans: [...A].sort((x, y) => x - y).join(' '), msg: '循環只做了一輪：最大的數值會被移到最後，但其他數值未必已排好次序。' }],
+    explain: ['逐對比較相鄰的兩項，前面的較大便用暫存變量 T 交換。', '一輪之後，最大的數值一定在最後一格。'] };
+});
+add('arr', '以算式填入陣列', () => {
+  const v = pick([1, 2, 3]);
+  if (v === 1) { const a = R(1, 6), n = R(3, 5);
+    const build = (q) => C(`Y[1] ← ${a}`, `設 k 由 1 至 ${n} 執行`, `${I}Y[k + 1] ← Y[k] + k`, `輸出 Y[${q}]`);
+    return { code: build(n + 1), intro: 'Y 是一個陣列。空運行以下算法。', asks: [{ k: 'output' }], trace: { mode: 'iter', cols: ['k', ...ACOLS(n + 1, 'Y')] },
+      mistakes: [{ code: build(n), msg: `看清楚輸出的是 Y[${n + 1}]：最後一次 k = ${n}，計算的是 Y[k + 1] = Y[${n + 1}]。` }],
+      explain: ['每次迭代用 Y[k] 計算下一格 Y[k + 1]。'] };
+  }
+  if (v === 2) { const a = R(1, 3), k0 = R(1, 4), n = R(4, 5);
+    const build = (sw) => C('i ← 1', `A[1] ← ${a}`, `K ← ${k0}`, `當 i < ${n} 執行`, `${I}i ← i + 1`, sw ? [`${I}K ← K + 2`, `${I}A[i] ← A[i - 1] + K`] : [`${I}A[i] ← A[i - 1] + K`, `${I}K ← K + 2`], `輸出 A[${n}]`);
+    return { code: build(false), intro: 'A 是一個陣列。空運行以下算法。', asks: [{ k: 'output' }, { k: 'var', e: 'K' }], trace: { mode: 'iter', cols: ['i', 'A[i]', 'K'] },
+      mistakes: [{ code: build(true), msg: '次序：A[i] 用的是「未加 2」的 K；計算 A[i] 之後 K 才加 2。' }],
+      explain: ['先把 i 加 1，再以前一格 A[i − 1] 加上 K 得出 A[i]，最後 K 加 2。'] };
+  }
+  const c = R(0, 3), d = R(2, 3), lim = R(12, 20), it = Math.ceil((lim - c) / d), p = R(2, Math.min(it, 6));
+  return { code: C(`cnt ← ${c}`, 'ind ← 1', `當 cnt < ${lim} 執行`, `${I}cnt ← cnt + ${d}`, `${I}AR[ind] ← cnt`, `${I}ind ← ind + 1`, `輸出 AR[${p}]`), intro: 'AR 是一個陣列。空運行以下算法。',
+    asks: [{ k: 'output' }, { k: 'var', e: 'ind' }], trace: { mode: 'iter', cols: ['cnt', 'ind'] },
+    mistakes: [{ ans: String(c + d * (p - 1)), msg: `cnt 先加 ${d}，才存入 AR[ind]，所以 AR[1] 已是 ${c + d}。` }],
+    explain: [`AR[1]、AR[2]、… 依次儲存 ${c + d}、${c + 2 * d}、…（DSE 2012 甲32 類型）。`] };
+});
+
+// ---------- 產生題目 ----------
+const lineOf = (code, t) => code.split('\n').findIndex((l) => l.trim() === t);
+function answerFor(res, ask, code) {
+  if (ask.k === 'output') return res.out.join(' ');
+  if (ask.k === 'count') { const ln = lineOf(code, ask.t); return ln < 0 ? null : String(DR.countLine(res, ln)); }
+  return DR.valIn(res.env, DR.parseExpr(ask.e));
+}
+const hasNeg = (res) => res.events.some((e) => e.snap && (Object.values(e.snap.v).some((x) => typeof x === 'number' && x < 0) || Object.values(e.snap.a).some((o) => Object.values(o).some((x) => typeof x === 'number' && x < 0))));
+function makeQuestion(tpl, type, opt = {}) {
+  for (let tries = 0; tries < 60; tries++) {
+    const g = tpl.gen(); let res, trace;
+    try { res = DR.run(g.code, g.init || {}, { trace: true }); trace = DR.buildTrace(res, g.trace); } catch (e) { if (opt.strict) throw e; continue; }
+    if (!g.neg && hasNeg(res)) continue;
+    if (trace.rows.length > 12 || trace.rows.length < 2 || trace.cols.length > 10) continue;
+    const asks = g.asks.filter((a) => a.k !== 'output' || res.out.length);
+    if (!asks.length) continue;
+    const ask = opt.ask ? asks.find((a) => a.k === opt.ask) || pick(asks) : pick(asks);
+    const answer = answerFor(res, ask, g.code);
+    if (answer == null || answer === '' || answer.length > 40) continue;
+    const mistakes = [];
+    for (const m of g.mistakes || []) {
+      if (m.for ? !m.for.includes(ask.k) : (m.ans !== undefined && ask.k !== 'output')) continue;
+      let a2 = m.ans;
+      if (m.code) { try { a2 = answerFor(DR.run(m.code, g.init || {}), ask, m.code); } catch (e) { continue; } }
+      if (a2 != null && a2 !== '' && !DR.same(a2, answer) && !mistakes.some((x) => DR.same(x.ans, a2))) mistakes.push({ ans: a2, msg: m.msg });
+    }
+    return { tpl, type, g, res, trace, ask, answer, mistakes };
+  }
+  throw new Error('未能產生題目：' + tpl.name);
+}
+/*CORE-END*/
+
+  // =================== 介面 ===================
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  const MODES = [
+    { id: 'seq', name: '序列與賦值', note: '按次序逐句執行；賦值（←）把右邊「當時」的值複製到左邊的變量。亦包括餘數及整數部分。', tips: '<b>常見錯誤：</b>以為之後改變了 LENGTH，AREA 會自動更新；交換兩個變量時沒有用暫存變量；把餘數和整數部分調轉。' },
+    { id: 'sel', name: '選擇與布爾算式', note: '對分、多向及嵌套選擇；關係運算符、AND／OR／NOT 及運算次序（括號 → NOT → AND → OR）。', tips: '<b>常見錯誤：</b>忘記 NOT 要把結果反轉；邊界值（相等時 > 不成立、>= 成立）；多向選擇第一個成立的條件執行後便不再檢查。' },
+    { id: 'for', name: '計數循環', note: '「設 i 由 a 至 b」共執行 b − a + 1 次；遞減循環；嵌套循環；以縮排分辨循環內外的語句。', tips: '<b>常見錯誤：</b>少做或多做一次迭代；把循環外的「輸出」當作每次都執行；嵌套循環的次數要相乘。' },
+    { id: 'loop', name: '前測／後測循環', note: '前測循環（當…執行）先檢查條件，可以一次也不執行；後測循環（重複…直至、執行…當）最少執行一次。', tips: '<b>常見錯誤：</b>「重複…直至」條件成立便停止，「當」條件成立便繼續；邊界值令次數相差一次；標記值不應計算在內。' },
+    { id: 'chg', name: '循環內改變變量', note: '條件中的變量在循環體內改變：兩個變量同時改變、控制變量被重新設定、每次增加的量在改變。', tips: '<b>常見錯誤：</b>只追蹤一個變量；以為計數循環的控制變量保留原本的值；最後一次輸出可以超過條件的界限。' },
+    { id: 'arr', name: '陣列', note: '陣列 A[1] 至 A[N]：存取、累加、點算、最大／最小值、線性搜尋、加入／刪除項目（移位）及調動。', tips: '<b>常見錯誤：</b>混淆索引 i 與數值 A[i]；加入時要由後向前移，刪除時要由前向後移；交換要用暫存變量。' },
+  ];
+  const TYPES = [{ id: 'mix', name: '混合' }, { id: 'calc', name: '求輸出／次數' }, { id: 'trace', name: '逐步追蹤' }];
+  const HINTS = {
+    '賦值次序': [['由第一句開始，逐句計算右邊的值。', '計算時用「當時」各變量的值。', '把結果寫入左邊的變量，取代舊值。'], 'A ← 2\nB ← 5\nA ← B - A   A = 3'],
+    '賦值是複製': [['賦值只在執行那一句時計算一次。', '之後改變右邊用過的變量，不會影響已計算出的結果。'], ''],
+    '交換兩個變量': [['逐句追蹤，每句只改變左邊一個變量。', '交換要先把其中一個值存入暫存變量。'], 'T ← X\nX ← Y\nY ← T'],
+    '餘數與整數部分': [['(a / b) 的整數部分：商（刪去小數）。', '(a / b) 的餘數：除剩的部分。'], '(472 / 10) 的整數部分 = 47\n(472 / 10) 的餘數 = 2'],
+    '嵌套選擇': [['先計算外層條件。', '按結果進入「則」或「否則」，再計算該部分內的條件。', '同一縮排的「否則」屬於同一縮排的「如果」。'], ''],
+    '多向選擇與邊界值': [['由上而下逐個檢查條件。', '第一個成立的條件便執行，之後的不再檢查。', '>= 包括相等；> 不包括相等。'], ''],
+    'NOT 布爾算式': [['先把數值代入每一個關係算式。', '計算括號內的結果，再處理 NOT（反轉）。', '次序：括號 → NOT → AND → OR。'], 'NOT (FALSE OR TRUE)\n= NOT TRUE = FALSE'],
+    '布爾算式求值': [['把每個關係算式寫成 TRUE／FALSE。', '由最內層括號開始合併。', 'AND：兩個都 TRUE；OR：一個 TRUE 便成立。'], ''],
+    '餘數與條件': [['餘數 = 0 表示整除。', 'AND 兩邊都要成立。', '第一個成立的條件執行後便不再檢查。'], ''],
+    '對分選擇改變變量': [['先計算條件。', '只執行「則」或「否則」其中一句。'], ''],
+    '累加與累乘': [['數一數循環體執行多少次：b − a + 1。', '每次迭代在舊值上加（乘）新的數。'], '設 i 由 1 至 3\n  S ← S + i\nS：0 → 1 → 3 → 6'],
+    '循環內外的語句': [['以縮排判斷語句在循環內還是循環外。', '循環內的語句每次迭代都執行；循環外的只執行一次。'], ''],
+    '遞減循環': [['「由 n 遞減至 m」：n, n−1, …, m。', '共執行 n − m + 1 次。'], ''],
+    '數列更新（暫存變量）': [['每句只改變一個變量。', 'T ← X + Y 用的是 X、Y 的舊值。', '追蹤表每次迭代寫一行。'], ''],
+    '嵌套循環的次數': [['外層每執行一次，內層由頭到尾執行一次。', '把外層每一次的內層次數加起來。'], '外層 3 次 × 內層 4 次 = 12 次'],
+    '循環內的選擇': [['每次迭代都要重新判斷條件。', '追蹤表每行寫下該次迭代的結果及輸出。'], ''],
+    '當循環的次數': [['前測：先檢查條件，成立才執行循環體。', '逐次寫下變量的值，直至條件不成立。', '特別留意剛好等於界限的情況。'], ''],
+    '前測與後測': [['前測（當）：可以一次也不執行。', '後測（重複…直至）：最少執行一次。'], ''],
+    '重複…直至': [['先執行循環體，再檢查「直至」的條件。', '條件成立便停止；不成立便再執行。'], ''],
+    '執行…當（後測）': [['先執行循環體，再檢查「當」的條件。', '條件成立便再執行（與「重複…直至」相反）。'], ''],
+    '標記值': [['標記值（例如 888）只用來終止輸入。', '讀到標記值後循環停止，標記值不會被處理。'], ''],
+    '條件中的 NOT': [['把 NOT 改寫為相反的關係運算符。', 'NOT (M < b) 即 M >= b；NOT (M <> b) 即 M = b。'], ''],
+    '除二取餘': [['每次記下 (X / 2) 的餘數，再把 X 變成 (X / 2) 的整數部分。', '直至 X = 0 才停止。'], '13 → 1, 6 → 0, 3 → 1, 1 → 1'],
+    '兩個變量同時改變': [['追蹤表要同時記下 X 和 Y。', '每次迭代後重新檢查 X < Y。'], ''],
+    '控制變量被重新設定': [['「設 C 由 a 至 b」開始時把 C 設為 a。', 'C 原本的值不影響執行次數。'], ''],
+    '每次增加的量在改變': [['按次序執行：先更新哪一個變量很重要。', '每次迭代後檢查條件。'], ''],
+    '循環內的選擇改變變量': [['每次迭代先判斷 A 是單數還是雙數。', '(A / 2) 的餘數 = 1 表示單數。'], ''],
+    '最後一次輸出超過界限': [['條件只在每次循環開始前檢查。', '循環體內更新後才輸出，所以最後的輸出可超過界限。'], ''],
+    '互相影響的更新': [['B ← A − B 用的是更新後的 A。', '每次迭代都要重新檢查條件。'], ''],
+    '累加與點算': [['i 是位置，A[i] 是該位置的數值。', '累加器加數值；計數器加 1。'], ''],
+    '最大值與最小值': [['先假設第一個是最大（小）值。', '逐一比較，遇到更大（小）的便更新。', '記錄位置時，比較用 A[P]。'], ''],
+    '線性搜尋（旗標）': [['由 A[1] 開始逐一比較。', '找到便把 FLAG 設為 TRUE，循環停止。', '查完都找不到，FLAG 仍是 FALSE。'], ''],
+    '在已排序陣列加入項目': [['由最後一項開始，比 K 大的項目逐一向後移一格。', '停下來的位置 i 便是 K 的位置。'], '1 3 5 7 _   加入 4\n→ 1 3 _ 5 7 → 1 3 4 5 7'],
+    '刪除陣列項目': [['由 A[P] 開始，把後一項移前一格。', '最後 N 減 1。'], '5 8 2 9 刪除第 2 項\n→ 5 2 9 (9)，N = 3'],
+    '調動項目': [['交換要用暫存變量 T。', '留意移位的方向：向前移由頭開始，向後移由尾開始。'], ''],
+    '以算式填入陣列': [['每次迭代只填入一格，寫下它的索引及數值。', '看清楚最後輸出的是哪一格。'], ''],
+  };
+
+  const S = { mode: 'seq', type: 'mix', on: {}, q: null, n: 0, answered: false, right: 0, total: 0, streak: 0, best: 0, row: 0, stats: [], tried: false };
+  try { S.best = +localStorage.getItem('dryrun-best') || 0; } catch (e) {}
+  try { const m = localStorage.getItem('dryrun-mode'); if (MODES.some((x) => x.id === m)) S.mode = m; } catch (e) {}
+  try { const t = localStorage.getItem('dryrun-type'); if (TYPES.some((x) => x.id === t)) S.type = t; } catch (e) {}
+  const hsh = location.hash.replace('#', ''); if (MODES.some((x) => x.id === hsh)) S.mode = hsh;
+  MODES.forEach((m) => { S.on[m.id] = new Set(TPL.filter((t) => t.cat === m.id).map((t) => t.name)); });
+  try { const saved = JSON.parse(localStorage.getItem('dryrun-filter') || '{}');
+    Object.keys(saved).forEach((id) => { if (!S.on[id] || !Array.isArray(saved[id])) return; const names = new Set(TPL.filter((t) => t.cat === id).map((t) => t.name));
+      const keep = saved[id].filter((n) => names.has(n)); if (keep.length) S.on[id] = new Set(keep); }); } catch (e) {}
+  const saveFilter = () => { try { const o = {}; Object.keys(S.on).forEach((id) => { o[id] = [...S.on[id]]; }); localStorage.setItem('dryrun-filter', JSON.stringify(o)); } catch (e) {} };
+
+  const nav = $('modes');
+  MODES.forEach((m) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = m.name; b.dataset.id = m.id;
+    b.addEventListener('click', () => { S.mode = m.id; try { localStorage.setItem('dryrun-mode', m.id); } catch (e) {} renderNav(); renderFilter(); next(); }); nav.appendChild(b); });
+  function renderNav() { [...nav.children].forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === S.mode)));
+    const m = MODES.find((x) => x.id === S.mode); $('mode-note').textContent = m.note; $('tips').innerHTML = m.tips; }
+  const tbar = $('types');
+  TYPES.forEach((t) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = t.name; b.dataset.id = t.id;
+    b.addEventListener('click', () => { S.type = t.id; try { localStorage.setItem('dryrun-type', t.id); } catch (e) {} renderTypes(); next(); }); tbar.appendChild(b); });
+  function renderTypes() { [...tbar.children].forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === S.type))); }
+
+  function renderCount() { const all = TPL.filter((t) => t.cat === S.mode).length, on = S.on[S.mode].size, el = $('fcount');
+    el.textContent = on === all ? `全部 ${all} 種算法` : `已選 ${on}／${all} 種`; el.classList.toggle('partial', on !== all); }
+  function renderFilter() {
+    const box = $('fchips'); box.innerHTML = '';
+    TPL.filter((t) => t.cat === S.mode).forEach((t) => { const c = document.createElement('button'); c.type = 'button'; c.className = 'chip'; c.textContent = t.name;
+      c.setAttribute('aria-pressed', String(S.on[S.mode].has(t.name)));
+      c.addEventListener('click', () => { const set = S.on[S.mode]; set.has(t.name) ? set.delete(t.name) : set.add(t.name); c.setAttribute('aria-pressed', String(set.has(t.name))); saveFilter(); renderCount(); afterFilter(); });
+      box.appendChild(c); });
+    renderCount();
+  }
+  function afterFilter() { if (!S.on[S.mode].size) { showEmpty(); return; } if (!S.q || !S.on[S.mode].has(S.q.tpl.name)) next(); }
+  $('f-all').addEventListener('click', () => { S.on[S.mode] = new Set(TPL.filter((t) => t.cat === S.mode).map((t) => t.name)); saveFilter(); renderFilter(); afterFilter(); });
+  $('f-none').addEventListener('click', () => { S.on[S.mode] = new Set(); saveFilter(); renderFilter(); afterFilter(); });
+
+  function renderScore() { $('sc-right').textContent = S.right; $('sc-total').textContent = S.total; $('sc-streak').textContent = S.streak; $('sc-best').textContent = S.best; }
+  function showEmpty() {
+    S.q = null; $('qtype').textContent = ''; $('qno').textContent = '';
+    $('prompt').innerHTML = '<p class="empty">請在上方「算法篩選」選擇至少一種算法。</p>'; $('input-area').innerHTML = ''; $('feedback').hidden = true; $('rowmsg').hidden = true;
+    $('btn-check').disabled = true; $('btn-show').disabled = true; $('btn-next').disabled = true; $('filter').open = true; $('btn-hint').hidden = true; $('hintbox').hidden = true;
+  }
+
+  // ---------- 顯示偽代碼及已知數據 ----------
+  const KWRE = /(否則如果|否則|如果|則|遞減至|直至|重複|執行|當|設|由|至|輸入|輸出|的整數部分|的餘數|AND|OR|NOT|TRUE|FALSE)/g;
+  const hlText = (s) => s.split(/('[^']*')/).map((seg, i) => (i % 2 ? `<span class="st">${esc(seg)}</span>` : esc(seg).replace(KWRE, '<span class="kw">$1</span>'))).join('');
+  const codeHTML = (code) => `<div class="code" id="code" role="group" aria-label="偽代碼">${code.split('\n').map((l, i) => `<div class="ln" data-l="${i}"><span class="no" aria-hidden="true">${i + 1}</span><span class="tx">${hlText(l)}</span></div>`).join('')}</div>`;
+  const showV = (v) => (typeof v === 'string' ? `'${v}'` : DR.fmt(v));
+  function givenHTML(init) {
+    if (!init) return '';
+    const parts = [];
+    for (const [k, v] of Object.entries(init.vars || {})) parts.push(`<div>已知 <span class="mono">${esc(k)} = ${esc(showV(v))}</span></div>`);
+    for (const [name, arr] of Object.entries(init.arrays || {})) parts.push(`<div>陣列 <span class="mono">${esc(name)}</span> 的初始值：</div><div class="scroll"><table class="arr"><tr><th>索引</th>${arr.map((_, i) => `<td>${i + 1}</td>`).join('')}</tr><tr><th>${esc(name)}[索引]</th>${arr.map((x) => `<td>${esc(showV(x))}</td>`).join('')}</tr></table></div>`);
+    if (init.inputs && init.inputs.length) parts.push(`<div>輸入的數值依次為：<span class="mono">${init.inputs.map((x) => esc(showV(x))).join('、')}</span></div>`);
+    return parts.length ? `<div class="given">${parts.join('')}</div>` : '';
+  }
+  function askText(q) { const a = q.ask;
+    if (a.k === 'output') return '這個算法的輸出是甚麼？';
+    if (a.k === 'count') return `「<span class="mono">${hlText(a.t)}</span>」會被執行多少次？`;
+    return `算法完成後，<span class="mono">${esc(a.e)}</span> 的值是甚麼？`; }
+  function setHL(lines) { document.querySelectorAll('#code .ln').forEach((el) => el.classList.toggle('hl', !!lines && lines.includes(+el.dataset.l))); }
+
+  // ---------- 追蹤表 ----------
+  function howto(tr) {
+    if (tr.mode === 'stmt') return '逐句執行，每一行填寫執行該語句後的值。變量沒有改變可以留空；遇到「如果」選擇條件的結果。';
+    const t = tr.loop.t;
+    if (t === 'while') return '「進入循環前」填寫初始值。之後每一行代表一次檢查條件：先選條件結果；若是 TRUE，再填寫執行循環體後的值（沒有改變可留空）。';
+    if (t === 'for') return '「進入循環前」填寫初始值；之後每一行填寫該次循環體執行完畢後的值（沒有改變可以留空）。';
+    return '「進入循環前」填寫初始值；之後每一行填寫該次循環體執行後的值，再判斷條件的結果。';
+  }
+  const condHead = (c) => (c.post ? (c.loopT === 'repeat' ? `直至 ${c.label}` : `當 ${c.label}`) : c.label);
+  function tableHTML(q, full) {
+    const tr = q.trace, cols = tr.cols, upto = full ? tr.rows.length : S.row;
+    let h = `<div class="tracewrap"><table class="trace"><thead><tr><th class="lab" scope="col">步驟</th>${cols.map((c) => `<th class="${c.kind}" scope="col">${esc(c.kind === 'cond' && tr.mode === 'iter' ? condHead(c) : c.label)}</th>`).join('')}${full ? '' : '<th class="lab" scope="col" aria-label="結果"></th>'}</tr></thead><tbody>`;
+    tr.rows.forEach((r, i) => {
+      if (i > upto || (i === upto && (full || S.answered))) return;
+      const lab = `<td class="lab${r.mono ? ' m' : ''}">${r.mono ? hlText(r.label) : esc(r.label)}</td>`;
+      if (i < upto) {
+        h += `<tr>${lab}${cols.map((c) => { const cell = r.cells[c.key]; if (!cell.on) return '<td class="v off"></td>';
+          const same = c.kind === 'var' && cell.exp === cell.prev; return `<td class="v${same ? ' same' : ''}">${esc(cell.exp)}</td>`; }).join('')}`;
+        if (!full) { const st = S.stats[i]; h += `<td class="st ${st}">${st === 'ok' ? '✓' : st === 'retry' ? '✓ 再試' : '提示'}</td>`; }
+        h += '</tr>';
+      } else {
+        h += `<tr class="cur">${lab}${cols.map((c) => { const cell = r.cells[c.key]; if (!cell.on) return '<td class="v off"></td>';
+          const al = `${r.label}：${c.kind === 'cond' ? '條件 ' + c.label : c.label}`;
+          if (c.kind === 'cond') return `<td><select class="cell" data-key="${esc(c.key)}" aria-label="${esc(al)}"><option value="">選擇</option><option>TRUE</option><option>FALSE</option></select></td>`;
+          const allNum = tr.rows.every((x) => !x.cells[c.key].on || /^\d*$/.test(x.cells[c.key].exp));
+          return `<td><input class="cell${c.kind === 'out' || tr.rows.some((x) => x.cells[c.key].exp.length > 5) ? ' wide' : ''}" data-key="${esc(c.key)}" type="text" autocomplete="off" spellcheck="false" ${allNum ? 'inputmode="numeric"' : ''} aria-label="${esc(al)}"></td>`; }).join('')}<td class="st"></td></tr>`;
+      }
+    });
+    return h + '</tbody></table></div>';
+  }
+  function renderTrace() {
+    const q = S.q, area = $('input-area');
+    area.innerHTML = `<p class="howto">${howto(q.trace)} 每一行第一次按「檢查」便全對，本題才計答對。</p>${tableHTML(q, false)}<p class="legend">灰色數值表示該變量在這一步沒有改變。</p>`;
+    const r = q.trace.rows[S.row];
+    setHL(r && !S.answered ? r.lines : null);
+    const inputs = area.querySelectorAll('.cell');
+    inputs.forEach((el) => el.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); checkRow(); } }));
+    if (inputs[0] && S.n > 1) inputs[0].focus({ preventScroll: true });
+  }
+  function cellMsg(c, cell, v, row) {
+    const lab = c.label;
+    if (c.kind === 'cond') return v === '' ? '請選擇條件的結果（TRUE 或 FALSE）。' : `條件「${lab}」的結果不對：把這時各變量的值代入再判斷。${/NOT/.test(lab) ? '留意 NOT 會把結果反轉。' : ''}${/[<>]=|<>/.test(lab) ? '留意相等時的情況。' : ''}`;
+    if (c.kind === 'out') return cell.exp === '' ? '這一步沒有執行「輸出」語句，輸出一欄應留空。' : v.trim() === '' ? '這一步有執行「輸出」語句，請寫下輸出的內容。' : '輸出的內容不對：看清楚輸出的是哪一個變量或算式。';
+    if (cell.exp === cell.prev) return `${lab}：這一步沒有改變 ${lab}（可以留空）。`;
+    if (v.trim() === '') return `${lab}：這一步有改變，不可以留空。`;
+    if (cell.prev !== '' && DR.same(v, cell.prev)) return `${lab}：仍是上一行的值？這一步已執行了改變 ${lab} 的語句。`;
+    return `${lab}：數值不對，再逐句計算一次。`;
+  }
+  function checkRow() {
+    if (!S.q || S.answered || S.q.type !== 'trace') return;
+    const row = S.q.trace.rows[S.row], msgs = []; let ok = true;
+    for (const c of S.q.trace.cols) {
+      const cell = row.cells[c.key]; if (!cell.on) continue;
+      const el = $('input-area').querySelector(`.cell[data-key="${CSS.escape(c.key)}"]`); const v = el.value;
+      let good;
+      if (c.kind === 'var') good = v.trim() === '' ? cell.exp === cell.prev : DR.same(v, cell.exp) && !(cell.exp === '' && v.trim() !== '');
+      else if (c.kind === 'cond') good = v === cell.exp;
+      else good = v.trim() === '' ? cell.exp === '' : cell.exp !== '' && DR.same(v, cell.exp);
+      el.classList.toggle('ok', good); el.classList.toggle('no', !good);
+      if (!good) { ok = false; msgs.push(cellMsg(c, cell, v, row)); }
+    }
+    if (ok) { S.stats[S.row] = S.tried ? 'retry' : 'ok'; advance(S.tried ? '這一行正確（再試後答對）。' : '這一行正確！', 'good'); return; }
+    S.tried = true;
+    const m = $('rowmsg'); m.hidden = false; m.className = 'feedback bad';
+    m.innerHTML = `<div class="verdict">這一行有錯，改正後再按「檢查」，或按「顯示這一步」。</div><ul class="steps">${msgs.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>${S.q.g.tip ? `<div>${esc(S.q.g.tip)}</div>` : ''}`;
+  }
+  function revealRow() {
+    if (!S.q || S.answered) return;
+    const row = S.q.trace.rows[S.row]; S.stats[S.row] = 'rev';
+    advance('', 'info', row);
+  }
+  function advance(msg, cls, revealed) {
+    const row = S.q.trace.rows[S.row];
+    S.row++; S.tried = false;
+    const m = $('rowmsg');
+    if (revealed) { m.hidden = false; m.className = 'feedback info'; m.innerHTML = `<div class="verdict">這一步（${esc(row.label)}）：</div><ul class="desc">${row.desc.map((d) => `<li>${esc(d)}</li>`).join('') || '<li>沒有語句改變變量。</li>'}</ul>`; }
+    else { m.hidden = false; m.className = 'feedback ' + cls; m.innerHTML = `<div class="verdict">${esc(msg)}</div>`; }
+    if (S.row >= S.q.trace.rows.length) { finishTrace(); return; }
+    renderTrace();
+  }
+  function finishTrace() {
+    const n = S.q.trace.rows.length, first = S.stats.filter((x) => x === 'ok').length, correct = first === n;
+    finish(correct, false, `${correct ? '全部一次答對！' : `${first}／${n} 行第一次便答對`}`);
+  }
+
+  // ---------- 出題 ----------
+  function next() {
+    const pool = TPL.filter((t) => t.cat === S.mode && S.on[S.mode].has(t.name));
+    if (!pool.length) { showEmpty(); return; }
+    let t = pick(pool); if (pool.length > 1 && S.q && t.name === S.q.tpl.name) t = pick(pool.filter((x) => x.name !== S.q.tpl.name));
+    const type = S.type === 'mix' ? pick(['calc', 'trace']) : S.type;
+    S.q = makeQuestion(t, type); S.n++; S.answered = false; S.row = 0; S.stats = []; S.tried = false;
+    const q = S.q;
+    $('qtype').innerHTML = `${esc(t.name)}<span class="kind">${type === 'calc' ? '求輸出／次數' : '逐步追蹤'}</span>`; $('qno').textContent = `第 ${S.n} 題`;
+    const h = HINTS[t.name]; $('hintbox').innerHTML = h ? `<h4>方法：${esc(t.name)}</h4><ol>${h[0].map((x) => `<li>${esc(x)}</li>`).join('')}</ol>${h[1] ? `<div class="ex">例：\n${esc(h[1])}</div>` : ''}` : '';
+    $('btn-hint').hidden = !h; setHint(false);
+    $('prompt').innerHTML = `<p>${esc(q.g.intro || '空運行以下算法。')}</p>${givenHTML(q.g.init)}${codeHTML(q.g.code)}${type === 'calc' ? `<p class="ask">${askText(q)}</p>` : ''}`;
+    $('feedback').hidden = true; $('rowmsg').hidden = true; $('btn-next').disabled = false;
+    $('btn-check').disabled = false; $('btn-show').disabled = false;
+    $('btn-check').textContent = type === 'calc' ? '核對答案' : '檢查';
+    $('btn-show').textContent = type === 'calc' ? '顯示答案' : '顯示這一步';
+    if (type === 'calc') {
+      $('input-area').innerHTML = `<div class="answer-row"><label for="ans">你的答案</label><input id="ans" type="text" autocomplete="off" spellcheck="false" placeholder="${q.ask.k === 'output' ? '多個輸出以空格分隔' : '數值'}"></div>`;
+      const inp = $('ans'); inp.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); S.answered ? next() : check(); } });
+      if (S.n > 1) inp.focus({ preventScroll: true });
+    } else renderTrace();
+    updNext();
+  }
+
+  function explainHTML(q, wrongMist) {
+    const out = q.res.out.join(' ');
+    let h = '';
+    if (wrongMist) h += `<div class="mist"><b>常見錯誤：</b>${esc(wrongMist.msg)}</div>`;
+    h += `<ol class="steps">${q.g.explain.map((x) => `<li>${esc(x)}</li>`).join('')}${q.type === 'trace' ? `<li>輸出：<span class="mono">${esc(out || '（沒有輸出）')}</span></li>` : ''}</ol>`;
+    if (q.type === 'calc') h += `<details class="full-trace" open><summary>完整追蹤表</summary>${tableHTML(q, true)}</details>`;
+    else if (q.mistakes.length) h += `<details class="full-trace"><summary>這類題目的常見錯誤</summary><ul class="steps">${q.mistakes.map((m) => `<li>${esc(m.msg)}</li>`).join('')}</ul></details>`;
+    return h;
+  }
+  function finish(correct, revealed, note) {
+    S.answered = true; $('btn-check').disabled = true; $('btn-show').disabled = true;
+    if (!revealed) { S.total++; if (correct) { S.right++; S.streak++; if (S.streak > S.best) { S.best = S.streak; try { localStorage.setItem('dryrun-best', S.best); } catch (e) {} } } else S.streak = 0; }
+    else S.streak = 0;
+    renderScore();
+    const q = S.q, fb = $('feedback'); fb.className = 'feedback ' + (correct ? 'good' : 'bad'); fb.hidden = false;
+    let head, mist = null;
+    if (q.type === 'calc') {
+      const a = ($('ans').value || '').trim();
+      if (!correct && !revealed) mist = q.mistakes.find((m) => DR.same(a, m.ans)) || null;
+      head = `${revealed ? '答案' : correct ? '答對了' : '未答對'}：<span class="mono">${esc(q.answer)}</span>`;
+    } else { head = `完成追蹤表：${esc(note)}`; $('rowmsg').hidden = true; renderTrace(); setHL(null); }
+    fb.innerHTML = `<div class="verdict">${head}</div>${explainHTML(q, mist)}`;
+    updNext(); $('btn-next').focus({ preventScroll: true });
+  }
+  function check() {
+    if (!S.q || S.answered) return;
+    if (S.q.type === 'trace') { checkRow(); return; }
+    const a = ($('ans').value || '').trim();
+    if (!a) { const fb = $('feedback'); fb.className = 'feedback bad'; fb.hidden = false; fb.innerHTML = '<div class="verdict">請先作答，或按「顯示答案」。</div>'; return; }
+    finish(DR.same(a, S.q.answer), false);
+  }
+  function setHint(open) { $('hintbox').hidden = !open; $('btn-hint').setAttribute('aria-expanded', String(open)); }
+  $('btn-hint').addEventListener('click', () => setHint($('hintbox').hidden));
+  $('btn-check').addEventListener('click', check);
+  $('btn-show').addEventListener('click', () => { if (!S.q || S.answered) return; if (S.q.type === 'trace') revealRow(); else finish(false, true); });
+  let skipTimer = null;
+  function updNext(confirming) {
+    const b = $('btn-next'); clearTimeout(skipTimer); b.classList.remove('primary', 'ghost', 'skip', 'confirm');
+    if (S.answered) { b.classList.add('primary'); b.textContent = '下一題 →'; }
+    else if (confirming) { b.classList.add('ghost', 'confirm'); b.textContent = '再按一次確認跳過'; skipTimer = setTimeout(() => updNext(false), 3000); }
+    else { b.classList.add('ghost', 'skip'); b.textContent = '跳過此題'; }
+  }
+  $('btn-next').addEventListener('click', () => { if (S.answered || $('btn-next').classList.contains('confirm')) return next(); updNext(true); });
+
+  // 供自動測試讀取目前題目（不影響使用）
+  window.dryrunLab = { info: () => S.q && { type: S.q.type, tpl: S.q.tpl.name, answer: S.q.answer, mistakes: S.q.mistakes.map((m) => m.ans), row: S.row, answered: S.answered,
+    rows: S.q.trace.rows.map((r) => Object.fromEntries(Object.entries(r.cells).filter(([, c]) => c.on).map(([k, c]) => [k, c.exp]))) } };
+
+  renderNav(); renderTypes(); renderFilter(); renderScore(); next();
+})();
+</script>
+
+</body></html>
