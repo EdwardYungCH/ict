@@ -271,10 +271,17 @@ def dark_and_blocked(browser, unit):
     pg.goto(URL(f'{unit}/index.html'))
     register(pg)
     check(f'{unit} localStorage 封鎖時仍可使用並有提示', '不能儲存進度' in pg.inner_text('footer') and pg.is_visible('#sec-title'))
-    it = U['sections'][0]['tries'][0]
-    right = pg.evaluate('(it) => D1.correctIndex(it)', it)
-    pg.click(f'.try-item[data-id="{it["id"]}"] label.opt >> nth={right}')
-    pg.click(f'.try-item[data-id="{it["id"]}"] button:has-text("鎖定答案")')
+    s0 = U['sections'][0]
+    if s0.get('tries'):
+        it = s0['tries'][0]
+        right = pg.evaluate('(it) => D1.correctIndex(it)', it)
+        pg.click(f'.try-item[data-id="{it["id"]}"] label.opt >> nth={right}')
+        pg.click(f'.try-item[data-id="{it["id"]}"] button:has-text("鎖定答案")')
+    else:
+        it = next(x for x in s0['practice'] if x['type'] == 'mc')
+        right = pg.evaluate('(it) => D1.correctIndex(it)', it)
+        pg.click(f'.prac-item[data-id="{it["id"]}"] label.opt >> nth={right}')
+        pg.click(f'.prac-item[data-id="{it["id"]}"] button:has-text("核對答案")')
     check(f'{unit} localStorage 封鎖時仍可計分', score(pg) == it['pts'])
     check(f'{unit} localStorage 封鎖時沒有 console 錯誤', not errs, '; '.join(errs[:5]))
     ctx.close()

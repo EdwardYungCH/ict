@@ -643,12 +643,12 @@
     if (task.code) box.append(codeView(task.code));
     const ctrls = [];
     const body = h('tbody', task.rows.map((r) => h('tr', r.map((c, ci) => {
-      if (!isIn(c)) return mdEl('td', String(c));
+      if (!isIn(c)) return mdEl('td', String(c), ci ? { 'data-label': task.head[ci] } : { class: 'rowhead' });
       let el;
       const lab = `${String(r[0]).replace(/[`*]/g, '')}：${task.head[ci]}`;
       if (c.sel) el = h('select.cellsel', { 'aria-label': lab }, h('option', { value: '' }, '（請選擇）'), task.opts[c.sel].map((o) => h('option', { value: o }, o)));
       else el = h('input.txt', { type: 'text', 'aria-label': lab, autocomplete: 'off', spellcheck: 'false' });
-      ctrls.push(el); return h('td', el);
+      ctrls.push(el); return h('td', { 'data-label': task.head[ci] }, el);
     }))));
     box.append(h('div.scroll', h('table.tb.anatab', h('thead', h('tr', task.head.map((x) => mdEl('th', x)))), body)));
     const bSubmit = h('button.btn.primary', { type: 'button' }, '提交評核');
@@ -695,7 +695,8 @@
   function renderQuiz(sec, ctx) {
     const qs = ctx.state.quiz = ctx.state.quiz || { ans: {}, submitted: false };
     const box = h('div.blk');
-    box.append(h('p.note', `共 ${sec.items.length} 題，每題 ${sec.items[0].pts} 分。這部分不能用模擬器，請自己空運行（可以在紙上畫追蹤表）。全部答完才可提交，提交後不能再改。`));
+    const hasCode = sec.items.some((it) => it.code);
+    box.append(h('p.note', `共 ${sec.items.length} 題，每題 ${sec.items[0].pts} 分。${hasCode ? '這部分不能用模擬器，請自己空運行（可以在紙上畫追蹤表）。' : ''}全部答完才可提交，提交後不能再改。`));
     const lists = [];
     sec.items.forEach((it, qi) => {
       const right = correctIndex(it);
@@ -914,7 +915,8 @@
       if (sec.kind === 'endless') return S.endless.n > 0;
       if (sec.kind === 'report') return !!S.reported;
       const ids = allItems.filter((x) => x.sec === sec.id).map((x) => x.id);
-      return ids.length > 0 && ids.every((id) => (S.items[id] || {}).done);
+      if (!ids.length) return S.visited.includes(U.sections.indexOf(sec));
+      return ids.every((id) => (S.items[id] || {}).done);
     };
     const ctx = {
       get state() { return S; }, save, get teacher() { return teacher; },
