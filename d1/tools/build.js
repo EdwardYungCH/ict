@@ -96,4 +96,43 @@ const topt = { title: 'D1 自學平台 教師頁', desc: 'D1 自學平台教師�
 fs.mkdirSync(path.join(D1DIR, 'teacher'), { recursive: true });
 fs.writeFileSync(path.join(D1DIR, 'teacher', 'index.html'), page(topt));
 fs.writeFileSync(path.join(OUT1, 'teacher_單一檔案.html'), page(Object.assign({}, topt, { inline: true })));
-console.log(`已產生 ${units.map((u) => u.id).join('、')} 及教師頁；單一檔案版在 ${OUT1}`);
+// ---------- 目錄頁 d1/index.html ----------
+const PLAN = [['u1', '界定及分析問題', 'p.2–9、24–25'], ['u2', '拆解問題與計算思維', 'p.10–23'], ['u3', '算法、變量與賦值', 'p.32–41'], ['u4', '數據類型、命名與變量分析表', 'p.36–47'], ['u5', '選擇：如果…則…否則', 'p.45–60'], ['u6', '布爾邏輯', 'p.60–73'], ['u7', '迭代（循環）', 'p.73–94'], ['u8', '追蹤表', 'p.110–121'], ['u9', '陣列', 'p.122–161']];
+const have = new Set(units.map((u) => u.id));
+const cards = PLAN.map(([id, t, pg]) => {
+  const U = units.find((u) => u.id === id); const title = U ? U.title : t;
+  const inner = `<span class="code">${id.toUpperCase()}</span><h2>${title}</h2><p>教科書 ${pg}</p>`;
+  return have.has(id) ? `<a class="hcard" href="${id}/">${inner}</a>` : `<div class="hcard soon" aria-disabled="true">${inner}<p class="soonlab">製作中</p></div>`;
+}).join('\n');
+const hub = `<!doctype html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="HKDSE ICT 必修 D1 自學平台：按教科書分 9 個單元，附模擬器、自動批改及簽名報告">
+<title>D1 自學平台</title>
+${FONTS}
+<link rel="stylesheet" href="style.css">
+<style>
+.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.hcard{display:grid;gap:6px;align-content:start;padding:16px;background:var(--card);border:1px solid var(--line);border-radius:12px;color:inherit;text-decoration:none}
+a.hcard:hover,a.hcard:focus-visible{border-color:var(--accent);outline:none}
+.hcard h2{margin:0;font-size:19px}.hcard p{margin:0;color:var(--muted);font-size:14px}
+.hcard .code{justify-self:start;font:600 12px var(--mono);background:var(--tag);color:var(--accent);padding:1px 8px;border-radius:6px}
+.hcard.soon{opacity:.55}.soonlab{font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><div class="brand"><span class="kicker">HKDSE ICT · 必修 D1</span><h1>D1 自學平台</h1><span class="pages">計算思維與算法設計（教科書 D1 第 1–3 章）</span></div></header>
+<p>每個單元有「學、試、練、寫算法、小測、無限練習」，最後按「交功課」產生附簽名的報告，交給老師。進度只儲存在這部裝置。</p>
+<div class="hgrid">
+${cards}
+</div>
+<footer><a href="../">← 返回練習室首頁</a><span class="spacer"></span><a href="teacher/">教師頁</a></footer>
+</div>
+</body>
+</html>
+`;
+fs.writeFileSync(path.join(D1DIR, 'index.html'), hub);
+console.log(`已產生${units.map((u) => u.id).join('、')} 及教師頁；單一檔案版在 ${OUT1}`);
