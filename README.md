@@ -7,7 +7,7 @@ HKDSE ICT 自學練習網頁（純 HTML，無需伺服器）。
 | `bits/` | 位元練習室 | A1 |
 | `network/` | 網絡練習室 | C1 |
 | `dryrun/` | 空運行練習室 | D1、D2 |
-| `d1/` | D1 自學平台（單元 1–5 已完成，其餘製作中；教師頁在 `d1/teacher/`） | D1 |
+| `d1/` | D1 自學平台（單元 1–7 已完成，其餘製作中；教師頁在 `d1/teacher/`） | D1 |
 | `python/` | Python 程式練習室 | D2 |
 | `web-security/` | 網頁與保安練習室 | C2 |
 | `sheet-db/` | 試算表與數據庫練習室 | A2 |

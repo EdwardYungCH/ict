@@ -345,6 +345,7 @@
     if (a.var) return E.fmt(res.env.v[a.var]);
     if (a.vars) return a.vars.map((v) => E.fmt(res.env.v[v])).join(' ');
     if (a.value != null) return String(a.value);
+    if (a.count != null) return String(res.counts[a.count] || 0); // 第 count+1 行執行了多少次
     throw new Error('未知的 ask');
   }
   D1.askAnswer = askAnswer; D1.runItem = runItem;
@@ -815,6 +816,50 @@
     const x = R(2, 20), y = R(2, 20), k = R(10, 35), m = pick([2, 3]);
     const L = [`X ← ${x}`, `Y ← ${y}`, `如果 X + Y > ${k} 則`, `    如果 Y > X * ${m} 則`, '        Y ← X', '    否則', '        X ← Y', '否則', `    Y ← X - ${R(1, 5)}`, pick(['輸出 X', '輸出 Y', '輸出 X, Y'])];
     return { code: L.join('\n'), q: '空運行以下算法，輸出是什麼？（參考教科書 p.58 例題 2.5）', type: '嵌套條件語句' };
+  };
+
+  // ---- 單元 6：布爾邏輯 ----
+  GENS.boolexpr = () => {
+    const A = R(-5, 12), B = R(-5, 12);
+    const atoms = ['A > B', 'A < B', 'A = B', 'A <> B', `A > ${R(0, 9)}`, `B <= ${R(0, 9)}`, `A >= ${R(-2, 6)}`, `B < ${R(-3, 8)}`];
+    const p = () => `(${pick(atoms)})`;
+    const forms = [() => `${p()} AND ${p()}`, () => `${p()} OR ${p()}`, () => `NOT ${p()}`, () => `(${p()} OR ${p()}) AND ${p()}`, () => `${p()} OR (${p()} AND ${p()})`, () => `NOT (${p()} OR ${p()})`, () => `(NOT ${p()}) AND ${p()}`];
+    return { code: [`A ← ${A}`, `B ← ${B}`, `輸出 ${pick(forms)()}`].join('\n'), q: '這個布爾算式的結果是 True 還是 False？（先處理括號；沒有括號時 NOT > AND > OR）', type: '複合布爾算式' };
+  };
+  GENS.range = () => {
+    const lo = R(1, 5) * 10, hi = lo + R(2, 6) * 10, v = pick([lo - 5, lo, lo + 5, hi, hi + 5, R(0, 100)]);
+    const f = pick([`mark >= ${lo} AND mark <= ${hi}`, `mark < ${lo} OR mark > ${hi}`, `NOT (mark >= ${lo})`, `NOT (mark < ${lo} OR mark > ${hi})`]);
+    return { code: [`mark ← ${v}`, `輸出 ${f}`].join('\n'), q: `mark 是 ${v}。結果是 True 還是 False？（可以先畫數線）`, type: '數線與範圍' };
+  };
+  // ---- 單元 7：迭代 ----
+  GENS.forloop = () => {
+    const a = R(1, 4), b = a + R(2, 5), k = R(2, 5);
+    const f = pick([
+      [`設 i 由 ${a} 至 ${b}`, `    輸出 i * ${k}`],
+      [`設 i 由 ${b} 下至 ${a}`, '    輸出 i'],
+      ['s ← 0', `設 i 由 ${a} 至 ${b}`, '    s ← s + i', '輸出 s'],
+      [`k ← ${R(0, 10)}`, `設 i 由 1 至 ${R(2, 6)}`, `    k ← k + ${k}`, '輸出 k'],
+      ['p ← 1', `設 i 由 1 至 ${R(2, 5)}`, '    p ← p * 2', '輸出 p, i'],
+    ]);
+    return { code: f.join('\n'), q: '空運行以下算法，輸出是什麼？（多個值用空格分隔；留意 for 循環完結後 i 的值）', type: 'for 循環' };
+  };
+  GENS.whileloop = () => {
+    const s = R(1, 6), st = R(2, 6), lim = s + st * R(2, 5) + R(0, st - 1);
+    const f = pick([
+      [`num ← ${s}`, `當 num < ${lim}`, '    輸出 num', `    num ← num + ${st}`],
+      [`A ← ${R(10, 30)}`, 'n ← 0', `當 A > ${R(0, 5)}`, `    A ← A - ${st}`, '    n ← n + 1', '輸出 A, n'],
+      [`A ← ${R(2, 6)}`, 'B ← 1', '當 B < A', '    A ← A + 1', `    B ← B + ${pick([2, 3])}`, '輸出 A, B'],
+    ]);
+    return { code: f.join('\n'), q: '空運行以下 while 循環，輸出是什麼？（多個值用空格分隔）', type: 'while 循環' };
+  };
+  GENS.postloop = () => {
+    const c = R(1, 6), d = R(1, 6);
+    const f = pick([
+      [`C ← ${c}`, `D ← ${d}`, '執行', '    C ← C + 1', `    D ← D + ${pick([2, 3])}`, '當 D < C', '輸出 C, D'],
+      [`A ← ${R(3, 7)}`, '重複', '    輸出 A', `    A ← A - ${pick([1, 2])}`, `直至 A <= ${R(0, 2)}`],
+      [`A ← ${R(5, 15)}`, '執行', `    A ← A - ${R(2, 4)}`, '    輸出 A', `當 A > ${R(5, 12)}`],
+    ]);
+    return { code: f.join('\n'), q: '空運行以下後測循環，輸出是什麼？（循環體最少執行一次）', type: '後測循環' };
   };
   function renderEndless(sec, ctx) {
     const es = ctx.state.endless = ctx.state.endless || { n: 0, right: 0 };

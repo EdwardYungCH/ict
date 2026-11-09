@@ -276,3 +276,4 @@ select.cellsel.no{border-color:var(--bad);background:var(--bad-bg)}
   .anatab td[data-label]::before{content:attr(data-label);display:block;font-size:12px;color:var(--muted);margin-bottom:2px}
   .anatab select.cellsel,.tb.anatab input.txt{width:100%}
 }
+@media (max-width:480px){.ref{white-space:normal}}

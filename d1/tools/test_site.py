@@ -85,7 +85,8 @@ def full_run(browser, unit, width):
             pg.click(f'{box} .sim-bar button:has-text("執行到底")')
             out = pg.inner_text(f'{box} .outbox')
             ans = pg.evaluate('(it) => D1.askAnswer(it)', it)
-            check(f'{it["id"]} 模擬器輸出與答案一致', ' '.join(out.split()) == ans, f'{out!r} vs {ans!r}')
+            if not it.get('ask') or it.get('ask') == 'out':
+                check(f'{it["id"]} 模擬器輸出與答案一致', ' '.join(out.split()) == ans, f'{out!r} vs {ans!r}')
             if 'flow' in it.get('open', []):
                 check(f'{it["id"]} 流程圖有高亮路線', pg.locator(f'{box} .fc-edge.on').count() > 0)
             if 'trace' in it.get('open', []):
@@ -131,7 +132,7 @@ def full_run(browser, unit, width):
                 for k in range(bl.count()): bl.nth(k).fill('1')
                 pg.click(f'{box} button:has-text("核對答案")')
                 fbt = pg.inner_text(f'{box} .fb.bad')
-                check(f'{it["id"]} 補完錯誤時說明期望與實際輸出', '期望輸出' in fbt, fbt)
+                check(f'{it["id"]} 補完錯誤時說明期望與實際輸出或錯誤原因', '期望輸出' in fbt or '執行出錯' in fbt, fbt)
                 for k in range(bl.count()): bl.nth(k).fill(it['ref'][k])
             before = score(pg)
             pg.click(f'{box} button:has-text("核對答案")')
@@ -171,7 +172,8 @@ def full_run(browser, unit, width):
             pg.fill(ta, task.get('starter', '').replace('\n\n', '\nZ ← 1\n') if '\n\n' in task.get('starter', '') else task.get('starter', '') + '\n輸出 1')
             pg.click(f'{box} button:has-text("提交評核")')
             fbt = pg.inner_text(f'{box} .fb')
-            check(f'{task["id"]}（{task["tier"]}）錯誤程式不通過並指出哪組數據', '第 1 組' in fbt and ('期望' in fbt), fbt[:160])
+            rule_hit = any(r['msg'] in fbt for r in task.get('rules', []))
+            check(f'{task["id"]}（{task["tier"]}）錯誤程式不通過並指出哪組數據（或違反的規定）', ('第 1 組' in fbt and '期望' in fbt) or rule_hit, fbt[:160])
             pg.fill(ta, 'A ← \n輸出 A')
             pg.click(f'{box} button:has-text("提交評核")')
             check(f'{task["id"]} 語法錯誤有行號', '第 1 行' in pg.inner_text(f'{box} .fb'))
