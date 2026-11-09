@@ -1,0 +1,1966 @@
+<!doctype html><html lang="zh-Hant-HK"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style></head><body>
+<title>試算表與數據庫練習室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --bg:#EEF2F0; --surface:#FFFFFF; --sunk:#E3E9E6; --ink:#17262A; --muted:#566A6E; --line:#C9D4D0;
+  --accent:#0E7466; --accent-ink:#FFFFFF; --led:#E39B10; --led-ink:#1A1204;
+  --hl:rgba(227,155,16,.18); --str:#9A4A06; --kw:#0E7466;
+  --good:#1F7A3A; --good-bg:#E3F3E7; --bad:#B3261E; --bad-bg:#FBE7E5;
+  --cmp:#E39B10; --cmp-bg:#FBEBC8; --sel:#D3EEE9; --grid:#D5DDDA; --hd:#E8EDEB; --hd-ink:#5B6B6E;
+  --ext:#7A3E9D; --ext-bg:#EEDDF6;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1618; --surface:#162226; --sunk:#1D2C31; --ink:#E2ECE9; --muted:#95A9AB; --line:#2C3E43;
+    --accent:#35BFA9; --accent-ink:#0B1413; --led:#F4B23C; --led-ink:#1A1204;
+    --hl:rgba(244,178,60,.16); --str:#F2B880; --kw:#5FD3BF;
+    --good:#5BD17E; --good-bg:#15301F; --bad:#FF8A80; --bad-bg:#3A1A18;
+    --cmp:#F4B23C; --cmp-bg:#3D3115; --sel:#163A35; --grid:#2E4146; --hd:#1F3035; --hd-ink:#9DB0B2;
+    --ext:#D7A8F0; --ext-bg:#3A2648; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1618; --surface:#162226; --sunk:#1D2C31; --ink:#E2ECE9; --muted:#95A9AB; --line:#2C3E43;
+  --accent:#35BFA9; --accent-ink:#0B1413; --led:#F4B23C; --led-ink:#1A1204;
+  --hl:rgba(244,178,60,.16); --str:#F2B880; --kw:#5FD3BF;
+  --good:#5BD17E; --good-bg:#15301F; --bad:#FF8A80; --bad-bg:#3A1A18;
+  --cmp:#F4B23C; --cmp-bg:#3D3115; --sel:#163A35; --grid:#2E4146; --hd:#1F3035; --hd-ink:#9DB0B2;
+  --ext:#D7A8F0; --ext-bg:#3A2648; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;margin:0;overflow-x:hidden}
+.wrap{max-width:900px;margin:0 auto;padding-inline:16px;padding-block:24px 48px;display:flex;flex-direction:column;gap:20px}
+.wrap>*,.card>*{min-width:0}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--muted)}
+h1{font-size:30px;font-weight:900;margin:0;letter-spacing:.02em;text-wrap:balance}
+h1 .bits{display:inline-block;white-space:nowrap;font-family:var(--mono);font-weight:600;color:var(--accent);font-size:.62em;margin-left:.4em;letter-spacing:.02em}
+.score{display:flex;gap:16px;font-variant-numeric:tabular-nums}
+.score div{display:flex;flex-direction:column;align-items:flex-end}
+.score b{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1.1}
+.score span{font-size:12px;color:var(--muted)}
+.navrow{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav button{font:inherit;font-size:15px;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+nav button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.wild{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{font:inherit;font-size:13px;padding:4px 12px;border:0;background:var(--surface);color:var(--muted);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.topic-note{font-size:14px;color:var(--muted);margin:-6px 0 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.qhead{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.qtype{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--accent)}
+.qno{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.qright{display:flex;align-items:center;gap:12px;margin-left:auto}
+.hintbtn{font:inherit;font-size:14px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--led);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.hintbtn::before{content:"?";display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--led);color:var(--led-ink);font-family:var(--mono);font-size:12px}
+.hintbtn[aria-expanded="true"]{background:var(--led);color:var(--led-ink)}
+.hintbtn[aria-expanded="true"]::before{background:var(--led-ink);color:var(--led)}
+.hintbox{border:1px solid var(--led);border-left-width:4px;border-radius:10px;padding:12px 14px;background:var(--sunk);font-size:15px;line-height:1.7;display:flex;flex-direction:column;gap:6px}
+.hintbox h4{margin:0;font-size:13px;letter-spacing:.06em;color:var(--muted)}
+.hintbox ol{margin:0;padding-left:1.3em}
+.hintbox .ex{font-family:var(--mono);font-size:14px;background:var(--surface);border-radius:8px;padding:6px 10px;width:fit-content;max-width:100%;overflow-x:auto;white-space:pre}
+.prompt{font-size:17px;line-height:1.7;display:flex;flex-direction:column;gap:10px;min-width:0}
+.prompt p{margin:0}
+.mono{font-family:var(--mono);font-weight:600;letter-spacing:.01em}
+.small{font-size:14px;color:var(--muted)}
+.prompt p.small{font-size:14px}
+.xs{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
+code{font-family:var(--mono);font-size:.92em;background:var(--sunk);border-radius:5px;padding:1px 5px;overflow-wrap:anywhere}
+.cond{margin:0;padding-left:1.3em;font-size:16px}
+/* 試算表格子 */
+table.sheet{border-collapse:collapse;font-family:var(--mono);font-size:14px;background:var(--surface)}
+.sheet th{background:var(--hd);color:var(--hd-ink);font-weight:500;font-size:12px;border:1px solid var(--grid);padding:2px 8px;text-align:center;min-width:2.4em}
+.sheet th.cn{min-width:2.2em}
+.sheet td{border:1px solid var(--grid);padding:3px 8px;min-width:4.2em;height:28px;white-space:nowrap;text-align:left}
+.sheet td.n{text-align:right}
+.sheet td.b,.sheet td.e{text-align:center}
+.sheet td.q{background:var(--cmp-bg);text-align:center;font-weight:700;color:var(--ink);box-shadow:inset 0 0 0 2px var(--cmp)}
+.sheet td.hl{box-shadow:inset 0 0 0 2px var(--accent);background:var(--sel)}
+.sheet td.gap,.sheet th.rn{color:var(--hd-ink)}
+.sp{color:var(--muted);opacity:.8}
+.tabs{display:flex;gap:2px;font-size:12px;margin-top:2px}
+.tabs span{padding:2px 12px;border:1px solid var(--grid);border-top:0;border-radius:0 0 6px 6px;color:var(--muted);background:var(--hd)}
+.tabs span.on{background:var(--surface);color:var(--ink);font-weight:700}
+.fbar{display:flex;align-items:stretch;border:1px solid var(--grid);border-radius:8px;overflow:hidden;font-family:var(--mono);font-size:15px;max-width:100%;background:var(--surface)}
+.fbar .nb{padding:5px 10px;background:var(--hd);color:var(--hd-ink);border-right:1px solid var(--grid);min-width:3.6em;text-align:center;flex:0 0 auto}
+.fbar .fx{padding:5px 8px;color:var(--muted);font-style:italic;border-right:1px solid var(--grid);flex:0 0 auto}
+.fbar code{background:transparent;padding:5px 10px;font-size:15px;white-space:pre;overflow-x:auto;flex:1 1 auto;min-width:0;border-radius:0;overflow-wrap:normal}
+/* 數據表、SQL */
+table.dbt,table.mini,table.pivot{border-collapse:collapse;font-size:14px;background:var(--surface)}
+.dbt caption{caption-side:top;text-align:left;font-family:var(--mono);font-weight:600;font-size:13px;color:var(--muted);padding-bottom:2px}
+.dbt th,.dbt td,.mini th,.mini td,.pivot th,.pivot td{border:1px solid var(--line);padding:4px 10px;white-space:nowrap}
+.dbt th{background:var(--sunk);font-family:var(--mono);font-weight:600;font-size:13px}
+.dbt td{font-family:var(--mono)}
+.dbt td.n,.pivot td{text-align:right}
+.dbt td.nul{background:repeating-linear-gradient(45deg,transparent 0 6px,var(--sunk) 6px 8px)}
+.dbt tr.hl td{background:var(--sel)}
+.mini th{background:var(--sunk);font-weight:500;font-size:13px}
+.mini td{text-align:center;font-family:var(--mono)}
+.mini tr.hl td{background:var(--sel)}
+.mini .ok{color:var(--good);font-weight:700}.mini .no{color:var(--bad);font-weight:700}.mini .nl{color:var(--muted);font-size:12px}
+.pivot th{background:var(--sunk);font-weight:500;font-size:13px}
+.pivot th.pl{text-align:left}
+.pivot .qm{display:inline-block;min-width:2em;text-align:center;background:var(--cmp-bg);border-radius:4px;box-shadow:inset 0 0 0 2px var(--cmp)}
+.sqlc{font-family:var(--mono);font-size:15px;line-height:1.7;background:var(--sunk);border-radius:10px;padding:10px 14px;margin:0;overflow-x:auto;max-width:100%}
+.sqlc .ln{display:block;white-space:pre}
+.sqlc .ln+.ln{padding-left:0}
+.kw{color:var(--kw);font-weight:700}
+.st{color:var(--str)}
+/* 作答 */
+.parts{display:flex;flex-direction:column;gap:12px}
+.part{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.part>label,.part>.plab{font-size:15px;color:var(--ink);font-family:var(--mono);overflow-wrap:anywhere;min-width:0}
+.part .sfx{font-size:14px;color:var(--muted)}
+input[type=text]{font-family:var(--mono);font-size:17px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:min(260px,100%)}
+input[type=text].n{width:7em;text-align:center}
+input[type=text].l{width:min(420px,100%)}
+input.ok,.gridin input.ok{border-color:var(--good)!important;background:var(--good-bg)!important}
+input.no,.gridin input.no{border-color:var(--bad)!important;background:var(--bad-bg)!important}
+table.gridin{border-collapse:collapse;font-family:var(--mono)}
+.gridin th{background:var(--sunk);font-size:13px;font-weight:600;border:1px solid var(--line);padding:4px 8px;white-space:nowrap}
+.gridin td{border:1px solid var(--line);padding:3px}
+.gridin input{font-family:var(--mono);font-size:15px;width:8.5em;padding:5px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:8px;width:100%}
+.choice{font:inherit;text-align:left;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;min-width:0;overflow-wrap:anywhere}
+.choice[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.choice.ok{border-color:var(--good);background:var(--good-bg)}
+.choice.no{border-color:var(--bad);background:var(--bad-bg)}
+.choice.m{font-family:var(--mono);font-size:15px}
+.btn{font:inherit;font-weight:700;padding:10px 18px;border-radius:10px;border:1px solid var(--accent);cursor:pointer}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.sm{padding:6px 12px;font-size:14px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#btn-next{margin-left:auto}
+#btn-next.skip{border-color:var(--line);color:var(--muted);font-weight:500}
+#btn-next.confirm{border-color:var(--bad);color:var(--bad);font-weight:700}
+.feedback{border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.feedback.good{background:var(--good-bg)}
+.feedback.bad{background:var(--bad-bg)}
+.feedback .verdict{font-weight:700;overflow-wrap:anywhere}
+.feedback.good .verdict{color:var(--good)}
+.feedback.bad .verdict{color:var(--bad)}
+.feedback .trap{margin:0;padding:8px 12px;border-left:4px solid var(--led);background:var(--surface);border-radius:6px;font-size:15px}
+.feedback code{background:var(--surface)}
+.feedback .sqlc{background:var(--surface)}
+.iolab{font-size:13px;color:var(--muted);margin:0 0 4px}
+.steps{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.steps li{line-height:1.6;overflow-wrap:anywhere}
+.tips{font-size:14px;color:var(--muted);border-top:1px dashed var(--line);padding-top:14px}
+.tips b{color:var(--ink)}
+/* 篩選 */
+.filter{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.filter summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:10px 14px;font-weight:700;font-size:15px}
+.filter summary::-webkit-details-marker{display:none}
+.filter summary::after{content:"▾";color:var(--muted);transition:transform .15s}
+.filter[open] summary::after{transform:rotate(180deg)}
+.fcount{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--muted);margin-left:auto}
+.fcount.partial{color:var(--accent);font-weight:600}
+.fbody{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.fbody>*{min-width:0}
+.fact{display:flex;flex-wrap:wrap;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:14px;line-height:1.4;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sunk);border-color:var(--accent);color:var(--ink);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip[aria-pressed="true"]::before{content:"✓ ";color:var(--accent);font-weight:700}
+.chip .tag{font-size:11px;font-weight:700;color:var(--ext);background:var(--ext-bg);border-radius:999px;padding:0 6px;margin-left:6px}
+.mini-b{font:inherit;font-size:13px;padding:4px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer}
+.fhint{margin:0;font-size:12px;color:var(--muted)}
+.empty{color:var(--muted);font-size:16px}
+/* 試算區 */
+.sbx{display:flex;flex-direction:column;gap:10px;min-width:0}
+.sbx .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sbx input[type=text]{width:min(420px,100%)}
+.sbx textarea{display:block;font-family:var(--mono);font-size:15px;line-height:1.55;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;min-height:6.5em;resize:vertical}
+.msg{font-size:15px;background:var(--sunk);border-radius:10px;padding:8px 12px;line-height:1.6;overflow-wrap:anywhere}
+.msg.err{background:var(--bad-bg);color:var(--bad);font-weight:700}
+.msg.ok{background:var(--good-bg)}
+@media (max-width:480px){h1{font-size:24px}.prompt{font-size:16px}.card{padding:18px 14px 16px}.score{gap:12px}.score b{font-size:19px}.fbody{padding:0 10px 12px}.sqlc{font-size:14px}.gridin input{width:7em}}
+@media (prefers-reduced-motion:reduce){.filter summary::after{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">HKDSE ICT · 必修 A d 數據操縱和分析</span>
+      <h1>試算表與數據庫練習室<span class="bits">=SUM( )</span></h1>
+    </div>
+    <div class="score" aria-live="polite">
+      <div><b id="sc-right">0</b><span>答對</span></div>
+      <div><b id="sc-total">0</b><span>已答</span></div>
+      <div><b id="sc-streak">0</b><span>連續答對</span></div>
+      <div><b id="sc-best">0</b><span>最高紀錄</span></div>
+    </div>
+  </header>
+
+  <div class="navrow">
+    <nav id="modes" aria-label="練習類別"></nav>
+    <div class="wild" id="wild"><span>萬用字符</span><div class="seg" role="group" aria-label="萬用字符寫法"><button type="button" data-w="dse" aria-pressed="true">DSE（% _）</button><button type="button" data-w="access" aria-pressed="false">Access（* ?）</button></div></div>
+  </div>
+  <p class="topic-note" id="mode-note"></p>
+
+  <details class="filter" id="filter">
+    <summary><span>分類篩選</span><span class="fcount" id="fcount"></span></summary>
+    <div class="fbody">
+      <div class="fact"><button type="button" class="mini-b" id="f-all">全選</button><button type="button" class="mini-b" id="f-none">全部取消</button></div>
+      <div class="chips" id="fchips"></div>
+      <p class="fhint">點按分類可加入或移除；標「延伸」的分類屬教科書延伸內容，預設不選。選擇會記在這部裝置上。每題的數據都是隨機產生的，答案由頁內的計算引擎得出。</p>
+    </div>
+  </details>
+
+  <section class="card" id="card">
+    <div class="qhead"><span class="qtype" id="qtype"></span><div class="qright"><span class="qno" id="qno"></span><button class="hintbtn" id="btn-hint" type="button" aria-expanded="false" aria-controls="hintbox">提示：方法</button></div></div>
+    <div class="hintbox" id="hintbox" hidden></div>
+    <div class="prompt" id="prompt"></div>
+    <div id="input-area"></div>
+    <div class="actions">
+      <button class="btn primary" id="btn-check" type="button">核對答案</button>
+      <button class="btn ghost" id="btn-show" type="button">顯示答案</button>
+      <button class="btn ghost skip" id="btn-next" type="button">跳過此題</button>
+    </div>
+    <div id="feedback" aria-live="polite" hidden></div>
+    <div class="tips" id="tips"></div>
+  </section>
+
+  <details class="filter" id="explorer">
+    <summary><span id="ex-title">試算區</span></summary>
+    <div class="fbody" id="explorer-body"></div>
+  </details>
+
+  <p class="topic-note">本頁的試算表規則按 Microsoft Excel（字串比較不分大小寫、COUNTIF 準則、VLOOKUP 近似查找等）；SQL 規則按 Microsoft Access（字串比較不分大小寫、/ 是一般除法、TRIM 只刪頭尾空格）。卷一 SQL 用 DSE 寫法（單引號、% _），上方可切換顯示 Access 的 * ?。</p>
+</div>
+<script>
+(() => {
+/*GEN:BEGIN*/
+// ====== 共用小工具 ======
+const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sample = (a, n) => shuffle(a).slice(0, n);
+const coin = (p = 0.5) => Math.random() < p;
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const range = (a, b) => { const o = []; for (let i = a; i < b; i++) o.push(i); return o; };
+const uniq = (a) => [...new Set(a)];
+const dp2 = (x) => typeof x === "number" && Number.isFinite(x) && Math.abs(x * 100 - Math.round(x * 100)) < 1e-7;
+
+// =================== 試算表公式引擎（Excel 規則） ===================
+// 值：數字、字串、布爾、null（空白）、{err:"#DIV/0!"}、{rg:…}（範圍）
+const XL = (() => {
+  class XErr extends Error {}
+  const colNum = (s) => { let n = 0; for (const ch of s.toUpperCase()) n = n * 26 + ch.charCodeAt(0) - 64; return n; };
+  const colStr = (n) => { let s = ""; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
+  const A = (c, r) => colStr(c) + r;
+  const pa = (a) => { const m = /^\$?([A-Z]{1,3})\$?(\d+)$/i.exec(a); return { c: colNum(m[1]), r: +m[2] }; };
+  const E = (e) => ({ err: e });
+  const isE = (v) => v !== null && typeof v === "object" && "err" in v;
+  const isRg = (v) => v !== null && typeof v === "object" && "rg" in v;
+  function fmtNum(x) { if (Object.is(x, -0)) return "0"; if (Number.isInteger(x) && Math.abs(x) < 1e15) return String(x); return String(parseFloat(x.toPrecision(15))); }
+  const disp = (v) => (v === null || v === undefined ? "" : typeof v === "boolean" ? (v ? "TRUE" : "FALSE") : typeof v === "number" ? fmtNum(v) : isE(v) ? v.err : String(v));
+  function numParse(s) {
+    const t = String(s).trim(); let m;
+    if (/^[+-]?(\d+(\.\d*)?|\.\d+)(E[+-]?\d+)?$/i.test(t)) return Number(t);
+    if (/^[+-]?\d{1,3}(,\d{3})+(\.\d+)?$/.test(t)) return Number(t.replace(/,/g, ""));
+    if ((m = /^([+-]?(\d+(\.\d*)?|\.\d+))%$/.exec(t))) return Number(m[1]) / 100;
+    return null;
+  }
+  const toNum = (v) => (isE(v) ? v : typeof v === "number" ? v : typeof v === "boolean" ? +v : v === null ? 0 : numParse(v) === null ? E("#VALUE!") : numParse(v));
+  const toStr = (v) => disp(v);
+  const toBool = (v) => { if (isE(v) || typeof v === "boolean") return v; if (typeof v === "number") return v !== 0; if (v === null) return false; const u = String(v).toUpperCase(); return u === "TRUE" ? true : u === "FALSE" ? false : E("#VALUE!"); };
+  const eqNum = (a, b) => a === b || Math.abs(a - b) <= Math.max(Math.abs(a), Math.abs(b)) * 3.6e-15;
+  function compare(a, b) {
+    if (a === null && b === null) return 0;
+    const dflt = (o) => (typeof o === "number" ? 0 : typeof o === "string" ? "" : false);
+    if (a === null) a = dflt(b); if (b === null) b = dflt(a);
+    const rk = (v) => (typeof v === "number" ? 0 : typeof v === "string" ? 1 : 2), ra = rk(a), rb = rk(b);
+    if (ra !== rb) return ra < rb ? -1 : 1;
+    if (ra === 1) { const x = a.toLowerCase(), y = b.toLowerCase(); return x < y ? -1 : x > y ? 1 : 0; }
+    if (ra === 2) return a === b ? 0 : a ? 1 : -1;
+    return eqNum(a, b) ? 0 : a < b ? -1 : 1;
+  }
+  // ---------- 分詞 ----------
+  const REF1 = "\\$?[A-Za-z]{1,3}\\$?[0-9]+";
+  const SHEET = "(?:'(?:[^']|'')+'|[A-Za-z_\\u3400-\\u9fff][A-Za-z0-9_\\u3400-\\u9fff]*)!";
+  const reRef = new RegExp("^(" + SHEET + ")?(" + REF1 + ")(?::(" + REF1 + "))?(?![A-Za-z0-9_(])");
+  const unq = (sh) => (sh ? sh.slice(0, -1).replace(/^'(.*)'$/, "$1").replace(/''/g, "'") : null);
+  function tokenize(src) {
+    let s = String(src).replace(/ /g, " ").trim(); let off = 0;
+    if (s[0] === "=") { s = s.slice(1); off = 1; }
+    const out = []; let i = 0;
+    const push = (t, i0) => { t.i0 = i0 + off; t.i1 = i + off; out.push(t); };
+    while (i < s.length) {
+      const c = s[i], rest = s.slice(i), i0 = i; let m;
+      if (c === " " || c === "\t" || c === "\n") { while (/[ \t\n]/.test(s[i] || "")) i++; push({ t: "ws" }, i0); continue; }
+      if (c === '"') { let j = i + 1, str = "";
+        for (;;) { if (j >= s.length) throw new XErr("字串缺少收尾的雙引號「\"」。"); if (s[j] === '"') { if (s[j + 1] === '"') { str += '"'; j += 2; continue; } break; } str += s[j++]; }
+        i = j + 1; push({ t: "str", v: str }, i0); continue; }
+      if ((m = /^#(REF!|DIV\/0!|VALUE!|NAME\?|N\/A|NULL!|NUM!)/i.exec(rest))) { i += m[0].length; push({ t: "err", v: "#" + m[1].toUpperCase() }, i0); continue; }
+      if ((m = reRef.exec(rest))) { i += m[0].length; push({ t: "ref", sheet: unq(m[1]), sheetRaw: m[1] || "", a: m[2], b: m[3] || null }, i0); continue; }
+      if ((m = /^(\d+\.?\d*|\.\d+)(E[+-]?\d+)?/i.exec(rest))) { i += m[0].length; push({ t: "num", v: Number(m[0]), raw: m[0] }, i0); continue; }
+      if ((m = /^[A-Za-z_][A-Za-z0-9_.]*/.exec(rest))) { i += m[0].length; const u = m[0].toUpperCase();
+        let j = i; while (s[j] === " ") j++;
+        if (s[j] === "(") push({ t: "fn", v: u }, i0); else if (u === "TRUE" || u === "FALSE") push({ t: "bool", v: u === "TRUE" }, i0); else push({ t: "name", v: u }, i0); continue; }
+      if ((m = /^(<=|>=|<>)/.exec(rest))) { i += 2; push({ t: "op", v: m[1] }, i0); continue; }
+      if ("+-*/^&=<>%(),:".includes(c)) { i++; push({ t: "op", v: c }, i0); continue; }
+      if ("≤≥≠".includes(c)) throw new XErr("Excel 不接受「≤」「≥」「≠」，要寫 <=、>=、<>。");
+      if (c === "'") throw new XErr("公式內的文字要用雙引號 \"…\"，不是單引號（單引號只用於工作表名稱）。");
+      if ("，（）＂“”；：＄！＝＜＞".includes(c)) throw new XErr("請用半形（英文）符號，例如 , ( ) \" $ !，不要用全形符號。");
+      if (c === ";") throw new XErr("函數的參數之間用逗號「,」分隔。");
+      throw new XErr("不認識的符號「" + c + "」。");
+    }
+    return out;
+  }
+  const ARITY = { SUM: [1, 255], AVERAGE: [1, 255], MAX: [1, 255], MIN: [1, 255], COUNT: [1, 255], COUNTA: [1, 255], COUNTBLANK: [1, 1], INT: [1, 1], ABS: [1, 1], SQRT: [1, 1], RAND: [0, 0],
+    RANK: [2, 3], "RANK.EQ": [2, 3], ROUND: [2, 2], ROUNDUP: [2, 2], ROUNDDOWN: [2, 2], LARGE: [2, 2], SMALL: [2, 2], IF: [2, 3], AND: [1, 255], OR: [1, 255], NOT: [1, 1],
+    COUNTIF: [2, 2], SUMIF: [2, 3], LEN: [1, 1], LEFT: [1, 2], RIGHT: [1, 2], MID: [3, 3], FIND: [2, 3], UPPER: [1, 1], LOWER: [1, 1], PROPER: [1, 1], TRIM: [1, 1],
+    CONCATENATE: [1, 255], TEXT: [2, 2], VALUE: [1, 1], CHAR: [1, 1], ISBLANK: [1, 1], VLOOKUP: [3, 4], HLOOKUP: [3, 4] };
+  // ---------- 語法分析 ----------
+  function parse(src) {
+    const toks = tokenize(src); const s0 = String(src).replace(/ /g, " ").trim(); let p = 0;
+    const skip = () => { while (toks[p] && toks[p].t === "ws") p++; };
+    const peek = () => { skip(); return toks[p]; };
+    const isOp = (v) => { const t = peek(); return !!t && t.t === "op" && t.v === v; };
+    const eat = (v, msg) => { if (!isOp(v)) throw new XErr(msg || "缺少「" + v + "」（檢查括號是否成對）。"); p++; };
+    const mk = (p0, node) => { node.src = s0.slice(toks[p0].i0, toks[p - 1].i1); return node; };
+    const bin = (ops, next) => () => { skip(); const p0 = p; let a = next(); for (;;) { const t = peek(); if (t && t.t === "op" && ops.includes(t.v)) { p++; const b = next(); a = mk(p0, { k: "bin", op: t.v, a, b }); } else return a; } };
+    const prim = () => {
+      skip(); const p0 = p, t = toks[p]; if (!t) throw new XErr("公式未完成。"); p++;
+      if (t.t === "num") return mk(p0, { k: "num", v: t.v });
+      if (t.t === "str") return mk(p0, { k: "str", v: t.v });
+      if (t.t === "bool") return mk(p0, { k: "bool", v: t.v });
+      if (t.t === "err") return mk(p0, { k: "err", v: t.v });
+      if (t.t === "name") return mk(p0, { k: "name", v: t.v });
+      if (t.t === "ref") { let node = mk(p0, refNode(t));
+        while (toks[p] && toks[p].t === "ws" && toks[p + 1] && toks[p + 1].t === "ref") { p++; const t2 = toks[p++]; node = mk(p0, { k: "isect", a: node, b: refNode(t2) }); }
+        return node; }
+      if (t.t === "fn") { eat("("); const args = [];
+        if (!isOp(")")) { for (;;) { if (isOp(",") || isOp(")")) throw new XErr("函數 " + t.v + " 有空白的參數。"); args.push(cmp()); if (isOp(",")) { p++; continue; } break; } }
+        eat(")", "函數 " + t.v + " 缺少「)」，或參數之間漏了逗號。");
+        const ar = ARITY[t.v]; if (ar && (args.length < ar[0] || args.length > ar[1])) throw new XErr("函數 " + t.v + " 的參數數目不正確。");
+        return mk(p0, { k: "fn", name: t.v, args }); }
+      if (t.t === "op" && t.v === "(") { const a = cmp(); eat(")"); return mk(p0, { k: "paren", a }); }
+      if (t.t === "op" && t.v === ":") throw new XErr("範圍要寫成 A2:A9（兩端都是儲存格位址）。");
+      throw new XErr("「" + (t.v === undefined ? "" : t.v) + "」的位置不正確。");
+    };
+    const pct = () => { skip(); const p0 = p; let a = prim(); while (isOp("%")) { p++; a = mk(p0, { k: "pct", a }); } return a; };
+    const neg = () => { const t = peek(); if (t && t.t === "op" && (t.v === "-" || t.v === "+")) { const p0 = p; p++; const a = neg(); return t.v === "-" ? mk(p0, { k: "neg", a }) : a; } return pct(); };
+    const pow = bin(["^"], neg), mul = bin(["*", "/"], pow), add = bin(["+", "-"], mul), cat = bin(["&"], add);
+    const cmp = bin(["=", "<>", "<", ">", "<=", ">="], cat);
+    if (!toks.filter((t) => t.t !== "ws").length) throw new XErr("請輸入公式。");
+    const ast = cmp(); skip(); if (p < toks.length) throw new XErr(toks[p].t === "op" && toks[p].v === ")" ? "右括號「)」太多。" : "公式有多餘的部分（檢查括號及逗號）。");
+    return ast;
+  }
+  function refNode(t) {
+    const x = pa(t.a), y = t.b ? pa(t.b) : x;
+    return { k: "ref", sheet: t.sheet, c1: Math.min(x.c, y.c), r1: Math.min(x.r, y.r), c2: Math.max(x.c, y.c), r2: Math.max(x.r, y.r) };
+  }
+  // ---------- 求值 ----------
+  function Book(sheets, def) {
+    const cache = {}, busy = {}, ast = {};
+    const norm = (n) => { const k = Object.keys(sheets).find((x) => x.toLowerCase() === String(n).toLowerCase()); return k === undefined ? null : k; };
+    const ctx = {
+      def,
+      get(sh, c, r) {
+        const name = norm(sh); if (name === null) return E("#REF!");
+        const key = name + "!" + c + "," + r; if (key in cache) return cache[key];
+        const raw = sheets[name][A(c, r)]; let v;
+        if (typeof raw === "string" && raw[0] === "=") {
+          if (busy[key]) return E("#REF!"); busy[key] = 1;
+          try { v = sc(ev(ast[key] || (ast[key] = parse(raw)), ctx, name), ctx); } catch (e) { v = E("#NAME?"); }
+          busy[key] = 0;
+        } else v = raw === undefined || raw === "" ? null : raw;
+        cache[key] = v; return v;
+      },
+      grid(g) { const out = []; for (let r = g.r1; r <= g.r2; r++) { const row = []; for (let c = g.c1; c <= g.c2; c++) row.push(ctx.get(g.sh, c, r)); out.push(row); } return out; },
+    };
+    return ctx;
+  }
+  function sc(v, ctx) { if (!isRg(v)) return v; if (v.r1 === v.r2 && v.c1 === v.c2) return ctx.get(v.sh, v.c1, v.r1); return E("#VALUE!"); }
+  function ev(n, ctx, sh) {
+    switch (n.k) {
+      case "num": case "str": case "bool": return n.v;
+      case "err": return E(n.v);
+      case "name": return E("#NAME?");
+      case "paren": return ev(n.a, ctx, sh);
+      case "ref": return { rg: 1, sh: n.sheet || sh, c1: n.c1, r1: n.r1, c2: n.c2, r2: n.r2 };
+      case "isect": { const a = ev(n.a, ctx, sh), b = ev(n.b, ctx, sh);
+        const c1 = Math.max(a.c1, b.c1), c2 = Math.min(a.c2, b.c2), r1 = Math.max(a.r1, b.r1), r2 = Math.min(a.r2, b.r2);
+        if (a.sh !== b.sh || c1 > c2 || r1 > r2) return E("#NULL!"); return { rg: 1, sh: a.sh, c1, r1, c2, r2 }; }
+      case "neg": { const v = toNum(sc(ev(n.a, ctx, sh), ctx)); return isE(v) ? v : -v; }
+      case "pct": { const v = toNum(sc(ev(n.a, ctx, sh), ctx)); return isE(v) ? v : v / 100; }
+      case "bin": {
+        const a = sc(ev(n.a, ctx, sh), ctx), b = sc(ev(n.b, ctx, sh), ctx);
+        if ("+-*/^".includes(n.op)) {
+          const x = toNum(a); if (isE(x)) return x; const y = toNum(b); if (isE(y)) return y;
+          if (n.op === "+") return x + y; if (n.op === "-") return x - y; if (n.op === "*") return x * y;
+          if (n.op === "/") return y === 0 ? E("#DIV/0!") : x / y;
+          if (x === 0 && y < 0) return E("#DIV/0!"); const r = Math.pow(x, y); return Number.isFinite(r) ? r : E("#NUM!");
+        }
+        if (isE(a)) return a; if (isE(b)) return b;
+        if (n.op === "&") return toStr(a) + toStr(b);
+        const c = compare(a, b);
+        return { "=": c === 0, "<>": c !== 0, "<": c < 0, ">": c > 0, "<=": c <= 0, ">=": c >= 0 }[n.op];
+      }
+      case "fn": {
+        if (n.name === "IF") { const c = toBool(sc(ev(n.args[0], ctx, sh), ctx)); if (isE(c)) return c;
+          if (c) return sc(ev(n.args[1], ctx, sh), ctx); return n.args.length > 2 ? sc(ev(n.args[2], ctx, sh), ctx) : false; }
+        const f = FN[n.name]; if (!f) return E("#NAME?");
+        return f(n.args.map((x) => ev(x, ctx, sh)), ctx);
+      }
+    }
+    return E("#VALUE!");
+  }
+  // 範圍內的數字（文字、布爾、空白略去）；直接引數的數字、布爾及數字字串計入
+  function nums(args, ctx) {
+    const out = [];
+    for (const a of args) {
+      if (isRg(a)) { for (const row of ctx.grid(a)) for (const v of row) { if (isE(v)) return { err: v }; if (typeof v === "number") out.push(v); } }
+      else if (isE(a)) return { err: a };
+      else if (typeof a === "number") out.push(a); else if (typeof a === "boolean") out.push(+a);
+      else if (typeof a === "string") { const x = numParse(a); if (x === null) return { err: E("#VALUE!") }; out.push(x); }
+    }
+    return { v: out };
+  }
+  const agg = (f) => (args, ctx) => { const r = nums(args, ctx); return r.err ? r.err : f(r.v); };
+  const one = (f) => (args, ctx) => f(...args.map((a) => sc(a, ctx)));
+  const n1 = (f) => one((x) => { const v = toNum(x); return isE(v) ? v : f(v); });
+  function rnd(x, d, mode) {
+    d = Math.trunc(d); const f = Math.pow(10, Math.abs(d)); let v = d >= 0 ? x * f : x / f; v = parseFloat(v.toPrecision(15));
+    const s = v < 0 ? -1 : 1, a = Math.abs(v); let r = mode === 0 ? Math.floor(a + 0.5) : mode > 0 ? Math.ceil(a) : Math.floor(a); r *= s;
+    return parseFloat((d >= 0 ? r / f : r * f).toPrecision(15)) + 0;
+  }
+  const rndF = (mode) => one((x, d) => { const v = toNum(x); if (isE(v)) return v; const k = toNum(d); if (isE(k)) return k; return rnd(v, k, mode); });
+  function critPred(c) {
+    if (typeof c === "number") return (v) => typeof v === "number" && eqNum(v, c);
+    if (typeof c === "boolean") return (v) => v === c;
+    if (c === null) return (v) => typeof v === "number" && v === 0;
+    const m = /^(<=|>=|<>|<|>|=)?([\s\S]*)$/.exec(String(c)), op = m[1] || "=", rest = m[2];
+    const num = numParse(rest);
+    const test = (k) => ({ "=": k === 0, "<>": k !== 0, "<": k < 0, ">": k > 0, "<=": k <= 0, ">=": k >= 0 }[op]);
+    if (num !== null) { if (op === "=") return (v) => typeof v === "number" && eqNum(v, num); if (op === "<>") return (v) => !(typeof v === "number" && eqNum(v, num)); return (v) => typeof v === "number" && test(compare(v, num)); }
+    if (rest === "") { if (op === "=") return (v) => v === null || v === ""; if (op === "<>") return (v) => !(v === null || v === ""); return () => false; }
+    const u = rest.toUpperCase();
+    if (u === "TRUE" || u === "FALSE") { const b = u === "TRUE"; if (op === "=") return (v) => v === b; if (op === "<>") return (v) => v !== b; return (v) => typeof v === "boolean" && test(compare(v, b)); }
+    if (op === "=") return (v) => typeof v === "string" && v.toLowerCase() === rest.toLowerCase();
+    if (op === "<>") return (v) => !(typeof v === "string" && v.toLowerCase() === rest.toLowerCase());
+    return (v) => typeof v === "string" && test(compare(v, rest));
+  }
+  function lookup(args, ctx, horiz) {
+    const x = sc(args[0], ctx); if (isE(x)) return x; if (x === null) return E("#N/A");
+    if (!isRg(args[1])) return E("#VALUE!"); const g = ctx.grid(args[1]);
+    let k = toNum(sc(args[2], ctx)); if (isE(k)) return k; k = Math.trunc(k);
+    let ap = true; if (args.length > 3) { ap = toBool(sc(args[3], ctx)); if (isE(ap)) return ap; }
+    const keys = horiz ? g[0] : g.map((r) => r[0]), width = horiz ? g.length : g[0].length;
+    if (k < 1) return E("#VALUE!"); if (k > width) return E("#REF!");
+    const get = (i) => { const v = horiz ? g[k - 1][i] : g[i][k - 1]; return v === null ? 0 : v; };
+    const same = (v) => v !== null && !isE(v) && typeof v === typeof x;
+    if (!ap) { for (let i = 0; i < keys.length; i++) if (same(keys[i]) && compare(keys[i], x) === 0) return get(i); return E("#N/A"); }
+    let f = -1; for (let i = 0; i < keys.length; i++) { const v = keys[i]; if (!same(v)) continue; if (compare(v, x) <= 0) f = i; else break; }
+    return f < 0 ? E("#N/A") : get(f);
+  }
+  function textFmt(v, fmt) {
+    if (typeof v === "string") { const n = numParse(v); if (n === null) return v; v = n; }
+    if (typeof v === "boolean") return disp(v);
+    if (v === null) v = 0;
+    let f = String(fmt), pctOn = false; if (f.endsWith("%")) { pctOn = true; f = f.slice(0, -1); v *= 100; }
+    const [ip, dpart = ""] = f.split("."); const comma = ip.includes(","); const minInt = (ip.match(/0/g) || []).length; const dec = (dpart.match(/[0#]/g) || []).length;
+    const r = rnd(v, dec, 0), neg = r < 0; let [is, ds = ""] = Math.abs(r).toFixed(dec).split(".");
+    if (is === "0" && minInt === 0) is = ""; while (is.length < minInt) is = "0" + is;
+    if (comma) is = is.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return (neg ? "-" : "") + is + (dec ? "." + ds : "") + (pctOn ? "%" : "");
+  }
+  const FN = {
+    SUM: agg((v) => v.reduce((s, x) => s + x, 0)),
+    AVERAGE: agg((v) => (v.length ? v.reduce((s, x) => s + x, 0) / v.length : E("#DIV/0!"))),
+    MAX: agg((v) => (v.length ? Math.max(...v) : 0)),
+    MIN: agg((v) => (v.length ? Math.min(...v) : 0)),
+    COUNT: (args, ctx) => { let n = 0; for (const a of args) { if (isRg(a)) { for (const row of ctx.grid(a)) for (const v of row) if (typeof v === "number") n++; } else if (typeof a === "number" || typeof a === "boolean" || (typeof a === "string" && numParse(a) !== null)) n++; } return n; },
+    COUNTA: (args, ctx) => { let n = 0; for (const a of args) { if (isRg(a)) { for (const row of ctx.grid(a)) for (const v of row) if (v !== null) n++; } else n++; } return n; },
+    COUNTBLANK: (args, ctx) => { if (!isRg(args[0])) return E("#VALUE!"); let n = 0; for (const row of ctx.grid(args[0])) for (const v of row) if (v === null || v === "") n++; return n; },
+    INT: n1((x) => Math.floor(x)), ABS: n1((x) => Math.abs(x)), SQRT: n1((x) => (x < 0 ? E("#NUM!") : Math.sqrt(x))), RAND: () => Math.random(),
+    RANK: (args, ctx) => { const x = toNum(sc(args[0], ctx)); if (isE(x)) return x; if (!isRg(args[1])) return E("#VALUE!"); const r = nums([args[1]], ctx); if (r.err) return r.err;
+      let o = 0; if (args.length > 2) { o = toNum(sc(args[2], ctx)); if (isE(o)) return o; }
+      if (!r.v.some((v) => eqNum(v, x))) return E("#N/A"); return 1 + r.v.filter((v) => (o ? v < x && !eqNum(v, x) : v > x && !eqNum(v, x))).length; },
+    ROUND: rndF(0), ROUNDUP: rndF(1), ROUNDDOWN: rndF(-1),
+    LARGE: (args, ctx) => { const r = nums([args[0]], ctx); if (r.err) return r.err; const k = toNum(sc(args[1], ctx)); if (isE(k)) return k; const s = r.v.sort((a, b) => b - a); const i = Math.ceil(k); return i < 1 || i > s.length ? E("#NUM!") : s[i - 1]; },
+    SMALL: (args, ctx) => { const r = nums([args[0]], ctx); if (r.err) return r.err; const k = toNum(sc(args[1], ctx)); if (isE(k)) return k; const s = r.v.sort((a, b) => a - b); const i = Math.ceil(k); return i < 1 || i > s.length ? E("#NUM!") : s[i - 1]; },
+    AND: (args, ctx) => logic(args, ctx, true), OR: (args, ctx) => logic(args, ctx, false),
+    NOT: one((x) => { const b = toBool(x); return isE(b) ? b : !b; }),
+    COUNTIF: (args, ctx) => { if (!isRg(args[0])) return E("#VALUE!"); const c = sc(args[1], ctx); if (isE(c)) return c; const f = critPred(c); let n = 0; for (const row of ctx.grid(args[0])) for (const v of row) if (!isE(v) && f(v)) n++; return n; },
+    SUMIF: (args, ctx) => { if (!isRg(args[0])) return E("#VALUE!"); const c = sc(args[1], ctx); if (isE(c)) return c; const f = critPred(c);
+      const g = args[0], s = args.length > 2 ? args[2] : g; if (!isRg(s)) return E("#VALUE!");
+      let t = 0; for (let i = 0; i <= g.r2 - g.r1; i++) for (let j = 0; j <= g.c2 - g.c1; j++) { const v = ctx.get(g.sh, g.c1 + j, g.r1 + i); if (isE(v) || !f(v)) continue; const w = ctx.get(s.sh, s.c1 + j, s.r1 + i); if (isE(w)) return w; if (typeof w === "number") t += w; }
+      return t; },
+    LEN: one((x) => (isE(x) ? x : toStr(x).length)),
+    LEFT: one((x, n) => { if (isE(x)) return x; let k = n === undefined ? 1 : toNum(n); if (isE(k)) return k; k = Math.trunc(k); return k < 0 ? E("#VALUE!") : toStr(x).slice(0, k); }),
+    RIGHT: one((x, n) => { if (isE(x)) return x; let k = n === undefined ? 1 : toNum(n); if (isE(k)) return k; k = Math.trunc(k); if (k < 0) return E("#VALUE!"); const s = toStr(x); return k === 0 ? "" : s.slice(Math.max(0, s.length - k)); }),
+    MID: one((x, a, n) => { if (isE(x)) return x; let s = toNum(a), k = toNum(n); if (isE(s)) return s; if (isE(k)) return k; s = Math.trunc(s); k = Math.trunc(k); if (s < 1 || k < 0) return E("#VALUE!"); return toStr(x).substr(s - 1, k); }),
+    FIND: one((f, w, s) => { if (isE(f)) return f; if (isE(w)) return w; let st = s === undefined ? 1 : toNum(s); if (isE(st)) return st; st = Math.trunc(st); const W = toStr(w), F = toStr(f);
+      if (st < 1 || st > W.length + 1) return E("#VALUE!"); const i = W.indexOf(F, st - 1); return i < 0 ? E("#VALUE!") : i + 1; }),
+    UPPER: one((x) => (isE(x) ? x : toStr(x).toUpperCase())), LOWER: one((x) => (isE(x) ? x : toStr(x).toLowerCase())),
+    PROPER: one((x) => (isE(x) ? x : toStr(x).toLowerCase().replace(/(^|[^A-Za-z])([a-z])/g, (m, a, b) => a + b.toUpperCase()))),
+    TRIM: one((x) => (isE(x) ? x : toStr(x).replace(/ +/g, " ").trim())),
+    CONCATENATE: (args, ctx) => { let s = ""; for (const a of args) { const v = sc(a, ctx); if (isE(v)) return v; s += toStr(v); } return s; },
+    TEXT: one((v, f) => (isE(v) ? v : isE(f) ? f : textFmt(v, toStr(f)))),
+    VALUE: one((x) => { if (isE(x) || typeof x === "number") return x; if (x === null) return 0; const n = numParse(toStr(x)); return n === null ? E("#VALUE!") : n; }),
+    CHAR: one((x) => { const v = toNum(x); if (isE(v)) return v; const k = Math.trunc(v); return k < 1 || k > 255 ? E("#VALUE!") : String.fromCharCode(k); }),
+    ISBLANK: (args, ctx) => { const a = args[0]; if (isRg(a)) return sc(a, ctx) === null; return false; },
+    VLOOKUP: (args, ctx) => lookup(args, ctx, false), HLOOKUP: (args, ctx) => lookup(args, ctx, true),
+  };
+  FN["RANK.EQ"] = FN.RANK;
+  function logic(args, ctx, all) {
+    const bs = [];
+    for (const a of args) {
+      if (isRg(a)) { for (const row of ctx.grid(a)) for (const v of row) { if (isE(v)) return v; if (typeof v === "boolean") bs.push(v); else if (typeof v === "number") bs.push(v !== 0); } }
+      else { const b = toBool(a); if (isE(b)) return b; bs.push(b); }
+    }
+    if (!bs.length) return E("#VALUE!");
+    return all ? bs.every(Boolean) : bs.some(Boolean);
+  }
+  // ---------- 對外 ----------
+  // sheets：{工作表名稱: {A1: 值或 "=公式"}}；calc(sheets, 工作表, 公式)
+  function calc(sheets, sh, formula) { const ctx = Book(sheets, sh); let ast; ast = parse(formula); return sc(ev(ast, ctx, sh), ctx); }
+  function calc1(cells, formula) { return calc({ Sheet1: cells }, "Sheet1", formula); }
+  function valueOf(sheets, sh, a) { const ctx = Book(sheets, sh), x = pa(a); return ctx.get(sh, x.c, x.r); }
+  // 逐步：列出函數及運算的中間結果（按計算次序）
+  function steps(sheets, sh, formula, opt = {}) {
+    const ctx = Book(sheets, sh), ast = parse(formula), out = [];
+    const walk = (n) => {
+      if (n.k === "paren") return walk(n.a);
+      if (n.k === "fn") { if (n.name === "IF") { walk(n.args[0]); const c = toBool(sc(ev(n.args[0], ctx, sh), ctx)); if (!isE(c)) walk(n.args[c ? 1 : 2] || n.args[0]); } else n.args.forEach(walk); }
+      else if (n.k === "bin" || n.k === "neg" || n.k === "pct") { walk(n.a); if (n.b) walk(n.b); }
+      else return;
+      if (n.k === "bin" && opt.noCmp && "=<>".includes(n.op[0])) return;
+      const v = sc(ev(n, ctx, sh), ctx); out.push([n.src, v]);
+    };
+    walk(ast); return out;
+  }
+  // 參照位移：複製公式（dr 列差、dc 欄差）；傳回新公式及每個參照的變化
+  const reShift = /^((?:'(?:[^']|'')+'|[A-Za-z_㐀-鿿][A-Za-z0-9_㐀-鿿]*)!)?(\$?)([A-Za-z]{1,3})(\$?)(\d+)(?::(\$?)([A-Za-z]{1,3})(\$?)(\d+))?(?![A-Za-z0-9_(])/;
+  function shift(formula, dr, dc) {
+    const s = String(formula); let out = "", i = 0; const refs = [];
+    while (i < s.length) {
+      const c = s[i];
+      if (c === '"') { let j = i + 1; while (j < s.length) { if (s[j] === '"') { if (s[j + 1] === '"') { j += 2; continue; } break; } j++; } out += s.slice(i, j + 1); i = j + 1; continue; }
+      const prev = i ? s[i - 1] : "";
+      const m = /[A-Za-z0-9_.$'㐀-鿿]/.test(prev) ? null : reShift.exec(s.slice(i));
+      if (m) {
+        const mv = (ca, col, ra, row) => { const C = ca ? colNum(col) : colNum(col) + dc, Rr = ra ? +row : +row + dr; return C < 1 || Rr < 1 ? null : ca + colStr(C) + ra + Rr; };
+        const a = mv(m[2], m[3], m[4], m[5]), b = m[6] !== undefined ? mv(m[6], m[7], m[8], m[9]) : "";
+        const to = a === null || b === null ? "#REF!" : (m[1] || "") + a + (b ? ":" + b : "");
+        refs.push({ from: m[0].toUpperCase(), to: to.toUpperCase() }); out += to.toUpperCase(); i += m[0].length; continue;
+      }
+      out += c; i++;
+    }
+    return { f: out, refs };
+  }
+  const offs = (from, to) => { const a = pa(from), b = pa(to); return { dr: b.r - a.r, dc: b.c - a.c }; };
+  const copy = (formula, from, to) => { const o = offs(from, to); return shift(formula, o.dr, o.dc); };
+  // 規範化：大寫（字串除外）、去空格、加「=」
+  function norm(f) {
+    const t = tokenize(f);
+    return "=" + t.map((x) => (x.t === "ws" ? "" : x.t === "str" ? '"' + x.v.replace(/"/g, '""') + '"' : x.t === "ref" ? (x.sheetRaw + x.a + (x.b ? ":" + x.b : "")).toUpperCase() : x.t === "num" ? x.raw : x.t === "bool" ? (x.v ? "TRUE" : "FALSE") : String(x.v).toUpperCase())).join("");
+  }
+  return { XErr, colNum, colStr, A, pa, E, isE, disp, fmtNum, numParse, parse, calc, calc1, valueOf, steps, shift, copy, offs, norm, compare, tokenize };
+})();
+
+// =================== SQL 引擎（模擬 Access：字串不分大小寫；三值邏輯） ===================
+const SQL = (() => {
+  class SErr extends Error {}
+  const KW = new Set(["SELECT", "DISTINCT", "FROM", "WHERE", "GROUP", "BY", "HAVING", "ORDER", "ASC", "DESC", "AND", "OR", "NOT", "IN", "BETWEEN", "LIKE", "IS", "NULL", "AS", "TRUE", "FALSE"]);
+  const AGG = new Set(["COUNT", "SUM", "AVG", "MAX", "MIN"]);
+  function tokenize(src) {
+    const s = String(src).replace(/ /g, " "), out = []; let i = 0;
+    while (i < s.length) {
+      const c = s[i], rest = s.slice(i), i0 = i; let m;
+      if (/\s/.test(c)) { i++; continue; }
+      if (c === "'" || c === '"') { let j = i + 1, str = ""; for (;;) { if (j >= s.length) throw new SErr("字串缺少收尾的引號。"); if (s[j] === c) { if (s[j + 1] === c) { str += c; j += 2; continue; } break; } str += s[j++]; } i = j + 1; out.push({ t: "str", v: str, i0, i1: i }); continue; }
+      if ((m = /^#(\d{4}-\d{2}-\d{2})#/.exec(rest))) { i += m[0].length; out.push({ t: "str", v: m[1], i0, i1: i }); continue; }
+      if ((m = /^(\d+\.?\d*|\.\d+)/.exec(rest))) { i += m[0].length; out.push({ t: "num", v: Number(m[0]), i0, i1: i }); continue; }
+      if ((m = /^\[([^\]]+)\]/.exec(rest))) { i += m[0].length; out.push({ t: "id", v: m[1].toUpperCase(), i0, i1: i }); continue; }
+      if ((m = /^[A-Za-z_㐀-鿿][A-Za-z0-9_㐀-鿿]*/.exec(rest))) { i += m[0].length; const u = m[0].toUpperCase(); out.push({ t: KW.has(u) ? "kw" : "id", v: u, i0, i1: i }); continue; }
+      if ((m = /^(<=|>=|<>|!=)/.exec(rest))) { i += 2; out.push({ t: "op", v: m[1] === "!=" ? "<>" : m[1], i0, i1: i }); continue; }
+      if ("=<>+-*/,()&;".includes(c)) { i++; if (c !== ";") out.push({ t: "op", v: c, i0, i1: i }); continue; }
+      if ("≤≥≠".includes(c)) throw new SErr("SQL 不接受「≤」「≥」「≠」，要寫 <=、>=、<>。");
+      if ("，（）‘’“”".includes(c)) throw new SErr("請用半形（英文）符號。");
+      throw new SErr("不認識的符號「" + c + "」。");
+    }
+    return out;
+  }
+  function parse(src) {
+    const toks = tokenize(src), s = String(src); let p = 0;
+    const peek = () => toks[p], isK = (v) => toks[p] && toks[p].t === "kw" && toks[p].v === v, isO = (v) => toks[p] && toks[p].t === "op" && toks[p].v === v;
+    const need = (k) => { if (!isK(k)) throw new SErr("缺少 " + k + "。"); p++; };
+    const eatO = (v) => { if (!isO(v)) throw new SErr("缺少「" + v + "」。"); p++; };
+    const span = (p0) => s.slice(toks[p0].i0, toks[p - 1].i1);
+    const mk = (p0, n) => { n.src = span(p0); return n; };
+    function expr() { return or(); }
+    function or() { const p0 = p; let a = and(); while (isK("OR")) { p++; a = mk(p0, { k: "or", a, b: and() }); } return a; }
+    function and() { const p0 = p; let a = not(); while (isK("AND")) { p++; a = mk(p0, { k: "and", a, b: not() }); } return a; }
+    function not() { if (isK("NOT")) { const p0 = p; p++; return mk(p0, { k: "not", a: not() }); } return pred(); }
+    function pred() {
+      const p0 = p, a = add();
+      if (toks[p] && toks[p].t === "op" && ["=", "<>", "<", ">", "<=", ">="].includes(toks[p].v)) { const op = toks[p++].v; return mk(p0, { k: "cmp", op, a, b: add(), pred: 1 }); }
+      let neg = false; if (isK("NOT") && toks[p + 1] && toks[p + 1].t === "kw" && ["IN", "BETWEEN", "LIKE"].includes(toks[p + 1].v)) { neg = true; p++; }
+      if (isK("IN")) { p++; eatO("("); const list = [add()]; while (isO(",")) { p++; list.push(add()); } eatO(")"); return mk(p0, { k: "in", a, list, neg, pred: 1 }); }
+      if (isK("BETWEEN")) { p++; const lo = add(); need("AND"); const hi = add(); return mk(p0, { k: "btw", a, lo, hi, neg, pred: 1 }); }
+      if (isK("LIKE")) { p++; return mk(p0, { k: "like", a, pat: add(), neg, pred: 1 }); }
+      if (isK("IS")) { p++; let n2 = false; if (isK("NOT")) { p++; n2 = true; } need("NULL"); return mk(p0, { k: "isnull", a, neg: n2, pred: 1 }); }
+      return a;
+    }
+    function add() { const p0 = p; let a = mul(); while (isO("+") || isO("-") || isO("&")) { const op = toks[p++].v; a = mk(p0, { k: "ar", op, a, b: mul() }); } return a; }
+    function mul() { const p0 = p; let a = un(); while (isO("*") || isO("/")) { const op = toks[p++].v; a = mk(p0, { k: "ar", op, a, b: un() }); } return a; }
+    function un() { if (isO("-")) { const p0 = p; p++; return mk(p0, { k: "neg", a: un() }); } return prim(); }
+    function prim() {
+      const p0 = p, t = toks[p]; if (!t) throw new SErr("語句未完成。"); p++;
+      if (t.t === "num") return mk(p0, { k: "lit", v: t.v });
+      if (t.t === "str") return mk(p0, { k: "lit", v: t.v });
+      if (t.t === "kw" && t.v === "NULL") return mk(p0, { k: "lit", v: null });
+      if (t.t === "kw" && (t.v === "TRUE" || t.v === "FALSE")) return mk(p0, { k: "lit", v: t.v === "TRUE" ? 1 : 0 });
+      if (t.t === "op" && t.v === "(") { const a = expr(); eatO(")"); return mk(p0, { k: "paren", a }); }
+      if (t.t === "id") {
+        if (isO("(")) { p++; const args = []; let star = false;
+          if (isO("*")) { p++; star = true; } else if (!isO(")")) { args.push(expr()); while (isO(",")) { p++; args.push(expr()); } }
+          eatO(")"); return mk(p0, { k: "fn", name: t.v, args, star }); }
+        return mk(p0, { k: "col", name: t.v });
+      }
+      throw new SErr("「" + s.slice(t.i0, t.i1) + "」的位置不正確。");
+    }
+    need("SELECT"); const q = { distinct: false, items: [], star: false, group: [], order: [] };
+    if (isK("DISTINCT")) { p++; q.distinct = true; }
+    if (isO("*")) { p++; q.star = true; } else { for (;;) { const p0 = p, e = expr(); const text = span(p0); let alias = null; if (isK("AS")) { p++; if (!peek() || peek().t !== "id") throw new SErr("AS 之後要寫別名。"); alias = toks[p++].v; } else if (peek() && peek().t === "id") alias = toks[p++].v; q.items.push({ e, text, alias }); if (isO(",")) { p++; continue; } break; } }
+    need("FROM"); if (!peek() || peek().t !== "id") throw new SErr("FROM 之後要寫數據表名稱。"); q.from = toks[p++].v;
+    if (isK("WHERE")) { p++; q.where = expr(); }
+    if (isK("GROUP")) { p++; need("BY"); q.group.push(expr()); while (isO(",")) { p++; q.group.push(expr()); } }
+    if (isK("HAVING")) { p++; q.having = expr(); }
+    if (isK("ORDER")) { p++; need("BY"); for (;;) { const p0 = p, e = add(); const text = span(p0); let desc = false; if (isK("ASC")) p++; else if (isK("DESC")) { p++; desc = true; } q.order.push({ e, desc, text }); if (isO(",")) { p++; continue; } break; } }
+    if (p < toks.length) throw new SErr("「" + s.slice(toks[p].i0, toks[p].i1) + "」附近有語法錯誤（檢查子句次序：SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY）。");
+    return q;
+  }
+  const isStr = (v) => typeof v === "string";
+  function cmpv(a, b) { if (isStr(a) && isStr(b)) { const x = a.toLowerCase(), y = b.toLowerCase(); return x < y ? -1 : x > y ? 1 : 0; } if (isStr(a) !== isStr(b)) throw new SErr("數據類型不相符：不可把文字與數字比較（文字要加單引號）。"); return a < b ? -1 : a > b ? 1 : 0; }
+  const likeRe = (pat, access) => new RegExp("^" + String(pat).split("").map((ch) => (ch === "%" || (access && ch === "*") ? "[\\s\\S]*" : ch === "_" || (access && ch === "?") ? "[\\s\\S]" : ch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))).join("") + "$", "i");
+  function hasAgg(e) { if (!e || typeof e !== "object") return false; if (e.k === "fn" && AGG.has(e.name)) return true; return ["a", "b", "lo", "hi", "pat"].some((k) => hasAgg(e[k])) || (e.list || []).some(hasAgg) || (e.args || []).some(hasAgg); }
+  function ev(e, env) {
+    switch (e.k) {
+      case "lit": return e.v;
+      case "paren": return ev(e.a, env);
+      case "col": { const r = env.row; const k = Object.keys(r).find((x) => x.toUpperCase() === e.name); if (k === undefined) { if (env.alias && e.name in env.alias) return env.alias[e.name]; throw new SErr("數據表沒有欄位 " + e.name + "（文字要加單引號）。"); } return r[k]; }
+      case "neg": { const v = ev(e.a, env); return v === null ? null : -v; }
+      case "ar": { const a = ev(e.a, env), b = ev(e.b, env);
+        if (e.op === "&") return (a === null ? "" : fmtV(a)) + (b === null ? "" : fmtV(b));
+        if (a === null || b === null) return null;
+        if (e.op === "+" && isStr(a) && isStr(b)) return a + b;
+        if (isStr(a) || isStr(b)) throw new SErr("文字不可用於算術運算。");
+        if (e.op === "+") return a + b; if (e.op === "-") return a - b; if (e.op === "*") return a * b; if (b === 0) throw new SErr("除以零。"); return a / b; }
+      case "cmp": { const a = ev(e.a, env), b = ev(e.b, env); if (a === null || b === null) return null; const c = cmpv(a, b); return { "=": c === 0, "<>": c !== 0, "<": c < 0, ">": c > 0, "<=": c <= 0, ">=": c >= 0 }[e.op]; }
+      case "and": { const a = ev(e.a, env), b = ev(e.b, env); if (a === false || b === false) return false; if (a === null || b === null) return null; return true; }
+      case "or": { const a = ev(e.a, env), b = ev(e.b, env); if (a === true || b === true) return true; if (a === null || b === null) return null; return false; }
+      case "not": { const a = ev(e.a, env); return a === null ? null : !a; }
+      case "in": { const a = ev(e.a, env); if (a === null) return null; const r = e.list.some((x) => { const v = ev(x, env); return v !== null && cmpv(a, v) === 0; }); return e.neg ? !r : r; }
+      case "btw": { const a = ev(e.a, env), lo = ev(e.lo, env), hi = ev(e.hi, env); if (a === null || lo === null || hi === null) return null; const r = cmpv(a, lo) >= 0 && cmpv(a, hi) <= 0; return e.neg ? !r : r; }
+      case "like": { const a = ev(e.a, env), pt = ev(e.pat, env); if (a === null || pt === null) return null; const r = likeRe(pt, env.access).test(fmtV(a)); return e.neg ? !r : r; }
+      case "isnull": { const r = ev(e.a, env) === null; return e.neg ? !r : r; }
+      case "fn": {
+        if (AGG.has(e.name)) {
+          if (!env.rows) throw new SErr("統計函數 " + e.name + " 不可用在 WHERE 子句（分組後篩選要用 HAVING）。");
+          if (e.star) { if (e.name !== "COUNT") throw new SErr("只有 COUNT 可寫成 COUNT(*)。"); return env.rows.length; }
+          if (e.args.length !== 1) throw new SErr(e.name + " 只有一個參數。");
+          const vs = env.rows.map((r) => ev(e.args[0], { row: r, access: env.access })).filter((v) => v !== null);
+          if (e.name === "COUNT") return vs.length; if (!vs.length) return null;
+          if (e.name === "SUM" || e.name === "AVG") { if (vs.some(isStr)) throw new SErr(e.name + " 只可用於數字欄位。"); const t = vs.reduce((x, y) => x + y, 0); return e.name === "SUM" ? t : t / vs.length; }
+          return vs.reduce((x, y) => ((e.name === "MAX" ? cmpv(y, x) > 0 : cmpv(y, x) < 0) ? y : x));
+        }
+        const a = e.args.map((x) => ev(x, env)), A0 = a[0];
+        const argN = (n) => { if (a.length !== n) throw new SErr(e.name + " 的參數數目不正確。"); };
+        switch (e.name) {
+          case "INT": argN(1); return A0 === null ? null : Math.floor(A0);
+          case "ABS": argN(1); return A0 === null ? null : Math.abs(A0);
+          case "LEN": case "CHAR_LENGTH": argN(1); return A0 === null ? null : fmtV(A0).length;
+          case "MID": case "SUBSTRING": case "SUBSTR": { if (a.length < 2 || a.length > 3) throw new SErr(e.name + " 的參數數目不正確。"); if (A0 === null) return null; const st = Math.trunc(a[1]); const t = fmtV(A0); return a.length === 3 ? t.substr(st - 1, Math.trunc(a[2])) : t.slice(st - 1); }
+          case "UPPER": case "UCASE": argN(1); return A0 === null ? null : fmtV(A0).toUpperCase();
+          case "LOWER": case "LCASE": argN(1); return A0 === null ? null : fmtV(A0).toLowerCase();
+          case "TRIM": argN(1); return A0 === null ? null : fmtV(A0).replace(/^ +| +$/g, "");
+          case "SPACE": argN(1); return " ".repeat(Math.max(0, Math.trunc(A0)));
+        }
+        throw new SErr("不支援的函數 " + e.name + "。");
+      }
+    }
+    throw new SErr("無法計算。");
+  }
+  const fmtV = (v) => (v === null || v === undefined ? "" : typeof v === "number" ? XL.fmtNum(v) : String(v));
+  const truth = (v) => v === true;
+  // tables：{表名: [欄名陣列, 記錄陣列（每筆為陣列）]}
+  function run(tables, sql, opt = {}) {
+    const q = parse(sql), tn = Object.keys(tables).find((x) => x.toUpperCase() === q.from);
+    if (tn === undefined) throw new SErr("沒有數據表 " + q.from + "。");
+    const [cols, recs] = tables[tn], rows = recs.map((r) => Object.fromEntries(cols.map((c, i) => [c, r[i]])));
+    const access = !!opt.access;
+    const kept = rows.filter((r) => (q.where ? truth(ev(q.where, { row: r, access })) : true));
+    const grouped = q.group.length > 0 || q.items.some((it) => hasAgg(it.e)) || hasAgg(q.having) || q.order.some((o) => hasAgg(o.e));
+    if (q.star && grouped) throw new SErr("SELECT * 不可與 GROUP BY 或統計函數一起使用。");
+    if (!grouped && q.having) throw new SErr("HAVING 要與 GROUP BY 一起使用。");
+    let out = [];
+    const names = q.star ? cols.slice() : q.items.map((it) => it.alias || it.text);
+    if (grouped) {
+      const gs = [], idx = {};
+      if (!q.group.length) gs.push(kept);
+      else for (const r of kept) { const key = JSON.stringify(q.group.map((g) => { const v = ev(g, { row: r, access }); return isStr(v) ? v.toLowerCase() : v; })); if (!(key in idx)) { idx[key] = gs.length; gs.push([]); } gs[idx[key]].push(r); }
+      if (q.group.length) for (const it of q.items) if (!hasAgg(it.e) && !q.group.some((g) => g.src.replace(/\s/g, "").toUpperCase() === it.e.src.replace(/\s/g, "").toUpperCase())) throw new SErr("SELECT 中的 " + it.text + " 既不是統計函數，也不在 GROUP BY 中。");
+      for (const g of gs) { const env = { row: g[0] || {}, rows: g, access }; if (q.having && !truth(ev(q.having, env))) continue; out.push({ vals: q.items.map((it) => ev(it.e, env)), env }); }
+    } else out = kept.map((r) => ({ vals: q.star ? cols.map((c) => r[c]) : q.items.map((it) => ev(it.e, { row: r, access })), env: { row: r, access } }));
+    if (q.order.length) {
+      const keyOf = (o, rec) => { const t = o.text.replace(/\s/g, "").toUpperCase(); const k = names.findIndex((n) => n.replace(/\s/g, "").toUpperCase() === t); if (k >= 0) return rec.vals[k]; return ev(o.e, rec.env); };
+      out = out.map((rec, i) => ({ rec, i, ks: q.order.map((o) => keyOf(o, rec)) }));
+      out.sort((x, y) => { for (let j = 0; j < q.order.length; j++) { const a = x.ks[j], b = y.ks[j]; let c = a === null && b === null ? 0 : a === null ? -1 : b === null ? 1 : cmpv(a, b); if (q.order[j].desc) c = -c; if (c) return c; } return x.i - y.i; });
+      out = out.map((x) => x.rec);
+    }
+    let res = out.map((o) => o.vals);
+    if (q.distinct) { const seen = new Set(); res = res.filter((r) => { const k = JSON.stringify(r.map((v) => (isStr(v) ? v.toLowerCase() : v))); if (seen.has(k)) return false; seen.add(k); return true; }); }
+    return { cols: names, rows: res, q };
+  }
+  // 逐行判斷：WHERE 內每個基本條件的真假
+  function preds(e, acc = []) { if (!e) return acc; if (e.pred) { if (!acc.some((x) => x.src === e.src)) acc.push(e); return acc; } ["a", "b"].forEach((k) => e[k] && typeof e[k] === "object" && preds(e[k], acc)); return acc; }
+  function trace(tables, sql) {
+    const q = parse(sql), tn = Object.keys(tables).find((x) => x.toUpperCase() === q.from), [cols, recs] = tables[tn];
+    const rows = recs.map((r) => Object.fromEntries(cols.map((c, i) => [c, r[i]])));
+    const ps = preds(q.where);
+    return { cols, ps: ps.map((x) => x.src), rows: rows.map((r, i) => ({ i, rec: recs[i], v: ps.map((x) => ev(x, { row: r })), ok: q.where ? ev(q.where, { row: r }) : true })) };
+  }
+  // 以 Access 萬用字符顯示（只改 LIKE 後的字串）
+  const toAccess = (sql) => String(sql).replace(/(LIKE\s+')((?:[^']|'')*)(')/gi, (m, a, b, c) => a + b.replace(/%/g, "*").replace(/_/g, "?") + c);
+  return { SErr, tokenize, parse, run, trace, fmtV, toAccess, likeRe };
+})();
+
+// =================== 輸入遮罩模擬（教科書表 5.4） ===================
+const MASK = (() => {
+  const CLS = { "0": [1, /[0-9]/], "9": [0, /[0-9]/], "#": [0, /[0-9 +-]/], L: [1, /[A-Za-z]/], "?": [0, /[A-Za-z]/], A: [1, /[A-Za-z0-9]/], a: [0, /[A-Za-z0-9]/], "&": [1, /[\s\S]/], C: [0, /[\s\S]/] };
+  function parse(m) {
+    const pos = []; let cs = null;
+    for (let i = 0; i < m.length; i++) {
+      const c = m[i];
+      if (c === ">") { cs = "U"; continue; } if (c === "<") { cs = "L"; continue; }
+      if (c === "\\") { pos.push({ lit: m[++i] }); continue; }
+      if (c === '"') { let j = i + 1; while (j < m.length && m[j] !== '"') pos.push({ lit: m[j++] }); i = j; continue; }
+      if (CLS[c]) { pos.push({ k: c, req: !!CLS[c][0], re: CLS[c][1], cs }); continue; }
+      pos.push({ lit: c });
+    }
+    return pos;
+  }
+  const NAME = { "0": "必須是數字", "9": "可以是數字", "#": "可以是數字、空格、+ 或 -", L: "必須是字母", "?": "可以是字母", A: "必須是字母或數字", a: "可以是字母或數字", "&": "必須是一個字符", C: "可以是一個字符" };
+  // value：顯示的值（包括遮罩自動顯示的符號）
+  function test(mask, value) {
+    const pos = parse(mask), v = String(value); let i = 0, shown = "";
+    for (let k = 0; k < pos.length; k++) {
+      const p = pos[k], ch = v[i];
+      if (p.lit !== undefined) { if (ch !== p.lit) return { ok: false, why: "第 " + (i + 1) + " 個字符應為「" + p.lit + "」（遮罩自動顯示的符號）。" }; shown += ch; i++; continue; }
+      if (ch !== undefined && p.re.test(ch)) { shown += p.cs === "U" ? ch.toUpperCase() : p.cs === "L" ? ch.toLowerCase() : ch; i++; continue; }
+      if (p.req) return { ok: false, why: ch === undefined ? "字符不足：遮罩的「" + p.k + "」" + NAME[p.k] + "。" : "第 " + (i + 1) + " 個字符「" + ch + "」不符合：遮罩的「" + p.k + "」" + NAME[p.k] + "。" };
+      if (ch !== undefined) return { ok: false, why: "第 " + (i + 1) + " 個字符「" + ch + "」不符合：遮罩的「" + p.k + "」" + NAME[p.k] + "。" };
+    }
+    if (i < v.length) return { ok: false, why: "字符太多：遮罩只容許 " + i + " 個字符，輸入了最後一個字符後便不能再輸入。" };
+    return { ok: true, shown };
+  }
+  return { parse, test, NAME };
+})();
+
+// =================== 顯示（只產生 HTML 字串，不用 DOM） ===================
+const SP = (s) => esc(s).replace(/ /g, '<span class="sp">␣</span>');
+const showV = (v, sp) => { const t = XL.disp(v); return sp ? t.replace(/ /g, "␣") : t; };
+const vtype = (v) => (v === null ? "" : typeof v === "number" ? "n" : typeof v === "boolean" ? "b" : XL.isE(v) ? "e" : "t");
+// 試算表格子：vals {A1: 值}；o：{c1,c2,r1,r2 | rows:[…,"⋮"]，q:[問號格]，hl:[標示格]，fmt:{格:顯示字串}，sp，tab}
+function sheetHTML(vals, o = {}) {
+  const keys = Object.keys(vals).concat(o.q || [], o.hl || []).map(XL.pa);
+  const c1 = o.c1 || 1, c2 = o.c2 || Math.max(1, ...keys.map((k) => k.c)), r1 = o.r1 || 1, r2 = o.r2 || Math.max(1, ...keys.map((k) => k.r));
+  const rows = o.rows || range(r1, r2 + 1), cols = o.cols || range(c1, c2 + 1);
+  const q = new Set(o.q || []), hl = new Set(o.hl || []), bold = new Set(o.bold || []);
+  let h = '<div class="xs"><table class="sheet"><tr><th class="cn"></th>' + cols.map((c) => "<th>" + XL.colStr(c) + "</th>").join("") + "</tr>";
+  for (const r of rows) {
+    if (r === "⋮") { h += '<tr><th class="rn">⋮</th>' + cols.map(() => '<td class="gap">⋮</td>').join("") + "</tr>"; continue; }
+    h += '<tr><th class="rn">' + r + "</th>";
+    for (const c of cols) {
+      const a = XL.A(c, r), v = vals[a] === undefined ? null : vals[a];
+      const cls = [vtype(v), q.has(a) ? "q" : "", hl.has(a) ? "hl" : "", bold.has(a) ? "bd" : ""].filter(Boolean).join(" ");
+      const txt = q.has(a) ? "?" : o.fmt && o.fmt[a] !== undefined ? esc(o.fmt[a]) : o.sp && typeof v === "string" ? SP(v) : esc(XL.disp(v));
+      h += "<td" + (cls ? ' class="' + cls + '"' : "") + ">" + txt + "</td>";
+    }
+    h += "</tr>";
+  }
+  return h + "</table>" + (o.tab ? '<div class="tabs">' + o.tab.map((t, i) => '<span class="' + (i === (o.tabOn || 0) ? "on" : "") + '">' + esc(t) + "</span>").join("") + "</div>" : "") + "</div>";
+}
+const fbar = (a, f) => '<div class="fbar"><span class="nb">' + esc(a) + '</span><span class="fx">fx</span><code>' + esc(f) + "</code></div>";
+// 數據表：cols 欄名，rows 記錄；null 以空白顯示
+function dbHTML(name, cols, rows, o = {}) {
+  const hl = new Set(o.hl || []);
+  return '<div class="xs"><table class="dbt">' + (name ? "<caption>" + esc(name) + "</caption>" : "") + "<tr>" + cols.map((c) => "<th>" + esc(c) + "</th>").join("") + "</tr>" +
+    rows.map((r, i) => '<tr' + (hl.has(i) ? ' class="hl"' : "") + ">" + r.map((v) => "<td" + (v === null ? ' class="nul"' : typeof v === "number" ? ' class="n"' : "") + ">" + (o.sp && typeof v === "string" ? SP(v) : esc(SQL.fmtV(v))) + "</td>").join("") + "</tr>").join("") + "</table></div>";
+}
+const SQL_KW = /('(?:[^']|'')*')|\b(SELECT|DISTINCT|FROM|WHERE|GROUP BY|HAVING|ORDER BY|ASC|DESC|AND|OR|NOT|IN|BETWEEN|LIKE|IS|NULL|AS|COUNT|SUM|AVG|MAX|MIN|INT|ABS|LEN|MID|UPPER|LOWER|TRIM)\b/g;
+const hiSQL = (line) => esc(line).replace(/(&#39;|')/g, "'").replace(SQL_KW, (m, s, k) => (s ? '<span class="st">' + s + "</span>" : '<b class="kw">' + k + "</b>"));
+function sqlRender(sql, mode) { const s = mode === "access" ? SQL.toAccess(sql) : sql; return s.split("\n").map((l) => '<span class="ln">' + hiSQL(l) + "</span>").join(""); }
+const sqlHTML = (sql) => '<pre class="sqlc" data-sql="' + esc(sql) + '">' + sqlRender(sql, "dse") + "</pre>";
+const sqlI = (s) => '<code class="sqli" data-sql="' + esc(s) + '">' + esc(s) + "</code>";
+const flat = (sql) => sql.replace(/\s*\n\s*/g, " ");
+const mini = (head, rows, o = {}) => '<div class="xs"><table class="mini">' + (head ? "<tr>" + head.map((x) => "<th>" + x + "</th>").join("") + "</tr>" : "") + rows.map((r, i) => '<tr' + (o.hl && o.hl.includes(i) ? ' class="hl"' : "") + ">" + r.map((x) => "<td>" + x + "</td>").join("") + "</tr>").join("") + "</table></div>";
+const TF = (v) => (v === null ? '<span class="nl">NULL</span>' : v ? '<span class="ok">✓</span>' : '<span class="no">✗</span>');
+
+// =================== 作答部分及評分 ===================
+const P = {
+  val: (label, ans, o = {}) => Object.assign({ type: "val", label, ans }, o),
+  num: (label, ans, o = {}) => Object.assign({ type: "num", label, ans }, o),
+  text: (label, ans, o = {}) => Object.assign({ type: "text", label, ans }, o),
+  addr: (label, ans, o = {}) => Object.assign({ type: "addr", label, ans }, o),
+  fx: (label, ans, o = {}) => Object.assign({ type: "fx", label, ans }, o),
+  fw: (label, o) => Object.assign({ type: "fw", label }, o),
+  choice: (label, opts, ans, o = {}) => Object.assign({ type: "choice", label, opts, ans }, o),
+  grid: (cols, ans, o = {}) => Object.assign({ type: "grid", label: "", cols, ans }, o),
+  list: (label, ans, o = {}) => Object.assign({ type: "list", label, ans }, o),
+};
+const parts = (...ps) => ({ kind: "parts", parts: ps });
+const choiceIn = (opts, answer, o = {}) => Object.assign({ kind: "choice", opts, answer }, o);
+const GR = (() => {
+  const clean = (s) => { let t = String(s === null || s === undefined ? "" : s).replace(/␣/g, " ").replace(/　/g, " ").replace(/ /g, " ").trim(); const m = /^"([\s\S]*)"$/.exec(t) || /^「([\s\S]*)」$/.exec(t); if (m) t = m[1]; return t; };
+  const numIn = (s) => { const t = clean(s).replace(/[，,]/g, ""); return XL.numParse(t); };
+  const close = (a, b) => Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a), Math.abs(b));
+  function sameVal(e, s, ci) { // e：正確值；s：學生輸入的字串
+    if (typeof e === "number") { const x = numIn(s); return x !== null && close(x, e); }
+    if (typeof e === "boolean") return clean(s).toUpperCase() === (e ? "TRUE" : "FALSE");
+    if (XL.isE(e)) return clean(s).toUpperCase() === e.err;
+    if (e === null) return clean(s) === "" || /^null$/i.test(clean(s));
+    const a = clean(s), b = String(e).trim(); return ci ? a.toLowerCase() === b.toLowerCase() : a === b;
+  }
+  // 試算表值嚴格比較（寫公式題）：類型要相同
+  function strict(e, v) {
+    if (typeof e === "number") return typeof v === "number" && close(v, e);
+    if (XL.isE(e)) return XL.isE(v) && v.err === e.err;
+    if (e === null) return v === null || v === "";
+    return typeof v === typeof e && v === e;
+  }
+  const addrN = (s) => clean(s).replace(/\$/g, "").toUpperCase();
+  function fw(p, raw) {
+    let f = clean(raw); if (!f) return { ok: false };
+    try { XL.parse(f); } catch (e) { return { ok: false, msg: e.message, syntax: true }; }
+    if (f[0] !== "=") f = "=" + f;
+    const res = p.books.map((b, k) => p.targets.map((t, j) => { const g = XL.copy(f, p.at, t).f; let v; try { v = XL.calc(b.sheets, b.sh, g); } catch (e) { v = XL.E("#NAME?"); } return { t, g, v, ok: strict(p.exp[k][j], v) }; }));
+    const ok = res.every((r) => r.every((x) => x.ok));
+    let msg = "";
+    if (!ok) {
+      const all = res.flat();
+      if (all.some((x) => XL.isE(x.v) && x.v.err === "#NAME?")) msg = "結果出現 #NAME?：檢查函數名稱（例如要寫 AVERAGE，不是 AVG）及文字有沒有加雙引號。";
+      else if (res.some((r, k) => r.some((x, j) => typeof x.v === "string" && typeof p.exp[k][j] === "number" && XL.numParse(x.v) !== null && close(XL.numParse(x.v), p.exp[k][j])))) msg = "數字結果不應加引號（例如寫 1，不寫 \"1\"），否則得出的是文字。";
+      else if (p.targets.length > 1 && res.every((r) => r[0].ok)) msg = "第一格正確，但複製到其他儲存格後出錯：檢查哪些參照要加 $（固定不變）。";
+      else if (res[0].every((x) => x.ok)) msg = "在這組數據得出正確結果，但改動數據後便出錯：不要把數值直接寫入公式，要參照儲存格。";
+      else msg = "結果不正確，見下表。";
+    }
+    return { ok, msg, res };
+  }
+  function grid(p, raw) {
+    const rows = raw.map((r) => r.map(clean)).filter((r) => r.some((x) => x !== ""));
+    const eq = (er, sr) => er.every((v, j) => sameVal(v, sr[j] === undefined ? "" : sr[j], !p.cs));
+    const marks = raw.map(() => null); let ok = rows.length === p.ans.length;
+    const idx = raw.map((r, i) => i).filter((i) => raw[i].some((x) => clean(x) !== ""));
+    if (p.ordered) { idx.forEach((i, k) => { marks[i] = k < p.ans.length && eq(p.ans[k], raw[i].map(clean)); }); ok = ok && idx.every((i) => marks[i]); }
+    else { const used = new Set(); idx.forEach((i) => { const k = p.ans.findIndex((er, kk) => !used.has(kk) && eq(er, raw[i].map(clean))); marks[i] = k >= 0; if (k >= 0) used.add(k); }); ok = ok && idx.every((i) => marks[i]); }
+    return { ok, marks };
+  }
+  function grade(p, raw) {
+    switch (p.type) {
+      case "val": return { ok: sameVal(p.ans, raw, false) };
+      case "num": { const x = numIn(raw); return { ok: x !== null && close(x, p.ans) }; }
+      case "text": return { ok: p.ci ? clean(raw).toLowerCase() === String(p.ans).toLowerCase() : clean(raw) === String(p.ans) };
+      case "addr": return { ok: addrN(raw) === addrN(p.ans) };
+      case "fx": { try { return { ok: XL.norm(clean(raw)) === XL.norm(p.ans) }; } catch (e) { return { ok: false, msg: e.message }; } }
+      case "fw": return fw(p, raw);
+      case "choice": return { ok: Array.isArray(p.ans) ? p.ans.includes(raw) : raw === p.ans };
+      case "grid": return grid(p, raw);
+      case "list": { const a = String(raw).split(/[\s,，、;；]+/).filter(Boolean).map(Number), e = p.ans.slice().sort((x, y) => x - y); const s = a.slice().sort((x, y) => x - y); return { ok: s.length === e.length && s.every((x, i) => x === e[i]) }; }
+    }
+    return { ok: false };
+  }
+  const isBlank = (p, raw) => (p.type === "grid" ? raw.every((r) => r.every((x) => !clean(x))) : p.type === "choice" ? raw === null : !String(raw).trim());
+  // 測試用：正確／錯誤的作答
+  function fill(p, ok) {
+    const first = (a) => (Array.isArray(a) ? a[0] : a);
+    switch (p.type) {
+      case "val": if (ok) return XL.disp(p.ans); return typeof p.ans === "number" ? String(p.ans + 1) : typeof p.ans === "boolean" ? (p.ans ? "FALSE" : "TRUE") : XL.isE(p.ans) ? (p.ans.err === "#N/A" ? "#VALUE!" : "#N/A") : p.ans + "x";
+      case "num": return ok ? String(p.ans) : String(p.ans + 1);
+      case "text": return ok ? p.ans : p.ans + "x";
+      case "addr": return ok ? p.ans : "Z99";
+      case "fx": return ok ? p.ans : p.ans + "+1";
+      case "fw": return ok ? p.ans : "=1";
+      case "choice": return ok ? first(p.ans) : p.opts.find((o) => (Array.isArray(p.ans) ? !p.ans.includes(o) : o !== p.ans));
+      case "grid": { const n = Math.max(p.rows || 4, p.ans.length); const g = range(0, n).map((i) => p.cols.map((_, j) => (i < p.ans.length ? XL.disp(p.ans[i][j]).replace(/^$/, "") : "")));
+        if (p.ans.length === 0) return ok ? g : g.map((r, i) => (i ? r : r.map(() => "X")));
+        if (!ok) g[0][0] = g[0][0] + "9"; return g; }
+      case "list": return ok ? p.ans.join(", ") : p.ans.concat([999]).join(", ");
+    }
+  }
+  return { clean, sameVal, strict, grade, isBlank, fill, fw };
+})();
+
+// =================== 題目產生器：試算表 ===================
+// 每題：{ prompt, input, show, explain:[…], after?, chk:[核對項目], sandbox? }
+const CN = ["陳大文", "李小芬", "張家雄", "王茵茵", "黃志明", "林嘉慧", "何建成", "吳芳如", "周偉倫", "曹勝德", "方嘉慧", "盧政香", "彭思涵", "韋麗珠", "梁子軒", "馬可兒"];
+const EN = ["Amy", "Ben", "Carmen", "David", "Eric", "Fiona", "Gary", "Helen", "Ivan", "Joyce", "Kelvin", "Lily", "Mandy", "Nick", "Oscar", "Peggy"];
+const SURN = ["CHAN", "WONG", "LEE", "CHEUNG", "HO", "LAM", "NG", "YIP", "LAU", "TAM", "KWOK", "MAK", "CHOI", "YEUNG", "FUNG", "TSANG"];
+const GIVEN = ["TAI MAN", "SIU MING", "KA YAN", "WING SZE", "CHI HO", "HOI LAM", "MAN KIT", "YUK LING", "KA HO", "WAI SHAN"];
+const cap = (s) => s.toLowerCase().replace(/(^|\s)([a-z])/g, (m, a, b) => a + b.toUpperCase());
+const J = (v) => (XL.isE(v) ? { err: v.err } : v === undefined ? null : v);
+const xlChk = (cells, f, exp) => ({ t: "xl", cells, f, exp: Object.fromEntries(Object.entries(exp).map(([k, v]) => [k, J(v)])) });
+const S1 = (cells) => ({ Sheet1: cells });
+const calcAt = (cells, f) => XL.calc1(cells, f);
+// 代入：把公式內的儲存格參照換成數值
+const subst = (src, cells) => src.replace(/(^|[^A-Za-z0-9_$"])(\$?[A-Z]{1,3}\$?\d+)(?![A-Za-z0-9_(:])/g, (m, a, r) => { const v = cells[r.replace(/\$/g, "")]; return a + (typeof v === "string" ? '"' + v + '"' : v === undefined || v === null ? "0" : XL.disp(v)); });
+const stepLines = (cells, f, opt) => XL.steps(S1(cells), "Sheet1", f, opt).map(([s, v]) => "`" + s + "` → " + (typeof v === "string" ? "「" + v.replace(/ /g, "␣") + "」" : XL.disp(v)));
+const qv = (v) => (typeof v === "string" ? "「" + v.replace(/ /g, "␣") + "」" : XL.disp(v));
+
+const GEN_SHEET = [
+  // ---------------- S1 運算與公式 ----------------
+  { id: "S1", name: "運算與公式", types: [
+    { name: "運算次序", fn() {
+      const T = ["=A1+B1*C1", "=(A1+B1)*C1", "=A1-B1/C1*D1", "=(A1+B1)/C1-D1", "=A1*B1-C1/D1", "=((A1+D1)/2-B1/C1)*2+D1", "=A1/B1*C1", "=A1-B1-C1", "=A1-(B1-C1)", "=(A1-B1)*(C1+D1)/2", "=A1+B1/2*C1-D1", "=A1*(B1+C1)-D1/2"];
+      let f, cells, v;
+      for (;;) { f = pick(T); cells = { A1: R(2, 20), B1: R(2, 20), C1: R(2, 10), D1: R(2, 12) }; v = calcAt(cells, f); if (!XL.isE(v) && Number.isInteger(v * 2) && Math.abs(v) <= 999) break; }
+      // 由左至右（不理先乘除）的錯誤答案
+      let naive = null; if (!f.includes("(")) { const t = f.slice(1).split(/([+\-*/])/); let acc = cells[t[0]]; for (let i = 1; i < t.length; i += 2) { const b = cells[t[i + 1]]; acc = t[i] === "+" ? acc + b : t[i] === "-" ? acc - b : t[i] === "*" ? acc * b : acc / b; } if (Math.abs(acc - v) > 1e-9) naive = acc; }
+      return { prompt: "<p>E1 的公式如下。E1 會顯示甚麼數值？</p>" + fbar("E1", f) + sheetHTML(cells, { c2: 5, q: ["E1"] }),
+        input: parts(P.val("E1 顯示", v, naive === null ? {} : { traps: [{ v: naive, msg: "你由左至右計算了。要先計算括號內，再計算 * 和 /，最後才計算 + 和 −。" }] })), show: XL.disp(v),
+        explain: ["代入數值：`=" + subst(f.slice(1), cells) + "`", ...stepLines(cells, f), "次序：括號 → * / → + −；同一級由左至右。"],
+        chk: [xlChk(cells, { E1: f }, { E1: v })], sandbox: { cells } }; } },
+    { name: "比較運算", fn() {
+      const kind = pick(["num", "num", "case", "order", "lit"]); let cells = {}, f;
+      if (kind === "num") { f = pick(["=A1>B1", "=A1*2>=B1", "=A1+B1<>C1", "=A1<=B1-C1", "=A1/2=B1", "=A1>=B1+C1"]); cells = { A1: R(2, 30), B1: R(2, 30), C1: R(1, 15) };
+        if (coin(0.5)) { // 製造相等的邊界
+          if (f === "=A1>B1") cells.B1 = cells.A1; else if (f === "=A1*2>=B1") cells.B1 = cells.A1 * 2; else if (f === "=A1+B1<>C1") cells.C1 = cells.A1 + cells.B1; else if (f === "=A1<=B1-C1") cells.B1 = cells.A1 + cells.C1; else if (f === "=A1/2=B1") { cells.A1 = 2 * cells.B1; } else cells.A1 = cells.B1 + cells.C1; } }
+      else if (kind === "case") { const w = pick(["Apple", "Hong Kong", "Excel", "Data"]); cells = { A1: w, B1: coin(0.7) ? pick([w.toUpperCase(), w.toLowerCase()]) : w + "s" }; f = "=A1=B1"; }
+      else if (kind === "order") { const W = ["apple", "Banana", "cat", "Car", "dog", "Date", "egg", "Echo", "bank", "Ant"]; let a, b; do { a = pick(W); b = pick(W); } while (a.toLowerCase() === b.toLowerCase()); cells = { A1: a, B1: b }; f = pick(["=A1<B1", "=A1>B1"]); }
+      else f = pick(['="10"<"9"', '="ABC"="abc"', '="Z">"a"', "=10<9", '="cat"<"Cat"', '="b">"ABC"']);
+      const v = calcAt(cells, f);
+      const ex = kind === "num" ? ["代入數值：`=" + subst(f.slice(1), cells) + "`；先計算兩邊的算式，再比較。", "比較運算的結果是 TRUE（成立）或 FALSE（不成立）。注意 >= 和 <= 包括相等的情況。"]
+        : kind === "case" ? ["Excel 比較兩個字串時不分大小寫：「" + cells.A1 + "」與「" + cells.B1 + "」" + (v ? "視為相同" : "不相同") + "。"]
+        : kind === "order" ? ["字串按字母次序逐個字符比較，不分大小寫：比較「" + cells.A1.toLowerCase() + "」與「" + cells.B1.toLowerCase() + "」。", "排在字典較前的字串較「小」。"]
+        : ["以雙引號括住的是字串：字串逐個字符比較（不分大小寫），不是比較數值大小。", f === '="10"<"9"' ? "「10」的第一個字符「1」排在「9」之前，所以 \"10\" < \"9\" 是 TRUE；但數值 10 < 9 是 FALSE。" : "按字母次序比較；大小寫視為相同。"];
+      return { prompt: "<p>" + (Object.keys(cells).length ? "根據以下儲存格，" : "") + "E1 的公式如下。E1 會顯示甚麼？</p>" + fbar("E1", f) + (Object.keys(cells).length ? sheetHTML(cells, { c2: 5, q: ["E1"] }) : ""),
+        input: choiceIn(["TRUE", "FALSE"], v ? "TRUE" : "FALSE", { mono: true, why: kind === "case" && v ? { FALSE: "Excel 比較字串時不分大小寫，所以兩者相等。" } : {} }), show: v ? "TRUE" : "FALSE",
+        explain: ex, chk: [xlChk(cells, { E1: f }, { E1: v })], sandbox: { cells } }; } },
+    { name: "& 串連", fn() {
+      const kind = R(1, 6); let cells, f;
+      if (kind === 1) { cells = { A1: R(10, 199), B1: pick(["cm", "kg", "分", "元", "ml"]) }; f = pick(["=A1&B1", '=A1&" "&B1']); }
+      else if (kind === 2) { const s = pick(SURN), g = pick(EN); cells = { A1: g, B1: cap(s) }; f = pick(['=A1&" "&B1', '=B1&", "&A1', '=B1&" "&A1']); }
+      else if (kind === 3) { cells = { A1: R(1, 30), A2: R(1, 30) }; f = pick(["=A1&A2", "=(A1&A2)+1", "=LEN(A1&A2)"]); }
+      else if (kind === 4) { cells = { A1: R(3, 40), B1: pick(["kg", "cm", "分"]) }; f = pick(["=A1*2&B1", "=A1+10&B1"]); }
+      else if (kind === 5) { cells = { A1: R(10, 98), B1: pick(["S", "P", "F"]) }; f = '=B1&"-"&A1+1'; }
+      else { cells = { A1: R(2, 9) * 0.5 + 0.25 * R(0, 1), B1: "%" }; cells.A1 = Math.round(cells.A1 * 100) / 100; f = "=A1*100&B1"; }
+      const v = calcAt(cells, f);
+      const ex = ["「&」把兩邊轉為文字再接起來；數字會照顯示的樣子變成文字。", ...stepLines(cells, f)];
+      if (kind === 3 && f === "=(A1&A2)+1") ex.push("A1&A2 得到的是文字，但文字「" + XL.disp(cells.A1) + XL.disp(cells.A2) + "」看來像數字，用於 + 時 Excel 會把它轉回數值。");
+      if (kind >= 4 && kind <= 5) ex.push("運算次序：算術運算（* / + −）先於 &，所以先計算 " + (kind === 5 ? "A1+1" : f.slice(1, f.indexOf("&"))) + "。");
+      return { prompt: "<p>E1 的公式如下。E1 會顯示甚麼？</p>" + fbar("E1", f) + sheetHTML(cells, { c2: 5, q: ["E1"] }) + '<p class="small">文字照樣寫出，不用加引號；空格可輸入空格或 ␣。</p>',
+        input: parts(P.val("E1 顯示", v, { sp: true })), show: showV(v, true), explain: ex, chk: [xlChk(cells, { E1: f }, { E1: v })], sandbox: { cells } }; } },
+  ] },
+  // ---------------- S2 數學及統計函數 ----------------
+  { id: "S2", name: "數學及統計函數", types: [
+    { name: "統計函數", fn() {
+      let cells, F, vals;
+      for (;;) {
+        const nums = range(0, 6).map(() => R(0, 20) * 5); if (coin(0.4)) nums[R(0, 5)] = 0;
+        const items = shuffle([...nums, pick(["缺席", "abs", "N/A"]), null]);
+        cells = { A1: "姓名", B1: "分數" }; items.forEach((v, i) => { cells["A" + (i + 2)] = CN[i]; if (v !== null) cells["B" + (i + 2)] = v; });
+        F = sample(["SUM", "AVERAGE", "MAX", "MIN", "COUNT", "COUNTA", "COUNTBLANK"], 2); vals = F.map((fn) => calcAt(cells, "=" + fn + "(B2:B9)"));
+        if (vals.every((v) => !XL.isE(v) && dp2(v))) break;
+      }
+      const nNum = range(2, 10).filter((r) => typeof cells["B" + r] === "number").length, sum = range(2, 10).reduce((s, r) => s + (typeof cells["B" + r] === "number" ? cells["B" + r] : 0), 0);
+      const traps = (fn) => fn === "COUNT" ? [{ v: 7, msg: "COUNT 只計數字；文字「" + cells["B" + range(2, 10).find((r) => typeof cells["B" + r] === "string")] + "」不計（計算非空白儲存格的是 COUNTA）。" }] : fn === "COUNTA" ? [{ v: 8, msg: "COUNTA 不計空白儲存格。" }, { v: nNum, msg: "COUNTA 計算所有非空白儲存格，文字也計在內。" }] : fn === "AVERAGE" ? [{ v: sum / 8, msg: "AVERAGE 只計數字：文字和空白儲存格不計入個數。" }, { v: sum / 7, msg: "AVERAGE 只計數字：文字不計入個數。" }] : fn === "COUNTBLANK" ? [{ v: 2, msg: "COUNTBLANK 只計真正空白的儲存格；有文字的儲存格不是空白。" }] : [];
+      const forms = F.map((fn) => "=" + fn + "(B2:B9)");
+      return { prompt: "<p>以下 B2:B9 記錄了測驗分數（B 欄有文字及空白儲存格）。寫出以下公式的結果。</p>" + sheetHTML(cells, { c2: 2, r2: 9 }),
+        input: parts(...F.map((fn, i) => P.val(forms[i], vals[i], { traps: traps(fn).filter((t) => Math.abs(t.v - vals[i]) > 1e-9) }))), show: forms.map((x, i) => x + " → " + XL.disp(vals[i])).join("；"),
+        explain: ["B2:B9 有 " + nNum + " 個數字（總和 " + sum + "）、1 個文字、1 個空白儲存格。", "SUM、AVERAGE、MAX、MIN、COUNT 只計數字；0 是數字，要計入。", "COUNTA 計算非空白儲存格（數字及文字）；COUNTBLANK 計算空白儲存格。"],
+        chk: [xlChk(cells, { D2: forms[0], D3: forms[1] }, { D2: vals[0], D3: vals[1] })], sandbox: { cells } }; } },
+    { name: "數學函數", fn() {
+      const kind = R(1, 5); let cells, f, v, ex, traps = [], extra = null;
+      if (kind === 1) { const x = (coin() ? -1 : 1) * (R(1, 9) + R(1, 9) / 10); cells = { B2: Math.round(x * 10) / 10 }; f = "=INT(B2)"; v = calcAt(cells, f); if (cells.B2 < 0) traps.push({ v: Math.trunc(cells.B2), msg: "INT 是「向下」取整：負數會變得更小，INT(-3.2) = -4，不是 -3。" }); ex = ["INT 取不大於該數的最大整數（向下取整）。", cells.B2 < 0 ? "負數向下取整會「遠離 0」。" : "正數向下取整即刪去小數部分。"]; }
+      else if (kind === 2) { const b = R(2, 9); cells = { B2: R(10, 99), B3: b }; f = pick(["=INT(B2/B3)", "=B2-INT(B2/B3)*B3"]); v = calcAt(cells, f); ex = stepLines(cells, f); }
+      else if (kind === 3) { cells = { B2: R(1, 60), B3: R(1, 60) }; f = pick(["=ABS(B2-B3)", "=ABS(B3-B2)*2"]); v = calcAt(cells, f); ex = ["ABS 傳回絕對值（不理正負號）。", ...stepLines(cells, f)]; }
+      else if (kind === 4) { const r = R(2, 15); cells = { B2: r * r }; f = pick(["=SQRT(B2)", "=SQRT(B2)+1"]); v = calcAt(cells, f); ex = ["SQRT 傳回平方根：" + r + " × " + r + " = " + r * r + "。"]; }
+      if (kind === 5) {
+        const n = pick([6, 10, 50, 100]), k = pick([0, 1, 1, 10]); f = "=INT(RAND()*" + n + ")+" + k; cells = {};
+        const lo = k, hi = n - 1 + k;
+        return { prompt: "<p>B2 的公式如下。按 F9 重新計算時，B2 可能顯示的最小值和最大值是多少？</p>" + fbar("B2", f),
+          input: parts(P.num("最小值", lo), P.num("最大值", hi)), show: "最小 " + lo + "，最大 " + hi,
+          explain: ["RAND() 傳回 0 至小於 1 的隨機數（可以是 0，但不會是 1）。", "RAND()*" + n + " 的範圍是 0 至小於 " + n + "；INT 之後是 0 至 " + (n - 1) + " 的整數。", "再加 " + k + "：" + lo + " 至 " + hi + "。"],
+          chk: [xlChk({}, { B2: f.replace("RAND()", "0") }, { B2: lo }), xlChk({}, { B2: f.replace("RAND()", "0.999999") }, { B2: hi })] };
+      }
+      return { prompt: "<p>寫出以下公式的結果。</p>" + fbar("C2", f) + sheetHTML(cells, { c1: 1, c2: 3, r1: 1, r2: Math.max(...Object.keys(cells).map((a) => XL.pa(a).r)), q: ["C2"] }),
+        input: parts(P.val("C2 顯示", v, { traps })), show: XL.disp(v), explain: ex, chk: [xlChk(cells, { C2: f }, { C2: v })], sandbox: { cells } }; } },
+    { name: "RANK 及 COUNT", fn() {
+      let cells, f1, f2, v1, v2, vals;
+      for (;;) {
+        const pool = sample([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3); vals = range(0, 7).map(() => pick(pool));
+        if (coin(0.3)) vals[R(0, 6)] = pick(["P", "Q"]);
+        cells = { A1: "Choice", B1: "Point" }; vals.forEach((v, i) => { cells["A" + (i + 2)] = pick(["P", "Q"]); cells["B" + (i + 2)] = v; });
+        const nums = vals.filter((x) => typeof x === "number"), tgt = pick(nums), asc = coin(0.3);
+        const r = range(2, 9).find((k) => cells["B" + k] === tgt);
+        f1 = "=RANK(B" + r + ",$B$2:$B$8" + (asc ? ",1)" : ")"); f2 = pick(["=COUNT(B2:B8)", "=COUNTA(B2:B8)", "=COUNTIF(B2:B8," + tgt + ")"]);
+        v1 = calcAt(cells, f1); v2 = calcAt(cells, f2);
+        if (nums.filter((x) => x === tgt).length >= 2 && nums.some((x) => (asc ? x < tgt : x > tgt))) break;
+      }
+      const nums = vals.filter((x) => typeof x === "number"), tgt = calcAt(cells, f1.slice(6, f1.indexOf(",")).replace(/^/, "=")), asc = f1.includes(",1)");
+      const better = nums.filter((x) => (asc ? x < tgt : x > tgt)).length, same = nums.filter((x) => x === tgt).length;
+      return { prompt: "<p>寫出以下兩條公式的結果。（題型參考：2024 卷一甲11）</p>" + sheetHTML(cells, { c2: 2, r2: 8 }) + fbar("D2", f1) + fbar("D3", f2),
+        input: parts(P.val(f1, v1, { traps: [{ v: better + same, msg: "同分的數值名次相同，取最前（最高）的名次。" }].filter((t) => t.v !== v1) }), P.val(f2, v2)), show: f1 + " → " + XL.disp(v1) + "；" + f2 + " → " + XL.disp(v2),
+        explain: ["RANK(數值, 範圍" + (asc ? ", 1" : "") + ")：" + (asc ? "第三個參數是 1，按由小至大" : "省略第三個參數，按由大至小") + "排名。", "比 " + tgt + (asc ? " 小" : " 大") + "的數值有 " + better + " 個，所以名次是 " + better + " + 1 = " + v1 + "；同分的 " + same + " 個數值名次相同。", f2.startsWith("=COUNT(") ? "COUNT 只計數字（0 也是數字），文字不計。" : f2.startsWith("=COUNTA") ? "COUNTA 計算非空白儲存格，數字和文字都計。" : "COUNTIF 計算等於該數值的儲存格。"],
+        chk: [xlChk(cells, { D2: f1, D3: f2 }, { D2: v1, D3: v2 })], sandbox: { cells } }; } },
+  ] },
+  // ---------------- S2x 延伸：ROUND／LARGE／SMALL ----------------
+  { id: "S2x", name: "ROUND、LARGE、SMALL", ext: true, types: [
+    { name: "ROUND 系列", fn() {
+      let x, d; const special = coin(0.3);
+      if (special) [x, d] = pick([[-2.5, 0], [7.45, 1], [2.675, 2], [-3.78, 1], [1234, -2], [-15.5, 0], [0.125, 2], [-0.45, 1], [149.5, -1], [2.5, 0]]);
+      else { d = pick([-2, -1, 0, 1, 1, 2]); x = (coin(0.4) ? -1 : 1) * R(1001, 99999) / (d >= 1 ? 1000 : d === 0 ? 100 : 10); x = Math.round(x * 1000) / 1000; }
+      const F = sample(["ROUND", "ROUNDUP", "ROUNDDOWN"], 2), cells = { B2: x }, forms = F.map((fn) => "=" + fn + "(B2," + d + ")"), vals = forms.map((f) => calcAt(cells, f));
+      return { prompt: "<p>B2 的數值是 <span class=\"mono\">" + XL.disp(x) + "</span>。寫出以下公式的結果。</p>",
+        input: parts(...forms.map((f, i) => P.val(f, vals[i]))), show: forms.map((f, i) => f + " → " + XL.disp(vals[i])).join("；"),
+        explain: ["位數 " + d + "：" + (d > 0 ? "保留 " + d + " 位小數" : d === 0 ? "捨入至整數" : "捨入至" + (d === -1 ? "十" : "百") + "位") + "。", "ROUND：下一位是 5 或以上便進位（正負數都「遠離 0」，ROUND(-2.5, 0) = -3）。", "ROUNDUP：只要有餘數便「遠離 0」；ROUNDDOWN：直接刪去，「趨向 0」。", "這些函數屬延伸內容（DSE 附頁沒有印出），INT 才是附頁函數：INT 一律向下取整。"],
+        chk: [xlChk(cells, { C2: forms[0], C3: forms[1] }, { C2: vals[0], C3: vals[1] })], sandbox: { cells } }; } },
+    { name: "LARGE 及 SMALL", fn() {
+      let cells, forms, vals;
+      for (;;) { const v = range(0, 7).map(() => R(5, 20) * 5); if (coin(0.6)) v[R(1, 6)] = v[0]; cells = {}; v.forEach((x, i) => { cells["A" + (i + 2)] = CN[i]; cells["B" + (i + 2)] = x; });
+        forms = [pick(["LARGE", "SMALL"]) + "(B2:B8," + R(1, 4) + ")", pick(["LARGE", "SMALL"]) + "(B2:B8," + R(2, 4) + ")"].map((s) => "=" + s); if (forms[0] === forms[1]) continue; vals = forms.map((f) => calcAt(cells, f)); break; }
+      const sorted = range(2, 9).map((r) => cells["B" + r]).sort((a, b) => b - a);
+      return { prompt: "<p>寫出以下公式的結果。</p>" + sheetHTML(cells, { c2: 2, r1: 2, r2: 8 }),
+        input: parts(...forms.map((f, i) => P.val(f, vals[i]))), show: forms.map((f, i) => f + " → " + XL.disp(vals[i])).join("；"),
+        explain: ["由大至小排列：" + sorted.join("、") + "。", "LARGE(範圍, k) 是第 k 大；SMALL(範圍, k) 是第 k 小。重複的數值分別計算（例如兩個最大值時，LARGE(…, 2) 等於最大值）。", "LARGE、SMALL 屬延伸內容；DSE 2022 乙2(a) 評卷接受 LARGE。常見錯誤：用 MAX 找第二高分。"],
+        chk: [xlChk(cells, { C2: forms[0], C3: forms[1] }, { C2: vals[0], C3: vals[1] })], sandbox: { cells } }; } },
+  ] },
+  // ---------------- S3 條件函數 ----------------
+  { id: "S3", name: "條件函數", types: [
+    { name: "IF 及巢狀 IF", fn() {
+      const kind = R(1, 4); let f, T1 = R(5, 8) * 10, T2 = T1 - R(1, 3) * 10;
+      if (kind === 1) f = '=IF(B2>=' + T1 + ',"合格","不合格")';
+      else if (kind === 2) f = '=IF(B2>=' + T1 + ',"A",IF(B2>=' + T2 + ',"B","C"))';
+      else if (kind === 3) f = '=IF(B2<' + T2 + ',"F",IF(B2<' + T1 + ',"P","D"))';
+      else f = "=IF(B2>" + T1 + ",B2-" + T1 + ",0)";
+      const cells = { A1: "姓名", B1: "分數", C1: "結果" }; const sc = shuffle([T1, T2, T1 - 1, T2 - 1, R(T1 + 1, 99), R(10, T2 - 2)]);
+      sc.forEach((v, i) => { cells["A" + (i + 2)] = CN[i]; cells["B" + (i + 2)] = v; });
+      const rows = sample(range(2, 8), 2).sort((a, b) => a - b), vals = rows.map((r) => calcAt(cells, XL.copy(f, "C2", "C" + r).f));
+      return { prompt: "<p>C2 的公式如下，並已複製到 C3:C7。C" + rows[0] + " 和 C" + rows[1] + " 會顯示甚麼？</p>" + fbar("C2", f) + sheetHTML(cells, { c2: 3, r2: 7, q: rows.map((r) => "C" + r) }),
+        input: parts(...rows.map((r, i) => P.val("C" + r, vals[i]))), show: rows.map((r, i) => "C" + r + "：" + XL.disp(vals[i])).join("；"),
+        explain: [...rows.map((r) => "C" + r + "：B" + r + " = " + cells["B" + r] + " → " + XL.disp(calcAt(cells, XL.copy(f, "C2", "C" + r).f))), "巢狀 IF 由外至內逐個條件判斷，第一個成立的條件便決定結果。", "留意邊界：>= 包括相等，> 不包括；< 不包括相等。"],
+        chk: [xlChk(cells, Object.fromEntries(rows.map((r) => ["C" + r, XL.copy(f, "C2", "C" + r).f])), Object.fromEntries(rows.map((r, i) => ["C" + r, vals[i]])))], sandbox: { cells } }; } },
+    { name: "AND、OR、NOT", fn() {
+      const yn = coin(0.5), T = R(4, 6) * 10, A = R(7, 9) * 10;
+      const F = yn ? ['=IF(AND(B2>=' + T + ',C2="Y"),"可參加","不可參加")', '=OR(B2>=' + A + ',C2="Y")', '=IF(NOT(C2="Y"),"跟進","OK")', '=AND(B2>=' + T + ',NOT(C2="N"))']
+        : ['=IF(AND(B2>=' + T + ',C2>=' + A + '),"Y","N")', "=OR(B2<" + T + ",C2<" + A + ")", '=IF(OR(B2<' + T + ',C2<' + A + '),"跟進","OK")', "=NOT(B2>=" + T + ")"];
+      const f = pick(F), cells = { A1: "姓名", B1: "分數", C1: yn ? "已交表格" : "出席率(%)" };
+      const sc = shuffle([T, T - 1, R(T + 1, 99), R(20, T - 2), A, R(T, 99)]);
+      sc.forEach((v, i) => { cells["A" + (i + 2)] = CN[i + 3]; cells["B" + (i + 2)] = v; cells["C" + (i + 2)] = yn ? pick(["Y", "N"]) : pick([A, A - 1, R(A + 1, 100), R(50, A - 2)]); });
+      const rows = sample(range(2, 8), 2).sort((a, b) => a - b), vals = rows.map((r) => calcAt(cells, XL.copy(f, "D2", "D" + r).f));
+      return { prompt: "<p>D2 的公式如下，並已複製到 D3:D7。D" + rows[0] + " 和 D" + rows[1] + " 會顯示甚麼？</p>" + fbar("D2", f) + sheetHTML(cells, { c2: 4, r2: 7, q: rows.map((r) => "D" + r) }),
+        input: parts(...rows.map((r, i) => P.val("D" + r, vals[i]))), show: rows.map((r, i) => "D" + r + "：" + XL.disp(vals[i])).join("；"),
+        explain: [...rows.map((r) => "D" + r + "：" + stepLines(cells, XL.copy(f, "D2", "D" + r).f).join("；")), "AND：全部條件成立才是 TRUE；OR：任何一個成立便是 TRUE；NOT：把結果相反。", "DSE 寫法：AND、OR 用前綴寫法 OR(條件1, 條件2)，不寫「條件1 OR 條件2」（2024 乙1(a)(i) 報告）。"],
+        chk: [xlChk(cells, Object.fromEntries(rows.map((r) => ["D" + r, XL.copy(f, "D2", "D" + r).f])), Object.fromEntries(rows.map((r, i) => ["D" + r, vals[i]])))], sandbox: { cells } }; } },
+    { name: "COUNTIF 及 SUMIF", fn() {
+      const cls = sample(["5A", "5B", "5C", "5D"], 3), cells = { A1: "姓名", B1: "性別", C1: "班別", D1: "分數" };
+      for (let i = 0; i < 8; i++) { cells["A" + (i + 2)] = CN[i + 2]; cells["B" + (i + 2)] = pick(["M", "F"]); cells["C" + (i + 2)] = pick(cls); cells["D" + (i + 2)] = R(6, 19) * 5; }
+      const t = pick(range(2, 10).map((r) => cells["D" + r])); cells.F1 = "準則"; cells.G1 = t; cells.G2 = pick(cls);
+      const T = ['=COUNTIF(B2:B9,"' + pick(["M", "F"]) + '")', '=COUNTIF(D2:D9,">=' + t + '")', '=COUNTIF(D2:D9,">"&G1)', '=COUNTIF(D2:D9,"<="&G1)', '=SUMIF(C2:C9,"' + cls[0] + '",D2:D9)', "=SUMIF(C2:C9,G2,D2:D9)", "=COUNTIF(C2:C9,G2)", '=SUMIF(D2:D9,"<"&G1)', '=SUMIF(B2:B9,"F",D2:D9)'];
+      const forms = sample(T, 2), vals = forms.map((f) => calcAt(cells, f));
+      const traps = forms.map((f) => { const alt = f.includes(">=") ? f.replace(">=", ">") : f.includes('">"') ? f.replace('">"', '">="') : f.includes('"<="') ? f.replace('"<="', '"<"') : f.includes('"<"') ? f.replace('"<"', '"<="') : null; if (!alt) return []; const av = calcAt(cells, alt); return Math.abs(av - calcAt(cells, f)) > 1e-9 ? [{ v: av, msg: "留意邊界：" + (f.includes("=") && /"(<|>)="/.test(f) ? "<= 和 >= 包括相等的數值。" : "< 和 > 不包括相等的數值。") }] : []; });
+      return { prompt: "<p>寫出以下公式的結果。</p>" + sheetHTML(cells, { c2: 7, r2: 9 }),
+        input: parts(...forms.map((f, i) => P.val(f, vals[i], { traps: traps[i] }))), show: forms.map((f, i) => f + " → " + XL.disp(vals[i])).join("；"),
+        explain: ["COUNTIF(範圍, 準則)：計算範圍內符合準則的儲存格數目。", "SUMIF(條件範圍, 準則, 加總範圍)：條件範圍符合準則的列，把加總範圍的數值加起來。", "準則字串：\">=" + t + "\" 表示「大於或等於 " + t + "」；\">\"&G1 先串連成 \">" + t + "\" 再使用。", ...forms.map((f, i) => "`" + f + "` → " + XL.disp(vals[i]))],
+        chk: [xlChk(cells, { I2: forms[0], I3: forms[1] }, { I2: vals[0], I3: vals[1] })], sandbox: { cells } }; } },
+    { name: "寫出公式", fn() { return genWrite(); } },
+  ] },
+  // ---------------- S4 文字函數 ----------------
+  { id: "S4", name: "文字函數", types: [
+    { name: "單一函數", fn() {
+      const kind = R(1, 7); let cells, forms;
+      if (kind === 1) { const w = pick(["Information Technology", "Hong Kong", "Data Analysis", "Microsoft Excel", "Happy Valley", "Ocean Park"]); cells = { A2: w };
+        const sp = w.indexOf(" ") + 1; forms = sample(["=LEN(A2)", "=LEFT(A2," + R(2, 6) + ")", "=RIGHT(A2," + R(2, 6) + ")", "=MID(A2," + R(2, sp + 1) + "," + R(2, 5) + ")", '=FIND(" ",A2)'], 2); }
+      else if (kind === 2) { const w = pick(["Information", "Technology", "Banana", "Mississippi", "Adventure", "Database"]); cells = { A2: w };
+        const chs = uniq(w.split("")).filter((c) => /[a-z]/.test(c)); const c1 = pick(chs);
+        forms = sample(['=FIND("' + c1 + '",A2)', '=FIND("' + c1.toUpperCase() + '",A2)', '=FIND("' + c1 + '",A2,' + (w.indexOf(c1) + 2) + ")", '=FIND("z",A2)', "=LEN(A2)"], 2); }
+      else if (kind === 3) { const w = pick(["hELLo wORLD", "dATA aNALYSIS", "hong KONG", "ict EXAM", "mY sChOoL"]); cells = { A2: w }; forms = sample(["=UPPER(A2)", "=LOWER(A2)", "=PROPER(A2)"], 2); }
+      else if (kind === 4) { const a = pick(["Hong", "Data", "Ocean", "Tai"]), b = pick(["Kong", "Base", "Park", "Po"]); const w = " ".repeat(R(1, 3)) + a + " ".repeat(R(2, 4)) + b + " ".repeat(R(1, 3)); cells = { A2: w }; forms = ["=TRIM(A2)", pick(["=LEN(A2)", "=LEN(TRIM(A2))"])]; }
+      else if (kind === 5) { cells = { A2: pick(EN), B2: cap(pick(SURN)) }; forms = [pick(['=CONCATENATE(A2," ",B2)', "=CONCATENATE(B2,A2)", '=CONCATENATE(LEFT(A2,1),". ",B2)']), pick(["=LEN(A2&B2)", "=UPPER(B2)&LEFT(A2,1)"])]; }
+      else if (kind === 6) { const n = pick([7, 42, 315, 12.5, 3.14159, 1234567, 2026, 0.5, 98765.4]); cells = { B2: n };
+        forms = sample(['=TEXT(B2,"0000")', '=TEXT(B2,"0.00")', '=TEXT(B2,"#,##0")', '=TEXT(B2,"0.0")'], 2); }
+      else { const k = R(65, 90); cells = { A2: "0" + R(100, 999), B2: k }; forms = sample(["=VALUE(A2)+1", "=CHAR(B2)", "=CHAR(B2+32)", "=LEN(A2)", "=CHAR(B2)&CHAR(B2+1)"], 2); }
+      const vals = forms.map((f) => calcAt(cells, f));
+      const ex = []; if (kind === 2) ex.push("FIND 區分大小寫，傳回第一次出現的位置（由 1 起計）；第三個參數是開始尋找的位置；找不到便得 #VALUE!。");
+      if (kind === 3) ex.push("UPPER 全部大寫；LOWER 全部小寫；PROPER 每個英文字的首字母大寫，其餘小寫。");
+      if (kind === 4) ex.push("TRIM 刪除頭尾的空格，並把中間連續的空格變成一個。LEN 會把空格計算在內。");
+      if (kind === 6) ex.push("TEXT(數值, 格式)：「0」位置必定顯示一位數字（不足補 0）；「#」只顯示有效位；「,」顯示千位分隔符號；小數位按格式四捨五入。結果是文字。");
+      if (kind === 7) ex.push("VALUE 把看來像數字的文字變成數值；CHAR 按字符編碼（ASCII）傳回字符：65 是 A，97 是 a（相差 32）。");
+      if (kind === 1 || kind === 5) ex.push("LEFT／RIGHT 由左／右取指定數目的字符；MID(文字, 開始位置, 字符數)；空格也算一個字符。");
+      return { prompt: "<p>寫出以下公式的結果（空格以 ␣ 顯示）。</p>" + sheetHTML(cells, { c2: 2, r1: 1, r2: 2, sp: true }) + '<p class="small">文字結果照樣寫出，不用加引號；空格可輸入空格或 ␣。</p>',
+        input: parts(...forms.map((f, i) => P.val(f, vals[i], { sp: true }))), show: forms.map((f, i) => f + " → " + showV(vals[i], true)).join("；"),
+        explain: [...ex, ...forms.map((f, i) => "`" + f + "` → " + qv(vals[i]))], chk: [xlChk(cells, { C2: forms[0], C3: forms[1] }, { C2: vals[0], C3: vals[1] })], sandbox: { cells } }; } },
+    { name: "組合公式", fn() {
+      const nm = cap(pick(SURN) + " " + pick(GIVEN)), cells = { A2: nm, B2: R(1, 300) };
+      const T = ['=MID(A2,FIND(" ",A2)+1,3)', '=LEFT(A2,FIND(" ",A2)-1)', '=RIGHT(A2,LEN(A2)-FIND(" ",A2))', '=UPPER(LEFT(A2,3))&TEXT(B2,"000")', '=LEFT(A2,1)&MID(A2,FIND(" ",A2)+1,1)', '=UPPER(MID(A2,FIND(" ",A2)+1,3))', '=LEN(A2)-LEN(TRIM(A2))+FIND(" ",A2)', '=FIND(" ",A2,FIND(" ",A2)+1)', '=MID(A2,FIND(" ",A2,FIND(" ",A2)+1)+1,10)', '=LOWER(LEFT(A2,FIND(" ",A2)-1))&B2'];
+      const f = pick(T), v = calcAt(cells, f);
+      return { prompt: "<p>A2 是學生的英文姓名，B2 是學號。寫出公式的結果（空格以 ␣ 顯示）。（題型參考：2020 卷一乙1(d)、教科書例題 4.4）</p>" + sheetHTML(cells, { c2: 2, r1: 1, r2: 2, sp: true }) + fbar("C2", f),
+        input: parts(P.val("C2 顯示", v, { sp: true })), show: showV(v, true),
+        explain: ["由最內層的函數開始計算：", ...stepLines(cells, f)], chk: [xlChk(cells, { C2: f }, { C2: v })], sandbox: { cells } }; } },
+  ] },
+  // ---------------- S5 查閱函數 ----------------
+  { id: "S5", name: "查閱函數", types: [
+    { name: "VLOOKUP 精確查找", fn() {
+      const items = sample(["原子筆", "筆記簿", "計算機", "滑鼠", "耳機", "螢光筆", "文件夾", "記憶卡"], 6), codes = range(1, 7).map((i) => "P0" + i), cells = { A1: "編號", B1: "名稱", C1: "價錢" };
+      const ord = coin(0.5) ? codes : shuffle(codes); ord.forEach((c, i) => { cells["A" + (i + 2)] = c; cells["B" + (i + 2)] = items[i]; cells["C" + (i + 2)] = R(3, 60) * 5; });
+      const kind = pick(["ok", "ok", "ok", "miss", "miss", "case"]); /* 欄號超出範圍：Excel 得 #REF!、LibreOffice 得 #VALUE!，不出此題 */ let look = pick(codes), col = pick([2, 3]);
+      if (kind === "miss") look = "P0" + R(7, 9); if (kind === "col") col = 4; if (kind === "case") look = look.toLowerCase();
+      cells.E1 = "查詢編號"; cells.E2 = look; const f = "=VLOOKUP(E2,$A$2:$C$7," + col + ",FALSE)", v = calcAt(cells, f);
+      return { prompt: "<p>F2 的公式如下。F2 會顯示甚麼？</p>" + fbar("F2", f) + sheetHTML(cells, { c2: 6, r2: 7, q: ["F2"] }),
+        input: parts(P.val("F2 顯示", v, { traps: kind === "miss" ? [{ v: 0, msg: "精確查找（FALSE）找不到查閱值時，結果是 #N/A。" }] : [] })), show: XL.disp(v),
+        explain: ["VLOOKUP(查閱值, 查閱表, 欄號, FALSE)：在查閱表第一欄找與查閱值完全相同的一列，再傳回該列第「欄號」欄的值。", kind === "miss" ? "第一欄沒有「" + look + "」，所以得 #N/A。" : kind === "col" ? "查閱表 $A$2:$C$7 只有 3 欄，欄號 4 超出範圍，所以得 #REF!。" : kind === "case" ? "Excel 比較文字時不分大小寫，「" + look + "」與「" + look.toUpperCase() + "」相同。" : "在第一欄找到「" + look + "」，取第 " + col + " 欄。", "查閱表加 $ 是為了公式複製到其他儲存格時範圍不變。"],
+        chk: [xlChk(cells, { F2: f }, { F2: v })], sandbox: { cells } }; } },
+    { name: "VLOOKUP 近似查找", fn() {
+      let th; do { th = uniq([pick([0, 0, 20, 30]), ...range(0, 4).map(() => R(4, 18) * 5)]).sort((a, b) => a - b); } while (th.length !== 5);
+      const g = ["F", "E", "D", "C", "B", "A"].slice(-5).reverse().slice(0, 5).reverse(); const grades = ["E", "D", "C", "B", "A"];
+      const cells = { A1: "姓名", B1: "分數", C1: "等級", E1: "分數下限", F1: "等級" }; th.forEach((t, i) => { cells["E" + (i + 2)] = t; cells["F" + (i + 2)] = grades[i]; });
+      const pool = shuffle([th[1], th[3], th[2] + R(1, 4), th[4] + R(1, 5), th[0] > 0 ? th[0] - R(1, 5) : th[1] - 1, th[2] - 1]);
+      pool.forEach((v, i) => { cells["A" + (i + 2)] = CN[i + 5]; cells["B" + (i + 2)] = Math.max(0, v); });
+      const exact = coin(0.15), f = "=VLOOKUP(B2,$E$2:$F$6,2" + (exact ? ",FALSE)" : pick([")", ",TRUE)"]));
+      const rows = sample(range(2, 8), 2).sort((a, b) => a - b), forms = rows.map((r) => XL.copy(f, "C2", "C" + r).f), vals = forms.map((x) => calcAt(cells, x));
+      const nextUp = (s) => { const i = th.findIndex((t) => t > s); return i < 0 ? null : grades[i]; };
+      return { prompt: "<p>C2 的公式如下，並已複製到 C3:C7。C" + rows[0] + " 和 C" + rows[1] + " 會顯示甚麼？</p>" + fbar("C2", f) + sheetHTML(cells, { c2: 6, r2: 7, q: rows.map((r) => "C" + r) }),
+        input: parts(...rows.map((r, i) => P.val("C" + r, vals[i], { traps: exact ? [] : [nextUp(cells["B" + r])].filter((x) => x && x !== vals[i]).map((x) => ({ v: x, msg: "近似查找取「不大於查閱值」的最大下限，不是較大的那一個。" })) }))),
+        show: rows.map((r, i) => "C" + r + "：" + XL.disp(vals[i])).join("；"),
+        explain: exact ? ["第四個參數是 FALSE：精確查找，第一欄要有完全相同的數值，否則得 #N/A。", "用分數下限表找等級時要用近似查找（TRUE 或省略）。"]
+          : ["近似查找（第四個參數 TRUE 或省略）：查閱表第一欄要由小至大排列；取「不大於查閱值」的最大者那一列。", ...rows.map((r, i) => "C" + r + "：分數 " + cells["B" + r] + " → " + (XL.isE(vals[i]) ? "比最小的下限 " + th[0] + " 還小，得 #N/A" : "下限 " + th[grades.indexOf(vals[i])] + " → " + vals[i]))],
+        chk: [xlChk(cells, Object.fromEntries(rows.map((r, i) => ["C" + r, forms[i]])), Object.fromEntries(rows.map((r, i) => ["C" + r, vals[i]])))], sandbox: { cells } }; } },
+    { name: "查閱範圍與複製", fn() {
+      // 兩張工作表：「成績表」A1:D9；「查詢」F1:G3（為方便核對，查詢表放在 F、G 欄）
+      const data = { A1: "姓名", B1: "中文", C1: "英文", D1: "平均分" }; const names = sample(CN, 8);
+      names.forEach((n, i) => { const a = R(10, 19) * 5, b = R(10, 19) * 5; data["A" + (i + 2)] = n; data["B" + (i + 2)] = a; data["C" + (i + 2)] = b; data["D" + (i + 2)] = (a + b) / 2; });
+      const q = { F1: "姓名", G1: "平均分", F2: data["A" + R(4, 9)], F3: data.A2 };
+      const good = pick(["成績表!$A$2:$D$9", "成績表!A$2:D$9"]), opts = shuffle([good, "成績表!A2:D9", "成績表!$A$3:$D$9", "查詢!$F$2:$G$3"]);
+      const sheets = { 成績表: data, 查詢: q }, mk = (r) => "=VLOOKUP(F2," + r + ",4,FALSE)";
+      const val = (r, t) => XL.calc(sheets, "查詢", XL.copy(mk(r), "G2", t).f);
+      const want = { G2: data["D" + names.indexOf(q.F2) + 2] }; want.G2 = val(good, "G2"); want.G3 = val(good, "G3");
+      const why = {}; opts.filter((o) => o !== good).forEach((o) => { why[o] = o === "成績表!A2:D9" ? "沒有 $：複製到 G3 時範圍變成 A3:D10，漏了第 2 列的記錄。" : o === "成績表!$A$3:$D$9" ? "範圍由第 3 列開始，漏了第 2 列的記錄。" : "要在「成績表」查閱，不是在「查詢」工作表本身查閱。"; });
+      return { prompt: "<p>工作表「成績表」記錄了學生的平均分。在工作表「查詢」的 G2 輸入 VLOOKUP 公式，再複製到 G3，以找出 F2、F3 學生的平均分。公式內應使用哪個範圍？（題型參考：2013 卷一甲7）</p>" + sheetHTML(data, { c2: 4, r2: 9, tab: ["成績表", "查詢"], tabOn: 0 }) + sheetHTML(q, { c1: 6, c2: 7, r2: 3, q: ["G2", "G3"], tab: ["成績表", "查詢"], tabOn: 1 }) + fbar("G2", "=VLOOKUP(F2, ? ,4,FALSE)"),
+        input: choiceIn(opts, good, { mono: true, why }), show: good,
+        explain: ["查閱表在另一張工作表時寫「工作表名稱!範圍」。", "公式由 G2 複製到 G3（向下一列），查閱表的列號不可移動，所以列號前要加 $（" + good + "）。", "F3 的學生在第 2 列：範圍不包括第 2 列（或複製後移到第 3 列開始）便會得 #N/A。"],
+        chk: [{ t: "xlopt", sheets, sh: "查詢", base: "G2", opts: opts.map(mk), targets: ["G2", "G3"], want: { G2: J(want.G2), G3: J(want.G3) }, ans: opts.indexOf(good) }], sandbox: { sheets, sh: "查詢" } }; } },
+  ] },
+  // ---------------- S5x 延伸：HLOOKUP ----------------
+  { id: "S5x", name: "HLOOKUP", ext: true, types: [
+    { name: "HLOOKUP", fn() {
+      let th; do { th = uniq([0, ...range(0, 3).map(() => R(3, 18) * 5)]).sort((a, b) => a - b); } while (th.length !== 4);
+      const grades = ["D", "C", "B", "A"], cells = { A1: "下限", A2: "等級", A3: "獎勵" };
+      th.forEach((t, i) => { const c = XL.colStr(i + 2); cells[c + "1"] = t; cells[c + "2"] = grades[i]; cells[c + "3"] = (i + 1) * 10; });
+      const s = pick([th[1], th[2] + R(1, 4), th[3] + R(0, 10), th[1] - 1]), row = pick([2, 3]); cells.A5 = "分數"; cells.B5 = s;
+      const f = "=HLOOKUP(B5,$B$1:$E$3," + row + ")", v = calcAt(cells, f);
+      return { prompt: "<p>B6 的公式如下。B6 會顯示甚麼？</p>" + fbar("B6", f) + sheetHTML(cells, { c2: 5, r2: 6, q: ["B6"] }),
+        input: parts(P.val("B6 顯示", v)), show: XL.disp(v),
+        explain: ["HLOOKUP 與 VLOOKUP 相同，只是查閱表橫放：在第一「列」找查閱值，再傳回第「列號」列的值。", "第四個參數省略：近似查找，取不大於 " + s + " 的最大下限。", "HLOOKUP 屬延伸內容（DSE 附頁只印 VLOOKUP）。"],
+        chk: [xlChk(cells, { B6: f }, { B6: v })], sandbox: { cells } }; } },
+  ] },
+  // ---------------- S6 複製公式 ----------------
+  { id: "S6", name: "複製公式與 $", types: [
+    { name: "複製後的公式", fn() {
+      const T = [["=A1*$B$1", "C2"], ["=$A2*B$1", "B2"], ["=SUM(A1:B2)", "D3"], ["=A2+$C$1", "B2"], ["=COUNTIF($B$2:$B$9,E2)", "F2"], ["=IF(A$1<$B1,A1&B1,B1&A1)", "C3"], ["=$A$1+A2*B$2", "C3"], ["=SUM($B$2:B2)", "C2"], ["=B2/$B$10", "C2"], ["=VLOOKUP(A2,$E$2:$F$6,2,FALSE)", "B2"], ["=AVERAGE(B2:D2)", "E2"], ["=B$3-$A4", "D5"]];
+      let f, o, d, res;
+      for (;;) { [f, o] = pick(T); const oc = XL.pa(o); const dr = R(-2, 4), dc = R(-2, 3); if (!dr && !dc) continue; if (oc.r + dr < 1 || oc.c + dc < 1) continue; d = XL.A(oc.c + dc, oc.r + dr); res = XL.copy(f, o, d); if (res.f.includes("#REF!") && coin(0.7)) continue; break; }
+      const od = XL.offs(o, d), naive = XL.copy(f.replace(/\$/g, ""), o, d).f, swap = XL.shift(f, od.dc, od.dr).f;
+      const traps = [{ v: f, msg: "相對參照會隨位置移動，不會與原來的公式相同。" }];
+      if (naive !== res.f && !naive.includes("#REF!")) traps.push({ v: naive, msg: "有 $ 的部分（例如 $B$1、$A2 的欄、B$1 的列）複製後不會改變。" });
+      if (swap !== res.f && !swap.includes("#REF!")) traps.push({ v: swap, msg: "列差和欄差調轉了：向右移動改變欄字母，向下移動改變列號。" });
+      const oc = XL.pa(o), dcp = XL.pa(d), mx = { c: Math.max(oc.c, dcp.c) + 1, r: Math.max(oc.r, dcp.r) + 1 };
+      return { prompt: "<p>" + o + " 的公式如下。把它複製到 " + d + " 後，" + d + " 的公式是甚麼？</p>" + fbar(o, f) + sheetHTML({}, { c2: Math.min(mx.c, 9), r2: Math.min(mx.r, 9), hl: [o], q: [d] }),
+        input: parts(P.fx(d + " 的公式", res.f, { traps: traps.map((t) => ({ f: t.v, msg: t.msg })) })), show: res.f,
+        explain: ["由 " + o + " 到 " + d + "：列差 " + (od.dr >= 0 ? "+" : "") + od.dr + "，欄差 " + (od.dc >= 0 ? "+" : "") + od.dc + "。", "沒有 $ 的欄字母移動欄差、列號移動列差；有 $ 的部分不變；移出 A 欄左邊或第 1 列上面便變成 #REF!。"],
+        after: mini(["原參照", "新參照"], res.refs.map((r) => ['<span class="mono">' + esc(r.from) + "</span>", '<span class="mono">' + esc(r.to) + "</span>"])),
+        chk: [{ t: "copy", f, from: o, to: d, exp: res.f }] }; } },
+    { name: "複製後的結果", fn() {
+      let cells, f, o, d, g, v;
+      for (;;) {
+        cells = {}; for (let r = 1; r <= 4; r++) for (let c = 1; c <= 3; c++) if (coin(0.85)) cells[XL.A(c, r)] = R(1, 9);
+        [f, o] = pick([["=SUM(A1:C3)", "E1"], ["=SUM(A1:B2)", "E1"], ["=A1*$C$1", "E1"], ["=MAX(A1:B3)", "E2"], ["=$A1+B$1", "E2"], ["=SUM($A$1:A2)", "E1"], ["=A2*B2-C1", "E3"]]);
+        d = pick(["F2", "F1", "E2", "F3", "G1", "E3"]); if (d === o) continue; g = XL.copy(f, o, d).f; if (g.includes("#REF!")) continue; v = calcAt(cells, g); if (XL.isE(v)) continue; break;
+      }
+      const vals = Object.assign({}, cells); vals[o] = calcAt(cells, f);
+      return { prompt: "<p>在 " + o + " 輸入公式 <span class=\"mono\">" + esc(f) + "</span>，然後把 " + o + " 複製到 " + d + "。" + d + " 會顯示甚麼數值？（題型參考：2014 卷一甲6）</p>" + sheetHTML(vals, { c2: 7, r2: 4, hl: [o], q: [d] }),
+        input: parts(P.num(d + " 顯示", v, { traps: [{ v: calcAt(cells, f), msg: "公式複製後參照會移動：" + d + " 的公式是 " + g + "，不是原來的 " + f + "。" }] })), show: XL.disp(v),
+        explain: ["由 " + o + " 到 " + d + " 的位移令公式變成 `" + g + "`。", "代入數值：`=" + subst(g.slice(1), cells) + "` → " + XL.disp(v) + "（空白儲存格當作 0，SUM 等函數會略去）。"],
+        chk: [{ t: "copy", f, from: o, to: d, exp: g }, xlChk(cells, { [d]: g }, { [d]: v })], sandbox: { cells } }; } },
+    { name: "選擇正確的 $", fn() { return genDollar(); } },
+  ] },
+  // ---------------- S7 延伸：錯誤值 ----------------
+  { id: "S7", name: "錯誤值", ext: true, types: [
+    { name: "會得出哪個錯誤值", fn() {
+      const ERRS = ["#DIV/0!", "#VALUE!", "#NAME?", "#REF!", "#N/A", "#NULL!"]; const nm = pick(EN);
+      const C = [
+        () => ({ cells: { A2: R(10, 99), B2: 0 }, f: "=A2/B2", why: "除數 B2 是 0。" }),
+        () => ({ cells: { A2: R(10, 99) }, f: "=A2/B2", why: "B2 是空白儲存格，當作 0，除以 0。" }),
+        () => ({ cells: { A2: "缺席", A3: "abs" }, f: "=AVERAGE(A2:A4)", why: "範圍內沒有數字，AVERAGE 要除以 0 個數字。" }),
+        () => ({ cells: { A2: R(10, 99), B2: "abc" }, f: "=A2+B2", why: "不能把文字「abc」用於加法。" }),
+        () => ({ cells: { A2: nm }, f: '=FIND("z",A2)', why: "FIND 找不到「z」。" }),
+        () => ({ cells: { A2: nm }, f: "=MID(A2,0,2)", why: "MID 的開始位置不可小於 1。" }),
+        () => ({ cells: { A2: 5, A3: 8 }, f: pick(["=AVG(A2:A3)", "=SUMM(A2:A3)", "=AVERGE(A2:A3)"]), why: "函數名稱拼錯（Excel 沒有這個函數）。" }),
+        () => ({ cells: { A2: R(30, 90) }, f: "=IF(A2>=50,Pass,Fail)", why: "文字 Pass、Fail 沒有雙引號，Excel 當作名稱。" }),
+        () => ({ cells: { A2: "P01", B2: 10, A3: "P02", B3: 20 }, f: '=VLOOKUP("P09",A2:B3,2,FALSE)', why: "查閱表沒有 P09。" }),
+        () => ({ cells: { A2: 3, B2: 4 }, f: "=#REF!*A1", note: "C2 的公式 =A1*B2 被複製到 B1，公式變成 =#REF!*A1。", why: "A1 向上一列、向左一欄移出了工作表範圍。" }),
+        () => ({ cells: { A2: 1, A3: 2, C2: 3, C3: 4 }, f: "=SUM(A2:A3 C2:C3)", why: "兩個範圍之間是空格（交集運算符），但兩者沒有重疊。" }),
+        () => ({ cells: { A2: 50, A3: 60, A4: 70, B2: 65 }, f: "=RANK(B2,A2:A4)", why: "B2 的數值 65 不在排名範圍之內。" }),
+      ];
+      const c = pick(C)(), v = calcAt(c.cells, c.f), opts = ERRS;
+      return { prompt: "<p>" + (c.note ? esc(c.note) + "</p><p>" : "") + "以下公式會得出哪個錯誤值？</p>" + fbar(c.note ? "B1" : "D2", c.f) + sheetHTML(c.cells, { c2: 3, r2: 4 }),
+        input: choiceIn(opts, v.err, { mono: true }), show: v.err,
+        explain: [c.why, "#DIV/0! 除以 0；#VALUE! 數據類型錯誤；#NAME? 名稱錯誤；#REF! 參照無效；#N/A 找不到；#NULL! 範圍沒有交集。", "錯誤值屬延伸內容（教科書「擴闊視野」）。"],
+        chk: [xlChk(c.cells, { D2: c.f }, { D2: v })], sandbox: { cells: c.cells } }; } },
+  ] },
+  // ---------------- S8 篩選與排序 ----------------
+  { id: "S8", name: "篩選與排序", types: [
+    { name: "篩選後的列", fn() {
+      const { cells, recs } = mkRecs();
+      let F; for (;;) { F = sample(FILTERS(recs), R(1, 2)); if (F.length === 2 && F[0].col === F[1].col) continue; const k = recs.filter((r) => F.every((x) => x.ok(r))).length; if (k >= 1 && k <= 6) break; }
+      const vis = recs.map((r, i) => i).filter((i) => F.every((x) => x.ok(recs[i]))), rowsN = vis.map((i) => i + 2);
+      return { prompt: "<p>對以下工作表使用自動篩選，設定如下。篩選後會顯示哪些列號（不計第 1 列標題）？</p>" + sheetHTML(cells, { c2: 5, r2: 9 }) + "<ul class=\"cond\">" + F.map((x) => "<li>" + x.text + "</li>").join("") + "</ul>",
+        input: parts(P.list("顯示的列號（以逗號分隔）", rowsN, { ph: "例：2, 5, 7" }), P.num("顯示的記錄數目", vis.length)), show: "列 " + rowsN.join("、") + "（共 " + vis.length + " 筆）",
+        explain: ["篩選只是隱藏不符合條件的列，列號不會改變，所以篩選後列號會「跳號」。", F.length > 1 ? "在兩欄設定篩選時，記錄要同時符合兩個條件。" : "", "「大於或等於」包括相等的數值；「大於」不包括。"].filter(Boolean),
+        after: mini(["列", "姓名", ...F.map((x) => x.short), "顯示"], recs.map((r, i) => [i + 2, r.name, ...F.map((x) => TF(x.ok(r))), TF(F.every((x) => x.ok(r)))]), { hl: vis }),
+        chk: [{ t: "filt", recs, filters: F.map((x) => x.spec), sort: [], exp: vis }] }; } },
+    { name: "多層排序", fn() {
+      const { cells, recs } = mkRecs(); let K, order;
+      for (;;) { K = [pick(KEYS1), pick(KEYS2)]; order = sortRecs(recs, K); const okTie = recs.some((a, i) => recs.some((b, j) => i < j && a[K[0].f] === b[K[0].f])); const full = recs.some((a, i) => recs.some((b, j) => i < j && a[K[0].f] === b[K[0].f] && a[K[1].f] === b[K[1].f])); if (okTie && !full) break; }
+      const k = R(1, 4), ans = recs[order[k - 1]].name;
+      const alt = [sortRecs(recs, [K[0]]), sortRecs(recs, [K[1]]), sortRecs(recs, [{ f: K[0].f, d: !K[0].d, t: K[0].t }, K[1]])].map((o) => recs[o[k - 1]].name);
+      const opts = shuffle(uniq([ans, ...alt, ...shuffle(recs.map((r) => r.name))]).slice(0, 4));
+      return { prompt: "<p>把以下記錄排序：<b>首先按" + K[0].label + "，然後按" + K[1].label + "</b>。排序後第 " + (k + 1) + " 列（第 " + k + " 筆記錄）是誰？（題型參考：2024 卷一乙1(a)(iv)）</p>" + sheetHTML(cells, { c2: 5, r2: 9 }),
+        input: choiceIn(opts, ans), show: ans,
+        explain: ["先按第一層（" + K[0].label + "）排列；第一層相同的記錄，才按第二層（" + K[1].label + "）排列。", "文字遞增 A→Z（不分大小寫），數字遞增由小至大；遞減則相反。", "排序後次序：" + order.map((i) => recs[i].name).join("、") + "。"],
+        chk: [{ t: "filt", recs, filters: [], sort: K.map((x) => [x.f, x.d]), exp: order }] }; } },
+    { name: "篩選後排序", fn() {
+      const { cells, recs } = mkRecs(); let F, K, vis, order;
+      for (;;) { F = [pick(FILTERS(recs))]; K = [pick(KEYS2.filter((x) => x.f !== "name"))]; vis = recs.map((r, i) => i).filter((i) => F[0].ok(recs[i])); if (vis.length < 3) continue; order = sortRecs(recs, K).filter((i) => vis.includes(i)); const top = recs[order[0]][K[0].f]; if (vis.filter((i) => recs[i][K[0].f] === top).length > 1) continue; const all = sortRecs(recs, K); if (all[0] === order[0]) continue; break; }
+      const ans = recs[order[0]].name, allTop = recs[sortRecs(recs, K)[0]].name;
+      const opts = shuffle(uniq([ans, allTop, recs[vis[0]].name, ...shuffle(recs.map((r) => r.name))]).slice(0, 4));
+      return { prompt: "<p>先以自動篩選設定「" + F[0].text + "」，再按" + K[0].label + "排序。第 2 列（顯示的第一筆記錄）是誰？（題型參考：教科書測試站 4.7）</p>" + sheetHTML(cells, { c2: 5, r2: 9 }),
+        input: choiceIn(opts, ans, { why: { [allTop]: allTop === ans ? "" : "這是未篩選前排第一的記錄，但它不符合篩選條件，已被隱藏。", [recs[vis[0]].name]: recs[vis[0]].name === ans ? "" : "這是篩選後原本排第一的記錄，但還要按" + K[0].label + "排序。" } }), show: ans,
+        explain: ["符合「" + F[0].text + "」的記錄：" + vis.map((i) => recs[i].name).join("、") + "。", "再按" + K[0].label + "排列：" + order.map((i) => recs[i].name + "（" + recs[i][K[0].f] + "）").join("、") + "。"],
+        chk: [{ t: "filt", recs, filters: F.map((x) => x.spec), sort: K.map((x) => [x.f, x.d]), exp: order }] }; } },
+  ] },
+  // ---------------- S9 樞紐分析表 ----------------
+  { id: "S9", name: "樞紐分析表", types: [
+    { name: "列、欄、值的設定", fn() { return genPivotCfg(); } },
+    { name: "計算樞紐分析表的數值", fn() { return genPivotCalc(); } },
+  ] },
+  // ---------------- S10 選用工具 ----------------
+  { id: "S10", name: "選用工具與圖表", types: [
+    { name: "應使用哪項功能", fn() {
+      const s = pick(TOOL_BANK), others = sample(TOOLS.filter((t) => t !== s.a && !(s.x || []).includes(t)), 3), opts = shuffle([s.a, ...others]);
+      return { prompt: "<p>" + esc(s.q) + "</p><p>應使用哪項功能？" + (s.src ? "（題型參考：" + s.src + "）" : "") + "</p>", input: choiceIn(opts, s.a, { why: TOOL_WHY }), show: s.a,
+        explain: [s.e, "口訣：改變輸入看結果 → 分析藍本；已知結果反求輸入 → 目標搜尋；按類別匯總 → 樞紐分析表；只顯示部分記錄 → 篩選；改變次序 → 排序；格式一致的列印文件 → 數據庫報告；方便輸入 → 表單。"],
+        chk: [{ t: "bank", opts, ans: s.a }] }; } },
+    { name: "目標搜尋的設定", fn() { return genGoal(); } },
+    { name: "選擇圖表類型", fn() {
+      const s = pick(CHART_BANK), CH = ["直條圖", "群組直條圖", "堆疊直條圖", "折線圖", "圓形圖"], opts = shuffle([s.a, ...sample(CH.filter((c) => c !== s.a && !(s.x || []).includes(c)), 3)]);
+      return { prompt: "<p>" + esc(s.q) + "</p>" + (s.tbl ? mini(s.tbl[0], s.tbl.slice(1)) : "") + "<p>哪類圖表最合適？" + (s.src ? "（題型參考：" + s.src + "）" : "") + "</p>", input: choiceIn(opts, s.a), show: s.a,
+        explain: [s.e, "直條圖：分類或離散數據；群組直條圖：比較多個數據數列；堆疊直條圖：比較每類的總和及組成；折線圖：連續數據、顯示趨勢；圓形圖：各部分佔整體的百分比。"],
+        chk: [{ t: "bank", opts, ans: s.a }] }; } },
+  ] },
+];
+
+// ---------- S3 寫出公式（以多組數據求值核對） ----------
+function genWrite() {
+  const cls = sample(["5A", "5B", "5C", "5D"], 3);
+  const T = [
+    { at: "F2", tg: range(2, 10).map((r) => "F" + r), ref: '=IF(D2>=$H$1,"合格","不合格")', task: "在 F2 寫公式：如分數（D2）不少於 H1 的合格分數，顯示「合格」，否則顯示「不合格」。公式會複製到 F3:F9。", setup: (c) => { c.G1 = "合格分數"; c.H1 = pick(range(2, 10).map((r) => c["D" + r])); } },
+    { at: "F2", tg: range(2, 10).map((r) => "F" + r), ref: '=IF(D2>=80,"A",IF(D2>=50,"B","C"))', task: "在 F2 寫公式：分數（D2）80 或以上顯示「A」；50 或以上（但低於 80）顯示「B」；其餘顯示「C」。公式會複製到 F3:F9。", setup: (c) => { c["D" + R(2, 9)] = 80; c["D" + R(2, 9)] = 50; } },
+    { at: "F2", tg: range(2, 10).map((r) => "F" + r), ref: '=IF(AND(D2>=50,E2>=80),"Y","N")', task: "在 F2 寫公式：分數（D2）不少於 50 而且出席率（E2）不少於 80 時顯示「Y」，否則顯示「N」。公式會複製到 F3:F9。", setup: (c) => { c["D" + R(2, 9)] = 50; c["E" + R(2, 9)] = 80; } },
+    { at: "I2", tg: ["I2", "I3", "I4"], ref: "=COUNTIF($B$2:$B$9,H2)", task: "在 I2 寫公式，計算班別（B 欄）等於 H2 的學生人數。公式會複製到 I3:I4。", setup: (c) => { cls.forEach((x, i) => { c["H" + (i + 2)] = x; }); c.H1 = "班別"; c.I1 = "人數"; } },
+    { at: "I2", tg: ["I2", "I3", "I4"], ref: "=SUMIF($B$2:$B$9,H2,$D$2:$D$9)", task: "在 I2 寫公式，計算班別（B 欄）等於 H2 的學生的分數（D 欄）總和。公式會複製到 I3:I4。", setup: (c) => { cls.forEach((x, i) => { c["H" + (i + 2)] = x; }); c.H1 = "班別"; c.I1 = "總分"; } },
+    { at: "I2", tg: ["I2", "I3"], ref: "=COUNTIF($C$2:$C$9,H2)", task: "在 I2 寫公式，計算性別（C 欄）等於 H2 的學生人數。公式會複製到 I3。", setup: (c) => { c.H1 = "性別"; c.H2 = "M"; c.H3 = "F"; c.I1 = "人數"; } },
+    { at: "I1", tg: ["I1"], ref: '=COUNTIF(D2:D9,"<="&H1)', task: "H1 是一個分數。在 I1 寫公式，計算分數（D 欄）不高於 H1 的學生人數。（題型參考：2025 卷一乙1(b)）", setup: (c) => { c.G1 = "分數上限"; c.H1 = pick(range(2, 10).map((r) => c["D" + r])); } },
+    { at: "I1", tg: ["I1"], ref: "=AVERAGE(D2:D9)", task: "在 I1 寫公式，計算 D2:D9 的平均分。", setup: () => {} },
+  ];
+  const t = pick(T);
+  const mkBook = () => { const c = { A1: "姓名", B1: "班別", C1: "性別", D1: "分數", E1: "出席率" }; for (let r = 2; r <= 9; r++) { c["A" + r] = CN[r]; c["B" + r] = pick(cls); c["C" + r] = pick(["M", "F"]); c["D" + r] = R(6, 19) * 5; c["E" + r] = R(14, 20) * 5; } t.setup(c); return c; };
+  let books, exp;
+  for (;;) { books = [mkBook(), mkBook(), mkBook()]; exp = books.map((c) => t.tg.map((a) => calcAt(c, XL.copy(t.ref, t.at, a).f))); if (exp.every((e) => e.every((v) => !XL.isE(v) && (typeof v !== "number" || dp2(v))))) break; }
+  const c0 = books[0], wide = Math.max(...Object.keys(c0).map((a) => XL.pa(a).c));
+  return { prompt: "<p>" + esc(t.task) + "</p>" + sheetHTML(c0, { c2: Math.max(wide, XL.pa(t.at).c), r2: 9, q: [t.at] }) + '<p class="small">會用另外兩組數據測試你的公式；只要結果正確，不同寫法都接受。</p>',
+    input: parts(P.fw(t.at + " 的公式", { at: t.at, targets: t.tg, books: books.map((c) => ({ sheets: S1(c), sh: "Sheet1" })), exp, ans: t.ref })), show: t.ref,
+    explain: ["參考答案：`" + t.ref + "`", t.tg.length > 1 ? "公式要複製到 " + t.tg[1] + (t.tg.length > 2 ? "…" + t.tg[t.tg.length - 1] : "") + "：範圍、準則儲存格等不應移動的部分要加 $；隨每列改變的參照不加 $。" : "公式只在一格，不用加 $。",
+      "評卷要點：函數名稱要正確（AVERAGE 不是 AVG）；文字加雙引號；不寫 ≤、≥；數字結果不加引號；OR、AND 用前綴寫法。"],
+    chk: books.map((c, k) => xlChk(c, Object.fromEntries(t.tg.map((a) => [a, XL.copy(t.ref, t.at, a).f])), Object.fromEntries(t.tg.map((a, j) => [a, exp[k][j]])))), sandbox: { cells: c0 } };
+}
+// ---------- S6 選擇正確的 $ ----------
+function genDollar() {
+  const kind = R(1, 5); let cells, base, targets, opts, good, title, why = {};
+  if (kind === 1) { // 乘數表（例題 4.6）
+    cells = {}; const a = sample(range(2, 13), 4), b = sample(range(2, 13), 4); a.forEach((v, i) => { cells["A" + (i + 2)] = v; }); b.forEach((v, i) => { cells[XL.colStr(i + 2) + "1"] = v; });
+    base = "B2"; targets = ["B2", "C2", "E2", "B5", "D4", "E5"]; good = "=$A2*B$1"; opts = [good, "=A2*B1", "=$A$2*B$1", "=A$2*$B1"];
+    title = "第 1 列及 A 欄是兩組數字。要在 B2 輸入公式，計算 A 欄數字與第 1 列數字的乘積，再把公式複製到 B2:E5。B2 的公式應是："; why = { "=A2*B1": "沒有 $：向右複製時 A2 會變成 B2，向下複製時 B1 會變成 B2。", "=$A$2*B$1": "$A$2 完全固定，向下複製時仍用 A2，不會用 A3、A4…", "=A$2*$B1": "$ 放錯位置：A 欄的數字要固定「欄」（$A2），第 1 列的數字要固定「列」（B$1）。" };
+  } else if (kind === 2) { // 比率儲存格（2025 甲1）
+    const rate = pick([0.1, 0.125, 0.2, 0.25, 0.15]); cells = { A1: "利潤", B1: rate, A3: "產品", B3: "成本", C3: "零售價" }; ["電腦", "電視", "平板電腦", "耳機"].forEach((n, i) => { cells["A" + (i + 4)] = n; cells["B" + (i + 4)] = R(2, 90) * 100; });
+    base = "C4"; targets = ["C4", "C5", "C6", "C7"]; good = pick(["=B4*(1+$B$1)", "=B4*(1+B$1)"]); opts = [good, "=B4*(1+$B1)", "=$B$4*(1+B1)", "=B4*(1+B1)"];
+    title = "B1 是利潤百分率。要在 C4 輸入公式計算零售價（成本 ×（1 + 利潤）），再複製到 C5:C7。C4 的公式應是：（題型參考：2025 卷一甲1）"; why = { "=B4*(1+$B1)": "$B1 只固定欄；向下複製時列號會變成 B2、B3…", "=$B$4*(1+B1)": "成本 $B$4 被固定了，向下複製時仍用第 4 列的成本；B1 亦會移動。", "=B4*(1+B1)": "沒有 $：向下複製時 B1 變成 B2、B3…" };
+  } else if (kind === 3) { // COUNTIF 範圍
+    const cls = ["5A", "5B", "5C"]; cells = { A1: "姓名", B1: "班別", D1: "班別", E1: "人數" }; let ok = false;
+    while (!ok) { for (let r = 2; r <= 9; r++) { cells["A" + r] = CN[r]; cells["B" + r] = pick(cls); } ok = cls.every((c) => range(2, 10).some((r) => cells["B" + r] === c)) && cells.B2 !== cells.B3; }
+    cls.forEach((c, i) => { cells["D" + (i + 2)] = c; });
+    base = "E2"; targets = ["E2", "E3", "E4"]; good = pick(["=COUNTIF($B$2:$B$9,D2)", "=COUNTIF(B$2:B$9,D2)"]); opts = [good, "=COUNTIF(B2:B9,D2)", "=COUNTIF($B$2:$B$9,$D$2)", "=COUNTIF($B2:$B9,D2)"];
+    title = "要在 E2 輸入公式，計算班別等於 D2 的人數，再把公式複製到 E3:E4。E2 的公式應是："; why = { "=COUNTIF(B2:B9,D2)": "範圍沒有 $：向下複製時範圍變成 B3:B10、B4:B11，漏了上面的記錄。", "=COUNTIF($B$2:$B$9,$D$2)": "準則 $D$2 被固定了，E3、E4 仍然計算 D2 的班別。", "=COUNTIF($B2:$B9,D2)": "$B2 只固定欄；向下複製時列號仍會移動。" };
+  } else if (kind === 4) { // 佔總數百分比
+    cells = { A1: "項目", B1: "金額", C1: "百分比" }; ["食物", "交通", "書簿", "娛樂"].forEach((n, i) => { cells["A" + (i + 2)] = n; cells["B" + (i + 2)] = R(1, 20) * 50; }); cells.A6 = "總數"; cells.B6 = "=SUM(B2:B5)";
+    base = "C2"; targets = ["C2", "C3", "C4", "C5"]; good = pick(["=B2/$B$6", "=B2/B$6"]); opts = [good, "=B2/B6", "=$B$2/B6", "=B2/$B6"];
+    title = "B6 是總數（=SUM(B2:B5)）。要在 C2 輸入公式，計算 B2 佔總數的比例，再複製到 C3:C5。C2 的公式應是："; why = { "=B2/B6": "B6 沒有 $：向下複製時變成 B7、B8（空白），得 #DIV/0!。", "=$B$2/B6": "分子 $B$2 被固定，分母反而會移動。", "=B2/$B6": "$B6 只固定欄；向下複製時列號仍會移動。" };
+  } else { // 累計
+    cells = { A1: "月份", B1: "銷售額", C1: "累計" }; ["1月", "2月", "3月", "4月", "5月"].forEach((n, i) => { cells["A" + (i + 2)] = n; cells["B" + (i + 2)] = R(1, 30) * 10; });
+    base = "C2"; targets = ["C2", "C3", "C4", "C5", "C6"]; good = "=SUM($B$2:B2)"; opts = [good, "=SUM(B2:B2)", "=SUM($B$2:$B$2)", "=SUM($B2:B2)"];
+    title = "要在 C2 輸入公式計算由 1 月至該月的累計銷售額，再把公式複製到 C3:C6。C2 的公式應是："; why = { "=SUM(B2:B2)": "範圍的起點沒有 $，複製後只計當月。", "=SUM($B$2:$B$2)": "整個範圍固定，每格都只計 1 月。", "=SUM($B2:B2)": "$B2 只固定欄，起點的列仍會移動，複製後只計當月。" };
+  }
+  const want = {}; targets.forEach((t) => { want[t] = J(XL.calc1(cells, XL.copy(good, base, t).f)); });
+  const okOpt = (o) => targets.every((t) => GR.strict(want[t] && want[t].err ? XL.E(want[t].err) : want[t], XL.calc1(cells, XL.copy(o, base, t).f)));
+  if (opts.filter(okOpt).length !== 1) return genDollar();
+  const sh = shuffle(opts), vals = {}; Object.keys(cells).forEach((a) => { vals[a] = XL.valueOf(S1(cells), "Sheet1", a); });
+  return { prompt: "<p>" + esc(title) + "</p>" + sheetHTML(vals, { q: targets, fmt: kind === 2 ? { B1: XL.disp(cells.B1 * 100) + "%" } : undefined }), input: choiceIn(sh, good, { mono: true, why }), show: good,
+    explain: ["決定 $ 的方法：想想公式複製的方向，哪一部分不應改變，便在它前面加 $。", "欄字母前的 $ 固定欄（向左右複製不變）；列號前的 $ 固定列（向上下複製不變）。", "以正確公式複製後：" + targets.map((t) => t + " " + XL.copy(good, base, t).f).join("；")],
+    chk: [{ t: "xlopt", sheets: S1(cells), sh: "Sheet1", base, opts: sh, targets, want, ans: sh.indexOf(good) }], sandbox: { cells } };
+}
+// ---------- S8 共用數據 ----------
+function mkRecs() {
+  const names = sample(EN, 8).sort(() => Math.random() - 0.5), cells = { A1: "姓名", B1: "班別", C1: "性別", D1: "中文", E1: "英文" }, recs = [];
+  names.forEach((n, i) => { const r = { name: n, cls: pick(["5A", "5B", "5C"]), sex: pick(["M", "F"]), chi: R(8, 19) * 5, eng: R(8, 19) * 5 }; recs.push(r); const k = i + 2; cells["A" + k] = r.name; cells["B" + k] = r.cls; cells["C" + k] = r.sex; cells["D" + k] = r.chi; cells["E" + k] = r.eng; });
+  return { cells, recs };
+}
+function FILTERS(recs) {
+  const t1 = pick(recs).chi, t2 = pick(recs).eng, c = pick(["5A", "5B", "5C"]), s = pick(["M", "F"]);
+  return [
+    { col: "cls", text: "「班別」等於 " + c, short: "班別 = " + c, ok: (r) => r.cls === c, spec: ["cls", "=", c] },
+    { col: "sex", text: "「性別」等於 " + s, short: "性別 = " + s, ok: (r) => r.sex === s, spec: ["sex", "=", s] },
+    { col: "chi", text: "「中文」大於或等於 " + t1, short: "中文 ≥ " + t1, ok: (r) => r.chi >= t1, spec: ["chi", ">=", t1] },
+    { col: "eng", text: "「英文」小於 " + t2, short: "英文 < " + t2, ok: (r) => r.eng < t2, spec: ["eng", "<", t2] },
+    { col: "eng", text: "「英文」大於 " + t2, short: "英文 > " + t2, ok: (r) => r.eng > t2, spec: ["eng", ">", t2] },
+  ];
+}
+const KEYS1 = [{ f: "cls", d: false, t: 1, label: "「班別」遞增（A→Z）" }, { f: "cls", d: true, t: 1, label: "「班別」遞減（Z→A）" }, { f: "sex", d: false, t: 1, label: "「性別」遞增（A→Z）" }];
+const KEYS2 = [{ f: "chi", d: true, label: "「中文」遞減（最大到最小）" }, { f: "chi", d: false, label: "「中文」遞增（最小到最大）" }, { f: "eng", d: true, label: "「英文」遞減（最大到最小）" }, { f: "name", d: false, t: 1, label: "「姓名」遞增（A→Z）" }];
+function sortRecs(recs, K) {
+  return recs.map((r, i) => i).sort((i, j) => { for (const k of K) { const a = recs[i][k.f], b = recs[j][k.f]; let c = typeof a === "string" ? (a.toLowerCase() < b.toLowerCase() ? -1 : a.toLowerCase() > b.toLowerCase() ? 1 : 0) : a - b; if (k.d) c = -c; if (c) return c; } return i - j; });
+}
+// ---------- S9 樞紐分析表 ----------
+const PIVOT_SETS = [
+  { title: "網上會議記錄", fields: ["日期", "參加者", "會議編碼", "時間"], gen: () => [pick(["30-1-2020", "28-2-2020", "18-3-2020"]), pick(["莉莉", "志明", "志偉", "嘉欣"]), pick(["AB-1234", "AB-1266", "AB-1268"]), pick([45, 60, 90, 120])],
+    tasks: [{ q: "找出每名參加者參與會議的次數", r: "參加者", c: null, v: "*", a: "項目個數", src: "2021 卷一甲13" }, { q: "找出每名參加者參與會議的總時間", r: "參加者", c: null, v: "時間", a: "加總" }] },
+  { title: "分店銷售記錄", fields: ["分店", "類別", "銷售員", "金額"], gen: () => [pick(["沙田", "旺角", "荃灣"]), pick(["文具", "書本", "電子"]), pick(["阿明", "阿芬", "阿強"]), R(2, 40) * 10],
+    tasks: [{ q: "找出每間分店每個類別的總金額", r: "分店", c: "類別", v: "金額", a: "加總" }, { q: "找出每個類別在每間分店的平均金額", r: "類別", c: "分店", v: "金額", a: "平均值" }, { q: "找出每名銷售員在每間分店的交易次數", r: "銷售員", c: "分店", v: "*", a: "項目個數" }] },
+  { title: "測驗成績", fields: ["班別", "性別", "科目", "分數"], gen: () => [pick(["5A", "5B", "5C"]), pick(["M", "F"]), pick(["中文", "英文", "數學"]), R(8, 20) * 5],
+    tasks: [{ q: "找出每班男生和女生的平均分", r: "班別", c: "性別", v: "分數", a: "平均值" }, { q: "找出每個科目每班的最高分以外的總分", skip: true }, { q: "找出每個科目的考生人數（每筆記錄是一名考生）", r: "科目", c: null, v: "*", a: "項目個數" }] },
+  { title: "學校設備記錄", fields: ["型號", "類型", "數量", "位置"], gen: () => [...pick([["打印機 A", "打印機"], ["掃描器 1", "掃描器"], ["PC 型號 Q", "電腦"], ["3D 打印機 X", "打印機"], ["手提電腦 M", "電腦"]]), R(1, 40), pick(["101 號房", "電腦室", "圖書館"])],
+    tasks: [{ q: "顯示同一類型裝置的總數量", r: "類型", c: null, v: "數量", a: "加總", src: "2024 卷一甲4" }, { q: "顯示每個位置每種類型裝置的總數量", r: "位置", c: "類型", v: "數量", a: "加總" }] },
+  { title: "捐款記錄", fields: ["編號", "姓名", "活動", "捐款"], gen: () => ["306" + R(10, 99), pick(["David", "Diana", "Eva", "Frank"]), pick(["賣旗", "慈善跑", "義賣"]), R(1, 20) * 10],
+    tasks: [{ q: "找出每人在每項活動的捐款總額", r: "姓名", c: "活動", v: "捐款", a: "加總", src: "教科書測試站 4.8（2017 卷一乙4(e)）" }, { q: "找出每人的平均捐款", r: "姓名", c: null, v: "捐款", a: "平均值" }] },
+];
+const pivSort = (a) => a.slice().sort((x, y) => (typeof x === "number" ? x - y : String(x).localeCompare(String(y), "zh-Hant")));
+function pivot(recs, fields, r, c, v, a) {
+  const ri = fields.indexOf(r), ci = c ? fields.indexOf(c) : -1, vi = v === "*" ? -1 : fields.indexOf(v);
+  const rk = pivSort(uniq(recs.map((x) => x[ri]))), ck = c ? pivSort(uniq(recs.map((x) => x[ci]))) : ["(值)"];
+  const cell = (rv, cv) => { const g = recs.filter((x) => (rv === undefined || x[ri] === rv) && (cv === undefined || !c || x[ci] === cv)); if (!g.length) return null; const vals = g.map((x) => (vi < 0 ? 1 : x[vi])); return a === "項目個數" ? g.length : a === "加總" ? vals.reduce((s, t) => s + t, 0) : vals.reduce((s, t) => s + t, 0) / g.length; };
+  return { rk, ck, cell };
+}
+function pivotHTML(pv, o) {
+  const head = [esc(o.vh), ...(o.c ? pv.ck.map(esc) : []), "總計"];
+  const fmtc = (v) => (v === null ? "" : XL.disp(Math.round(v * 100) / 100));
+  const rows = pv.rk.map((rv) => [esc(rv), ...(o.c ? pv.ck.map((cv) => (o.q && o.q[0] === rv && o.q[1] === cv ? '<b class="qm">?</b>' : o.blank ? "" : fmtc(pv.cell(rv, cv)))) : []), o.q && o.q[0] === rv && o.q[1] === "總計" ? '<b class="qm">?</b>' : o.blank ? "" : fmtc(pv.cell(rv))]);
+  rows.push(["總計", ...(o.c ? pv.ck.map((cv) => (o.q && o.q[0] === "總計" && o.q[1] === cv ? '<b class="qm">?</b>' : o.blank ? "" : fmtc(pv.cell(undefined, cv)))) : []), o.q && o.q[0] === "總計" && o.q[1] === "總計" ? '<b class="qm">?</b>' : o.blank ? "" : fmtc(pv.cell())]);
+  return '<div class="xs"><table class="pivot"><tr>' + head.map((x, i) => "<th" + (i ? "" : ' class="pl"') + ">" + x + "</th>").join("") + "</tr>" + rows.map((r) => "<tr>" + r.map((x, i) => (i ? "<td>" : "<th class=\"pl\">") + x + (i ? "</td>" : "</th>")).join("") + "</tr>").join("") + "</table></div>";
+}
+function recSheet(fields, recs) { const cells = {}; fields.forEach((f, j) => { cells[XL.colStr(j + 1) + "1"] = f; }); recs.forEach((r, i) => r.forEach((v, j) => { cells[XL.colStr(j + 1) + (i + 2)] = v; })); return cells; }
+function genPivotCfg() {
+  const set = pick(PIVOT_SETS), t = pick(set.tasks.filter((x) => !x.skip)), recs = range(0, 6).map(() => set.gen());
+  const pv = pivot(recs, set.fields, t.r, t.c, t.v, t.a), NONE = "（不用）";
+  const fieldsOpt = set.fields.slice(), vAns = t.v === "*" ? set.fields.slice() : t.v;
+  return { prompt: "<p>某人用試算表儲存了數百筆" + set.title + "（以下只顯示首 6 筆）。他想建立樞紐分析表，" + esc(t.q) + "。" + (t.src ? "（題型參考：" + t.src + "）" : "") + "</p>" + sheetHTML(recSheet(set.fields, recs), { c2: set.fields.length, r2: 7 }) + "<p>完成的樞紐分析表應該像這樣（數值從略）：</p>" + pivotHTML(pv, { c: t.c, vh: "？", blank: true }) + "<p>應如何設定樞紐分析表的四個區域？</p>",
+    input: parts(P.choice("列", fieldsOpt, t.r), P.choice("欄", [...fieldsOpt, NONE], t.c || NONE), P.choice("值", fieldsOpt, vAns), P.choice("值的匯總方法", ["加總", "項目個數", "平均值"], t.a)),
+    show: "列：" + t.r + "；欄：" + (t.c || NONE) + "；值：" + (t.v === "*" ? "任何沒有空白的欄位（例如 " + t.r + "）" : t.v) + "；" + t.a,
+    explain: ["拆解句式「每個 X（每個 Y）的 Z 的總和／次數／平均」：X 放列，Y 放欄，Z 放值。", "本題：列 = " + t.r + (t.c ? "，欄 = " + t.c : "，欄不用") + "，值 = " + (t.v === "*" ? "任何沒有空白的欄位" : t.v) + "，匯總方法 = " + t.a + "。", t.a === "項目個數" ? "計算「次數」用項目個數（COUNT）：數的是記錄數目，所以值可放任何沒有空白的欄位，連「" + t.r + "」本身也可以（2021 甲13 答案：參加者放列及值）。" : t.a === "加總" ? "「總和」用加總（評卷用語：總和 ✓，總計 ✗）。" : "「平均」要把匯總方法改為平均值（預設是加總）。", "篩選區只用來選擇顯示哪部分數據，不會產生分組。"],
+    chk: [{ t: "pivcfg", fields: set.fields, recs, r: t.r, c: t.c, rk: pv.rk, ck: t.c ? pv.ck : [] }], sandbox: { cells: recSheet(set.fields, recs) } };
+}
+function genPivotCalc() {
+  const set = pick(PIVOT_SETS.slice(1)), t = pick(set.tasks.filter((x) => !x.skip && x.c)), aggs = ["加總", "項目個數", "平均值"];
+  let recs, pv, q, v, a;
+  for (;;) { recs = range(0, R(8, 10)).map(() => set.gen()); a = pick(aggs); const vf = t.v === "*" ? set.fields[3] : t.v; pv = pivot(recs, set.fields, t.r, t.c, a === "項目個數" ? "*" : vf, a);
+    const rv = pick([...pv.rk, "總計"]), cv = pick([...pv.ck, "總計"]); q = [rv, cv]; v = pv.cell(rv === "總計" ? undefined : rv, cv === "總計" ? undefined : cv);
+    if (v !== null && dp2(v) && pv.rk.length >= 2 && pv.ck.length >= 2) break; }
+  const vf = t.v === "*" ? set.fields[3] : t.v, vh = (a === "項目個數" ? "項目個數 - " + t.r : a + " - " + vf);
+  const used = recs.map((x, i) => i).filter((i) => (q[0] === "總計" || recs[i][set.fields.indexOf(t.r)] === q[0]) && (q[1] === "總計" || recs[i][set.fields.indexOf(t.c)] === q[1]));
+  return { prompt: "<p>以下" + set.title + "建立了樞紐分析表：列 = " + t.r + "，欄 = " + t.c + "，值 = " + (a === "項目個數" ? t.r : vf) + "（" + a + "）。問號的位置應顯示甚麼數值？</p>" + sheetHTML(recSheet(set.fields, recs), { c2: 4, r2: recs.length + 1 }) + pivotHTML(pv, { c: t.c, vh, q, blank: true }),
+    input: parts(P.num("問號的數值", v)), show: XL.disp(v),
+    explain: ["找出" + (q[0] === "總計" ? "所有" + t.r : t.r + "是「" + q[0] + "」") + (q[1] === "總計" ? "" : "而且" + t.c + "是「" + q[1] + "」") + "的記錄：第 " + used.map((i) => i + 2).join("、") + " 列。", a === "項目個數" ? "項目個數：數記錄的數目 = " + used.length + "。" : a === "加總" ? "加總：" + used.map((i) => recs[i][set.fields.indexOf(vf)]).join(" + ") + " = " + XL.disp(v) + "。" : "平均值：(" + used.map((i) => recs[i][set.fields.indexOf(vf)]).join(" + ") + ") ÷ " + used.length + " = " + XL.disp(v) + "。", "完整的樞紐分析表見下。"],
+    after: pivotHTML(pv, { c: t.c, vh }),
+    chk: [{ t: "pivot", fields: set.fields, recs, r: t.r, c: t.c, v: vf, agg: a, q, exp: v }], sandbox: { cells: recSheet(set.fields, recs) } };
+}
+// ---------- S10 選用工具 ----------
+const TOOLS = ["樞紐分析表", "分析藍本（「假設」分析）", "目標搜尋", "篩選", "排序", "數據庫報告", "表單（表格）"];
+const TOOL_WHY = { "樞紐分析表": "樞紐分析表用來按類別匯總（總和、次數、平均）及比較數據，不會改變輸入值去估算結果。", "分析藍本（「假設」分析）": "分析藍本用來改變輸入值（不同情境），比較公式結果的變化。", "目標搜尋": "目標搜尋是已知想要的結果，反求一個輸入值。", "篩選": "篩選只顯示符合條件的記錄，不會計算匯總數值。", "排序": "排序只改變記錄的次序。", "數據庫報告": "數據庫報告用來把數據製成格式一致、可列印的文件。", "表單（表格）": "表單（DSE 稱「表格」）是方便用戶輸入及查看數據的界面，不是用來篩選或匯總。" };
+const TOOL_BANK = [
+  { q: "書店想比較不同類型書籍的銷售總額。", a: "樞紐分析表", e: "按類別匯總比較 → 樞紐分析表。", src: "教科書例題 4.7" },
+  { q: "學校記錄了所有設備的型號、類型和數量，想顯示同一類型裝置的總數。", a: "樞紐分析表", e: "按類型匯總數量 → 樞紐分析表。", src: "2024 卷一甲4" },
+  { q: "老師想找出每名參加者參與網上會議的次數。", a: "樞紐分析表", e: "按參加者計算次數（項目個數）→ 樞紐分析表。", src: "2021 卷一甲13" },
+  { q: "連鎖便利店想改變租金、人工等不同參數，估算每月支出。", a: "分析藍本（「假設」分析）", e: "改變不同參數（輸入）估算結果 → 「假設」分析（分析藍本）。", src: "2017 卷一甲11" },
+  { q: "公司想估算由三間不同製造商生產產品的成本。", a: "分析藍本（「假設」分析）", e: "每間製造商是一個情境，比較不同情境的成本 → 分析藍本。", src: "2020 卷一甲10" },
+  { q: "工廠經理想比較購入 3 台、4 台或 5 台機器時的成本和生產時間，以決定購入多少台機器。", a: "分析藍本（「假設」分析）", e: "比較不同輸入值的結果 → 「假設」分析。", src: "2019 卷一甲3", x: ["目標搜尋"] },
+  { q: "店主想比較售價定為 $10、$20、$40 時的收入。", a: "分析藍本（「假設」分析）", e: "多個不同售價（情境）→ 分析藍本摘要。", src: "教科書 4.7A", x: ["目標搜尋"] },
+  { q: "店主想知道售價要定為多少，收入才剛好達到 $23,000。", a: "目標搜尋", e: "已知目標結果（收入 23000），反求輸入（售價）→ 目標搜尋。", src: "教科書 4.7A", x: ["分析藍本（「假設」分析）"] },
+  { q: "班會想把每名同學的班會費限制為 $1,000，求遊學團預算最多可以是多少。", a: "目標搜尋", e: "已知目標（班會費 1000），反求遊學團預算 → 目標搜尋。", src: "2022 卷一甲10", x: ["分析藍本（「假設」分析）"] },
+  { q: "小明想知道每月要儲蓄多少，兩年後的存款才剛好達到 $50,000。", a: "目標搜尋", e: "已知目標存款，反求每月儲蓄額 → 目標搜尋。", x: ["分析藍本（「假設」分析）"] },
+  { q: "老師只想顯示數學考試獲得 90 分或以上的學生記錄。", a: "篩選", e: "只顯示符合條件的記錄 → 篩選。", src: "2020 卷一甲10", x: ["排序"] },
+  { q: "文員只想顯示來自 5A 班的學生記錄。", a: "篩選", e: "只顯示部分記錄 → 篩選。", x: ["排序"] },
+  { q: "老師想把學生記錄按總分由高至低排列。", a: "排序", e: "改變記錄的次序 → 排序。", x: ["篩選"] },
+  { q: "店主想把產品按價錢由低至高排列。", a: "排序", e: "改變次序 → 排序。", x: ["篩選"] },
+  { q: "老師想用數據庫內的學生資料和考試分數，為每名學生製作格式一致的成績單。", a: "數據庫報告", e: "製作格式一致、可列印的文件 → 數據庫報告（不是樞紐分析表）。", src: "2020 卷一甲9", x: ["表單（表格）"] },
+  { q: "清潔公司要為數千名客戶每月編製服務報告。", a: "數據庫報告", e: "大量記錄、格式一致的文件 → 數據庫報告。", src: "2014 卷一甲5", x: ["表單（表格）"] },
+  { q: "數據庫設計員想為文員提供一個方便的界面輸入新會員資料，並減少輸入錯誤。", a: "表單（表格）", e: "方便輸入、減少輸入錯誤 → 表單。", src: "2021 卷一甲11、2017 卷一甲10", x: ["數據庫報告"] },
+  { q: "王先生想讓同事以下拉式選單選擇產品類別，方便輸入數據。", a: "表單（表格）", e: "方便用戶輸入的界面 → 表單。", src: "2025 卷一甲11", x: ["數據庫報告"] },
+];
+const CHART_BANK = [
+  { q: "王先生想展示一種食物的營養成分各佔多少百分比。", tbl: [["營養", "成分（重量）"], ["脂肪", "20%"], ["膽固醇", "5%"], ["鈉", "5%"], ["碳水化合物", "50%"], ["蛋白質", "20%"]], a: "圓形圖", e: "各部分佔整體的百分比 → 圓形圖。", src: "2014 卷一甲7" },
+  { q: "調查男生和女生回家的方法（步行、校巴、港鐵），想比較每種方法的男女人數。", tbl: [["回家方法", "男", "女"], ["步行", "10", "20"], ["校巴", "15", "5"], ["港鐵", "25", "30"]], a: "群組直條圖", e: "每個類別有兩個數據數列（男、女），要並排比較 → 群組直條圖。", src: "2017 卷一甲13", x: ["堆疊直條圖"] },
+  { q: "記錄了 1A 班房由 08:00 至 18:00 每小時的溫度，想顯示溫度的變化趨勢。", a: "折線圖", e: "時間是連續數據，中間點有意義，要顯示趨勢 → 折線圖。", src: "教科書圖 4.76" },
+  { q: "記錄了十個班房在同一時間的溫度，想比較各班房的溫度。", a: "直條圖", e: "班房是分類數據，班房之間的中間點沒有意義 → 直條圖。", src: "教科書圖 4.77", x: ["群組直條圖", "堆疊直條圖"] },
+  { q: "想比較十名學生的中文和英文成績總和，並同時顯示兩科各佔多少。", a: "堆疊直條圖", e: "比較同一類別內各數據數列的總和 → 堆疊直條圖。", src: "教科書圖 4.74", x: ["群組直條圖"] },
+  { q: "想顯示公司過去十年營業額的變化趨勢。", a: "折線圖", e: "年份是連續的時間，顯示趨勢 → 折線圖。" },
+  { q: "想顯示全級選修 ICT、化學、生物、物理的學生各佔多少百分比。", a: "圓形圖", e: "各部分佔整體的百分比 → 圓形圖。", src: "教科書圖 4.78" },
+  { q: "想比較五間分店本月的銷售額。", a: "直條圖", e: "分店是分類數據，只有一個數據數列 → 直條圖。", x: ["群組直條圖", "堆疊直條圖"] },
+  { q: "想比較每班男生和女生的人數。", a: "群組直條圖", e: "每班有兩個數據數列（男、女），並排比較 → 群組直條圖。", x: ["堆疊直條圖"] },
+];
+function genGoal() {
+  const kind = R(1, 3); let cells, tcell, vcell, target, f, sol, ctx, labelT, labelV;
+  if (kind === 1) { const q = R(2, 40) * 10; sol = R(20, 300) / 2; target = Math.round(sol * q * 100) / 100; cells = { A1: "產品價格", B1: R(20, 300) / 2, A2: "買家數量", B2: q, A3: "收入", B3: "=B1*B2" }; tcell = "B3"; vcell = "B1"; f = "=B1*B2"; labelT = "收入"; labelV = "產品價格"; ctx = "店主想把收入定為 $" + target + "，並據此決定產品價格。"; }
+  else if (kind === 2) { const n = pick([20, 25, 30, 40]); const ref = R(10, 80) * 100, cp = R(2, 20) * 100; const fee = R(Math.ceil((ref + cp) / n / 10) + 5, 120) * 10; sol = fee * n - ref - cp; target = fee;
+    cells = { A1: "開支（" + n + " 名同學）", A2: "參考書", B2: ref, A3: "影印費", B3: cp, A4: "遊學團預算", B4: R(sol / 100 + 10, sol / 100 + 120) * 100, A6: "每名同學班會費", B6: "=SUM(B2:B4)/" + n }; tcell = "B6"; vcell = "B4"; f = cells.B6; labelT = "班會費"; labelV = "遊學團預算"; ctx = "同學希望縮減遊學團預算，把每名同學的班會費限制為 $" + fee + "。（題型參考：2022 卷一甲10）"; }
+  else { const m = pick([12, 24, 36]), have = R(0, 50) * 100; sol = R(5, 60) * 50; target = sol * m + have; cells = { A1: "每月儲蓄", B1: R(5, 60) * 50, A2: "月數", B2: m, A3: "現有存款", B3: have, A4: "將來存款", B4: "=B1*B2+B3" }; tcell = "B4"; vcell = "B1"; f = cells.B4; labelT = "將來存款"; labelV = "每月儲蓄"; ctx = "小明想知道每月要儲蓄多少，" + m + " 個月後的存款才剛好達到 $" + target + "。"; }
+  if (XL.calc1(Object.assign({}, cells, { [vcell]: sol }), f) !== target && Math.abs(XL.calc1(Object.assign({}, cells, { [vcell]: sol }), f) - target) > 1e-9) return genGoal();
+  const vals = {}; Object.keys(cells).forEach((a) => { vals[a] = XL.valueOf(S1(cells), "Sheet1", a); });
+  return { prompt: "<p>" + esc(ctx) + "要使用「目標搜尋」，三項設定是甚麼？目標搜尋完成後，" + vcell + " 會變成多少？</p>" + sheetHTML(vals, { c2: 2 }) + fbar(tcell, f),
+    input: parts(P.addr("目標儲存格", tcell, { traps: [{ v: vcell, msg: "目標儲存格是含公式、要達到目標的儲存格（" + labelT + "）。" }] }), P.num("目標值", target), P.addr("變數儲存格", vcell, { traps: [{ v: tcell, msg: "變數儲存格是讓 Excel 改動的輸入值（" + labelV + "），不可以是含公式的儲存格。" }] }), P.num("完成後 " + vcell + " 的值", sol)),
+    show: "目標儲存格 " + tcell + "；目標值 " + target + "；變數儲存格 " + vcell + "；" + vcell + " 變成 " + XL.disp(sol),
+    explain: ["目標儲存格：含公式、要達到目標的儲存格 → " + tcell + "（" + labelT + "）。", "目標值：想得到的結果 → " + target + "。", "變數儲存格：讓 Excel 改動的輸入值 → " + vcell + "（" + labelV + "）；必須是數值，不可以含公式。", "反求：把 " + vcell + " 設為 " + XL.disp(sol) + " 時，" + tcell + " = " + target + "。"],
+    chk: [(() => { const cc = Object.assign({}, cells, { [vcell]: sol }); delete cc[tcell]; return xlChk(cc, { Z1: f }, { Z1: target }); })()], sandbox: { cells } };
+}
+
+// =================== 題目產生器：數據庫 ===================
+const CN4 = ["歐陽志強", "司徒美儀", "陳大文", "李小芬", "張家雄", "王茵茵", "黃志明", "林嘉慧", "何建成", "吳芳如", "周偉倫", "曹勝德", "方嘉慧", "盧政香", "彭思涵", "韋麗珠"];
+function mkStu(n, o = {}) {
+  const names = sample(CN.slice(0, 14), n), cls = sample(["5A", "5B", "5C", "5D"], o.ncls || 3), en = sample(SURN, n);
+  let sid = R(10, 40); const rows = [];
+  const s1 = o.distinct ? sample(range(7, 20), n).map((x) => x * 5) : null;
+  for (let i = 0; i < n; i++) {
+    sid += R(1, 3);
+    const r = { SID: "0350" + sid, SNAME: names[i], ENAME: en[i] + " " + pick(GIVEN), SEX: pick(["M", "F"]), CLASS: pick(cls), SCORE1: s1 ? s1[i] : R(7, 19) * 5, SCORE2: R(7, 19) * 5, CREDIT: coin(0.25) ? null : coin(0.2) ? 0 : R(1, 5) * 10 };
+    rows.push(r);
+  }
+  const cols = o.cols || ["SID", "SNAME", "SEX", "CLASS", "SCORE1", "SCORE2"];
+  return { name: "STUDENT", cols, recs: rows, rows: rows.map((r) => cols.map((c) => r[c])), T: { STUDENT: [cols, rows.map((r) => cols.map((c) => r[c]))] } };
+}
+const runQ = (T, sql) => SQL.run(T, flat(sql));
+const sqlChk = (T, sql, res, ordered) => ({ t: "sql", tables: T, sql: flat(sql), exp: { cols: res.cols, rows: res.rows }, ordered: !!ordered });
+function traceHTML(T, sql, keyCols) {
+  const tr = SQL.trace(T, flat(sql)), ki = keyCols.map((k) => tr.cols.indexOf(k));
+  return '<p class="iolab">逐行判斷（✓ 成立、✗ 不成立、NULL 未知）</p>' + mini([...keyCols, ...tr.ps.map((p) => sqlI(p)), "WHERE 結果"], tr.rows.map((r) => [...ki.map((i) => esc(SQL.fmtV(r.rec[i]))), ...r.v.map(TF), TF(r.ok)]), { hl: tr.rows.map((r, i) => (r.ok === true ? i : -1)).filter((i) => i >= 0) });
+}
+const gridHint = (ordered) => (ordered ? "有 ORDER BY：記錄的次序要正確。" : "沒有 ORDER BY：任何次序都接受（通常按數據表原有次序寫）。");
+const gridPart = (res, o = {}) => P.grid(res.cols, res.rows, Object.assign({ rows: 4 }, o));
+const gridPrompt = (ordered) => '<p class="small">在下表寫出輸出（每行一筆記錄，多出的行留空；空白表示 NULL）。' + gridHint(ordered) + "</p>";
+// WHERE 條件
+function atomsBasic(st) {
+  const v = (c) => pick(st.recs)[c];
+  const s1 = v("SCORE1"), s2 = v("SCORE2"), cl = v("CLASS"), r = pick(st.recs);
+  return [
+    { s: "SEX = '" + pick(["M", "F"]) + "'" }, { s: "CLASS = '" + cl + "'" }, { s: "CLASS <> '" + cl + "'" },
+    { s: "SCORE1 >= " + s1, alt: "SCORE1 > " + s1 }, { s: "SCORE2 < " + s2, alt: "SCORE2 <= " + s2 }, { s: "SCORE1 > SCORE2" },
+    { s: "SCORE1 + SCORE2 >= " + (r.SCORE1 + r.SCORE2), alt: "SCORE1 + SCORE2 > " + (r.SCORE1 + r.SCORE2) }, { s: "SCORE1 - SCORE2 > " + pick([0, 5, 10, 15]) },
+  ];
+}
+function whereForm(A) {
+  const [a, b, c] = sample(A, 3), F = [
+    () => ({ w: a.s + " AND " + b.s, alts: [[a.s + " OR " + b.s, "把 AND 當作 OR：AND 要兩個條件都成立。"]] }),
+    () => ({ w: a.s + " OR " + b.s, alts: [[a.s + " AND " + b.s, "把 OR 當作 AND：OR 只要其中一個條件成立。"]] }),
+    () => ({ w: "NOT " + a.s, alts: [[a.s, "漏看了 NOT：NOT 把條件的結果相反。"]] }),
+    () => ({ w: a.s + " AND NOT " + b.s, alts: [[a.s + " AND " + b.s, "漏看了 NOT。"]] }),
+    () => ({ w: a.s + " OR " + b.s + " AND " + c.s, alts: [["(" + a.s + " OR " + b.s + ") AND " + c.s, "運算次序：AND 先於 OR，即 " + a.s + " OR (" + b.s + " AND " + c.s + ")。"]] }),
+    () => ({ w: "(" + a.s + " OR " + b.s + ") AND " + c.s, alts: [[a.s + " OR " + b.s + " AND " + c.s, "括號內的 OR 要先計算。"]] }),
+  ];
+  const r = pick(F)(); [a, b, c].forEach((x) => { if (x.alt && r.w.includes(x.s)) r.alts.push([r.w.replace(x.s, x.alt), "留意邊界：>= 和 <= 包括相等的數值，> 和 < 不包括。"]); });
+  return r;
+}
+function gridTraps(T, sel, alts, res) {
+  return alts.map(([w, msg]) => { try { const r = runQ(T, sel + "\nWHERE " + w); return { rows: r.rows, msg }; } catch (e) { return null; } }).filter((t) => t && JSON.stringify(t.rows) !== JSON.stringify(res.rows));
+}
+function atomsSpecial(st) {
+  const ens = st.recs.map((r) => r.ENAME), e = pick(ens), w = e.split(" ");
+  const s1 = st.recs.map((r) => r.SCORE1), lo = pick(s1), hi = lo + R(1, 4) * 5, cl = sample(uniq(st.recs.map((r) => r.CLASS)), 2);
+  const sids = st.recs.map((r) => r.SID);
+  return [
+    { s: "CLASS IN ('" + cl.join("', '") + "')" }, { s: "CLASS NOT IN ('" + cl[0] + "')" },
+    { s: "SCORE1 BETWEEN " + lo + " AND " + hi, alt: ["SCORE1 > " + lo + " AND SCORE1 < " + hi, "BETWEEN … AND … 包括兩端的數值。"] },
+    { s: "SCORE1 NOT BETWEEN " + lo + " AND " + hi },
+    { s: "ENAME LIKE '" + e.slice(0, 2) + "%'", alt: ["ENAME LIKE '" + e.slice(0, 2) + "_'", "% 代表任意數量的字符；_ 只代表一個字符。"] },
+    { s: "ENAME LIKE '%" + w[w.length - 1] + "'" }, { s: "ENAME LIKE '_" + e[1] + "%'", alt: ["ENAME LIKE '%" + e[1] + "%'", "_ 代表剛好一個字符：'_" + e[1] + "%' 要第二個字母是 " + e[1] + "。"] },
+    { s: "ENAME LIKE '%" + pick(["MAN", "KA", "HO", "LAM", "SIU", "YAN", "WAI"]) + "%'" },
+    { s: "SID LIKE '" + pick(sids).slice(0, 5) + "_'" },
+    { s: "CREDIT IS NULL", alt: ["CREDIT = 0", "NULL（沒有數據）不等於 0。"] }, { s: "CREDIT IS NOT NULL" },
+    { s: "CREDIT = 0", alt: ["CREDIT IS NULL", "0 是一個數值，不是 NULL。"] }, { s: "CREDIT > 10", alt: ["CREDIT > 10 OR CREDIT IS NULL", "與 NULL 比較的條件不成立，NULL 的記錄不會輸出。"] },
+  ];
+}
+const DT = ["文字", "數字", "日期／時間", "貨幣", "自動編號", "是／否"];
+const DT_BANK = [
+  { f: "學生編號", s: ["034930", "001275", "102003"], a: "文字", e: "編號有前置零（0 開頭），而且不會用來計算；用數字類型會失去前置零。", x: [] },
+  { f: "電話號碼", s: ["91234567", "23456789", "61238888"], a: "文字", e: "電話號碼不會用來計算，部分號碼可能有前置零或符號，應用文字（教科書把 PHONE 設為數字，見疑似錯誤 A2-22）。", src: "2019 卷一甲6" },
+  { f: "香港身份證號碼", s: ["A123456(7)", "Y654321(0)"], a: "文字", e: "含字母及括號，只能用文字。" },
+  { f: "班別", s: ["5A", "5B", "4D"], a: "文字", e: "含字母，用文字。" },
+  { f: "出生日期", s: ["2009-05-12", "2008-11-30"], a: "日期／時間", e: "日期應用日期／時間類型，方便排序及計算年齡。", x: ["文字"] },
+  { f: "入會日期", s: ["2024-09-01", "2025-01-15"], a: "日期／時間", e: "日期用日期／時間類型。", x: ["文字"] },
+  { f: "書價", s: ["$128.50", "$89.00"], a: "貨幣", e: "金額用貨幣類型（以 4 位小數精確儲存，並顯示貨幣符號）。", x: ["數字"] },
+  { f: "每月薪金", s: ["$15,000", "$18,500"], a: "貨幣", e: "金額用貨幣類型。", x: ["數字"] },
+  { f: "是否已繳交學費", s: ["☑", "☐"], a: "是／否", e: "只有兩個可能的值（布爾值），用是／否類型。", x: [] },
+  { f: "會員是否已續會", s: ["是", "否"], a: "是／否", e: "只有兩個可能的值，用是／否（DSE 稱布爾）。", x: [] },
+  { f: "借書數量", s: ["3", "12", "0"], a: "數字", e: "整數，而且可能要計算總數，用數字（DSE 稱整數）。", x: ["貨幣", "自動編號"] },
+  { f: "身高（米）", s: ["1.65", "1.72"], a: "數字", e: "有小數而且要計算，用數字（欄位大小設為單精確度或雙精確度，DSE 稱實數）。", x: ["貨幣", "自動編號"] },
+  { f: "考試分數", s: ["78", "92", "45"], a: "數字", e: "要計算平均等，用數字。", x: ["貨幣", "自動編號"] },
+  { f: "記錄編號（每加入一筆新記錄便由系統自動產生 1、2、3…）", s: ["1", "2", "3"], a: "自動編號", e: "由系統為每筆新記錄自動產生獨特的數字 → 自動編號。", x: ["數字"] },
+];
+const MASKS = [
+  { m: "0000\\-0000", item: "電話號碼", ok: () => [R(1000, 9999) + "-" + R(1000, 9999)], bad: () => [R(100, 999) + "-" + R(1000, 9999), "A" + R(100, 999) + "-" + R(1000, 9999), R(1000, 9999) + "-" + R(10000, 99999), R(10000000, 99999999) + ""] },
+  { m: "000000", item: "學生編號", ok: () => ["0" + R(10000, 99999), R(100000, 999999) + ""], bad: () => [R(10000, 99999) + "", R(100, 999) + "A" + R(10, 99), R(1000000, 9999999) + ""] },
+  { m: "999999", item: "數量", ok: () => [R(1, 99) + "", R(100, 99999) + ""], bad: () => [R(1, 99) + "A", R(1000000, 9999999) + "", "-" + R(1, 99)] },
+  { m: ">L<LL", item: "月份", ok: () => [pick(["apr", "JAN", "mAY", "Jun", "dEC", "oct"])], bad: () => [pick(["Ap1", "J4N"]), pick(["April", "June"]), pick(["Ma", "De"])] },
+  { m: "0>L", item: "班別", ok: () => [R(1, 6) + pick(["a", "B", "c", "D"])], bad: () => [R(1, 6) + "", "A" + R(1, 6), R(1, 6) + "AB", R(10, 66) + ""] },
+  { m: ">LL0000", item: "會員編號", ok: () => [pick(["hk", "KL", "nT", "Cw"]) + R(1000, 9999)], bad: () => ["H" + R(10000, 99999), "HK" + R(100, 999), "HK" + R(10000, 99999), R(10, 99) + "" + R(1000, 9999)] },
+  { m: "00:00", item: "時間", ok: () => [pick(["09", "13", "21"]) + ":" + pick(["00", "30", "45"])], bad: () => ["9:30", pick(["0930", "09-30"]), "09:3"] },
+];
+
+const GEN_DB = [
+  // ---------------- D1 數據類型與欄位 ----------------
+  { id: "D1", name: "數據類型與欄位", types: [
+    { name: "選擇數據類型", fn() {
+      const b = pick(DT_BANK), opts = shuffle([b.a, ...sample(DT.filter((d) => d !== b.a && !(b.x || []).includes(d)), 3)]);
+      return { prompt: "<p>數據表要儲存「" + esc(b.f) + "」，例子：" + b.s.map((x) => '<span class="mono">' + esc(x) + "</span>").join("、") + "。最適合的數據類型是甚麼？" + (b.src ? "（題型參考：" + b.src + "）" : "") + "</p>",
+        input: choiceIn(opts, b.a, { why: { "數字": "只由數字組成的數據不一定用數字類型：不用作計算、有前置零的（例如編號、電話）用文字。" } }), show: b.a,
+        explain: [b.e, "Access 名稱與 DSE 名稱：文字＝字符；數字＝整數／實數；是／否＝布爾。"], chk: [{ t: "bank", opts, ans: b.a }] }; } },
+    { name: "主關鍵碼", fn() {
+      const kind = R(1, 3); let cols, rows, opts, ans, keyOf;
+      for (;;) {
+        if (kind === 1) { const n = 6, names = sample(CN.slice(0, 8), 4); names.push(names[0], names[1]); const nm = shuffle(names); cols = ["SID", "SNAME", "CLASS", "CNO"]; let sid = R(10, 40); rows = nm.map((x, i) => ["0350" + (sid += R(1, 3)), x, pick(["5A", "5B"]), R(1, 4)]);
+          opts = ["SID", "SNAME", "CLASS", "CNO"]; ans = "SID"; keyOf = { SID: ["SID"], SNAME: ["SNAME"], CLASS: ["CLASS"], CNO: ["CNO"] }; }
+        else if (kind === 2) { cols = ["SID", "CLUB", "JOINYEAR"]; const sids = ["035011", "035018", "035023"], clubs = ["ICT", "STEM", "BAND"]; const pairs = shuffle(sids.flatMap((s) => clubs.map((c) => [s, c]))).slice(0, 6); rows = pairs.map(([s, c]) => [s, c, pick([2024, 2025])]);
+          opts = ["SID", "CLUB", "SID 和 CLUB（複合鍵）", "JOINYEAR"]; ans = opts[2]; keyOf = { SID: ["SID"], CLUB: ["CLUB"], [opts[2]]: ["SID", "CLUB"], JOINYEAR: ["JOINYEAR"] }; }
+        else { cols = ["CLASS", "CNO", "SNAME", "SEX"]; const cl = ["5A", "5B"]; const pairs = shuffle(cl.flatMap((c) => [1, 2, 3].map((k) => [c, k]))).slice(0, 6); const nm = sample(CN.slice(0, 8), 5); nm.push(nm[0]); rows = pairs.map(([c, k], i) => [c, k, nm[i], pick(["M", "F"])]);
+          opts = ["CLASS", "CNO", "CLASS 和 CNO（複合鍵）", "SNAME"]; ans = opts[2]; keyOf = { CLASS: ["CLASS"], CNO: ["CNO"], [opts[2]]: ["CLASS", "CNO"], SNAME: ["SNAME"] }; }
+        const uq = (k) => { const ix = k.map((c) => cols.indexOf(c)); return new Set(rows.map((r) => ix.map((i) => r[i]).join("|"))).size === rows.length; };
+        if (opts.filter((o) => uq(keyOf[o])).length === 1 && uq(keyOf[ans])) break;
+      }
+      const sh = shuffle(opts);
+      return { prompt: "<p>根據以下數據表的數據，哪一個欄位（或欄位組合）最適合作主關鍵碼？</p>" + dbHTML(kind === 2 ? "MEMBER" : "STUDENT", cols, rows),
+        input: choiceIn(sh, ans, { mono: false }), show: ans,
+        explain: ["主關鍵碼的值必須獨一無二，而且不可以是 NULL。", kind === 1 ? "SNAME 有重複的姓名，CLASS、CNO 亦有重複；只有 SID 每筆記錄都不同。即使姓名現在沒有重複，日後亦可能有同名同姓的學生。" : "單一欄位都有重複的值，要用兩個欄位組成複合鍵：兩者合起來每筆記錄都不同（教科書 5.3B）。", "如沒有合適的欄位，可加入一個 ID 欄位（自動編號）。"],
+        chk: sh.map((o) => ({ t: "uniq", cols, rows, key: keyOf[o], exp: o === ans })) }; } },
+    { name: "輸入遮罩", fn() {
+      const M = pick(MASKS), kind = /[<>]/.test(M.m) && coin(0.35) ? 3 : R(1, 2);
+      if (kind === 3) { const v = M.ok()[0], r = MASK.test(M.m, v);
+        return { prompt: "<p>「" + M.item + "」欄位的輸入遮罩是 <span class=\"mono\">" + esc(M.m) + "</span>。用戶輸入 <span class=\"mono\">" + esc(v) + "</span> 後會顯示甚麼？</p>",
+          input: parts(P.text("顯示為", r.shown)), show: r.shown, explain: ["「>」之後的字母轉為大寫，「<」之後的字母轉為小寫。", "例：教科書表 5.5 月份的遮罩 >L<LL：Apr、Jan。"], chk: [{ t: "mask", mask: M.m, value: v, ok: true, shown: r.shown }] }; }
+      const goods = uniq([...M.ok(), ...M.ok(), ...M.ok()]), bads = uniq(M.bad()).filter((b) => !MASK.test(M.m, b).ok);
+      let opts, ans;
+      if (kind === 1) { ans = pick(goods); opts = shuffle([ans, ...sample(bads, 3)]); } else { ans = pick(bads); opts = shuffle([ans, ...sample(goods.concat(uniq([...M.ok(), ...M.ok(), ...M.ok(), ...M.ok()])), 6).filter((x, i, a) => a.indexOf(x) === i).slice(0, 3)]); }
+      if (opts.length !== 4) return GEN_DB[0].types[2].fn();
+      const why = {}; opts.forEach((o) => { const r = MASK.test(M.m, o); why[o] = r.ok ? "可以輸入：符合遮罩每一位的要求。" : r.why; });
+      return { prompt: "<p>「" + M.item + "」欄位的輸入遮罩是 <span class=\"mono\">" + esc(M.m) + "</span>。以下哪一個值" + (kind === 1 ? "<b>可以</b>" : "<b>不能</b>") + "按此遮罩完整輸入？（值已包括遮罩自動顯示的符號，例如「-」。）</p>",
+        input: choiceIn(opts, ans, { mono: true, why }), show: ans,
+        explain: ["0 必須是數字；9 可以是數字；L 必須是字母；? 可以是字母；A 必須是字母或數字；a 可以是字母或數字；> 之後轉大寫；< 之後轉小寫；\\ 下一個字符照樣顯示（教科書表 5.4）。", ...opts.map((o) => o + "：" + why[o])],
+        chk: opts.map((o) => ({ t: "mask", mask: M.m, value: o, ok: MASK.test(M.m, o).ok })) }; } },
+    { name: "欄位大小", fn() {
+      const kind = R(1, 3); let col, vals;
+      if (kind === 1) { col = "ENAME"; vals = sample(SURN, 5).map((s) => s + " " + pick(GIVEN)); }
+      else if (kind === 2) { col = "SNAME"; vals = sample(CN4, 5); }
+      else { col = "PID"; vals = range(0, 5).map(() => pick(["P", "PT", "A"]) + R(1, 9999)); }
+      const ans = Math.max(...vals.map((v) => v.length));
+      return { prompt: "<p>文字欄位 " + col + " 現有以下數據。如要剛好容納這些數據，欄位大小最小應設為多少？</p>" + dbHTML("", [col], vals.map((v) => [v]), { sp: true }),
+        input: parts(P.num("欄位大小", ans, { sfx: "個字符" })), show: String(ans),
+        explain: ["欄位大小為 N 的文字欄位最多儲存 N 個字符；空格及每個中文字都算一個字符。", "最長的是「" + vals.find((v) => v.length === ans) + "」，共 " + ans + " 個字符。", "實際設計時要預留空間：例如姓名欄不應設為 3，因為有些人的姓名多於 3 個字（教科書 p.97）。"],
+        chk: [{ t: "maxlen", values: vals, exp: ans }] }; } },
+  ] },
+  // ---------------- D2 SELECT 與 WHERE ----------------
+  { id: "D2", name: "SELECT 與 WHERE", types: [
+    { name: "寫出輸出", fn() {
+      let st, sel, w, res, alts;
+      for (;;) { st = mkStu(7); const items = sample(["SNAME", "SID", "CLASS", "SCORE1", "SCORE2", "SCORE1 + SCORE2"], R(1, 3)); sel = "SELECT " + items.join(", ") + "\nFROM STUDENT"; const f = whereForm(atomsBasic(st)); w = f.w; alts = f.alts;
+        res = runQ(st.T, sel + "\nWHERE " + w); if (res.rows.length >= 1 && res.rows.length <= 4) break; }
+      const sql = sel + "\nWHERE " + w;
+      return { prompt: "<p>寫出以下 SQL 語句的輸出。（題型參考：2020 卷一乙1(b)、2015 卷一甲14）</p>" + dbHTML("STUDENT", st.cols, st.rows) + sqlHTML(sql) + gridPrompt(false),
+        input: parts(gridPart(res, { traps: gridTraps(st.T, sel, alts, res) })), show: res.rows.map((r) => r.map(SQL.fmtV).join("，")).join("／"),
+        explain: ["執行次序：FROM 選數據表 → WHERE 逐行判斷 → SELECT 選出欄位（按 SELECT 的次序）。", "邏輯運算次序：NOT → AND → OR；有括號先計算括號。", "輸出第一行寫欄名；每筆記錄寫一行。"],
+        after: traceHTML(st.T, sql, ["SID", "SNAME"]), chk: [sqlChk(st.T, sql, res)], sandbox: { tables: st.T } }; } },
+    { name: "輸出行數", fn() {
+      let st, w, res, alts;
+      for (;;) { st = mkStu(8); const f = whereForm(atomsBasic(st)); w = f.w; alts = f.alts; res = runQ(st.T, "SELECT * FROM STUDENT WHERE " + w); if (res.rows.length >= 1 && res.rows.length <= 7) break; }
+      const sql = "SELECT *\nFROM STUDENT\nWHERE " + w;
+      const traps = alts.map(([a, msg]) => ({ v: runQ(st.T, "SELECT * FROM STUDENT WHERE " + a).rows.length, msg })).filter((t) => t.v !== res.rows.length);
+      return { prompt: "<p>以下 SQL 語句會輸出多少筆記錄？（題型參考：2016 卷一甲3）</p>" + dbHTML("STUDENT", st.cols, st.rows) + sqlHTML(sql),
+        input: parts(P.num("記錄數目", res.rows.length, { traps })), show: String(res.rows.length),
+        explain: ["逐行判斷 WHERE 的條件，只輸出條件成立的記錄。", "NOT → AND → OR；字串要加單引號，Access 比較字串時不分大小寫。"], after: traceHTML(st.T, sql, ["SID", "SNAME"]), chk: [sqlChk(st.T, sql, res)], sandbox: { tables: st.T } }; } },
+  ] },
+  // ---------------- D3 IN／BETWEEN／LIKE／IS NULL ----------------
+  { id: "D3", name: "IN、BETWEEN、LIKE、IS NULL", types: [
+    { name: "寫出輸出", fn() {
+      let st, sql, res, at, sel;
+      for (;;) { st = mkStu(7, { cols: ["SID", "ENAME", "CLASS", "SCORE1", "CREDIT"] }); at = pick(atomsSpecial(st)); const items = sample(["SID", "ENAME", "CLASS", "SCORE1"], R(1, 2)); if (/CREDIT/.test(at.s) && coin(0.5)) items.push("CREDIT");
+        sel = "SELECT " + items.join(", ") + "\nFROM STUDENT"; let w = at.s; if (coin(0.3)) w += " AND " + pick(["SCORE1 >= 50", "CLASS <> '5D'"]); sql = sel + "\nWHERE " + w; res = runQ(st.T, sql); if (res.rows.length >= 1 && res.rows.length <= 4 && res.rows.length < 7) break; }
+      const traps = at.alt ? gridTraps(st.T, sel, [[flat(sql).split("WHERE ")[1].replace(at.s, at.alt[0]), at.alt[1]]], res) : [];
+      return { prompt: "<p>寫出以下 SQL 語句的輸出（空白表示 NULL）。</p>" + dbHTML("STUDENT", st.cols, st.rows) + sqlHTML(sql) + gridPrompt(false),
+        input: parts(gridPart(res, { traps })), show: res.rows.map((r) => r.map((v) => (v === null ? "（空白）" : SQL.fmtV(v))).join("，")).join("／"),
+        explain: ["IN (…)：等於其中一個值；BETWEEN a AND b：包括 a 和 b。", "LIKE：% 代表任意數量（包括零個）的字符，_ 代表剛好一個字符（Access 寫 * 和 ?）。", "IS NULL 找出沒有數據的欄位；NULL 不等於 0；與 NULL 比較（例如 CREDIT > 10）結果是未知，記錄不會輸出。"],
+        after: traceHTML(st.T, sql, ["SID", "ENAME"]), chk: [sqlChk(st.T, sql, res)], sandbox: { tables: st.T } }; } },
+    { name: "輸出行數", fn() {
+      let st, sql, res, at;
+      for (;;) { st = mkStu(8, { cols: ["SID", "ENAME", "CLASS", "SCORE1", "CREDIT"] }); at = pick(atomsSpecial(st)); sql = "SELECT *\nFROM STUDENT\nWHERE " + at.s; res = runQ(st.T, sql); if (res.rows.length <= 7) break; }
+      const traps = at.alt ? [{ v: runQ(st.T, "SELECT * FROM STUDENT WHERE " + at.alt[0]).rows.length, msg: at.alt[1] }].filter((t) => t.v !== res.rows.length) : [];
+      return { prompt: "<p>以下 SQL 語句會輸出多少筆記錄？（空白表示 NULL）</p>" + dbHTML("STUDENT", st.cols, st.rows) + sqlHTML(sql),
+        input: parts(P.num("記錄數目", res.rows.length, { traps })), show: String(res.rows.length),
+        explain: ["IN、BETWEEN（包括兩端）、LIKE（% 任意數量字符、_ 一個字符）、IS NULL。", "0 是數值，不是 NULL；空白（NULL）表示沒有數據。"], after: traceHTML(st.T, sql, ["SID", "ENAME"]), chk: [sqlChk(st.T, sql, res)], sandbox: { tables: st.T } }; } },
+  ] },
+  // ---------------- D4 ORDER BY ----------------
+  { id: "D4", name: "ORDER BY", types: [
+    { name: "排序後的輸出", fn() {
+      let st, sql, res;
+      const KEYS = [["CLASS", "SCORE1 DESC"], ["CLASS DESC", "SCORE1"], ["SEX", "SCORE2 DESC"], ["SEX DESC", "SID"], ["CLASS", "SID DESC"], ["SCORE1 DESC", "SID"]];
+      for (;;) { st = mkStu(8); const k = pick(KEYS), w = pick(["SCORE1 >= " + pick(st.recs).SCORE1, "SCORE2 < " + pick(st.recs).SCORE2, "SEX = '" + pick(["M", "F"]) + "'", "CLASS <> '" + pick(st.recs).CLASS + "'"]);
+        const items = uniq(["SNAME", k[0].split(" ")[0], k[1].split(" ")[0]]); sql = "SELECT " + items.join(", ") + "\nFROM STUDENT\nWHERE " + w + "\nORDER BY " + k.join(", "); res = runQ(st.T, sql);
+        if (res.rows.length < 3 || res.rows.length > 4) continue; const c1 = items.indexOf(k[0].split(" ")[0]), c2 = items.indexOf(k[1].split(" ")[0]);
+        const tie = res.rows.some((a, i) => res.rows.some((b, j) => i < j && a[c1] === b[c1])), full = res.rows.some((a, i) => res.rows.some((b, j) => i < j && a[c1] === b[c1] && a[c2] === b[c2]));
+        if (tie && !full) break; }
+      return { prompt: "<p>寫出以下 SQL 語句的輸出（次序要正確）。（題型參考：2014 卷一乙4(b)(i)）</p>" + dbHTML("STUDENT", st.cols, st.rows) + sqlHTML(sql) + gridPrompt(true),
+        input: parts(gridPart(res, { ordered: true })), show: res.rows.map((r) => r.map(SQL.fmtV).join("，")).join("／"),
+        explain: ["先按 WHERE 篩選，再排序。", "ORDER BY 第一個欄位決定次序；第一個欄位相同時，才按第二個欄位。", "ASC（可省略）遞增：數字由小至大、文字 A→Z；DESC 遞減。"],
+        after: traceHTML(st.T, sql, ["SID", "SNAME"]), chk: [sqlChk(st.T, sql, res, true)], sandbox: { tables: st.T } }; } },
+    { name: "選擇 ORDER BY 子句", fn() {
+      const C = ["ORDER BY SCORE1 DESC", "ORDER BY SCORE1", "ORDER BY CLASS, SCORE1 DESC", "ORDER BY CLASS DESC, SCORE1", "ORDER BY CLASS, SCORE1", "ORDER BY CLASS DESC, SCORE1 DESC", "ORDER BY SID DESC"];
+      let st, good, opts, res, base;
+      for (;;) { st = mkStu(6, { distinct: true, ncls: 2 }); base = "SELECT SID, CLASS, SCORE1\nFROM STUDENT\n"; good = pick(C); res = runQ(st.T, base + good);
+        const others = shuffle(C.filter((c) => c !== good)).filter((c) => JSON.stringify(runQ(st.T, base + c).rows) !== JSON.stringify(res.rows)); if (others.length < 3) continue; opts = shuffle([good, ...others.slice(0, 3)]); break; }
+      return { prompt: "<p>執行 <span class=\"mono\">SELECT SID, CLASS, SCORE1 FROM STUDENT</span> 再加上一個 ORDER BY 子句，得出以下輸出。是哪一個 ORDER BY 子句？（題型參考：2023 卷一甲5）</p>" + dbHTML("STUDENT", st.cols, st.rows) + "<p>輸出：</p>" + dbHTML("", res.cols, res.rows),
+        input: choiceIn(opts, good, { mono: true }), show: good,
+        explain: ["先看輸出的第一個排序欄位：哪一欄是整體遞增或遞減？", "第一個欄位相同的記錄之間，再看第二個欄位的次序。", "沒有寫 ASC 或 DESC 時是遞增（ASC）。"],
+        chk: [{ t: "sqlopt", tables: st.T, sqls: opts.map((o) => flat(base + o)), want: res.rows, ans: opts.indexOf(good) }], sandbox: { tables: st.T } }; } },
+  ] },
+  // ---------------- D5 統計函數與 GROUP BY ----------------
+  { id: "D5", name: "統計函數與 GROUP BY", types: [
+    { name: "統計函數", fn() {
+      let st, sql, res, kind;
+      for (;;) { st = mkStu(7, { cols: ["SID", "SNAME", "SEX", "CLASS", "SCORE1", "SCORE2", "CREDIT"] }); kind = R(1, 6); const r = pick(st.recs);
+        sql = kind === 1 ? "SELECT COUNT(*)\nFROM STUDENT\nWHERE " + pick(["SEX = '" + r.SEX + "'", "SCORE1 >= " + r.SCORE1, "CLASS = '" + r.CLASS + "' OR SCORE2 > " + r.SCORE2])
+          : kind === 2 ? "SELECT COUNT(CREDIT)\nFROM STUDENT" : kind === 3 ? "SELECT MAX(SCORE1), MIN(SCORE2)\nFROM STUDENT\nWHERE CLASS = '" + r.CLASS + "'"
+          : kind === 4 ? "SELECT SUM(SCORE1)\nFROM STUDENT\nWHERE SEX = '" + r.SEX + "'" : kind === 5 ? "SELECT AVG(SCORE2)\nFROM STUDENT\nWHERE SCORE1 >= " + r.SCORE1 : "SELECT AVG(CREDIT)\nFROM STUDENT";
+        res = runQ(st.T, sql); if (res.rows[0].every((v) => v !== null && dp2(v)) && st.recs.some((x) => x.CREDIT === null)) break; }
+      const one = res.cols.length === 1, v = res.rows[0][0];
+      const traps = kind === 2 ? [{ v: st.recs.length, msg: "COUNT(欄位) 不計 NULL；COUNT(*) 才計算所有記錄。" }] : kind === 6 ? [{ v: st.recs.reduce((s, x) => s + (x.CREDIT || 0), 0) / st.recs.length, msg: "AVG 略去 NULL：分母只計有數據的記錄（0 是數據，要計入）。" }] : [];
+      return { prompt: "<p>寫出以下 SQL 語句的輸出（空白表示 NULL）。（題型參考：2018 卷一甲2、2025 卷一甲10）</p>" + dbHTML("STUDENT", st.cols, st.rows) + sqlHTML(sql) + (one ? "" : gridPrompt(false)),
+        input: parts(one ? P.num(res.cols[0], v, { traps: traps.filter((t) => Math.abs(t.v - v) > 1e-9) }) : gridPart(res)), show: res.rows[0].map(SQL.fmtV).join("，"),
+        explain: ["沒有 GROUP BY 時，統計函數把所有（經 WHERE 篩選的）記錄計算成一個結果，只輸出一行。", "COUNT(*) 計算記錄數目；COUNT(欄位)、SUM、AVG、MAX、MIN 都略去 NULL。"], after: /WHERE/.test(sql) ? traceHTML(st.T, sql, ["SID", "SNAME"]) : "",
+        chk: [sqlChk(st.T, sql, res)], sandbox: { tables: st.T } }; } },
+    { name: "GROUP BY 輸出", fn() {
+      let st, sql, res;
+      for (;;) { st = mkStu(8); const r = pick(st.recs);
+        sql = pick(["SELECT CLASS, COUNT(*)\nFROM STUDENT\nGROUP BY CLASS", "SELECT SEX, AVG(SCORE1)\nFROM STUDENT\nWHERE CLASS <> '" + r.CLASS + "'\nGROUP BY SEX", "SELECT CLASS, SUM(SCORE1)\nFROM STUDENT\nWHERE NOT (SEX = 'M' AND SCORE1 < " + r.SCORE1 + ")\nGROUP BY CLASS", "SELECT CLASS, MAX(SCORE2)\nFROM STUDENT\nWHERE SEX = '" + r.SEX + "'\nGROUP BY CLASS", "SELECT SEX, COUNT(*), SUM(SCORE2)\nFROM STUDENT\nWHERE SCORE1 >= " + r.SCORE1 + "\nGROUP BY SEX"]);
+        res = runQ(st.T, sql); if (res.rows.length >= 1 && res.rows.length <= 4 && res.rows.every((x) => x.every((v) => typeof v !== "number" || dp2(v)))) break; }
+      const gcol = res.cols[0], gi = st.cols.indexOf(gcol), wsql = /WHERE/.test(sql) ? flat(sql).replace(/^SELECT .* FROM/, "SELECT * FROM").replace(/ GROUP BY.*$/, "") : "SELECT * FROM STUDENT", kept = runQ(st.T, wsql).rows;
+      const groups = uniq(kept.map((x) => x[gi])).map((g) => g + "：" + kept.filter((x) => x[gi] === g).map((x) => x[1]).join("、"));
+      return { prompt: "<p>寫出以下 SQL 語句的輸出。（題型參考：教科書例題 5.4、2025 卷一乙7(d)(ii)）</p>" + dbHTML("STUDENT", st.cols, st.rows) + sqlHTML(sql) + gridPrompt(false),
+        input: parts(gridPart(res)), show: res.rows.map((r) => r.map(SQL.fmtV).join("，")).join("／"),
+        explain: ["執行次序：FROM → WHERE（先篩選記錄）→ GROUP BY（分組）→ SELECT（每組計算一行）。", "WHERE 後的分組：" + groups.join("；") + "。", "GROUP BY 與樞紐分析表相似：分組欄位就像樞紐分析表的「列」，統計函數就像「值」。"],
+        after: /WHERE/.test(sql) ? traceHTML(st.T, sql, ["SID", "SNAME"]) : "", chk: [sqlChk(st.T, sql, res)], sandbox: { tables: st.T } }; } },
+    { name: "輸出多少行", fn() {
+      const st = mkStu(7), r = pick(st.recs), kind = R(1, 4);
+      const sql = kind === 1 ? "SELECT COUNT(*)\nFROM STUDENT\nWHERE SCORE1 >= " + r.SCORE1 : kind === 2 ? "SELECT CLASS, AVG(SCORE1)\nFROM STUDENT\nGROUP BY CLASS" : kind === 3 ? "SELECT SNAME\nFROM STUDENT\nWHERE CLASS = '" + r.CLASS + "'" : "SELECT SEX, MAX(SCORE2)\nFROM STUDENT\nWHERE CLASS <> '" + r.CLASS + "'\nGROUP BY SEX";
+      const res = runQ(st.T, sql), n = res.rows.length;
+      const traps = kind === 1 ? [{ v: res.rows[0][0], msg: "COUNT(*) 的結果是一個數字，但只輸出一行。" }].filter((t) => t.v !== 1) : kind === 2 || kind === 4 ? [{ v: runQ(st.T, flat(sql).replace(/^SELECT .* FROM/, "SELECT * FROM").replace(/ GROUP BY.*$/, "")).rows.length, msg: "GROUP BY 每組只輸出一行，不是每筆記錄一行。" }].filter((t) => t.v !== n) : [];
+      return { prompt: "<p>以下 SQL 語句會輸出多少行（不計欄名）？（題型參考：2025 卷一甲10）</p>" + dbHTML("STUDENT", st.cols, st.rows) + sqlHTML(sql),
+        input: parts(P.num("行數", n, { traps })), show: String(n),
+        explain: [kind === 1 ? "沒有 GROUP BY 的統計函數只輸出一行。" : kind === 3 ? "沒有統計函數：每筆符合條件的記錄輸出一行。" : "GROUP BY：每組一行；先按 WHERE 篩選再分組。", "輸出：" + res.rows.map((x) => x.map(SQL.fmtV).join("，")).join("／")], chk: [sqlChk(st.T, sql, res)], sandbox: { tables: st.T } }; } },
+  ] },
+  // ---------------- D5x 延伸：HAVING ----------------
+  { id: "D5x", name: "HAVING", ext: true, types: [
+    { name: "HAVING 輸出", fn() {
+      let st, sql, res;
+      for (;;) { st = mkStu(9, { ncls: 3 }); const t = pick(st.recs);
+        sql = pick(["SELECT CLASS, COUNT(*)\nFROM STUDENT\nGROUP BY CLASS\nHAVING COUNT(*) >= " + R(2, 4), "SELECT SEX, AVG(SCORE1)\nFROM STUDENT\nGROUP BY SEX\nHAVING AVG(SCORE1) > " + R(11, 16) * 5, "SELECT CLASS, SUM(SCORE2)\nFROM STUDENT\nWHERE SCORE1 >= " + t.SCORE1 + "\nGROUP BY CLASS\nHAVING SUM(SCORE2) > " + R(10, 30) * 5]);
+        res = runQ(st.T, sql); const all = runQ(st.T, sql.replace(/\nHAVING.*$/, "")); if (res.rows.length >= 1 && res.rows.length < all.rows.length && res.rows.every((x) => x.every((v) => typeof v !== "number" || dp2(v)))) break; }
+      const all = runQ(st.T, sql.replace(/\nHAVING.*$/, ""));
+      return { prompt: "<p>寫出以下 SQL 語句的輸出。</p>" + dbHTML("STUDENT", st.cols, st.rows) + sqlHTML(sql) + gridPrompt(false),
+        input: parts(gridPart(res)), show: res.rows.map((r) => r.map(SQL.fmtV).join("，")).join("／"),
+        explain: ["WHERE 在分組前篩選記錄；HAVING 在分組後篩選組（條件可以用統計函數）。", "分組後未篩選前：" + all.rows.map((r) => r.map(SQL.fmtV).join("，")).join("／") + "。", "HAVING 屬延伸內容（選修 A 再深入學習）。"],
+        chk: [sqlChk(st.T, sql, res)], sandbox: { tables: st.T } }; } },
+  ] },
+  // ---------------- D6 SQL 函數 ----------------
+  { id: "D6", name: "SQL 函數", types: [
+    { name: "函數輸出", fn() {
+      let st, sql, res, cs = false;
+      for (;;) { st = mkStu(6, { cols: ["SID", "ENAME", "CLASS", "SCORE1", "SCORE2"] }); const r = pick(st.recs), d = R(3, 9);
+        const F = ["SELECT ENAME, LEN(ENAME)", "SELECT SID, MID(SID, " + R(2, 4) + ", " + R(2, 3) + ")", "SELECT LOWER(ENAME)", "SELECT SID, INT(SCORE1 / " + d + ")", "SELECT ENAME, ABS(SCORE1 - SCORE2)", "SELECT SID, INT((SCORE1 + SCORE2) / 2)", "SELECT MID(ENAME, 1, 3), SCORE1", "SELECT UPPER(MID(ENAME, 2, 3))"];
+        const f = pick(F); cs = /LOWER|UPPER/.test(f); sql = f + "\nFROM STUDENT\nWHERE " + pick(["CLASS = '" + r.CLASS + "'", "SCORE1 >= " + r.SCORE1, "SID < '" + r.SID + "'"]); res = runQ(st.T, sql);
+        if (res.rows.length >= 1 && res.rows.length <= 3) break; }
+      return { prompt: "<p>寫出以下 SQL 語句的輸出" + (cs ? "（注意大小寫）" : "") + "。</p>" + dbHTML("STUDENT", st.cols, st.rows, { sp: true }) + sqlHTML(sql) + gridPrompt(false),
+        input: parts(gridPart(res, { cs })), show: res.rows.map((r) => r.map(SQL.fmtV).join("，")).join("／"),
+        explain: ["INT：向下取整；ABS：絕對值；LEN：字符數（包括空格）；MID(文字, 開始位置, 字符數)。", "UPPER／LOWER（Access 寫 UCASE／LCASE）。", "Access 的 / 是一般除法（有小數），INT 才把結果向下取整。"], after: traceHTML(st.T, sql, ["SID", "ENAME"]),
+        chk: [sqlChk(st.T, sql, res)], sandbox: { tables: st.T } }; } },
+    { name: "Excel 與 Access 的 TRIM", fn() {
+      const a = pick(["HO", "WONG", "CHAN"]), b = pick(["KA", "SIU", "TAI"]), c = pick(["YAN", "MING", "MAN"]);
+      const s = " ".repeat(R(1, 3)) + a + " ".repeat(R(2, 3)) + b + " " + c + " ".repeat(R(1, 2));
+      const cells = { A2: s }, xv = calcAt(cells, "=LEN(TRIM(A2))"), T = { STUDENT: [["SID", "ENAME"], [["035011", s]]] }, sres = runQ(T, "SELECT LEN(TRIM(ENAME)) FROM STUDENT"), av = sres.rows[0][0];
+      return { prompt: "<p>試算表 A2 及數據表 STUDENT 的 ENAME 都儲存了以下文字（空格以 ␣ 顯示）：</p><p class=\"mono\">" + SP(s) + "</p><p>寫出兩個結果。</p>" + fbar("B2", "=LEN(TRIM(A2))") + sqlHTML("SELECT LEN(TRIM(ENAME))\nFROM STUDENT"),
+        input: parts(P.num("Excel：=LEN(TRIM(A2))", xv), P.num("Access：LEN(TRIM(ENAME))", av)), show: "Excel " + xv + "；Access " + av,
+        explain: ["Excel 的 TRIM 刪除頭尾的空格，並把中間連續的空格變成一個：「" + calcAt(cells, "=TRIM(A2)").replace(/ /g, "␣") + "」。", "Access（SQL）的 TRIM 只刪除頭尾的空格，中間的空格不變：「" + s.trim().replace(/ /g, "␣") + "」。", "兩者同名但作用不同（見溫習紙 §15）。"],
+        chk: [xlChk(cells, { B2: "=LEN(TRIM(A2))" }, { B2: xv }), sqlChk(T, "SELECT LEN(TRIM(ENAME)) FROM STUDENT", sres)] }; } },
+  ] },
+];
+const GEN = { sheet: GEN_SHEET, db: GEN_DB };
+// 提示：方法
+const HINTS = {
+  S1: [["先計算括號內，再計算 * 和 /，最後計算 + 和 −；同一級由左至右。", "比較運算（= <> < > <= >=）的結果是 TRUE 或 FALSE；字串比較不分大小寫，按字母次序逐個字符比較。", "& 把兩邊變成文字再接起來；算術運算先於 &。"], "=(8+4)/2-6/3 → 12/2-2 → 6-2 = 4"],
+  S2: [["SUM、AVERAGE、MAX、MIN、COUNT 只計範圍內的數字，略去文字及空白儲存格。", "COUNTA 計算非空白儲存格；COUNTBLANK 計算空白儲存格。", "AVERAGE 不計空白，但 0 是數字，要計入。", "INT 向下取整：INT(-3.2) = -4。", "RANK 預設由大至小；同分同名次，下一個名次跳過。"], "數值 3, 3, 0 → RANK(0, …) = 3"],
+  S2x: [["ROUND：5 或以上進位（遠離 0）。", "ROUNDUP：有餘數便遠離 0；ROUNDDOWN：直接刪去（趨向 0）。", "位數負數：-1 捨入至十位，-2 捨入至百位。", "LARGE(範圍, k) 第 k 大；SMALL(範圍, k) 第 k 小。"], "ROUND(-2.5, 0) = -3；ROUNDDOWN(-3.78, 1) = -3.7"],
+  S3: [["IF(條件, 成立時, 不成立時)；巢狀 IF 由外至內，第一個成立的條件決定結果。", "AND 全部成立；OR 任何一個成立；NOT 相反。", "COUNTIF(範圍, 準則)；SUMIF(條件範圍, 準則, 加總範圍)。", "準則 \">=\"&G2 先串連成字串再使用。", "寫公式：文字加雙引號；數字結果不加引號；寫 <= 不寫 ≤。"], "=COUNTIF(D2:D9,\">=\"&G1)"],
+  S4: [["LEN 計算字符數（空格也算）。", "LEFT／RIGHT(文字, n)；MID(文字, 開始位置, 字符數)。", "FIND 區分大小寫，傳回第一次出現的位置；找不到得 #VALUE!。", "PROPER 每個英文字首字母大寫；TRIM 刪除頭尾空格，中間連續空格變一個。", "組合公式由最內層開始計算。"], "A2 = \"Chan Tai Man\"：FIND(\" \",A2) = 5"],
+  S5: [["VLOOKUP(查閱值, 查閱表, 欄號, FALSE)：精確查找，找不到得 #N/A。", "第四個參數 TRUE 或省略：近似查找，第一欄要遞增，取不大於查閱值的最大者。", "欄號由查閱表第一欄起計；超出查閱表欄數得 #REF!。", "公式要複製時，查閱表加 $。"], "下限 0 F、50 C、70 B：分數 65 → C"],
+  S5x: [["HLOOKUP 與 VLOOKUP 相同，只是查閱表橫放：在第一列找，再取第 n 列。"], ""],
+  S6: [["複製公式：相對參照按列差、欄差移動；有 $ 的部分不變。", "$B$1 欄列都固定；$B1 只固定欄；B$1 只固定列。", "移出 A 欄或第 1 列之前便得 #REF!。", "決定 $：複製時哪一部分不應改變，便在它前面加 $。"], "C2 =A1*$B$1 複製到 D4 → =B3*$B$1"],
+  S7: [["#DIV/0! 除以 0 或空白；#VALUE! 數據類型錯誤。", "#NAME? 函數名稱錯誤或文字沒有引號；#REF! 參照無效。", "#N/A 查閱值找不到；#NULL! 範圍沒有交集。"], ""],
+  S8: [["篩選只隱藏不符合條件的列，列號會跳號。", "多欄篩選：記錄要同時符合所有條件。", "多層排序：先按第一層，第一層相同才看第二層。"], ""],
+  S9: [["「每個 X（每個 Y）的 Z 的總和／次數／平均」：X 放列，Y 放欄，Z 放值。", "總和 → 加總；次數 → 項目個數；平均 → 平均值。", "篩選區只用來選擇顯示哪部分數據。", "計算數值：先找出同時符合列及欄標籤的記錄。"], "每間分店每個類別的總金額：列 分店、欄 類別、值 金額（加總）"],
+  S10: [["改變輸入看結果 → 分析藍本（「假設」分析）。", "已知目標結果，反求輸入 → 目標搜尋：目標儲存格（含公式）、目標值、變數儲存格（輸入值）。", "按類別匯總 → 樞紐分析表；只顯示部分記錄 → 篩選；改變次序 → 排序。", "圖表：分類比較 → 直條圖；連續數據、趨勢 → 折線圖；百分比 → 圓形圖。"], ""],
+  D1: [["前置零、不用計算的編號（學生編號、電話）→ 文字。", "主關鍵碼：值獨一無二、不可以是 NULL；單一欄位不足時用複合鍵。", "遮罩：0 必須數字、9 可以數字、L 必須字母、? 可以字母、A 必須字母或數字、> 轉大寫、< 轉小寫、\\ 照樣顯示。", "欄位大小：最長數據的字符數（中文字每字一個字符）。"], "0>L：5a → 5A"],
+  D2: [["先 FROM，再 WHERE 逐行判斷，最後 SELECT 選欄。", "NOT → AND → OR；有括號先計算。", "字串用單引號；Access 比較字串不分大小寫。", "輸出第一行寫欄名，每筆記錄一行。"], ""],
+  D3: [["IN (…)：等於其中一個值。", "BETWEEN a AND b：包括 a 和 b。", "LIKE：% 任意數量字符（Access *）；_ 一個字符（Access ?）。", "IS NULL；NULL 不等於 0；與 NULL 比較的條件不成立。"], "'CH%' 配合 CHAN TAI MAN；'_H%' 第二個字母是 H"],
+  D4: [["先 WHERE 篩選，再 ORDER BY 排序。", "第一個欄位相同時才看第二個欄位。", "ASC 遞增（可省略）；DESC 遞減。"], ""],
+  D5: [["沒有 GROUP BY：統計函數只輸出一行。", "COUNT(*) 計記錄；COUNT(欄位)、SUM、AVG、MAX、MIN 略去 NULL。", "GROUP BY：先 WHERE，再分組，每組一行。"], ""],
+  D5x: [["WHERE 在分組前篩選記錄；HAVING 在分組後篩選組。"], ""],
+  D6: [["INT 向下取整；ABS 絕對值；LEN 字符數；MID(文字, 開始, 字符數)。", "UPPER／LOWER（Access：UCASE／LCASE）。", "SQL 的 TRIM 只刪頭尾空格；Excel 的 TRIM 還把中間連續空格變一個。"], ""],
+};
+/*GEN:END*/
+
+// =================== 介面 ===================
+const $ = (id) => document.getElementById(id);
+const h = (tag, attrs = {}, html) => { const e = document.createElement(tag); Object.entries(attrs).forEach(([k, v]) => { if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else e.setAttribute(k, v); }); if (html !== undefined) e.innerHTML = html; return e; };
+const LS = { get(k, d) { try { const v = localStorage.getItem("a2lab-" + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem("a2lab-" + k, JSON.stringify(v)); } catch (e) {} } };
+const MODES = [
+  { id: "sheet", name: "試算表", note: "第 4 章：公式與運算符、函數（統計、條件、文字、查閱）、複製公式與 $、篩選與排序、樞紐分析表、選用工具及圖表。",
+    tips: "<b>寫法提醒：</b>公式以 = 開頭（評卷時可省略）；文字用雙引號；寫 &lt;= 不寫 ≤；用 AVERAGE 不寫 AVG；邏輯函數寫 OR(…, …)；數字結果不加引號；只在需要的地方加 $。" },
+  { id: "db", name: "數據庫", note: "第 5 章：數據類型、主關鍵碼、輸入遮罩、欄位大小；SELECT 與 WHERE；IN、BETWEEN、LIKE、IS NULL；ORDER BY；統計函數與 GROUP BY；SQL 函數。",
+    tips: "<b>寫法提醒：</b>卷一只考解讀 SQL：寫輸出時第一行寫欄名（按 SELECT 的次序），每筆記錄一行；有 ORDER BY 便要按次序。字串用單引號；萬用字符 DSE 寫 % _，Access 寫 * ?。" },
+];
+const S = { mode: "sheet", q: null, cat: null, type: null, n: 0, answered: false, right: 0, total: 0, streak: LS.get("streak", 0), best: LS.get("best", 0), sel: null, on: {}, wild: "dse" };
+if (typeof S.streak !== "number") S.streak = 0; if (typeof S.best !== "number") S.best = 0;
+const CATS = (m) => GEN[m];
+const hsh = (() => { try { return location.hash.replace("#", ""); } catch (e) { return ""; } })(); if (MODES.some((x) => x.id === hsh)) S.mode = hsh;
+MODES.forEach((m) => { S.on[m.id] = new Set(CATS(m.id).filter((c) => !c.ext).map((c) => c.id)); });
+(() => { const saved = LS.get("filter", null); if (!saved || typeof saved !== "object") return; MODES.forEach((m) => { if (!Array.isArray(saved[m.id])) return; const ids = new Set(CATS(m.id).map((c) => c.id)); S.on[m.id] = new Set(saved[m.id].filter((x) => ids.has(x))); }); })();
+const saveFilter = () => { const o = {}; MODES.forEach((m) => { o[m.id] = [...S.on[m.id]]; }); LS.set("filter", o); };
+const md = (s) => esc(s).replace(/`([^`]+)`/g, (m, a) => "<code>" + a + "</code>");
+function applyWild(root) {
+  (root || document).querySelectorAll(".sqlc[data-sql]").forEach((e) => { e.innerHTML = sqlRender(e.getAttribute("data-sql"), S.wild); });
+  (root || document).querySelectorAll(".sqli[data-sql]").forEach((e) => { const s = e.getAttribute("data-sql"); e.textContent = S.wild === "access" ? SQL.toAccess(s) : s; });
+}
+document.querySelectorAll("#wild button").forEach((b) => b.addEventListener("click", () => { S.wild = b.dataset.w; document.querySelectorAll("#wild button").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); applyWild(); }));
+const hintHTML = (c) => { const x = HINTS[c.id]; if (!x) return ""; return "<h4>方法：" + esc(c.name) + "</h4><ol>" + x[0].map((t) => "<li>" + esc(t) + "</li>").join("") + "</ol>" + (x[1] ? '<div class="ex">例：' + esc(x[1]) + "</div>" : ""); };
+const nav = $("modes");
+MODES.forEach((m) => { const b = h("button", { type: "button", "data-id": m.id, text: m.name }); b.addEventListener("click", () => { if (S.mode === m.id) return; S.mode = m.id; try { history.replaceState(null, "", "#" + m.id); } catch (e) {} renderNav(); renderFilter(); next(); buildSandbox(); }); nav.appendChild(b); });
+function renderNav() { [...nav.children].forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === S.mode))); const m = MODES.find((x) => x.id === S.mode); $("mode-note").textContent = m.note; $("tips").innerHTML = m.tips; $("wild").hidden = S.mode !== "db"; $("ex-title").textContent = S.mode === "db" ? "試算區：自己輸入 SQL 試試看" : "試算區：自己輸入公式試試看"; }
+function renderCount() { const all = CATS(S.mode).length, on = S.on[S.mode].size, el = $("fcount"); el.textContent = on === all ? "全部 " + all + " 個分類" : "已選 " + on + "／" + all + " 個分類"; el.classList.toggle("partial", on !== all); }
+function renderFilter() {
+  const box = $("fchips"); box.innerHTML = "";
+  CATS(S.mode).forEach((c) => { const b = h("button", { type: "button", class: "chip", "aria-pressed": String(S.on[S.mode].has(c.id)), "data-id": c.id }, esc(c.name) + (c.ext ? '<span class="tag">延伸</span>' : ""));
+    b.addEventListener("click", () => { const set = S.on[S.mode]; set.has(c.id) ? set.delete(c.id) : set.add(c.id); b.setAttribute("aria-pressed", String(set.has(c.id))); saveFilter(); renderCount(); afterFilter(); }); box.appendChild(b); });
+  renderCount();
+}
+function afterFilter() { if (!S.on[S.mode].size) { showEmpty(); return; } if (!S.q || !S.cat || !S.on[S.mode].has(S.cat.id)) next(); }
+$("f-all").addEventListener("click", () => { S.on[S.mode] = new Set(CATS(S.mode).map((c) => c.id)); saveFilter(); renderFilter(); afterFilter(); });
+$("f-none").addEventListener("click", () => { S.on[S.mode] = new Set(); saveFilter(); renderFilter(); afterFilter(); });
+function renderScore() { $("sc-right").textContent = S.right; $("sc-total").textContent = S.total; $("sc-streak").textContent = S.streak; $("sc-best").textContent = S.best; }
+function showEmpty() { S.q = null; S.cat = null; $("qtype").textContent = ""; $("qno").textContent = "";
+  $("prompt").innerHTML = '<p class="empty">請在上方「分類篩選」選擇至少一個分類。</p>'; $("input-area").innerHTML = ""; $("feedback").hidden = true;
+  $("btn-check").disabled = true; $("btn-show").disabled = true; $("btn-next").disabled = true; $("filter").open = true; $("btn-hint").hidden = true; $("hintbox").hidden = true; }
+
+// ---------- 作答區 ----------
+function renderInput(q) {
+  const area = $("input-area"); area.innerHTML = ""; S.sel = null;
+  if (q.input.kind === "choice") {
+    const box = h("div", { class: "choices" });
+    q.input.opts.forEach((o) => { const b = h("button", { type: "button", class: "choice" + (q.input.mono ? " m" : ""), "aria-pressed": "false", text: o });
+      b.addEventListener("click", () => { if (S.answered) return; S.sel = o; box.querySelectorAll(".choice").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }); box.appendChild(b); });
+    area.appendChild(box); return;
+  }
+  const wrap = h("div", { class: "parts" });
+  q.input.parts.forEach((p, k) => {
+    const row = h("div", { class: "part" });
+    if (p.type === "grid") {
+      const n = Math.max(p.rows || 4, p.ans.length);
+      row.innerHTML = '<div class="xs" style="width:100%"><table class="gridin"><tr>' + p.cols.map((c) => "<th>" + esc(c) + "</th>").join("") + "</tr>" + range(0, n).map((i) => '<tr data-r="' + i + '">' + p.cols.map((c, j) => '<td><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="第 ' + (i + 1) + " 行 " + esc(c) + '" data-p="' + k + '" data-r="' + i + '" data-c="' + j + '"></td>').join("") + "</tr>").join("") + "</table></div>";
+    } else if (p.type === "choice") {
+      row.innerHTML = '<span class="plab">' + esc(p.label) + "</span>"; const box = h("div", { class: "choices" });
+      p.opts.forEach((o) => { const b = h("button", { type: "button", class: "choice", "aria-pressed": "false", text: o, "data-p": k });
+        b.addEventListener("click", () => { if (S.answered) return; box.querySelectorAll(".choice").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }); box.appendChild(b); });
+      row.appendChild(box);
+    } else {
+      const id = "ans-" + k, cls = p.type === "num" ? "n" : p.type === "fx" || p.type === "fw" || p.type === "list" ? "l" : "";
+      row.innerHTML = '<label for="' + id + '">' + esc(p.label) + '</label><input id="' + id + '" type="text" class="' + cls + '" data-p="' + k + '" autocomplete="off" autocapitalize="off" spellcheck="false"' + (p.type === "num" ? ' inputmode="decimal"' : "") + (p.ph ? ' placeholder="' + esc(p.ph) + '"' : p.type === "fw" || p.type === "fx" ? ' placeholder="=…"' : "") + ">" + (p.sfx ? '<span class="sfx">' + esc(p.sfx) + "</span>" : "");
+    }
+    wrap.appendChild(row);
+  });
+  area.appendChild(wrap);
+  area.querySelectorAll("input").forEach((inp) => inp.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); S.answered ? next() : check(); } }));
+}
+function readParts(q) {
+  const area = $("input-area");
+  return q.input.parts.map((p, k) => {
+    if (p.type === "grid") { const n = Math.max(p.rows || 4, p.ans.length); return range(0, n).map((i) => p.cols.map((_, j) => area.querySelector('input[data-p="' + k + '"][data-r="' + i + '"][data-c="' + j + '"]').value)); }
+    if (p.type === "choice") { const b = area.querySelector('.choice[data-p="' + k + '"][aria-pressed="true"]'); return b ? b.textContent : null; }
+    return area.querySelector('input[data-p="' + k + '"]').value;
+  });
+}
+// 針對性回饋：學生答案與常見錯誤相同時
+function trapMsg(p, raw) {
+  if (!p.traps || !p.traps.length) return "";
+  for (const t of p.traps) {
+    let hit = false;
+    try {
+      if (p.type === "grid") hit = GR.grade(Object.assign({}, p, { ans: t.rows }), raw).ok;
+      else if (p.type === "fx") hit = XL.norm(GR.clean(raw)) === XL.norm(t.f);
+      else if (p.type === "addr") hit = GR.grade({ type: "addr", ans: t.v }, raw).ok;
+      else if (p.type === "num") hit = GR.grade({ type: "num", ans: t.v }, raw).ok;
+      else hit = GR.sameVal(XL.isE(t.v) || typeof t.v !== "object" ? t.v : t.v, raw, false);
+    } catch (e) { hit = false; }
+    if (hit) return t.msg;
+  }
+  return "";
+}
+
+// ---------- 出題、核對 ----------
+function next() {
+  const pool = CATS(S.mode).filter((c) => S.on[S.mode].has(c.id)); if (!pool.length) { showEmpty(); return; }
+  let c = pick(pool); if (pool.length > 1 && S.cat && c.id === S.cat.id && coin(0.7)) c = pick(pool.filter((x) => x.id !== S.cat.id));
+  const t = pick(c.types); let q = null;
+  for (let i = 0; i < 5 && !q; i++) { try { q = t.fn(); } catch (e) { q = null; } }
+  if (!q) { $("prompt").innerHTML = '<p class="empty">未能產生題目，請按「跳過此題」。</p>'; return; }
+  S.cat = c; S.type = t; S.q = q; S.n++; S.answered = false; $("btn-next").disabled = false;
+  $("qtype").textContent = MODES.find((m) => m.id === S.mode).name + " · " + c.name + " · " + t.name; $("qno").textContent = "第 " + S.n + " 題";
+  $("hintbox").innerHTML = hintHTML(c); $("btn-hint").hidden = !$("hintbox").innerHTML; setHint(false); updNext();
+  $("prompt").innerHTML = q.prompt; applyWild($("prompt"));
+  renderInput(q); $("feedback").hidden = true; $("btn-check").disabled = false; $("btn-show").disabled = false;
+  if (q.sandbox) loadSandbox(q.sandbox);
+}
+function fwTable(r) {
+  return '<p class="iolab">你的公式複製後的結果（第一組數據）</p>' + mini(["儲存格", "你的公式", "你的結果", "正確結果"], r.res[0].map((x, j) => ['<span class="mono">' + x.t + "</span>", '<span class="mono">' + esc(x.g) + "</span>", (x.ok ? '<span class="ok">✓</span> ' : '<span class="no">✗</span> ') + esc(XL.disp(x.v)), esc(XL.disp(S.q.input.parts.find((p) => p.type === "fw").exp[0][j]))]));
+}
+function finish(correct, revealed, results, raws) {
+  S.answered = true; $("btn-check").disabled = true; $("btn-show").disabled = true;
+  if (!revealed) { S.total++; if (correct) { S.right++; S.streak++; if (S.streak > S.best) S.best = S.streak; } else S.streak = 0; } else S.streak = 0;
+  LS.set("streak", S.streak); LS.set("best", S.best); renderScore();
+  const q = S.q, area = $("input-area"); let extra = "";
+  if (q.input.kind === "choice") {
+    area.querySelectorAll(".choice").forEach((b) => { if (b.textContent === q.input.answer) b.classList.add("ok"); else if (b.textContent === S.sel) b.classList.add("no"); });
+    if (!revealed && !correct && q.input.why && q.input.why[S.sel]) extra += '<p class="trap">' + md(q.input.why[S.sel]) + "</p>";
+  } else {
+    q.input.parts.forEach((p, k) => {
+      const r = results ? results[k] : null;
+      if (p.type === "grid") { area.querySelectorAll('input[data-p="' + k + '"]').forEach((x) => { x.readOnly = true; if (r && r.marks && r.marks[+x.dataset.r] !== null) x.classList.add(r.marks[+x.dataset.r] ? "ok" : "no"); }); }
+      else if (p.type === "choice") area.querySelectorAll('.choice[data-p="' + k + '"]').forEach((b) => { const good = Array.isArray(p.ans) ? p.ans.includes(b.textContent) : b.textContent === p.ans; if (good) b.classList.add("ok"); else if (b.getAttribute("aria-pressed") === "true") b.classList.add("no"); });
+      else { const x = area.querySelector('input[data-p="' + k + '"]'); x.readOnly = true; if (r) x.classList.add(r.ok ? "ok" : "no"); }
+      if (r && !r.ok && !revealed) {
+        const tm = trapMsg(p, raws[k]); if (tm) extra += '<p class="trap">' + md(tm) + "</p>";
+        if (r.msg) extra += '<p class="trap">' + md(r.msg) + "</p>";
+        if (p.type === "fw" && r.res) extra += fwTable(r);
+      }
+      if (p.type === "grid" && (revealed || (r && !r.ok))) extra += '<p class="iolab">正確輸出</p>' + dbHTML("", p.cols, p.ans);
+    });
+  }
+  const fb = $("feedback"); fb.className = "feedback " + (correct ? "good" : "bad"); fb.hidden = false;
+  const head = revealed ? "答案" : correct ? "答對了" : "未答對";
+  fb.innerHTML = '<div class="verdict">' + head + (q.show ? "：" + esc(q.show) : "") + "</div>" + extra + '<ol class="steps">' + q.explain.filter(Boolean).map((x) => "<li>" + md(x) + "</li>").join("") + "</ol>" + (q.after || "") + (q.sandbox ? '<div class="actions"><button type="button" class="btn ghost sm" id="btn-sbx">在試算區用這題的數據試試 ↓</button></div>' : "");
+  applyWild(fb);
+  const bs = $("btn-sbx"); if (bs) bs.addEventListener("click", () => { loadSandbox(q.sandbox); $("explorer").open = true; try { $("explorer").scrollIntoView({ block: "start" }); } catch (e) {} });
+  updNext(); try { $("btn-next").focus({ preventScroll: true }); } catch (e) {}
+}
+function warn(msg) { const fb = $("feedback"); fb.className = "feedback bad"; fb.hidden = false; fb.innerHTML = '<div class="verdict">' + msg + "</div>"; }
+function check() {
+  if (S.answered || !S.q) return; const q = S.q;
+  if (q.input.kind === "choice") { if (S.sel === null) return warn("請先選擇一個答案，或按「顯示答案」。"); return finish(S.sel === q.input.answer, false); }
+  const raws = readParts(q); if (q.input.parts.some((p, k) => GR.isBlank(p, raws[k]))) return warn("請先完成所有空格，或按「顯示答案」。");
+  const results = q.input.parts.map((p, k) => GR.grade(p, raws[k]));
+  const fwErr = results.find((r) => r.syntax); if (fwErr && results.length === 1) return warn("公式有語法錯誤：" + esc(fwErr.msg) + "（未計分，請修改後再核對。）");
+  finish(results.every((r) => r.ok), false, results, raws);
+}
+function setHint(open) { $("hintbox").hidden = !open; $("btn-hint").setAttribute("aria-expanded", String(open)); }
+$("btn-hint").addEventListener("click", () => setHint($("hintbox").hidden));
+$("btn-check").addEventListener("click", check);
+$("btn-show").addEventListener("click", () => { if (!S.answered && S.q) finish(false, true, null, null); });
+let skipTimer = null;
+function updNext(confirming) { const b = $("btn-next"); clearTimeout(skipTimer); b.classList.remove("primary", "ghost", "skip", "confirm");
+  if (S.answered) { b.classList.add("primary"); b.textContent = "下一題 →"; }
+  else if (confirming) { b.classList.add("ghost", "confirm"); b.textContent = "再按一次確認跳過"; skipTimer = setTimeout(() => updNext(false), 3000); }
+  else { b.classList.add("ghost", "skip"); b.textContent = "跳過此題"; } }
+$("btn-next").addEventListener("click", () => { if (S.answered || $("btn-next").classList.contains("confirm")) return next(); updNext(true); });
+
+// =================== 試算區 ===================
+const SBX_SHEET = (() => { const c = { A1: "姓名", B1: "班別", C1: "分數", D1: "出席率" }; ["陳大文", "李小芬", "張家雄", "王茵茵", "黃志明"].forEach((n, i) => { c["A" + (i + 2)] = n; c["B" + (i + 2)] = ["5A", "5B", "5A", "5C", "5B"][i]; c["C" + (i + 2)] = [78, 45, 66, 90, 52][i]; c["D" + (i + 2)] = [95, 70, 88, 100, 82][i]; }); c.F1 = "合格分數"; c.G1 = 50; return { sheets: { Sheet1: c }, sh: "Sheet1" }; })();
+const SBX_DB = { tables: { STUDENT: [["SID", "SNAME", "ENAME", "SEX", "CLASS", "SCORE1", "SCORE2", "CREDIT"], [["035011", "陳大文", "CHAN TAI MAN", "M", "5A", 78, 85, 20], ["035013", "李小芬", "LEE SIU FUN", "F", "5B", 45, 60, null], ["035016", "張家雄", "CHEUNG KA HUNG", "M", "5A", 66, 72, 0], ["035018", "王茵茵", "WONG YAN YAN", "F", "5C", 90, 88, 30], ["035021", "黃志明", "WONG CHI MING", "M", "5B", 52, 49, 10]]] } };
+const SB = { sheet: null, db: null };
+function loadSandbox(sb) { if (sb.tables) SB.db = sb; else SB.sheet = sb.cells ? { sheets: { Sheet1: sb.cells }, sh: "Sheet1" } : { sheets: sb.sheets, sh: sb.sh }; if ($("explorer").open) buildSandbox(); else SB.dirty = true; }
+$("explorer").addEventListener("toggle", () => { if ($("explorer").open) buildSandbox(); });
+function buildSandbox() {
+  const body = $("explorer-body"); body.innerHTML = "";
+  if (S.mode === "sheet") {
+    const sb = SB.sheet || SBX_SHEET, vals = {}, names = Object.keys(sb.sheets);
+    let grids = ""; names.forEach((nm, i) => { const v = {}; Object.keys(sb.sheets[nm]).forEach((a) => { v[a] = XL.valueOf(sb.sheets, nm, a); }); vals[nm] = v; grids += sheetHTML(v, { sp: true, tab: names.length > 1 ? names : null, tabOn: i }); });
+    body.innerHTML = '<div class="sbx"><p class="small">' + (SB.sheet ? "以下是上一題的工作表。" : "以下是示範工作表。") + "輸入公式（可參照以下儲存格），按「計算」看結果及計算步驟。" + (names.length > 1 ? "公式在工作表「" + esc(sb.sh) + "」計算。" : "") + "</p>" + grids +
+      '<div class="row"><input type="text" id="sbx-f" placeholder="例：=COUNTIF(B2:B9,&quot;5A&quot;)" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="公式"><button type="button" class="btn primary sm" id="sbx-go">計算</button>' + (SB.sheet ? '<button type="button" class="btn ghost sm" id="sbx-reset">改用示範工作表</button>' : "") + '</div><div class="msg" id="sbx-out">結果會在這裏顯示。</div></div>';
+    const run = () => { const f = $("sbx-f").value.trim(), out = $("sbx-out"); if (!f) return; try { const v = XL.calc(sb.sheets, sb.sh, f[0] === "=" ? f : "=" + f); const st = XL.steps(sb.sheets, sb.sh, f[0] === "=" ? f : "=" + f);
+        out.className = "msg" + (XL.isE(v) ? " err" : " ok"); out.innerHTML = "結果：<span class=\"mono\">" + esc(XL.disp(v)).replace(/ /g, "␣") + "</span>" + (typeof v === "string" ? "（文字）" : typeof v === "boolean" ? "（布爾值）" : "") + (st.length > 1 ? '<ol class="steps">' + st.map(([s, x]) => "<li><code>" + esc(s) + "</code> → " + esc(XL.disp(x)) + "</li>").join("") + "</ol>" : ""); }
+      catch (e) { out.className = "msg err"; out.textContent = "語法錯誤：" + e.message; } };
+    $("sbx-go").addEventListener("click", run); $("sbx-f").addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); run(); } });
+    if ($("sbx-reset")) $("sbx-reset").addEventListener("click", () => { SB.sheet = null; buildSandbox(); });
+  } else {
+    const sb = SB.db || SBX_DB, tn = Object.keys(sb.tables);
+    body.innerHTML = '<div class="sbx"><p class="small">' + (SB.db ? "以下是上一題的數據表。" : "以下是示範數據表。") + "輸入 SELECT 語句，按「執行」看輸出（按上方切換，LIKE 可用 % _ 或 * ?）。</p>" + tn.map((t) => dbHTML(t, sb.tables[t][0], sb.tables[t][1])).join("") +
+      '<textarea id="sbx-q" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="SQL 語句">SELECT SNAME, SCORE1\nFROM ' + esc(tn[0]) + "\nWHERE SCORE1 >= 50</textarea>" + '<div class="row"><button type="button" class="btn primary sm" id="sbx-go">執行</button>' + (SB.db ? '<button type="button" class="btn ghost sm" id="sbx-reset">改用示範數據表</button>' : "") + '</div><div id="sbx-out" class="msg">輸出會在這裏顯示。</div></div>';
+    $("sbx-go").addEventListener("click", () => { const out = $("sbx-out"); try { const r = SQL.run(sb.tables, $("sbx-q").value, { access: S.wild === "access" }); out.className = "msg ok"; out.innerHTML = (r.rows.length ? "" : "（沒有記錄）") + dbHTML("", r.cols, r.rows) + '<p class="small">共 ' + r.rows.length + " 行。</p>"; }
+      catch (e) { out.className = "msg err"; out.textContent = "錯誤：" + e.message; } });
+    if ($("sbx-reset")) $("sbx-reset").addEventListener("click", () => { SB.db = null; buildSandbox(); });
+  }
+}
+
+// 測試用：以正確或錯誤答案填寫目前的題目（不會自動核對）
+window.__a2lab = {
+  fill(ok) { const q = S.q; if (!q || S.answered) return false; const area = $("input-area");
+    if (q.input.kind === "choice") { const t = ok ? q.input.answer : q.input.opts.find((o) => o !== q.input.answer); [...area.querySelectorAll(".choice")].find((b) => b.textContent === t).click(); return true; }
+    q.input.parts.forEach((p, k) => { const v = GR.fill(p, ok || k > 0);
+      if (p.type === "grid") v.forEach((r, i) => r.forEach((x, j) => { area.querySelector('input[data-p="' + k + '"][data-r="' + i + '"][data-c="' + j + '"]').value = x; }));
+      else if (p.type === "choice") [...area.querySelectorAll('.choice[data-p="' + k + '"]')].find((b) => b.textContent === v).click();
+      else area.querySelector('input[data-p="' + k + '"]').value = v; });
+    return true; },
+  only(id) { S.on[S.mode] = new Set([id]); renderFilter(); next(); }, cats: () => CATS(S.mode).map((c) => c.id), mode: (m) => [...nav.children].find((b) => b.dataset.id === m).click(),
+  state: () => ({ mode: S.mode, cat: S.cat && S.cat.id, type: S.type && S.type.name, answered: S.answered, right: S.right, total: S.total, streak: S.streak, best: S.best, on: [...S.on[S.mode]], wild: S.wild }),
+};
+renderNav(); renderFilter(); renderScore(); next();
+})();
+</script>
+
+</body></html>

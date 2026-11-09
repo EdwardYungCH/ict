@@ -1,0 +1,1646 @@
+<!doctype html><html lang="zh-Hant-HK"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style></head><body>
+<title>網頁程式練習室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --bg:#EFF1F6; --surface:#FFFFFF; --sunk:#E4E8F0; --ink:#172033; --muted:#566079; --line:#C8CFDD;
+  --accent:#1D5FBF; --accent-ink:#FFFFFF; --led:#D9822B; --led-ink:#1E1205;
+  --str:#A04A0C; --kw:#1D5FBF; --good:#1F7A3A; --good-bg:#E2F2E6; --bad:#B3261E; --bad-bg:#FBE6E4;
+  --sel:#DCE6F8; --hlrow:#FFF1D6; --ext:#8A3B7A; --ext-bg:#F4DDEF; --code:#F5F7FB; --lnno:#8A93A8;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F131C; --surface:#171D29; --sunk:#222A3A; --ink:#E5E9F2; --muted:#A1A9BD; --line:#323B4E;
+    --accent:#7FB0FF; --accent-ink:#0D1526; --led:#F0A65A; --led-ink:#1E1205;
+    --str:#F2B880; --kw:#9CC2FF; --good:#62D387; --good-bg:#16301F; --bad:#FF8E84; --bad-bg:#3B1B19;
+    --sel:#22345A; --hlrow:#3A3018; --ext:#E7A6D8; --ext-bg:#43263D; --code:#121823; --lnno:#6F7890; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F131C; --surface:#171D29; --sunk:#222A3A; --ink:#E5E9F2; --muted:#A1A9BD; --line:#323B4E;
+  --accent:#7FB0FF; --accent-ink:#0D1526; --led:#F0A65A; --led-ink:#1E1205;
+  --str:#F2B880; --kw:#9CC2FF; --good:#62D387; --good-bg:#16301F; --bad:#FF8E84; --bad-bg:#3B1B19;
+  --sel:#22345A; --hlrow:#3A3018; --ext:#E7A6D8; --ext-bg:#43263D; --code:#121823; --lnno:#6F7890; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;margin:0;overflow-x:hidden}
+.wrap{max-width:920px;margin:0 auto;padding-inline:16px;padding-block:24px 48px;display:flex;flex-direction:column;gap:20px}
+.wrap>*,.card>*{min-width:0}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--muted)}
+h1{font-size:30px;font-weight:900;margin:0;letter-spacing:.02em;text-wrap:balance}
+h1 .bits{display:inline-block;white-space:nowrap;font-family:var(--mono);font-weight:600;color:var(--accent);font-size:.58em;margin-left:.4em}
+.lead{margin:0;font-size:15px;color:var(--muted);max-width:60em}
+.score{display:flex;gap:16px;font-variant-numeric:tabular-nums}
+.score div{display:flex;flex-direction:column;align-items:flex-end}
+.score b{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1.1}
+.score span{font-size:12px;color:var(--muted)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.qhead{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.qtype{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--accent)}
+.qno{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.qright{display:flex;align-items:center;gap:12px;margin-left:auto}
+.hintbtn{font:inherit;font-size:14px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--led);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.hintbtn::before{content:"?";display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--led);color:var(--led-ink);font-family:var(--mono);font-size:12px}
+.hintbtn[aria-expanded="true"]{background:var(--led);color:var(--led-ink)}
+.hintbtn[aria-expanded="true"]::before{background:var(--led-ink);color:var(--led)}
+.hintbox{border:1px solid var(--led);border-left-width:4px;border-radius:10px;padding:12px 14px;background:var(--sunk);font-size:15px;line-height:1.7;display:flex;flex-direction:column;gap:6px}
+.hintbox h4{margin:0;font-size:13px;letter-spacing:.06em;color:var(--muted)}
+.hintbox ol{margin:0;padding-left:1.3em}
+.hintbox .ex{font-family:var(--mono);font-size:14px;background:var(--surface);border-radius:8px;padding:6px 10px;max-width:100%;overflow-x:auto;white-space:pre}
+.prompt{font-size:17px;line-height:1.7;display:flex;flex-direction:column;gap:10px;min-width:0}
+.prompt p{margin:0}
+.small{font-size:14px;color:var(--muted)}
+.xs{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
+code{font-family:var(--mono);font-size:.92em;background:var(--sunk);border-radius:5px;padding:1px 5px;overflow-wrap:anywhere}
+.iolab{font-size:13px;color:var(--muted);margin:0 0 -6px;font-family:var(--mono)}
+/* 代碼（附行號） */
+pre.code{font-family:var(--mono);font-size:14.5px;line-height:1.6;background:var(--code);border:1px solid var(--line);border-radius:10px;padding:8px 0;margin:0;overflow-x:auto;max-width:100%;tab-size:2}
+pre.code .ln{display:block;white-space:pre;padding:0 14px 0 0}
+pre.code .ln.hl{background:var(--hlrow)}
+pre.code .ln i{font-style:normal;color:var(--lnno);display:inline-block;width:3.2em;padding-right:1em;text-align:right;user-select:none;-webkit-user-select:none}
+pre.code .st{color:var(--str)}
+/* 數據表、迷你表 */
+table.dbt,table.mini{border-collapse:collapse;font-size:14px;background:var(--surface)}
+.dbt caption{caption-side:top;text-align:left;font-family:var(--mono);font-weight:600;font-size:13px;color:var(--muted);padding-bottom:2px}
+.dbt th,.dbt td,.mini th,.mini td{border:1px solid var(--line);padding:4px 10px;white-space:nowrap}
+.dbt th{background:var(--sunk);font-family:var(--mono);font-weight:600;font-size:13px}
+.dbt td{font-family:var(--mono)}
+.dbt td.n{text-align:right}
+.mini th{background:var(--sunk);font-weight:500;font-size:13px}
+.mini td{font-family:var(--mono);white-space:normal;min-width:3em}
+.mini tr.hl td{background:var(--sel)}
+.ok{color:var(--good);font-weight:700}.no{color:var(--bad);font-weight:700}
+.tree{font-family:var(--mono);font-size:15px;line-height:1.55;background:var(--code);border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin:0;overflow-x:auto;white-space:pre}
+.acts{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:2px}
+/* 作答 */
+.parts{display:flex;flex-direction:column;gap:12px}
+.part{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.part>label,.part>.plab{font-size:15px;color:var(--ink);overflow-wrap:anywhere;min-width:0}
+.part.col{flex-direction:column;align-items:stretch}
+input[type=text]{font-family:var(--mono);font-size:17px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:min(300px,100%)}
+input[type=text].n{width:7em;text-align:center}
+input[type=text].l{width:min(520px,100%)}
+textarea.out{display:block;font-family:var(--mono);font-size:16px;line-height:1.55;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;min-height:5.5em;resize:vertical}
+select{font:inherit;font-size:15px;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);max-width:100%}
+.sfx{font-family:var(--mono);color:var(--muted)}
+input.ok,select.ok,textarea.ok{border-color:var(--good)!important;background:var(--good-bg)!important}
+input.no,select.no,textarea.no{border-color:var(--bad)!important;background:var(--bad-bg)!important}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:8px;width:100%}
+.choices.wide{grid-template-columns:1fr}
+.choice{font:inherit;text-align:left;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;min-width:0;overflow-wrap:anywhere}
+.choice[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.choice.ok{border-color:var(--good);background:var(--good-bg)}
+.choice.no{border-color:var(--bad);background:var(--bad-bg)}
+.btn{font:inherit;font-weight:700;padding:10px 18px;border-radius:10px;border:1px solid var(--accent);cursor:pointer}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#btn-next{margin-left:auto}
+#btn-next.skip{border-color:var(--line);color:var(--muted);font-weight:500}
+#btn-next.confirm{border-color:var(--bad);color:var(--bad);font-weight:700}
+.feedback{border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.feedback.good{background:var(--good-bg)}
+.feedback.bad{background:var(--bad-bg)}
+.feedback .verdict{font-weight:700;overflow-wrap:anywhere}
+.feedback.good .verdict{color:var(--good)}
+.feedback.bad .verdict{color:var(--bad)}
+.feedback .trap{margin:0;padding:8px 12px;border-left:4px solid var(--led);background:var(--surface);border-radius:6px;font-size:15px}
+.feedback code,.feedback pre.code{background:var(--surface)}
+.feedback .ansbox{font-family:var(--mono);font-size:15px;background:var(--surface);border-radius:8px;padding:8px 12px;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.steps{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.steps li{line-height:1.6;overflow-wrap:anywhere}
+.tips{font-size:14px;color:var(--muted);border-top:1px dashed var(--line);padding-top:14px}
+.tips b{color:var(--ink)}
+/* 篩選 */
+.filter{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.filter summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:10px 14px;font-weight:700;font-size:15px}
+.filter summary::-webkit-details-marker{display:none}
+.filter summary::after{content:"▾";color:var(--muted);transition:transform .15s}
+.filter[open] summary::after{transform:rotate(180deg)}
+.fcount{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--muted);margin-left:auto}
+.fcount.partial{color:var(--accent);font-weight:600}
+.fbody{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.fact{display:flex;flex-wrap:wrap;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:14px;line-height:1.4;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sunk);border-color:var(--accent);color:var(--ink);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip[aria-pressed="true"]::before{content:"✓ ";color:var(--accent);font-weight:700}
+.chip .cid{font-family:var(--mono);font-size:12px;margin-right:4px;color:var(--accent)}
+.chip .tag{font-size:11px;font-weight:700;color:var(--ext);background:var(--ext-bg);border-radius:999px;padding:0 6px;margin-left:6px}
+.mini-b{font:inherit;font-size:13px;padding:4px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer}
+.fhint{margin:0;font-size:12px;color:var(--muted)}
+.empty{color:var(--muted);font-size:16px}
+.foot{font-size:13px;color:var(--muted);margin:0}
+@media (max-width:480px){h1{font-size:24px}.prompt{font-size:16px}.card{padding:18px 14px 16px}.score{gap:12px}.score b{font-size:19px}.fbody{padding:0 10px 12px}pre.code{font-size:13.5px}pre.code .ln i{width:2.6em;padding-right:.7em}}
+@media (prefers-reduced-motion:reduce){.filter summary::after{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">HKDSE ICT · 選修部分 B 網頁應用程式開發</span>
+      <h1>網頁程式練習室<span class="bits">&lt;?php ?&gt;</span></h1>
+    </div>
+    <div class="score" aria-live="polite">
+      <div><b id="sc-right">0</b><span>答對</span></div>
+      <div><b id="sc-total">0</b><span>已答</span></div>
+      <div><b id="sc-streak">0</b><span>連續答對</span></div>
+      <div><b id="sc-best">0</b><span>最高紀錄</span></div>
+    </div>
+  </header>
+  <p class="lead">CSS、PHP、表單、數據庫、JavaScript 及網絡服務的隨機練習：預測顯示效果或輸出、判斷表單提交的數據及檢驗結果、配對網絡服務、計算檔案權限。每題的數據都是隨機產生的，答案由頁內的引擎按題目計算。</p>
+
+  <details class="filter" id="filter">
+    <summary><span>分類篩選</span><span class="fcount" id="fcount"></span></summary>
+    <div class="fbody">
+      <div class="fact"><button type="button" class="mini-b" id="f-all">全選</button><button type="button" class="mini-b" id="f-none">全部取消</button></div>
+      <div class="chips" id="fchips"></div>
+      <p class="fhint">點按分類可加入或移除；標「延伸」的分類屬延伸內容，預設不選。選擇會記在這部裝置上。</p>
+    </div>
+  </details>
+
+  <section class="card" id="card">
+    <div class="qhead"><span class="qtype" id="qtype"></span><div class="qright"><span class="qno" id="qno"></span><button class="hintbtn" id="btn-hint" type="button" aria-expanded="false" aria-controls="hintbox">提示：方法</button></div></div>
+    <div class="hintbox" id="hintbox" hidden></div>
+    <div class="prompt" id="prompt"></div>
+    <div id="input-area"></div>
+    <div class="actions">
+      <button class="btn primary" id="btn-check" type="button">核對答案</button>
+      <button class="btn ghost" id="btn-show" type="button">顯示答案</button>
+      <button class="btn ghost skip" id="btn-next" type="button">跳過此題</button>
+    </div>
+    <div id="feedback" aria-live="polite" hidden></div>
+    <div class="tips" id="tips"><b>作答提示：</b>寫輸出時每行一個；行尾空格不計；按 Enter 核對（多行輸出框內用 Ctrl＋Enter）。PHP 輸出的 &lt;br&gt; 表示換行。</div>
+  </section>
+
+  <p class="foot">代碼寫法跟 HKDSE 2025 卷二乙部及教科書（HTML5、CSS、PHP 8、mysqli 程序式函數、JavaScript ES6）。PHP 部分按 PHP 8 的規則計算；數據庫部分的 mysqli 以模擬層核對，未經 MySQL 實機測試。</p>
+</div>
+<script>
+(() => {
+/*GEN:BEGIN*/
+// =================== 共用工具（出題用亂數；dump.js 以固定種子覆寫 Math.random） ===================
+// MUT：變異測試用（dump.js 傳入 __MUT，例如 { css_tieFirst: true }）；網頁內永遠是空物件
+const MUT = (typeof __MUT !== "undefined" && __MUT) ? __MUT : {};
+const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = (a) => a[Math.floor(Math.random() * a.length)];
+const coin = (p = 0.5) => Math.random() < p;
+const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
+const sample = (a, n) => shuffle(a).slice(0, n);
+const range = (a, b) => { const r = []; for (let i = a; i < b; i++) r.push(i); return r; };
+const uniq = (a) => [...new Set(a)];
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const md = (s) => esc(s).replace(/`([^`]+)`/g, (m, a) => "<code>" + a + "</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+const mini = (head, rows, o = {}) => '<div class="xs"><table class="mini">' + (head ? "<tr>" + head.map((x) => "<th>" + x + "</th>").join("") + "</tr>" : "") +
+  rows.map((r, i) => "<tr" + (o.hl && o.hl.includes(i) ? ' class="hl"' : "") + ">" + r.map((x) => "<td>" + x + "</td>").join("") + "</tr>").join("") + "</table></div>";
+// 代碼（附行號）：lines 為字串陣列；start 起始行號
+function codeHTML(lines, o = {}) {
+  const start = o.start || 1, hl = new Set(o.hl || []);
+  return '<pre class="code' + (o.cls ? " " + o.cls : "") + '">' + lines.map((l, i) => '<span class="ln' + (hl.has(i + start) ? " hl" : "") + '"><i>' + String(i + start).padStart(2, " ") + "</i>" + hiCode(l) + "</span>").join("") + "</pre>";
+}
+const hiCode = (l) => esc(l).replace(/(&quot;(?:[^&]|&(?!quot;))*?&quot;|'[^']*')/g, '<span class="st">$1</span>');
+// 作答部分
+const P = {
+  lines: (label, ans, o = {}) => Object.assign({ type: "lines", label, ans }, o),     // 多行輸出（逐行比對）
+  text: (label, ans, o = {}) => Object.assign({ type: "text", label, ans }, o),       // 單行文字；o.alt 其他可接受答案
+  num: (label, ans, o = {}) => Object.assign({ type: "num", label, ans }, o),
+  choice: (label, opts, ans, o = {}) => Object.assign({ type: "choice", label, opts, ans }, o),
+  sel: (label, opts, ans, o = {}) => Object.assign({ type: "sel", label, opts, ans }, o), // 下拉式選單
+};
+const parts = (...ps) => ({ kind: "parts", parts: ps });
+const choiceIn = (opts, answer, o = {}) => Object.assign({ kind: "choice", opts, answer }, o);
+// 四選一：answer 必須在 opts 內；干擾項去重
+function mkChoice(answer, wrongs, n = 4, why = {}) {
+  const w = uniq(wrongs.filter((x) => x !== answer)).slice(0, n - 1);
+  return choiceIn(shuffle([answer, ...w]), answer, { why });
+}
+const GR = (() => {
+  const clean = (s) => String(s === null || s === undefined ? "" : s).replace(/　/g, " ").replace(/ /g, " ").replace(/\s+$/, "").replace(/^\s+/, "");
+  const lineList = (s) => { const a = String(s || "").replace(/\r/g, "").split("\n").map((x) => x.replace(/[ \t　]+$/, "")); while (a.length && a[a.length - 1] === "") a.pop(); while (a.length && a[0] === "") a.shift(); return a; };
+  const numIn = (s) => { const t = clean(s).replace(/px$/i, "").replace(/[，,]/g, ""); if (!/^[-+]?(\d+\.?\d*|\.\d+)$/.test(t)) return null; return Number(t); };
+  function grade(p, raw) {
+    switch (p.type) {
+      case "lines": {
+        const got = lineList(raw), exp = p.ans;
+        const marks = exp.map((e, i) => got[i] !== undefined && got[i].replace(/^\s+/, "") === e);
+        const ok = got.length === exp.length && marks.every(Boolean);
+        let msg = "";
+        if (!ok) {
+          if (got.length !== exp.length) msg = "行數不對：應有 " + exp.length + " 行，你寫了 " + got.length + " 行。";
+          const k = marks.findIndex((m) => !m); if (k >= 0 && got[k] !== undefined) msg += "第 " + (k + 1) + " 行不對。";
+          if (got.some((g, i) => exp[i] !== undefined && g.replace(/\s+/g, "") === exp[i].replace(/\s+/g, "") && g !== exp[i])) msg += "（留意空格。）";
+        }
+        return { ok, msg, marks };
+      }
+      case "text": { const a = clean(raw).replace(/^["「]|["」]$/g, ""); const all = [p.ans, ...(p.alt || [])]; return { ok: all.some((x) => (p.ci ? a.toLowerCase() === String(x).toLowerCase() : a === String(x))) }; }
+      case "num": { const x = numIn(raw); return { ok: x !== null && Math.abs(x - p.ans) < 1e-9 }; }
+      case "choice": case "sel": return { ok: raw === p.ans };
+    }
+    return { ok: false };
+  }
+  const isBlank = (p, raw) => (p.type === "choice" || p.type === "sel" ? raw === null || raw === "" : !String(raw || "").trim());
+  // 測試用：正確／錯誤的作答
+  function fill(p, ok) {
+    switch (p.type) {
+      case "lines": return ok ? p.ans.join("\n") : (p.ans.length ? p.ans.slice(0, -1).concat([p.ans[p.ans.length - 1] + "9"]) : ["9"]).join("\n");
+      case "text": return ok ? String(p.ans) : String(p.ans) + "9";
+      case "num": return ok ? String(p.ans) : String(p.ans + 1);
+      case "choice": case "sel": return ok ? p.ans : p.opts.find((o) => o !== p.ans && o !== "—");
+    }
+  }
+  return { clean, lineList, grade, isBlank, fill };
+})();
+// =================== 分類登記 ===================
+const GEN = [];
+function cat(id, name, o = {}) { const c = Object.assign({ id, name, types: [], ext: false }, o); GEN.push(c); return c; }
+const CAT = (id) => GEN.find((c) => c.id === id);
+function addType(id, name, fn) { CAT(id).types.push({ name, fn }); }
+
+// =================== CSS 層疊引擎 ===================
+const COLORS = {
+  red: [255, 0, 0, "紅色"], blue: [0, 0, 255, "藍色"], orange: [255, 165, 0, "橙色"], purple: [128, 0, 128, "紫色"], brown: [165, 42, 42, "啡色"],
+  navy: [0, 0, 128, "深藍色"], teal: [0, 128, 128, "藍綠色"], maroon: [128, 0, 0, "栗色"], black: [0, 0, 0, "黑色"],
+  yellow: [255, 255, 0, "黃色"], pink: [255, 192, 203, "粉紅色"], lightblue: [173, 216, 230, "淺藍色"], silver: [192, 192, 192, "銀色"],
+  lavender: [230, 230, 250, "淡紫色"], wheat: [245, 222, 179, "小麥色"], white: [255, 255, 255, "白色"],
+};
+const FG = ["red", "blue", "orange", "purple", "brown", "navy", "teal", "maroon"];
+const BG = ["yellow", "pink", "lightblue", "silver", "lavender", "wheat"];
+const rgbOf = (c) => "rgb(" + COLORS[c].slice(0, 3).join(", ") + ")";
+const cName = (c) => COLORS[c][3] + "（" + c + "）";
+const CSS = (() => {
+  const INH = { color: true, "font-size": true, "background-color": false };
+  const DEF = { color: "black", "font-size": 16, "background-color": "transparent" };
+  // 簡單選擇器 {t:'tag'|'cls'|'id', v}；選擇器 {chain:[簡單選擇器…]}（多於一個＝後代選擇器）；規則 {sels:[選擇器…], decl:[[prop, val, imp]], order, sheet}
+  const ms = (el, s) => (s.t === "tag" ? el.tag === s.v : s.t === "cls" ? el.cls.includes(s.v) : el.id === s.v);
+  function matchSel(el, sel) {
+    const ch = sel.chain; if (!ms(el, ch[ch.length - 1])) return false;
+    let k = ch.length - 2, a = el.parent;
+    while (k >= 0 && a) { if (ms(a, ch[k])) k--; a = a.parent; }
+    return k < 0;
+  }
+  const spec = (sel) => [sel.chain.filter((s) => s.t === "id").length, sel.chain.filter((s) => s.t === "cls").length, sel.chain.filter((s) => s.t === "tag").length];
+  const selText = (sel) => sel.chain.map((s) => (s.t === "tag" ? s.v : s.t === "cls" ? "." + s.v : "#" + s.v)).join(" ");
+  const ruleSel = (r) => r.sels.map(selText).join(", ");
+  // 所有適用於 el 的 prop 宣告
+  function cands(doc, el, prop) {
+    const out = [];
+    doc.rules.forEach((r) => {
+      if (MUT.css_groupIgnored && r.sels.length > 1) return;
+      const hit = r.sels.filter((s) => matchSel(el, s)); if (!hit.length) return;
+      const best = hit.map(spec).sort(cmpSpec).pop();
+      const hs = hit.find((s) => cmpSpec(spec(s), best) === 0);
+      r.decl.forEach(([p, v, imp], di) => { if (p === prop) out.push({ v, imp: !!imp, inl: 0, sp: best, order: r.order * 100 + di, src: ruleSel(r), hitSel: hs, rule: r }); });
+    });
+    if (el.style && el.style[prop] !== undefined && !MUT.css_ignoreInline) out.push({ v: el.style[prop], imp: false, inl: 1, sp: [0, 0, 0], order: 1e9, src: 'style="…"（行內樣式）' });
+    return out;
+  }
+  function cmpSpec(a, b) { for (let i = 0; i < 3; i++) if (a[i] !== b[i]) return a[i] - b[i]; return 0; }
+  function cmp(el) {
+    return (x, y) => {
+      if (x.imp !== y.imp) return x.imp ? 1 : -1;
+      if (x.inl !== y.inl) return x.inl - y.inl;
+      const c = cmpSpec(x.sp, y.sp); if (c) return c;
+      if (MUT.css_classOrder && x.hitSel && y.hitSel && x.sp[1] === 1 && y.sp[1] === 1 && x.sp[0] === 0 && y.sp[0] === 0) {
+        const cx = x.hitSel.chain.find((s) => s.t === "cls"), cy = y.hitSel.chain.find((s) => s.t === "cls");
+        if (cx && cy && cx.v !== cy.v) return el.cls.indexOf(cx.v) - el.cls.indexOf(cy.v);
+      }
+      return MUT.css_tieFirst ? y.order - x.order : x.order - y.order;
+    };
+  }
+  // 計算值：{v, how:'rule'|'inherit'|'default'|'ua', el(來源), win, all}
+  function value(doc, el, prop) {
+    const all = cands(doc, el, prop).sort(cmp(el));
+    if (all.length) return { v: all[all.length - 1].v, how: "rule", el, win: all[all.length - 1], all };
+    if (prop === "font-size" && el.tag === "h2") { const pv = el.parent ? value(doc, el.parent, prop).v : 16; return { v: pv * 1.5, how: "ua", el, all }; }
+    if (INH[prop] && el.parent && !MUT.css_noInherit) { const r = value(doc, el.parent, prop); return { v: r.v, how: "inherit", el, from: r, all }; }
+    return { v: DEF[prop], how: "default", el, all };
+  }
+  // 看到的背景：由元素向上找第一個不透明背景；都沒有＝白色（畫布）
+  function visibleBg(doc, el) {
+    const chain = [];
+    for (let e = el; e; e = e.parent) { const r = value(doc, e, "background-color"); chain.push({ el: e, r }); if (r.v !== "transparent") return { v: r.v, chain }; if (MUT.css_bgSelf) break; }
+    return { v: "white", chain };
+  }
+  return { value, visibleBg, cands, spec, selText, ruleSel, cmpSpec };
+})();
+
+// ---------- 文件模型與顯示 ----------
+const elName = (e) => (e.tag === "body" ? "body" : "<" + e.tag + (e.id ? ' id="' + e.id + '"' : "") + (e.cls.length ? ' class="' + e.cls.join(" ") + '"' : "") + ">");
+const elShort = (e) => e.tag + (e.id ? "#" + e.id : "") + e.cls.map((c) => "." + c).join("");
+const fmtVal = (p, v) => (p === "font-size" ? v + "px" : v);
+function cssRuleLines(r) { return [CSS.ruleSel(r) + " {", ...r.decl.map(([p, v, imp]) => "  " + p + ": " + fmtVal(p, v) + (imp ? " !important" : "") + ";"), "}"]; }
+const styleAttr = (e) => (e.style && Object.keys(e.style).length ? ' style="' + Object.entries(e.style).map(([p, v]) => p + ": " + fmtVal(p, v) + ";").join(" ") + '"' : "");
+const openTag = (e) => "<" + e.tag + (e.id ? ' id="' + e.id + '"' : "") + (e.cls.length ? ' class="' + e.cls.join(" ") + '"' : "") + styleAttr(e) + ">";
+// 產生 index.html（及 style.css）原始碼
+function cssDocFiles(doc, bodyLines) {
+  const ext = doc.rules.filter((r) => r.sheet === "ext"), inl = doc.rules.filter((r) => r.sheet === "int");
+  const head = ["<!DOCTYPE html>", "<html>", "<head>", '  <meta charset="utf-8">'];
+  const linkL = ['  <link rel="stylesheet" href="style.css">'];
+  const styleL = inl.length ? ["  <style>", ...inl.flatMap(cssRuleLines).map((l) => "    " + l), "  </style>"] : [];
+  const mid = ext.length ? (doc.linkFirst ? [...linkL, ...styleL] : [...styleL, ...linkL]) : styleL;
+  const html = [...head, ...mid, "</head>", "<body>", ...bodyLines.map((l) => "  " + l), "</body>", "</html>"];
+  const css = ext.flatMap(cssRuleLines);
+  return { html, css: ext.length ? css : null };
+}
+function cssPrompt(f) {
+  return (f.css ? '<p class="iolab">style.css</p>' + codeHTML(f.css) : "") + '<p class="iolab">index.html</p>' + codeHTML(f.html);
+}
+const filesOf = (f) => Object.assign({ "index.html": f.html.join("\n") + "\n" }, f.css ? { "style.css": f.css.join("\n") + "\n" } : {});
+
+// ---------- C1：CSS 顯示效果 ----------
+const IDS = ["news", "intro", "main", "box", "notice", "info", "top", "menu"];
+const CLS = ["card", "note", "big", "key", "warn", "hot", "tip", "item"];
+function mkCssDoc(o = {}) {
+  const ids = sample(IDS, 3), cl = sample(CLS, 5);
+  const body = { tag: "body", id: "", cls: [], parent: null };
+  const div = { tag: "div", id: coin(0.6) ? ids[0] : "", cls: coin(0.6) ? [cl[0]] : [], parent: body };
+  const h2 = { tag: "h2", id: "", cls: coin(0.4) ? [cl[1]] : [], parent: div };
+  const p = { tag: "p", id: ids[1], cls: coin(0.5) ? [cl[2], cl[3]] : [cl[2]], parent: div };
+  const sp = { tag: "span", id: coin(0.3) ? ids[2] : "", cls: coin(0.7) ? [cl[4]] : [], parent: p };
+  const els = [div, h2, p, sp];
+  const txt = pick([["最新消息", "歡迎", "報名"], ["活動通告", "本週六", "截止"], ["課程簡介", "請按", "這裏"], ["比賽結果", "冠軍是", "5A 班"]]);
+  return { body, div, h2, p, sp, els, txt, rules: [], linkFirst: coin(0.7), ext: !!o.ext };
+}
+function bodyLinesOf(d) {
+  const t = d.txt;
+  return [openTag(d.div), "  " + openTag(d.h2) + t[0] + "</h2>", "  " + openTag(d.p) + t[1] + openTag(d.sp) + t[2] + "</span></p>", "</div>"];
+}
+const PATH = { div: "body > div", h2: "body > div > h2", p: "body > div > p", span: "body > div > p > span" };
+function randSel(d, o = {}) {
+  const e = pick(d.els), opts = [];
+  opts.push({ chain: [{ t: "tag", v: e.tag }] });
+  e.cls.forEach((c) => opts.push({ chain: [{ t: "cls", v: c }] }));
+  if (e.id) opts.push({ chain: [{ t: "id", v: e.id }] });
+  if (o.desc && e.parent && e.parent.tag !== "body") opts.push({ chain: [{ t: "tag", v: e.parent.tag }, { t: "tag", v: e.tag }] }, { chain: [e.parent.id ? { t: "id", v: e.parent.id } : { t: "tag", v: e.parent.tag }, e.cls.length ? { t: "cls", v: e.cls[0] } : { t: "tag", v: e.tag }] });
+  return pick(opts.filter((x) => x.chain.every((s) => s.v)));
+}
+function buildRules(d, prop, n, o = {}) {
+  const vals = prop === "color" ? FG : prop === "font-size" ? [12, 14, 18, 20, 22, 24, 28, 30] : BG;
+  const rules = [];
+  for (let i = 0; i < n; i++) {
+    let sels = [randSel(d, o)];
+    if (!o.noGroup && coin(0.2)) { const s2 = randSel(d, o); if (CSS.selText(s2) !== CSS.selText(sels[0])) sels.push(s2); }
+    const decl = [[prop, pick(vals), o.imp && coin(0.35)]];
+    if (coin(0.35)) { const p2 = pick(["color", "font-size", "background-color"].filter((x) => x !== prop)); decl.push([p2, pick(p2 === "color" ? FG : p2 === "font-size" ? [14, 18, 20] : BG)]); }
+    if (coin(0.5)) decl.reverse();
+    rules.push({ sels, decl, order: i, sheet: "int" });
+  }
+  // 外連與內含：分成兩份（style.css 在前或在後由 linkFirst 決定）
+  if (d.ext) { const k = R(1, Math.max(1, n - 1)); rules.forEach((r, i) => { r.sheet = (d.linkFirst ? i < k : i >= k) ? "ext" : "int"; }); }
+  d.rules = rules;
+}
+function cssWhyTable(d, el, prop, res) {
+  const all = CSS.cands(d, el, prop).sort((a, b) => a.order - b.order);
+  if (!all.length) return "";
+  const win = res.win;
+  return mini(["次序", "規則（選擇器）", "值", "優先性（行內, ID, 類別, 標籤）", ""], all.map((c, i) => [c.inl ? "—" : String(i + 1) + (c.rule && c.rule.sheet === "ext" ? "（style.css）" : d.ext ? "（&lt;style&gt;）" : ""), "<code>" + esc(c.src) + "</code>", esc(fmtVal(prop, c.v)) + (c.imp ? " !important" : ""), "(" + [c.inl, ...c.sp].join(", ") + ")", c === win ? '<span class="ok">✓ 生效</span>' : ""]));
+}
+function cssExplain(d, el, prop, res) {
+  const ex = [];
+  if (res.how === "rule") {
+    ex.push("適用於 `" + elShort(el) + "` 的 " + prop + " 宣告見下表；比較次序：行內樣式 ＞ ID 選擇器 ＞ 類別選擇器 ＞ 標籤選擇器；優先性相同時，**後定義**的規則生效（類別名稱在 class 屬性內的次序沒有影響）。");
+    if (d.ext) ex.push("外連樣式表與內含樣式表的規則按它們在 <head> 出現的次序排列：" + (d.linkFirst ? "<link> 在 <style> 之前，所以 style.css 的規則較先。" : "<style> 在 <link> 之前，所以 style.css 的規則較後。"));
+  } else if (res.how === "inherit") {
+    let r = res, chain = [];
+    while (r.how === "inherit") { chain.push(elShort(r.el)); r = r.from; }
+    ex.push("沒有規則直接設定 `" + elShort(el) + "` 的 " + prop + "；" + prop + " 會**繼承**父元素：" + chain.join(" ← ") + " ← " + elShort(r.el) + (r.how === "rule" ? "（由規則 `" + r.win.src + "` 設定為 " + fmtVal(prop, r.v) + "）" : r.how === "ua" ? "（h2 預設是父元素的 1.5 倍）" : "（瀏覽器預設 " + fmtVal(prop, r.v) + "）") + "。");
+  } else if (res.how === "ua") ex.push("沒有規則設定 h2 的 font-size：瀏覽器預設 h2 是父元素字體大小的 1.5 倍（2em 是 h1）。");
+  else ex.push("沒有規則設定，亦沒有可繼承的值：用瀏覽器預設 " + fmtVal(prop, res.v) + "。");
+  return ex;
+}
+function cssTraps(d, el, prop, ans, fnVal) {
+  const t = [];
+  for (const [m, msg] of [["css_tieFirst", "優先性相同時，**後定義**的規則生效，不是先定義的。"], ["css_noInherit", "沒有規則直接設定時，color 和 font-size 會繼承父元素的值。"], ["css_ignoreInline", "行內樣式（style 屬性）的優先性最高。"], ["css_classOrder", "class 屬性內類別名稱的次序沒有影響；要看規則在樣式表中的先後。"], ["css_bgSelf", "background-color 不會繼承，預設是透明：看到的是外層元素的背景。"]]) {
+    const old = MUT[m]; MUT[m] = true; let v; try { v = fnVal(); } catch (e) { v = null; } if (old) MUT[m] = old; else delete MUT[m];
+    if (v !== null && v !== ans) t.push({ v, msg });
+  }
+  return t;
+}
+function genC1(o = {}) {
+  for (let tries = 0; tries < 60; tries++) {
+    const d = mkCssDoc({ ext: o.ext !== undefined ? o.ext : coin(0.4) });
+    const prop = o.prop || pick(["color", "color", "font-size", "background-color"]);
+    const el = o.el ? d[o.el] : pick(prop === "background-color" ? [d.h2, d.p, d.sp] : d.els);
+    buildRules(d, prop, R(o.nmin || 2, o.nmax || 5), o);
+    // 兩個類別：故意令規則次序與 class 屬性內的次序相反（常見誤解：以 class 屬性的次序決定）
+    const ce = [d.p, d.sp].find((e) => e.cls.length >= 2 && (e === el || e === el.parent));
+    if (ce && coin(0.5)) { const vals = prop === "color" ? FG : prop === "font-size" ? [12, 14, 18, 20, 22, 24, 28, 30] : BG; const [v1, v2] = sample(vals, 2); const n0 = d.rules.length; d.rules.push({ sels: [{ chain: [{ t: "cls", v: ce.cls[1] }] }], decl: [[prop, v1]], order: n0, sheet: "int" }, { sels: [{ chain: [{ t: "cls", v: ce.cls[0] }] }], decl: [[prop, v2]], order: n0 + 1, sheet: "int" }); if (d.ext) { d.rules[n0].sheet = d.linkFirst ? "int" : "ext"; d.rules[n0 + 1].sheet = d.linkFirst ? "int" : "ext"; } }
+    if (o.inline !== false && coin(0.3)) { const t = pick([d.p, d.sp]); t.style = { [prop]: prop === "font-size" ? pick([15, 17, 26]) : pick(prop === "color" ? FG : BG) }; }
+    const valFn = () => (prop === "background-color" ? CSS.visibleBg(d, el).v : CSS.value(d, el, prop).v);
+    const res = prop === "background-color" ? null : CSS.value(d, el, prop);
+    const ans = valFn();
+    // 要有比較：至少兩條宣告與目標（或其祖先）有關，而且常見錯誤會得出不同答案
+    const rel = [el, el.parent, el.parent && el.parent.parent].filter(Boolean).reduce((s, e) => s + CSS.cands(d, e, prop).length, 0);
+    const traps = cssTraps(d, el, prop, ans, valFn);
+    if (rel < 2 || (!traps.length && coin(0.8))) continue;
+    if (o.need && !o.need(d, el, prop)) continue;
+    const f = cssDocFiles(d, bodyLinesOf(d));
+    const what = { color: "文字顏色", "font-size": "字體大小", "background-color": "看到的背景顏色" }[prop];
+    const elDesc = el === d.sp ? "「" + d.txt[2] + "」（<span>）" : el === d.p ? "「" + d.txt[1] + "」（<p>）" : el === d.h2 ? "「" + d.txt[0] + "」（<h2>）" : "<div>";
+    const prompt = '<p>瀏覽器顯示以下網頁時，' + esc(elDesc) + " 的<b>" + what + "</b>是甚麼？" + (prop === "background-color" ? "（如沒有任何背景，答白色。）" : "") + "</p>" + cssPrompt(f);
+    let input, show;
+    if (prop === "font-size") { input = parts(P.num("字體大小（px）", ans, { sfx: "px", traps: traps.map((t) => ({ v: t.v, msg: t.msg })) })); show = ans + "px"; }
+    else {
+      const pool = uniq([ans, ...traps.map((t) => t.v), ...d.rules.flatMap((r) => r.decl.filter((x) => x[0] === prop).map((x) => x[1])), ...(el.style && el.style[prop] ? [el.style[prop]] : []), prop === "color" ? "black" : "white"]).slice(0, 5);
+      const opts = shuffle(pool.map(cName)); input = choiceIn(opts, cName(ans), { why: Object.fromEntries(traps.map((t) => [cName(t.v), t.msg])) }); show = cName(ans);
+    }
+    let explain, after = "";
+    if (prop === "background-color") {
+      const vb = CSS.visibleBg(d, el);
+      explain = ["background-color **不會繼承**，沒有設定時是透明（transparent）；看到的是第一個有背景顏色的外層元素：" + vb.chain.map((c) => elShort(c.el) + "：" + (c.r.v === "transparent" ? "透明" : c.r.v)).join(" → ") + (vb.chain[vb.chain.length - 1].r.v === "transparent" ? " → 都沒有，見到白色。" : "。")];
+      const top = vb.chain[vb.chain.length - 1]; if (top.r.how === "rule") after = cssWhyTable(d, top.el, prop, top.r);
+    } else { explain = cssExplain(d, el, prop, res); const src = res.how === "inherit" ? (() => { let r = res; while (r.how === "inherit") r = r.from; return r; })() : res; if (src.how === "rule") after = (src.el !== el ? '<p class="iolab">設定 ' + esc(elShort(src.el)) + " 的宣告</p>" : "") + cssWhyTable(d, src.el, prop, src); }
+    const chk = [{ t: "css", files: filesOf(f), sel: PATH[el.tag], prop, vis: prop === "background-color", exp: prop === "font-size" ? fmtPx(ans) : rgbOf(ans) }];
+    return { prompt, input, show, explain, after, chk };
+  }
+  throw new Error("C1 產生失敗");
+}
+const fmtPx = (v) => (Number.isInteger(v) ? v : +v.toFixed(3)) + "px";
+
+// ---------- C2：方盒尺寸 ----------
+const BOXV = (s) => { const a = s.split(" ").map((x) => parseInt(x, 10)); return a.length === 1 ? [a[0], a[0], a[0], a[0]] : a.length === 2 ? [a[0], a[1], a[0], a[1]] : a.length === 3 ? [a[0], a[1], a[2], a[1]] : a; }; // 上 右 下 左
+function genC2() {
+  const w = pick([120, 150, 180, 200, 240, 300]), hgt = pick([0, 0, 60, 80, 100]);
+  const pv = pick(["10px", "15px", "8px 16px", "10px 20px", "5px 10px 15px 20px", "12px 6px 4px"]), bw = pick([1, 2, 3, 4, 5]), mv = pick(["10px", "20px", "5px 15px", "10px 25px", "0 12px 0 30px"]);
+  const decl = [["width", w + "px"]]; if (hgt) decl.push(["height", hgt + "px"]);
+  decl.push(["padding", pv]); let bl = bw, br = bw, bt = bw, bb = bw; decl.push(["border", bw + "px solid black"]);
+  let pad = BOXV(pv), mar = BOXV(mv);
+  if (coin(0.3)) { const x = pick([0, 25, 30]); decl.push(["padding-left", x + "px"]); pad = [pad[0], pad[1], pad[2], x]; }
+  if (coin(0.25)) { const x = pick([6, 8, 10]); decl.push(["border-right", x + "px solid gray"]); br = x; }
+  decl.push(["margin", mv]);
+  const ask = pick(hgt ? ["mw", "bw", "mh", "bh"] : ["mw", "bw", "mw"]);
+  const onePad = MUT.box_onePad, noB = MUT.box_noBorder;
+  const W = { content: w, pad: onePad ? pad[3] : pad[1] + pad[3], bor: noB ? 0 : bl + br, mar: mar[1] + mar[3] };
+  const H = { content: hgt, pad: onePad ? pad[0] : pad[0] + pad[2], bor: noB ? 0 : bt + bb, mar: mar[0] + mar[2] };
+  const S = ask[1] === "w" ? W : H, withM = ask[0] === "m";
+  const ans = S.content + S.pad + S.bor + (withM ? S.mar : 0);
+  const cls = pick(["box", "panel", "card"]);
+  const css = ["." + cls + " {", ...decl.map(([p, v]) => "  " + p + ": " + v + ";"), "}"];
+  const html = ["<!DOCTYPE html>", "<html>", "<head>", '  <meta charset="utf-8">', "  <style>", ...css.map((l) => "    " + l), "  </style>", "</head>", "<body>", '  <div class="' + cls + '">內容</div>', "</body>", "</html>"];
+  const what = (ask[1] === "w" ? "闊度" : "高度");
+  const q = withM ? "元素在網頁上佔用的總" + what + "（由外邊距的一邊至另一邊）" : "元素由邊界（border）外緣量度的" + what + "（不包括外邊距）";
+  const side = ask[1] === "w" ? ["左", "右", 3, 1] : ["上", "下", 0, 2];
+  const steps = [what + "：" + S.content + "px（內容）", "內邊距 padding：" + side[0] + " " + pad[side[2]] + " ＋ " + side[1] + " " + pad[side[3]] + " ＝ " + (pad[side[2]] + pad[side[3]]) + "px", "邊界 border：" + side[0] + " " + (ask[1] === "w" ? bl : bt) + " ＋ " + side[1] + " " + (ask[1] === "w" ? br : bb) + " ＝ " + (ask[1] === "w" ? bl + br : bt + bb) + "px"];
+  if (withM) steps.push("外邊距 margin：" + side[0] + " " + mar[side[2]] + " ＋ " + side[1] + " " + mar[side[3]] + " ＝ " + (mar[side[2]] + mar[side[3]]) + "px");
+  const good = w0(ask, w, hgt, pad, mar, bl, br, bt, bb);
+  steps.push("合計 " + good + "px。");
+  const explain = ["padding／margin 簡寫：一個值＝四邊相同；兩個值＝上下、左右；三個值＝上、左右、下；四個值＝上、右、下、左（順時針）。同一規則內後寫的 padding-left、border-right 會取代簡寫中的那一邊。", ...steps];
+  const traps = [{ v: S.content + (ask[1] === "w" ? pad[3] : pad[0]) + S.bor + (withM ? S.mar : 0), msg: "內邊距左右（或上下）兩邊都要計算。" }, { v: S.content + S.pad + (withM ? S.mar : 0), msg: "要加上兩邊的邊界（border）闊度。" }, { v: S.content, msg: "width／height 只是內容的尺寸（content-box），還要加內邊距及邊界。" }, { v: S.content + S.pad + S.bor + (withM ? 0 : S.mar), msg: withM ? "總佔用尺寸包括外邊距。" : "題目問邊界外緣的尺寸，不包括外邊距。" }].filter((t) => t.v !== ans);
+  return { prompt: "<p>求以下 <code>&lt;div&gt;</code> 的<b>" + esc(q) + "</b>。（box-sizing 為預設的 content-box）</p>" + codeHTML(html), input: parts(P.num(what + "（px）", ans, { sfx: "px", traps })), show: ans + "px", explain,
+    chk: [{ t: "box", files: { "index.html": html.join("\n") + "\n" }, sel: "body > div", key: withM ? "margin" : "border", dim: ask[1], exp: ans }] };
+}
+function w0(ask, w, hgt, pad, mar, bl, br, bt, bb) { return ask[1] === "w" ? w + pad[1] + pad[3] + bl + br + (ask[0] === "m" ? mar[1] + mar[3] : 0) : hgt + pad[0] + pad[2] + bt + bb + (ask[0] === "m" ? mar[0] + mar[2] : 0); }
+
+cat("C1", "CSS 顯示效果", { tag: "指引 常考", hint: [["列出所有能選中該元素的規則（標籤、類別、ID、群組；行內樣式）。", "比較優先性：行內 ＞ ID ＞ 類別 ＞ 標籤；相同時後定義者生效（外連與內含按 <link>／<style> 的次序）。", "沒有規則直接設定：color、font-size 繼承父元素；background-color 透明，看外層。"], "p.note { color: red; } #intro { color: blue; } → <p id=\"intro\" class=\"note\"> 是藍色"] });
+addType("C1", "文字顏色", () => genC1({ prop: "color" }));
+addType("C1", "字體大小", () => genC1({ prop: "font-size" }));
+addType("C1", "看到的背景顏色", () => genC1({ prop: "background-color" }));
+cat("C2", "方盒尺寸", { tag: "指引", hint: [["總闊度 ＝ 左外邊距 ＋ 左邊界 ＋ 左內邊距 ＋ width ＋ 右內邊距 ＋ 右邊界 ＋ 右外邊距。", "簡寫：1 值四邊；2 值 上下｜左右；3 值 上｜左右｜下；4 值 上 右 下 左。", "同一規則內較後的 padding-left 等會取代簡寫中的那一邊。"], "width:200px; padding:10px 20px; border:3px; margin:5px 15px → 30+6+40+200 = 276px"] });
+addType("C2", "方盒尺寸", genC2);
+// =================== JavaScript 子集：語法樹、顯示、求值 ===================
+const JS = (() => {
+  const PREC = { "||": 4, "&&": 5, "==": 9, "!=": 9, "===": 9, "!==": 9, "<": 10, "<=": 10, ">": 10, ">=": 10, "+": 12, "-": 12, "*": 13, "/": 13, "%": 13 };
+  const q = (s) => '"' + s.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"';
+  function ex(e, parent = 0, right = false) {
+    switch (e.k) {
+      case "n": return String(e.v);
+      case "s": return q(e.v);
+      case "v": return e.n;
+      case "b": { const p = PREC[e.op]; const s = ex(e.l, p, false) + " " + e.op + " " + ex(e.r, p, true); return p < parent || (right && p === parent) ? "(" + s + ")" : s; }
+      case "c": {
+        if (e.f === "len") return ex(e.a[0], 20) + ".length";
+        if (e.f === "idx") return ex(e.a[0], 20) + "[" + ex(e.a[1]) + "]";
+        return e.f + "(" + e.a.map((x) => ex(x)).join(", ") + ")";
+      }
+      case "tpl": return "`" + e.parts.map((x) => (typeof x === "string" ? x : "${" + ex(x) + "}")).join("") + "`";
+      case "arr": return "[" + e.items.map((x) => ex(x)).join(", ") + "]";
+      case "dom": return 'document.getElementById("' + e.id + '").' + e.prop;
+    }
+    throw new Error("ex " + e.k);
+  }
+  const body = (b, ind) => b.flatMap((s) => st(s, ind));
+  function st(s, ind = "") {
+    const I = ind + "  ";
+    switch (s.k) {
+      case "let": return [ind + (s.c ? "const " : "let ") + s.n + (s.e ? " = " + ex(s.e) : "") + ";"];
+      case "set": return [ind + s.n + " " + (s.op || "=") + " " + ex(s.e) + ";"];
+      case "inc": return [ind + s.n + s.op + ";"];
+      case "log": return [ind + "console.log(" + ex(s.e) + ");"];
+      case "push": return [ind + s.a + ".push(" + ex(s.e) + ");"];
+      case "domset": return [ind + 'document.getElementById("' + s.id + '").' + s.prop + " = " + ex(s.e) + ";"];
+      case "addopt": return [ind + 'let option = document.createElement("option");', ind + "option.text = " + ex(s.text) + ";", ...(s.value ? [ind + "option.value = " + ex(s.value) + ";"] : []), ind + 'document.getElementById("' + s.sel + '").add(option);'];
+      case "if": {
+        const out = [];
+        s.br.forEach(([c, b], i) => { out.push((i ? ind + "} else if (" : ind + "if (") + ex(c) + ") {"); out.push(...body(b, I)); });
+        if (s.els) { out.push(ind + "} else {"); out.push(...body(s.els, I)); }
+        out.push(ind + "}"); return out;
+      }
+      case "for": return [ind + "for (let " + s.n + " = " + ex(s.init) + "; " + ex(s.cond) + "; " + s.n + (s.upd === 1 ? "++" : s.upd === -1 ? "--" : s.upd > 0 ? " += " + s.upd : " -= " + -s.upd) + ") {", ...body(s.body, I), ind + "}"];
+      case "while": return [ind + "while (" + ex(s.cond) + ") {", ...body(s.body, I), ind + "}"];
+      case "fn": return [ind + "function " + s.name + "() {", ...body(s.body, I), ind + "}"];
+    }
+    throw new Error("st " + s.k);
+  }
+  // 求值：env 變量；dom {id:{text,value,options}}；out 輸出行
+  function val(e, env) {
+    switch (e.k) {
+      case "n": return e.v;
+      case "s": return e.v;
+      case "v": if (!(e.n in env.vars)) throw new Error("ReferenceError: " + e.n); return env.vars[e.n];
+      case "b": {
+        const l = val(e.l, env); if (e.op === "&&") return l && val(e.r, env); if (e.op === "||") return l || val(e.r, env);
+        const r = val(e.r, env);
+        switch (e.op) {
+          case "+": return MUT.js_plusAdd ? Number(l) + Number(r) : l + r;
+          case "-": return l - r; case "*": return l * r; case "/": return l / r; case "%": return l % r;
+          case "<": return MUT.js_ltAsLte ? l <= r : l < r; case "<=": return l <= r; case ">": return l > r; case ">=": return l >= r;
+          case "==": return l == r; case "!=": return l != r; case "===": return l === r; case "!==": return l !== r;   // eslint-disable-line eqeqeq
+        }
+        break;
+      }
+      case "c": {
+        const a = e.a.map((x) => val(x, env));
+        switch (e.f) {
+          case "Number": return Number(a[0]);
+          case "String": return String(a[0]);
+          case "String.fromCharCode": return String.fromCharCode(a[0]);
+          case "Math.floor": return Math.floor(a[0]);
+          case "len": return a[0].length;
+          case "idx": return a[0][a[1]];
+        }
+        break;
+      }
+      case "tpl": return e.parts.map((x) => (typeof x === "string" ? x : String(val(x, env)))).join("");
+      case "arr": return e.items.map((x) => val(x, env));
+      case "dom": { const d = env.dom[e.id]; return e.prop === "value" ? d.value : d.text; }
+    }
+    throw new Error("val " + e.k);
+  }
+  function run(b, env) {
+    for (const s of b) {
+      if (++env.steps > 5000) throw new Error("too many steps");
+      switch (s.k) {
+        case "let": env.vars[s.n] = s.e ? val(s.e, env) : undefined; break;
+        case "set": { const v = val(s.e, env), o = env.vars[s.n]; env.vars[s.n] = !s.op || s.op === "=" ? v : s.op === "+=" ? (MUT.js_plusAdd ? Number(o) + Number(v) : o + v) : s.op === "-=" ? o - v : o * v; break; }
+        case "inc": env.vars[s.n] += s.op === "++" ? 1 : -1; break;
+        case "log": env.out.push(fmt(val(s.e, env))); break;
+        case "push": env.vars[s.a].push(val(s.e, env)); break;
+        case "domset": env.dom[s.id].text = String(val(s.e, env)); break;
+        case "addopt": { const t = String(val(s.text, env)); env.dom[s.sel].options.push({ text: t, value: s.value ? String(val(s.value, env)) : t }); break; }
+        case "if": { const br = s.br.find(([c]) => val(c, env)); if (br) run(br[1], env); else if (s.els) run(s.els, env); break; }
+        case "for": { const saved = s.n in env.vars ? env.vars[s.n] : undefined; env.vars[s.n] = val(s.init, env); while (val(s.cond, env)) { run(s.body, env); env.vars[s.n] += s.upd; if (++env.steps > 5000) throw new Error("loop"); } if (saved === undefined) delete env.vars[s.n]; else env.vars[s.n] = saved; break; }
+        case "while": while (val(s.cond, env)) { run(s.body, env); if (++env.steps > 5000) throw new Error("loop"); } break;
+        case "fn": env.fns[s.name] = s.body; break;
+      }
+    }
+  }
+  const fmt = (v) => (typeof v === "number" ? (Object.is(v, -0) ? "0" : String(v)) : String(v));
+  function exec(prog, o = {}) { const env = { vars: {}, out: [], dom: o.dom || {}, fns: {}, steps: 0 }; run(prog, env); return env; }
+  return { ex, st, lines: (prog) => prog.flatMap((s) => st(s)), exec, run, val };
+})();
+// 建構工具
+const jN = (v) => ({ k: "n", v }), jS = (v) => ({ k: "s", v }), jV = (n) => ({ k: "v", n }), jB = (op, l, r) => ({ k: "b", op, l, r }), jC = (f, ...a) => ({ k: "c", f, a });
+const jLet = (n, e, c) => ({ k: "let", n, e, c }), jSet = (n, e, op) => ({ k: "set", n, e, op }), jLog = (e) => ({ k: "log", e }), jIf = (br, els) => ({ k: "if", br, els });
+const jFor = (n, init, cond, upd, body) => ({ k: "for", n, init, cond, upd, body }), jWhile = (cond, body) => ({ k: "while", cond, body }), jInc = (n, op = "++") => ({ k: "inc", n, op });
+// 以變異引擎重算，得出常見錯誤的答案（用作針對性回饋）
+function mutAns(fn, list) {
+  const out = [];
+  for (const [m, msg] of list) { const old = MUT[m]; MUT[m] = true; let v = null; try { v = fn(); } catch (e) { v = null; } if (old) MUT[m] = old; else delete MUT[m]; if (v !== null) out.push({ v, msg }); }
+  return out;
+}
+const JS_TRAPS = [["js_plusAdd", "`+` 的其中一方是字串時，`+` 是字串合併，不是加法（由左至右計算）。"], ["js_ltAsLte", "`<` 不包括相等：循環少做一次（與 `<=` 比較）。"]];
+function jsQuestion(prog, intro, o = {}) {
+  const out = JS.exec(prog).out;
+  const code = JS.lines(prog);
+  const traps = mutAns(() => JS.exec(prog).out, JS_TRAPS).filter((t) => t.v.join("\n") !== out.join("\n"));
+  return {
+    prompt: "<p>" + intro + "</p>" + codeHTML(code),
+    input: parts(P.lines("輸出（每行一個 console.log）", out, { traps: traps.map((t) => ({ v: t.v, msg: t.msg })) })),
+    show: out.join("／"), explain: o.explain || [], after: o.after || "",
+    chk: [{ t: "js", code: code.join("\n") + "\n", exp: out }],
+  };
+}
+// 逐行追蹤表（循環）
+function traceRows(prog, names) {
+  const rows = []; const env = { vars: {}, out: [], dom: {}, fns: {}, steps: 0 };
+  // 只為說明：在循環主體結束時記錄變量
+  const wrap = (b) => b.map((s) => (s.k === "for" || s.k === "while" ? Object.assign({}, s, { body: [...wrap(s.body), { k: "snap" }] }) : s));
+  const run = (b) => { for (const s of b) { if (s.k === "snap") { rows.push(names.map((n) => (env.vars[n] === undefined ? "—" : JSON.stringify(env.vars[n])))); continue; }
+    if (s.k === "for") { env.vars[s.n] = JS.val(s.init, env); while (JS.val(s.cond, env)) { run(s.body); env.vars[s.n] += s.upd; } continue; }
+    if (s.k === "while") { while (JS.val(s.cond, env)) run(s.body); continue; }
+    if (s.k === "if") { const br = s.br.find(([c]) => JS.val(c, env)); if (br) run(br[1]); else if (s.els) run(s.els); continue; }
+    JS.run([s], env); } };
+  run(wrap(prog));
+  return rows.length ? '<p class="iolab">每次循環主體完結時</p>' + mini(names.map((n) => "<code>" + esc(n) + "</code>"), rows.slice(0, 12).map((r) => r.map(esc))) + (rows.length > 12 ? '<p class="small">（其餘 ' + (rows.length - 12) + " 次從略）</p>" : "") : "";
+}
+
+// ---------- J1：JavaScript 輸出 ----------
+function genJ1a() {
+  const a = R(2, 9), b = String(R(1, 9)), x = R(2, 9), w = pick(["總數：", "結果：", "答案是 "]), u = pick(["分", "元", "個"]);
+  const pool = [jLog(jB("+", jV("a"), jV("b"))), jLog(jB(pick(["-", "*"]), jV("a"), jV("b"))), jLog(jB("+", jV("a"), jC("Number", jV("b")))),
+    jLog(jB("+", jB("+", jS(w), jV("a")), jV("x"))), jLog(jB("+", jB("+", jV("a"), jV("x")), jS(u))), jLog(jB("+", jS(w), jB("+", jV("a"), jV("x")))),
+    jLog({ k: "tpl", parts: ["", jV("a"), " + ", jV("x"), " = ", jB("+", jV("a"), jV("x"))] }), jLog(jB("+", jV("b"), jV("x")))];
+  const prog = [jLet("a", jN(a)), jLet("b", jS(b)), jLet("x", jN(x)), ...sample(pool, R(3, 4))];
+  return jsQuestion(prog, "寫出以下 JavaScript 代碼在控制台（console）的輸出。", { explain: ["`b` 是字串（有雙引號）。`+` 的任何一方是字串時便是**字串合併**；`-`、`*`、`/` 會把字串轉為數字計算。", "`+` 由左至右計算：`\"" + w + "\" + a + x` 先得字串，再合併 x；`a + x + \"" + u + "\"` 先相加再合併。", "`Number(b)` 把字串轉為數字；樣板字面值（反引號）的 `${…}` 內先計算再放入字串。"] });
+}
+function genJ1b() {
+  const v = pick(["score", "marks", "mark"]), cuts = sample([40, 50, 60, 70, 80, 90], 3).sort((p, q) => q - p);
+  const s = coin(0.4) ? pick(cuts) : R(25, 100), ops = [pick([">=", ">"]), pick([">=", ">"]), pick([">=", ">"])];
+  const gs = pick([["A", "B", "C", "D"], ["優異", "良好", "合格", "不合格"], ["金", "銀", "銅", "參與"]]);
+  const prog = [jLet(v, jN(s)), jLet("grade", jS("")),
+    jIf([[jB(ops[0], jV(v), jN(cuts[0])), [jSet("grade", jS(gs[0]))]], [jB(ops[1], jV(v), jN(cuts[1])), [jSet("grade", jS(gs[1]))]], [jB(ops[2], jV(v), jN(cuts[2])), [jSet("grade", jS(gs[2]))]]], [jSet("grade", jS(gs[3]))]),
+    jLog(jB("+", jB("+", jV(v), jS(" ")), jV("grade")))];
+  if (coin(0.5)) { const k = R(3, 15); prog.push(jSet(v, jN(k), "+="), jIf([[jB("&&", jB(">=", jV(v), jN(cuts[1])), jB("<", jV(v), jN(cuts[0]))), [jLog(jS("加分後在中間級別"))]]], [jLog(jB("+", jS("加分後："), jV(v)))])); }
+  return jsQuestion(prog, "寫出以下 JavaScript 代碼的輸出。", { explain: ["`if … else if … else` 由上而下檢查，只執行**第一個**成立的分支。", "留意 `>=` 包括相等、`>` 不包括。" + (s === cuts[0] || s === cuts[1] || s === cuts[2] ? "本題 " + v + " 剛好等於分界值 " + s + "。" : "")] });
+}
+function genJ1c() {
+  const s = R(0, 3), e = s + R(3, 8), up = pick([1, 1, 2, 3]), cmpOp = pick(["<", "<="]), mode = R(0, 2);
+  const prog = [jLet("total", jN(0)), jLet("count", jN(0))];
+  const bodyS = [jSet("total", jV("i"), "+="), jInc("count")];
+  if (mode === 1) bodyS.push(jIf([[jB("==", jB("%", jV("i"), jN(2)), jN(0)), [jLog(jV("i"))]]]));
+  if (mode === 2) bodyS.unshift(jLog(jB("+", jS("i = "), jV("i"))));
+  prog.push(jFor("i", jN(s), jB(cmpOp, jV("i"), jN(e)), up, bodyS), jLog(jB("+", jS("total = "), jV("total"))), jLog(jB("+", jS("count = "), jV("count"))));
+  return jsQuestion(prog, "寫出以下 JavaScript 代碼的輸出。", { explain: ["循環變量 i 由 " + s + " 開始，每次加 " + up + "，條件 `i " + cmpOp + " " + e + "` 成立便執行主體。", "`" + cmpOp + "` " + (cmpOp === "<" ? "不包括 " + e : "包括 " + e) + "。"], after: traceRows(prog, ["i", "total", "count"]) });
+}
+function genJ1d() {
+  const n0 = R(30, 99), mode = R(0, 1), k = pick([5, 8, 10, 12]), d = pick([7, 9, 11, 13]);
+  const prog = [jLet("n", jN(n0)), jLet("steps", jN(0))];
+  if (mode === 0) prog.push(jWhile(jB(">", jV("n"), jN(k)), [jSet("n", jB("-", jV("n"), jN(d))), jInc("steps")]));
+  else prog.push(jWhile(jB(">=", jV("n"), jN(pick([2, 3, 5]))), [jSet("n", jC("Math.floor", jB("/", jV("n"), jN(2)))), jInc("steps")]));
+  prog.push(jLog(jV("steps")), jLog(jV("n")));
+  return jsQuestion(prog, "寫出以下 JavaScript 代碼的輸出。", { explain: ["`while` 每次先檢查條件，成立才執行主體；條件不成立時離開循環。", mode ? "`Math.floor(n / 2)` 取整數部分（JavaScript 的 `/` 會得出小數）。" : "逐次減 " + d + "，直至條件不成立。"], after: traceRows(prog, ["n", "steps"]) });
+}
+function genJ1e() {
+  const arr = range(0, R(4, 6)).map(() => R(3, 19) * 5), add = R(3, 19) * 5, lim = pick([40, 50, 60]), nm = pick(["marks", "scores", "points"]);
+  const prog = [jLet(nm, { k: "arr", items: arr.map(jN) }), { k: "push", a: nm, e: jN(add) }, jLet("sum", jN(0)), jLet("pass", jN(0)),
+    jFor("i", jN(0), jB(pick(["<", "<"]), jV("i"), jC("len", jV(nm))), 1, [jIf([[jB(">=", jC("idx", jV(nm), jV("i")), jN(lim)), [jSet("sum", jC("idx", jV(nm), jV("i")), "+="), jInc("pass")]]])]),
+    jLog(jC("len", jV(nm))), jLog(jV("pass")), jLog(jV("sum")), jLog(jC("idx", jV(nm), jN(R(0, arr.length))))];
+  return jsQuestion(prog, "寫出以下 JavaScript 代碼的輸出。", { explain: ["`push()` 在陣列**末端**加入一個元素，`length` 隨即加 1。", "陣列索引由 0 開始：`" + nm + "[0]` 是第一個元素，最後一個是 `" + nm + "[" + nm + ".length - 1]`。", "循環只累加 ≥ " + lim + " 的元素。"] });
+}
+function genJ1f() {
+  const mode = R(0, 2);
+  let prog;
+  if (mode === 0) { const st = pick([65, 66, 67, 70, 72, 97, 98]), n = R(3, 5), step = pick([1, 2]); prog = [jFor("i", jN(0), jB("<", jV("i"), jN(n)), 1, [jLog(jC("String.fromCharCode", jB("+", jN(st), jB("*", jV("i"), jN(step)))))])]; }
+  else if (mode === 1) { const c = R(65, 85); prog = [jLet("code", jN(c)), jLet("letter", jC("String.fromCharCode", jV("code"))), jLog(jB("+", jV("letter"), jV("code"))), jLog(jB("+", jB("+", jV("code"), jN(1)), jV("letter"))), jLog(jC("String.fromCharCode", jB("+", jV("code"), jN(R(1, 4)))))]; }
+  else { const team = sample(["1", "2", "3", "4", "5", "6"], 3).sort(); prog = [jLet("team", { k: "arr", items: team.map(jS) }), jLet("temp", jN(pick([65, 70, 75]))), jFor("i", jN(0), jB("<", jV("i"), jC("len", jV("team"))), 1, [jLog(jB("+", jC("idx", jV("team"), jV("i")), jC("String.fromCharCode", jB("+", jV("temp"), jV("i")))))])]; }
+  return jsQuestion(prog, "寫出以下 JavaScript 代碼的輸出。（ASCII：A＝65、a＝97）", { explain: ["`String.fromCharCode(65)` 得 \"A\"；66 得 \"B\"……；97 得 \"a\"。", "字串 ＋ 數字 會合併；數字 ＋ 數字 先相加（由左至右）。"] });
+}
+cat("J1", "JavaScript 輸出", { tag: "指引 易錯", hint: [["逐句執行，記下每個變量的值（可畫追蹤表）。", "`+`：任何一方是字串便合併；`-` `*` `/` 會把字串轉為數字。", "循環：先檢查條件；`<` 不包括相等；陣列索引由 0 開始。"], 'let a = 5; let b = "3"; console.log(a + b); → 53'] });
+addType("J1", "字串與數字", genJ1a); addType("J1", "if … else if", genJ1b); addType("J1", "for 循環", genJ1c); addType("J1", "while 循環", genJ1d); addType("J1", "陣列", genJ1e); addType("J1", "String.fromCharCode", genJ1f);
+
+// ---------- J2：DOM 結果 ----------
+const SCRIPT_OPEN = "<" + "script>", SCRIPT_CLOSE = "</" + "script>";
+function domPage(bodyEls, prog, onload) {
+  const js = JS.lines(prog).map((l) => "    " + l);
+  return ["<!DOCTYPE html>", "<html>", "<head>", '  <meta charset="utf-8">', "  " + SCRIPT_OPEN, ...js, "  " + SCRIPT_CLOSE, "</head>", "<body" + (onload ? ' onload="' + onload + '()"' : "") + ">", ...bodyEls.map((l) => "  " + l), "</body>", "</html>"];
+}
+function runDom(prog, dom, actions, onload) {
+  const env = JS.exec(prog, { dom });
+  if (onload) JS.run(env.fns[onload], env);
+  for (const a of actions) { if (a[0] === "fill") env.dom[a[1]].value = a[2]; else JS.run(env.fns[a[2]], env); }
+  return env;
+}
+const actText = (a, labels) => (a[0] === "fill" ? "在輸入欄輸入 <code>" + esc(a[2]) + "</code>" : "按「" + esc(labels[a[1]]) + "」按鈕");
+function genJ2a() {   // 計數器
+  const c0 = R(0, 5), k = R(2, 5), msg = pick(["次數：", "分數：", "已按："]), lab = { add: "加 " + k, sub: "減 1", reset: "重設" };
+  const prog = [jLet("count", jN(c0)),
+    { k: "fn", name: "addOne", body: [jSet("count", jB("+", jV("count"), jN(k))), { k: "domset", id: "msg", prop: "innerText", e: jB("+", jS(msg), jV("count")) }] },
+    { k: "fn", name: "minusOne", body: [jInc("count", "--"), { k: "domset", id: "msg", prop: "innerText", e: jB("+", jS(msg), jV("count")) }] },
+    { k: "fn", name: "reset", body: [jSet("count", jN(0)), { k: "domset", id: "msg", prop: "innerText", e: jS("已重設") }] }];
+  const fnOf = { add: "addOne", sub: "minusOne", reset: "reset" };
+  const html = domPage(['<p id="msg">未開始</p>', '<button id="add" onclick="addOne()">' + lab.add + "</button>", '<button id="sub" onclick="minusOne()">' + lab.sub + "</button>", '<button id="reset" onclick="reset()">' + lab.reset + "</button>"], prog);
+  const acts = range(0, R(3, 6)).map(() => { const b = pick(["add", "add", "sub", "reset"]); return ["click", b, fnOf[b]]; });
+  return domQ(html, prog, { msg: { text: "未開始" } }, acts, lab, "msg", "id 為 msg 的段落最後顯示甚麼？", ["每按一次按鈕便執行一次對應的函數；`count` 是全域變量，每次都由上一次的值繼續。", "`innerText = …` 把段落的文字整段換成新內容。"]);
+}
+function genJ2b() {   // 讀取輸入欄
+  const k = R(1, 9), mode = R(0, 3);
+  const e = mode === 0 ? jB("+", jV("x"), jN(k)) : mode === 1 ? jB("+", jC("Number", jV("x")), jN(k)) : mode === 2 ? jB("*", jV("x"), jN(k)) : jB("+", jB("+", jS("你輸入了 "), jV("x")), jS(" 號"));
+  const prog = [{ k: "fn", name: "show", body: [jLet("x", { k: "dom", id: "num", prop: "value" }), { k: "domset", id: "out", prop: "innerText", e }] }];
+  const html = domPage(['<input id="num" type="text">', '<button id="go" onclick="show()">計算</button>', '<p id="out">（結果）</p>'], prog);
+  const acts = []; for (let i = 0; i < R(1, 2); i++) { acts.push(["fill", "num", String(R(2, 30))], ["click", "go", "show"]); }
+  return domQ(html, prog, { num: { value: "" }, out: { text: "（結果）" } }, acts, { go: "計算" }, "out", "id 為 out 的段落最後顯示甚麼？", ["`.value` 取得的輸入一定是**字串**：`x + " + k + "` 是字串合併；`Number(x) + " + k + "` 才是加法；`*` 會把字串轉為數字。"]);
+}
+function genJ2c() {   // onload 產生下拉式選單（仿 2025 9(b)）
+  const items = sample(["1A", "2B", "3C", "4D", "5E", "6F", "籃球", "排球", "足球"].slice(0, 6), R(3, 5)).sort();
+  const n = items.length, cv = R(0, 4);
+  const cond = [jB("<", jV("i"), jC("len", jV("team"))), jB("<=", jV("i"), jB("-", jC("len", jV("team")), jN(1))), jB("<", jV("i"), jB("-", jC("len", jV("team")), jN(1))), jB("<=", jV("i"), jC("len", jV("team"))), jB("<", jV("i"), jN(R(2, n)))][cv];
+  const start = coin(0.25) ? 1 : 0, textE = coin(0.5) ? jC("idx", jV("team"), jV("i")) : jB("+", jB("+", jS("第"), jB("+", jV("i"), jN(1))), jS("項"));
+  const prog = [{ k: "fn", name: "init", body: [jLet("team", { k: "arr", items: items.map(jS) }), jFor("i", jN(start), cond, 1, [{ k: "addopt", sel: "team", text: textE, value: jC("idx", jV("team"), jV("i")) }])] }];
+  const html = domPage(['<select id="team"></select>'], prog, "init");
+  const env = (() => { try { return runDom(prog, { team: { options: [] } }, [], "init"); } catch (e) { return null; } })();
+  if (!env || env.dom.team.options.some((o) => o.value === "undefined")) return genJ2c();   // 越界會加入 undefined 選項：不出此題
+  const opts = env.dom.team.options.map((o) => o.text);
+  if (!opts.length) return genJ2c();
+  const code = html;
+  return {
+    prompt: "<p>網頁載入後，下拉式選單 <code>team</code> 有哪些選項？按次序每行寫一個選項顯示的文字。</p>" + codeHTML(code),
+    input: parts(P.lines("選項（每行一個）", opts)), show: opts.join("／"),
+    explain: ["`<body onload=\"init()\">`：網頁完全載入後才執行 `init()`，這時 `<select>` 已存在。", "每次循環以 `document.createElement(\"option\")` 建立一個選項，設定 `text`（顯示）及 `value`（提交的值），再用 `add()` 加入選單。", "循環由 i = " + start + " 開始，條件 `" + JS.ex(cond) + "`：team.length 是 " + n + "，共執行 " + opts.length + " 次。"],
+    chk: [{ t: "dom", files: { "index.html": code.join("\n") + "\n" }, actions: [], id: "team", what: "options", exp: opts }],
+  };
+}
+function genJ2d() {   // 開關
+  const a = pick([["關", "開"], ["暫停", "播放"], ["隱藏", "顯示"]]), lab = { sw: "切換" };
+  const prog = [jLet("n", jN(0)), { k: "fn", name: "toggle", body: [jInc("n"), jIf([[jB("==", { k: "dom", id: "lamp", prop: "innerText" }, jS(a[0])), [{ k: "domset", id: "lamp", prop: "innerText", e: jS(a[1]) }]]], [[{ k: "domset", id: "lamp", prop: "innerText", e: jS(a[0]) }]][0]), { k: "domset", id: "info", prop: "innerText", e: jB("+", jB("+", jS("已按 "), jV("n")), jS(" 次")) }] }];
+  const html = domPage(['<p id="lamp">' + a[0] + "</p>", '<p id="info">已按 0 次</p>', '<button id="sw" onclick="toggle()">切換</button>'], prog);
+  const acts = range(0, R(2, 7)).map(() => ["click", "sw", "toggle"]);
+  const id = coin(0.6) ? "lamp" : "info";
+  return domQ(html, prog, { lamp: { text: a[0] }, info: { text: "已按 0 次" } }, acts, lab, id, "id 為 " + id + " 的段落最後顯示甚麼？", ["每按一次，`if` 檢查目前的文字：是「" + a[0] + "」便改為「" + a[1] + "」，否則改回「" + a[0] + "」；按單數次後是「" + a[1] + "」。"]);
+}
+function domQ(html, prog, dom, acts, labels, id, ask, explain) {
+  const env = runDom(prog, JSON.parse(JSON.stringify(dom)), acts);
+  const ans = env.dom[id].text;
+  const alt = mutAns(() => runDom(prog, JSON.parse(JSON.stringify(dom)), acts).dom[id].text, JS_TRAPS).filter((t) => t.v !== ans);
+  return {
+    prompt: "<p>用戶開啟以下網頁後，依次：</p><ol class=\"acts\">" + acts.map((a) => (a[0] === "fill" ? "<li>" + actText(a, labels) + "</li>" : "<li>" + actText(a, labels) + "</li>")).join("") + "</ol><p>" + esc(ask) + "</p>" + codeHTML(html),
+    input: parts(P.text("顯示的文字", ans, { cls: "l", traps: alt })), show: ans, explain,
+    chk: [{ t: "dom", files: { "index.html": html.join("\n") + "\n" }, actions: acts.map((a) => (a[0] === "fill" ? ["fill", "#" + a[1], a[2]] : ["click", "#" + a[1]])), id, what: "text", exp: ans }],
+  };
+}
+cat("J2", "DOM 結果", { tag: "指引 常考 易錯", hint: [["找出每個按鈕的 onclick 呼叫哪個函數；onload 在網頁載入後執行一次。", "逐次執行函數，記下全域變量及元素文字的變化。", "`.value` 取得的是字串；`innerText = …` 會取代原有文字。"], 'document.getElementById("msg").innerText = "次數：" + count;'] });
+addType("J2", "計數器", genJ2a); addType("J2", "讀取輸入欄", genJ2b); addType("J2", "onload 產生選項", genJ2c); addType("J2", "開關切換", genJ2d);
+// =================== PHP 子集（PHP 8 語義）：語法樹、顯示、求值 ===================
+// 值：整數＝JS 整數；浮點數＝{f: 數值}；字串、布爾、null；陣列＝{arr: [[鍵, 值]…], next}
+const PHP = (() => {
+  const isF = (x) => x !== null && typeof x === "object" && "f" in x;
+  const isA = (x) => x !== null && typeof x === "object" && "arr" in x;
+  const isNumStr = (s) => typeof s === "string" && /^[ \t\n\r\v\f]*[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?[ \t\n\r\v\f]*$/.test(s);
+  function fmtF(v) {
+    if (!isFinite(v)) return v > 0 ? "INF" : v < 0 ? "-INF" : "NAN";
+    if (Number.isInteger(v) && Math.abs(v) < 1e15) return String(v);
+    let s = v.toPrecision(14);
+    if (/e/.test(s)) { let [m, e] = s.split("e"); if (m.includes(".")) m = m.replace(/0+$/, "").replace(/\.$/, ".0"); else m += ".0"; return m + "E" + (e[0] === "-" ? "-" : "+") + e.replace(/^[+-]/, ""); }
+    if (s.includes(".")) s = s.replace(/0+$/, "").replace(/\.$/, "");
+    return s;
+  }
+  function str(x) {
+    if (x === null || x === undefined || x === false) return "";
+    if (x === true) return "1";
+    if (isF(x)) return fmtF(x.f);
+    if (typeof x === "number") return String(x);
+    if (isA(x)) return "Array";
+    return x;
+  }
+  const num = (x) => {   // 算術用的數字（整數或 {f}）
+    if (typeof x === "number" || isF(x)) return x;
+    if (x === true) return 1; if (x === false || x === null) return 0;
+    if (typeof x === "string") { if (!isNumStr(x)) throw new Error("TypeError: Unsupported operand types"); const t = x.trim(); return /[.eE]/.test(t) ? { f: Number(t) } : parseInt(t, 10); }
+    throw new Error("TypeError");
+  };
+  const nv = (x) => (isF(x) ? x.f : x);
+  const mk = (v, flt) => (flt || !Number.isInteger(v) ? { f: v } : v);
+  function arith(op, a, b) {
+    a = num(a); b = num(b); const fl = isF(a) || isF(b), x = nv(a), y = nv(b);
+    switch (op) {
+      case "+": return mk(x + y, fl); case "-": return mk(x - y, fl); case "*": return mk(x * y, fl);
+      case "/": if (y === 0) throw new Error("DivisionByZeroError"); if (MUT.php_divInt) return Math.trunc(x / y); return !fl && x % y === 0 ? x / y : { f: x / y };
+      case "%": { const xi = Math.trunc(x), yi = Math.trunc(y); if (yi === 0) throw new Error("DivisionByZeroError"); const r = xi % yi; return r === 0 ? 0 : r; }
+      case "**": return !fl && y >= 0 ? x ** y : { f: x ** y };
+    }
+  }
+  const truthy = (x) => !(x === null || x === false || x === 0 || x === "" || x === "0" || (isF(x) && x.f === 0) || (isA(x) && x.arr.length === 0));
+  function cmp(a, b) {   // PHP 8 寬鬆比較：傳回 -1／0／1
+    if (typeof a === "boolean" || typeof b === "boolean" || a === null || b === null) {
+      if (a === null && typeof b === "string") return a === b ? 0 : ("" < b ? -1 : "" === b ? 0 : 1);
+      if (b === null && typeof a === "string") return a === "" ? 0 : 1;
+      const x = truthy(a), y = truthy(b); return x === y ? 0 : x ? 1 : -1;
+    }
+    const an = typeof a === "number" || isF(a), bn = typeof b === "number" || isF(b);
+    if ((an && bn) || (an && isNumStr(b)) || (bn && isNumStr(a)) || (isNumStr(a) && isNumStr(b))) { const x = nv(num(a)), y = nv(num(b)); return x < y ? -1 : x > y ? 1 : 0; }
+    const s = str(a), t = str(b); return s < t ? -1 : s > t ? 1 : 0;
+  }
+  const same = (a, b) => (isF(a) && isF(b) ? a.f === b.f : isF(a) || isF(b) ? false : typeof a === typeof b && a === b);
+  const utf8len = (s) => { let n = 0; for (const ch of s) { const c = ch.codePointAt(0); n += c < 0x80 ? 1 : c < 0x800 ? 2 : c < 0x10000 ? 3 : 4; } return n; };
+  const aGet = (a, k) => { const e = a.arr.find((p) => cmpKey(p[0], k)); return e ? e[1] : undefined; };
+  const normKey = (k) => (typeof k === "string" && /^(0|-?[1-9]\d*)$/.test(k) ? parseInt(k, 10) : isF(k) ? Math.trunc(k.f) : k === true ? 1 : k === false ? 0 : k);
+  const cmpKey = (x, y) => normKey(x) === normKey(y);
+  function aSet(a, k, v) { if (k === undefined) { a.arr.push([a.next, v]); a.next++; return; } k = normKey(k); const e = a.arr.find((p) => p[0] === k); if (e) e[1] = v; else { a.arr.push([k, v]); if (typeof k === "number" && k >= a.next) a.next = k + 1; } }
+  const mkArr = (pairs) => { const a = { arr: [], next: 0 }; pairs.forEach(([k, v]) => aSet(a, k, v)); return a; };
+  // ---------- 顯示 ----------
+  const PREC = { "||": 4, "&&": 5, and: 3, or: 2, "==": 9, "!=": 9, "===": 9, "!==": 9, "<": 10, "<=": 10, ">": 10, ">=": 10, ".": 11, "+": 12, "-": 12, "*": 13, "/": 13, "%": 13, "**": 16 };
+  const dq = (s) => '"' + s.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\$/g, "\\$") + '"';
+  const sq = (s) => "'" + s.replace(/\\/g, "\\\\").replace(/'/g, "\\'") + "'";
+  function ex(e, parent = 0, right = false) {
+    switch (e.k) {
+      case "n": return isF(e.v) ? (Number.isInteger(e.v.f) ? e.v.f.toFixed(1) : String(e.v.f)) : String(e.v);
+      case "s": return e.q === "'" ? sq(e.v) : dq(e.v);
+      case "b": return e.v ? "true" : "false";
+      case "null": return "null";
+      case "v": return "$" + e.n;
+      case "idx": return ex(e.a, 20) + "[" + ex(e.i) + "]";
+      case "is": return '"' + e.parts.map((p, i) => { if (typeof p === "string") return p.replace(/\\/g, "\\\\").replace(/"/g, '\\"'); const nx = e.parts[i + 1]; const need = p.brace || p.e.k !== "v" || (typeof nx === "string" && /^[\w\[\u0080-\uffff-]/.test(nx)); return need ? "{" + ex(p.e) + "}" : ex(p.e); }).join("") + '"';
+      case "op": { const p = PREC[e.op]; const s = ex(e.l, p, e.op === "**") + " " + e.op + " " + ex(e.r, p, e.op !== "**"); return p < parent || (right && p === parent) ? "(" + s + ")" : s; }
+      case "not": return "!" + ex(e.e, 18);
+      case "call": return e.f + "(" + e.a.map((x) => ex(x)).join(", ") + ")";
+      case "arr": return "[" + e.items.map(([k, v]) => (k ? ex(k) + " => " : "") + ex(v)).join(", ") + "]";
+      case "raw": return e.s;
+    }
+    throw new Error("php ex " + e.k);
+  }
+  const body = (b, ind) => b.flatMap((s) => st(s, ind));
+  function st(s, ind = "") {
+    const I = ind + "  ";
+    switch (s.k) {
+      case "echo": return [ind + "echo " + ex(s.e) + ";"];
+      case "set": return [ind + ex(s.lhs) + " " + (s.op || "=") + " " + ex(s.e) + ";"];
+      case "push": return [ind + ex(s.lhs) + "[] = " + ex(s.e) + ";"];
+      case "inc": return [ind + ex(s.lhs) + s.op + ";"];
+      case "if": {
+        const out = [];
+        s.br.forEach(([c, b], i) => { out.push((i ? ind + "} elseif (" : ind + "if (") + ex(c) + ") {"); out.push(...body(b, I)); });
+        if (s.els) { out.push(ind + "} else {"); out.push(...body(s.els, I)); }
+        out.push(ind + "}"); return out;
+      }
+      case "for": return [ind + "for ($" + s.n + " = " + ex(s.init) + "; " + ex(s.cond) + "; $" + s.n + (s.upd === 1 ? "++" : s.upd === -1 ? "--" : s.upd > 0 ? " += " + s.upd : " -= " + -s.upd) + ") {", ...body(s.body, I), ind + "}"];
+      case "while": return [ind + "while (" + ex(s.cond) + ") {", ...body(s.body, I), ind + "}"];
+      case "foreach": return [ind + "foreach (" + ex(s.a) + " as " + (s.kn ? "$" + s.kn + " => " : "") + "$" + s.vn + ") {", ...body(s.body, I), ind + "}"];
+      case "fetch": return [ind + "while ($" + s.row + " = " + s.fn + "($" + s.res + ")) {", ...body(s.body, I), ind + "}"];
+      case "raw": return s.lines.map((l) => ind + l);
+      case "blank": return [""];
+    }
+    throw new Error("php st " + s.k);
+  }
+  const lines = (prog) => ["<?php", ...body(prog, "  "), "?>"];
+  // ---------- 求值 ----------
+  function val(e, env) {
+    switch (e.k) {
+      case "n": return e.v;
+      case "s": return e.q === "'" ? e.v : e.v;
+      case "b": return e.v;
+      case "null": return null;
+      case "v": if (!(e.n in env.vars)) { env.warn.push("Undefined variable $" + e.n); return null; } return env.vars[e.n];
+      case "idx": { const a = val(e.a, env), k = val(e.i, env); if (isA(a)) { const v = aGet(a, k); if (v === undefined) { env.warn.push("Undefined array key"); return null; } return v; } if (typeof a === "string") return a[nv(num(k))]; return null; }
+      case "is": return e.parts.map((p) => (typeof p === "string" ? p : str(val(p.e, env)))).join("");
+      case "op": {
+        if (e.op === "&&" || e.op === "and") return truthy(val(e.l, env)) && truthy(val(e.r, env));
+        if (e.op === "||" || e.op === "or") return truthy(val(e.l, env)) || truthy(val(e.r, env));
+        const a = val(e.l, env), b = val(e.r, env);
+        switch (e.op) {
+          case ".": return str(a) + str(b);
+          case "+": case "-": case "*": case "/": case "%": case "**": return arith(e.op, a, b);
+          case "==": return cmp(a, b) === 0; case "!=": return cmp(a, b) !== 0; case "===": return same(a, b); case "!==": return !same(a, b);
+          case "<": return cmp(a, b) < 0; case "<=": return cmp(a, b) <= 0; case ">": return cmp(a, b) > 0; case ">=": return cmp(a, b) >= 0;
+        }
+        break;
+      }
+      case "not": return !truthy(val(e.e, env));
+      case "call": return call(e, env);
+      case "arr": return mkArr(e.items.map(([k, v]) => [k ? val(k, env) : undefined, val(v, env)]));
+    }
+    throw new Error("php val " + e.k);
+  }
+  function call(e, env) {
+    if (e.f === "isset") { const x = e.a[0]; if (x.k === "v") return x.n in env.vars && env.vars[x.n] !== null; if (x.k === "idx") { const a = x.a.k === "v" ? env.vars[x.a.n] : val(x.a, env); if (!isA(a)) return false; const v = aGet(a, val(x.i, env)); return v !== undefined && v !== null; } }
+    if (e.f === "empty") { const x = e.a[0]; let v; if (x.k === "v") v = env.vars[x.n]; else if (x.k === "idx") { const a = x.a.k === "v" ? env.vars[x.a.n] : val(x.a, env); v = isA(a) ? aGet(a, val(x.i, env)) : undefined; } else v = val(x, env); if (v === undefined) return true; if (MUT.php_empty0 && v === "0") return false; return !truthy(v); }
+    const a = e.a.map((x) => val(x, env));
+    switch (e.f) {
+      case "count": return a[0].arr.length;
+      case "implode": return a[1].arr.map((p) => str(p[1])).join(str(a[0]));
+      case "strlen": return MUT.php_strlenChars ? [...str(a[0])].length : utf8len(str(a[0]));
+      case "mb_strlen": return [...str(a[0])].length;
+      case "strtoupper": return str(a[0]).replace(/[a-z]/g, (c) => c.toUpperCase());
+      case "str_contains": return str(a[0]).includes(str(a[1]));
+      case "strcmp": { const s = str(a[0]), t = str(a[1]); return s < t ? -1 : s > t ? 1 : 0; }
+      case "floor": return { f: Math.floor(nv(num(a[0]))) };
+      case "is_numeric": return typeof a[0] === "number" || isF(a[0]) || isNumStr(a[0]);
+      case "in_array": return a[1].arr.some((p) => cmp(p[1], a[0]) === 0);
+      case "mysqli_num_rows": return a[0].rows.length;
+    }
+    throw new Error("php call " + e.f);
+  }
+  function lhsSet(lhs, v, env) {
+    if (lhs.k === "v") { env.vars[lhs.n] = v; return; }
+    if (lhs.k === "idx") { const a = env.vars[lhs.a.n]; aSet(a, val(lhs.i, env), v); }
+  }
+  function run(b, env) {
+    for (const s of b) {
+      if (++env.steps > 20000) throw new Error("steps");
+      switch (s.k) {
+        case "echo": env.out += str(val(s.e, env)); break;
+        case "set": { const v = val(s.e, env); if (!s.op || s.op === "=") lhsSet(s.lhs, v, env); else { const o = val(s.lhs, env); lhsSet(s.lhs, s.op === ".=" ? str(o) + str(v) : arith(s.op[0], o, v), env); } break; }
+        case "push": env.vars[s.lhs.n] = env.vars[s.lhs.n] || mkArr([]); aSet(env.vars[s.lhs.n], undefined, val(s.e, env)); break;
+        case "inc": { const o = val(s.lhs, env); lhsSet(s.lhs, arith(s.op === "++" ? "+" : "-", o === null ? 0 : o, 1), env); break; }
+        case "if": { const br = s.br.find(([c]) => truthy(val(c, env))); if (br) run(br[1], env); else if (s.els) run(s.els, env); break; }
+        case "for": env.vars[s.n] = val(s.init, env); while (truthy(val(s.cond, env))) { run(s.body, env); env.vars[s.n] = arith("+", env.vars[s.n], s.upd); if (++env.steps > 20000) throw new Error("loop"); } break;
+        case "while": while (truthy(val(s.cond, env))) { run(s.body, env); if (++env.steps > 20000) throw new Error("loop"); } break;
+        case "foreach": { const a = val(s.a, env); for (const [k, v] of a.arr.slice()) { if (s.kn) env.vars[s.kn] = k; env.vars[s.vn] = v; run(s.body, env); } break; }
+        case "fetch": { const r = env.vars[s.res]; while (r.pos < r.rows.length) { const row = r.rows[r.pos++]; env.vars[s.row] = mkArr(Object.entries(row).map(([k, v]) => [k, v === null ? null : String(v)])); run(s.body, env); } env.vars[s.row] = null; break; }
+        case "raw": case "blank": if (s.run) s.run(env); break;
+      }
+    }
+  }
+  function exec(prog, o = {}) { const env = { vars: Object.assign({}, o.vars || {}), out: "", warn: [], steps: 0 }; run(prog, env); return env; }
+  return { ex, st, lines, exec, val, str, fmtF, isF, isA, mkArr, truthy, cmp, isNumStr, utf8len };
+})();
+// 建構工具
+const pN = (v) => ({ k: "n", v }), pF = (v) => ({ k: "n", v: { f: v } }), pS = (v, q) => ({ k: "s", v, q }), pV = (n) => ({ k: "v", n }), pO = (op, l, r) => ({ k: "op", op, l, r });
+const pC = (f, ...a) => ({ k: "call", f, a }), pI = (a, i) => ({ k: "idx", a, i }), pIS = (...parts) => ({ k: "is", parts: parts.map((p) => (typeof p === "string" ? p : p)) });
+const pEcho = (e) => ({ k: "echo", e }), pSet = (lhs, e, op) => ({ k: "set", lhs: typeof lhs === "string" ? pV(lhs) : lhs, e, op }), pIf = (br, els) => ({ k: "if", br, els });
+const pFor = (n, init, cond, upd, body) => ({ k: "for", n, init, cond, upd, body }), pWhile = (cond, body) => ({ k: "while", cond, body }), pInc = (n, op = "++") => ({ k: "inc", lhs: pV(n), op });
+const pEach = (a, vn, body, kn) => ({ k: "foreach", a, vn, kn, body }), pNot = (e) => ({ k: "not", e });
+const BR = pS("<br>");
+const brCat = (e) => pO(".", e, BR);
+// 瀏覽器顯示的行（<br> 換行；空白合併）
+const showLines = (raw) => { const a = raw.split(/<br\s*\/?>/i).map((x) => x.replace(/\s+/g, " ").trim()); while (a.length && a[a.length - 1] === "") a.pop(); return a; };
+const PHP_TRAPS = [["php_empty0", "`empty(\"0\")` 是 **true**：字串 \"0\" 被當作空值。"], ["php_divInt", "PHP 的 `/` 不能整除時得出**小數**（浮點數），不會自動捨去。"], ["php_strlenChars", "`strlen()` 傳回**字節數**：UTF-8 每個中文字 3 字節（字符數要用 `mb_strlen()`）。"]];
+function phpQuestion(prog, intro, o = {}) {
+  const env = PHP.exec(prog, { vars: o.vars });
+  if (env.warn.length && !o.allowWarn) throw new Error("warn " + env.warn[0]);
+  const raw = env.out, out = showLines(raw);
+  if (!out.length || out.some((l) => l === "")) throw new Error("empty line");
+  const code = PHP.lines(prog);
+  const traps = mutAns(() => showLines(PHP.exec(prog, { vars: o.vars }).out), PHP_TRAPS).filter((t) => t.v.join("\n") !== out.join("\n"));
+  return {
+    prompt: "<p>" + intro + "</p>" + codeHTML(code),
+    input: parts(P.lines("瀏覽器顯示（每個 <br> 換一行）", out, { traps: traps.map((t) => ({ v: t.v, msg: t.msg })) })),
+    show: out.join("／"), explain: o.explain || [], after: o.after || "",
+    chk: [{ t: "php", code: code.join("\n") + "\n", exp: raw, post: o.post, get: o.get }],
+  };
+}
+
+// ---------- P1：PHP 輸出 ----------
+const NAMES = ["Amy", "Ben", "Carl", "Dora", "Eric", "Fiona", "Gary", "Helen"];
+function genP1a() {   // 引號與變量解析、. 合併
+  const name = pick(NAMES), n = R(2, 9), k = R(2, 5), u = pick(["本書", "個蘋果", "張票"]);
+  const pool = [pEcho(pIS("Hello ", { e: pV("name") }, "<br>")), pEcho(pS("Hello $name<br>", "'")), pEcho(pIS({ e: pV("name"), brace: true }, "有", { e: pV("n"), brace: true }, u + "<br>")),
+    pEcho(brCat(pO(".", pO(".", pV("name"), pS(" 有 ")), pO("*", pV("n"), pN(k))))), pEcho(brCat(pO(".", pS("總數："), pO("+", pV("n"), pN(k))))),
+    pEcho(pO(".", pO(".", pIS({ e: pV("name") }, " 的"), pV("n")), BR)), pEcho(brCat(pO(".", pV("n"), pV("n"))))];
+  const prog = [pSet("name", pS(name)), pSet("n", pN(n)), ...sample(pool, R(3, 4))];
+  return phpQuestion(prog, "寫出瀏覽器執行以下 PHP 代碼後顯示的內容。", { explain: ["雙引號字串會**解析變量**（`\"$name\"`、`\"{$name}\"`）；單引號字串照字面輸出，`$name` 不會被取代。", "`.` 是字串合併。PHP 8 中 `+` `-` 先於 `.`、`*` 更先：`\"總數：\" . $n + " + k + "` 先計算 `$n + " + k + "`。", "`<br>` 是換行標籤，瀏覽器不會顯示它。"] });
+}
+function genP1b() {   // 算術
+  const a = R(7, 40), b = pick([2, 3, 4, 5, 6, 8]), k = R(2, 6);
+  const pool = [pEcho(brCat(pO("/", pV("a"), pV("b")))), pEcho(brCat(pO("%", pV("a"), pV("b")))), pEcho(brCat(pC("floor", pO("/", pV("a"), pV("b"))))), pEcho(brCat(pO("**", pV("b"), pN(R(2, 3))))), pEcho(brCat(pO("+", pV("a"), pO("*", pV("b"), pN(k))))), pEcho(brCat(pO("*", pO("+", pV("a"), pV("b")), pN(k))))];
+  const prog = [pSet("a", pN(a)), pSet("b", pN(b)), ...sample(pool, 3)];
+  if (coin(0.6)) prog.push(pInc("a"), pSet("b", pN(k), pick(["+=", "-=", "*="])), pEcho(pIS({ e: pV("a") }, " ", { e: pV("b") }, "<br>")));
+  return phpQuestion(prog, "寫出瀏覽器執行以下 PHP 代碼後顯示的內容。", { explain: ["`/` 能整除得整數，否則得小數（PHP 顯示最多 14 位有效數字）；`%` 是餘數；`**` 是乘方。", "`floor()` 向下取整（傳回浮點數，但 echo 顯示時沒有小數點）。", "`$a++` 加 1；`$b += " + k + "` 即 `$b = $b + " + k + "`。"] });
+}
+function genP1c() {   // if / elseif
+  const v = pick(["score", "age", "temp"]), cuts = sample([10, 18, 25, 30, 40, 50, 60, 75], 3).sort((p, q) => q - p);
+  const s = coin(0.4) ? pick(cuts) : R(5, 90), ops = [pick([">=", ">"]), pick([">=", ">"]), pick([">=", ">", "=="])];
+  const gs = pick([["A", "B", "C", "D"], ["高", "中", "低", "很低"], ["金", "銀", "銅", "參與"]]);
+  const prog = [pSet(v, pN(s)), pIf([[pO(ops[0], pV(v), pN(cuts[0])), [pEcho(pS(gs[0] + "<br>"))]], [pO(ops[1], pV(v), pN(cuts[1])), [pEcho(pS(gs[1] + "<br>"))]], [pO(ops[2], pV(v), pN(cuts[2])), [pEcho(pS(gs[2] + "<br>"))]]], [pEcho(pS(gs[3] + "<br>"))])];
+  if (coin(0.6)) { const lo = R(5, 40), hi = lo + R(10, 40); prog.push(pIf([[pO(pick(["&&", "||"]), pO(">=", pV(v), pN(lo)), pO("<=", pV(v), pN(hi))), [pEcho(pIS("在範圍內：", { e: pV(v) }, "<br>"))]]], [pEcho(pS("不在範圍內<br>"))])); }
+  return phpQuestion(prog, "寫出瀏覽器執行以下 PHP 代碼後顯示的內容。", { explain: ["`if … elseif … else` 只執行第一個條件成立的分支（PHP 寫 `elseif`，JavaScript 寫 `else if`）。", "`&&` 兩個條件都要成立；`||` 其中一個成立即可。"] });
+}
+function genP1d() {   // for / while
+  const mode = R(0, 2);
+  let prog, ex;
+  if (mode === 0) { const s = R(1, 4), e = s + R(4, 9), up = pick([1, 2, 3]); prog = [pSet("sum", pN(0)), pFor("i", pN(s), pO(pick(["<", "<="]), pV("i"), pN(e)), up, [pEcho(pO(".", pV("i"), pS(" "))), pSet("sum", pV("i"), "+=")]), pEcho(BR), pEcho(pIS("總和：", { e: pV("sum") }, "<br>"))]; ex = "for 循環：每次執行主體後才更新 `$i`，再檢查條件。"; }
+  else if (mode === 1) { const n0 = R(40, 99), d = pick([6, 7, 9, 11]), k = pick([10, 15, 20]); prog = [pSet("n", pN(n0)), pSet("count", pN(0)), pWhile(pO(">", pV("n"), pN(k)), [pSet("n", pN(d), "-="), pInc("count")]), pEcho(pIS("count = ", { e: pV("count") }, "<br>")), pEcho(pIS("n = ", { e: pV("n") }, "<br>"))]; ex = "while 循環：條件成立才執行主體；離開循環時條件剛好不成立。"; }
+  else { const rows = R(2, 4), cols = R(2, 4); prog = [pFor("r", pN(1), pO("<=", pV("r"), pN(rows)), 1, [pSet("line", pS("")), pFor("c", pN(1), pO("<=", pV("c"), pN(cols)), 1, [pSet("line", pO(".", pO("*", pV("r"), pV("c")), pS(" ")), ".=")]), pEcho(pO(".", pV("line"), BR))])]; ex = "巢狀循環：外層每執行一次，內層由頭執行一次；`.=` 把字串加到變量末端。"; }
+  return phpQuestion(prog, "寫出瀏覽器執行以下 PHP 代碼後顯示的內容。", { explain: [ex, "瀏覽器會把連續空格顯示為一個；行尾空格不計。"] });
+}
+function genP1e() {   // 陣列、foreach、count、implode
+  const items = sample(["pen", "book", "ruler", "bag", "cap", "cup", "map"], R(3, 4)), add = pick(["kiwi", "lamp", "fan"]);
+  const prog = [pSet("items", { k: "arr", items: items.map((x) => [null, pS(x)]) }), { k: "push", lhs: pV("items"), e: pS(add) }, pEcho(brCat(pO(".", pS("共 "), pC("count", pV("items"))))),
+    pEcho(brCat(pI(pV("items"), pN(R(0, items.length))))), pEach(pV("items"), "it", [pIf([[pO(">", pC("strlen", pV("it")), pN(3)), [pEcho(brCat(pC("strtoupper", pV("it"))))]]])]), pEcho(brCat(pC("implode", pS(pick([", ", "-", " / "])), pV("items"))))];
+  return phpQuestion(prog, "寫出瀏覽器執行以下 PHP 代碼後顯示的內容。", { explain: ["`$items[] = …` 在陣列末端加入元素；`count()` 傳回元素數目；索引由 0 開始。", "`foreach ($items as $it)` 逐一取出每個元素；`strlen()` 是字串長度（英文字母每個 1）。", "`implode(分隔符, 陣列)` 把元素以分隔符連成一個字串。"] });
+}
+function genP1f() {   // 關聯陣列
+  const keys = sample(["pen", "book", "bag", "cap", "ball", "lamp"], R(3, 4)), vals = keys.map(() => R(2, 30) * 5), lim = pick([20, 40, 50, 60]);
+  const prog = [pSet("price", { k: "arr", items: keys.map((k, i) => [pS(k), pN(vals[i])]) })];
+  if (coin(0.5)) prog.push(pSet(pI(pV("price"), pS(keys[0])), pN(R(2, 30) * 5)));
+  if (coin(0.5)) prog.push(pSet(pI(pV("price"), pS("fan")), pN(R(2, 30) * 5)));
+  prog.push(pSet("total", pN(0)), pEach(pV("price"), "p", [pIf([[pO(">=", pV("p"), pN(lim)), [pEcho(pIS({ e: pV("item") }, "：", { e: pV("p") }, "<br>"))]]]), pSet("total", pV("p"), "+=")], "item"),
+    pEcho(pIS("總數：", { e: pV("total") }, "<br>")), pEcho(brCat(pO("*", pI(pV("price"), pS(pick(keys))), pN(2)))));
+  return phpQuestion(prog, "寫出瀏覽器執行以下 PHP 代碼後顯示的內容。", { explain: ["關聯陣列以「鍵 => 值」儲存；`$price['pen'] = …` 已有的鍵會被改寫，新鍵加在末端。", "`foreach ($price as $item => $p)` 按次序取出每對鍵和值。"] });
+}
+function genP1g() {   // 字串函數及 isset／empty
+  const w = pick(["Hello", "School", "Coding", "Server"]), sub = pick([w.slice(1, 3), "xy", w.slice(-2)]), other = pick([w, w.toLowerCase(), w + "s"]);
+  const vals = { a: pick(["0", "", "abc", "5"]), b: pick(["0", " ", "12"]) };
+  const prog = [pSet("w", pS(w)), pSet("a", pS(vals.a)), pSet("b", pS(vals.b)),
+    pEcho(brCat(pC("strlen", pV("w")))),
+    pIf([[pC("str_contains", pV("w"), pS(sub)), [pEcho(pS("有 " + sub + "<br>"))]]], [pEcho(pS("沒有 " + sub + "<br>"))]),
+    pIf([[pO("==", pC("strcmp", pV("w"), pS(other)), pN(0)), [pEcho(pS("相同<br>"))]]], [pEcho(pS("不同<br>"))]),
+    pIf([[pC("empty", pV("a")), [pEcho(pS("a 是空的<br>"))]]], [pEcho(pIS("a 是 ", { e: pV("a") }, "<br>"))]),
+    pIf([[pC("isset", pV("c")), [pEcho(pS("有 c<br>"))]]], [pEcho(pS("沒有 c<br>"))]),
+    pIf([[pC("empty", pV("b")), [pEcho(pS("b 是空的<br>"))]]], [pEcho(pS("b 不是空的<br>"))])];
+  return phpQuestion(prog, "寫出瀏覽器執行以下 PHP 代碼後顯示的內容。（`str_contains()` 須 PHP 8.0 或以上）", { explain: ["`strcmp(a, b)` 兩字串相同時傳回 **0**（區分大小寫），所以要寫 `strcmp(…) == 0`。", "`empty()`：\"\"、\"0\"、0、null、未設定都算空；\" \"（一個空格）不是空的。", "`isset($c)`：變量未設定（或為 null）時是 false。"] });
+}
+cat("P1", "PHP 輸出", { tag: "指引", hint: [["由上而下執行，記下每個變量的值；`<br>` 表示換行。", "雙引號解析變量、單引號照字面；`.` 合併字串（`+` `-` `*` 先計算）。", "`/` 不能整除得小數；`%` 餘數；`floor()` 向下取整。"], '$n = 3; echo "共 $n 個<br>"; echo \'共 $n 個\'; → 共 3 個／共 $n 個'] });
+addType("P1", "引號與合併", genP1a); addType("P1", "算術運算", genP1b); addType("P1", "if 與 elseif", genP1c); addType("P1", "循環", genP1d); addType("P1", "陣列", genP1e); addType("P1", "關聯陣列", genP1f); addType("P1", "字串函數及 empty", genP1g);
+// ---------- P3：伺服器端檢驗 ----------
+const POSTV = (k) => pI(pV("_POST"), pS(k, "'"));
+function genP3() {
+  const lim = pick([6, 8, 10]), lo = pick([10, 12, 13]), hi = lo + pick([5, 6, 8]), classes = ["5A", "5B", "5C"];
+  const C = {
+    name: [{ m: "請輸入姓名", c: pC("empty", POSTV("name")) }, { m: "請輸入姓名", c: pO("==", POSTV("name"), pS("")) }][R(0, 1)],
+    nlen: { m: "姓名太長", c: pO(">", pC("strlen", POSTV("name")), pN(lim)) },
+    agen: { m: "年齡必須是數字", c: pNot(pC("is_numeric", POSTV("age"))) },
+    ager: { m: "年齡不在範圍內", c: pO("||", pO("<", POSTV("age"), pN(lo)), pO(">", POSTV("age"), pN(hi))) },
+    qty: { m: "請輸入數量", c: pC("empty", POSTV("qty")) },
+    cls: { m: "班別不正確", c: pNot(pC("in_array", POSTV("cls"), pV("classes"))) },
+    agree: { m: "請同意條款", c: pNot(pC("isset", POSTV("agree"))) },
+  };
+  const order = ["name", "nlen", "agen", "ager", "qty", "cls", "agree"].filter((k) => k === "name" || coin(0.7));
+  if (order.includes("ager") && !order.includes("agen")) order.splice(order.indexOf("ager"), 0, "agen");
+  if (order.length < 4) return genP3();
+  const msgs = [...order.map((k) => C[k].m), "提交成功"];
+  const prog = [pSet("classes", { k: "arr", items: classes.map((c) => [null, pS(c)]) }), pIf(order.map((k) => [C[k].c, [pEcho(pS(C[k].m))]]), [pEcho(pS("提交成功"))])];
+  const V = { name: ["", "0", "Amy", "Ken", "Christopher", "Bobby Chan", "Jo"], age: ["15", "abc", "12a", "", String(lo), String(hi), String(hi + 1), String(lo - 1), "3.5", "16"], qty: ["0", "", "3", "12"], cls: ["5A", "5B", "5C", "5D", "5a"], agree: [null, "yes"] };
+  const target = pick(msgs);
+  for (let t = 0; t < 60; t++) {
+    const post = { name: pick(V.name), age: pick(V.age) };
+    if (order.includes("qty")) post.qty = pick(V.qty);
+    if (order.includes("cls")) post.cls = pick(V.cls);
+    if (order.includes("agree")) { const a = pick(V.agree); if (a !== null) post.agree = a; }
+    const vars = { _POST: PHP.mkArr(Object.entries(post)) };
+    const out = PHP.exec(prog, { vars }).out;
+    if (out !== target && t < 59) continue;
+    const code = PHP.lines(prog);
+    const fields = [["name", "姓名（文字欄）"], ["age", "年齡（文字欄）"], ...(order.includes("qty") ? [["qty", "數量（文字欄）"]] : []), ...(order.includes("cls") ? [["cls", "班別（文字欄）"]] : []), ...(order.includes("agree") ? [["agree", "同意條款（複選框，value=\"yes\"）"]] : [])];
+    const tbl = mini(["欄位（name）", "說明", "提交的值"], fields.map(([k, d]) => ["<code>" + k + "</code>", esc(d), k in post ? (post[k] === "" ? '<span class="small">（空白）</span>' : "<code>" + esc(post[k]) + "</code>") : '<span class="small">（沒有勾選：不會傳送）</span>']));
+    const traps = mutAns(() => PHP.exec(prog, { vars: { _POST: PHP.mkArr(Object.entries(post)) } }).out, PHP_TRAPS).filter((x) => x.v !== out);
+    const why = {}; traps.forEach((x) => { why[x.v] = x.msg; });
+    if (out !== "提交成功" && !why["提交成功"]) why["提交成功"] = "由上而下檢查，第一個成立的條件便輸出訊息，之後的 elseif 不再檢查。";
+    const steps = order.map((k) => { const r = PHP.truthy(PHP.val(C[k].c, PHP.exec([], { vars: { classes: PHP.mkArr(classes.map((c) => [undefined, c])), _POST: PHP.mkArr(Object.entries(post)) } }))); return "`" + PHP.ex(C[k].c) + "` → " + (r ? "**true**（輸出「" + C[k].m + "」）" : "false"); });
+    const cut = steps.findIndex((s) => s.includes("**true**"));
+    return {
+      prompt: "<p>用戶以 POST 方法提交表單到以下 PHP 程式，提交的數據如下表。網頁會顯示甚麼？</p>" + tbl + codeHTML(code),
+      input: choiceIn(shuffle(uniq(msgs)), out, { why }), show: out,
+      explain: [...(cut >= 0 ? steps.slice(0, cut + 1) : steps), ...(cut >= 0 ? ["之後的條件不再檢查。"] : ["全部條件都不成立，執行 else。"]), "提示：`empty(\"0\")` 是 true；沒有勾選的複選框不會傳送，`isset($_POST['agree'])` 是 false；`is_numeric(\"12a\")` 是 false；`in_array()` 區分大小寫。"],
+      chk: [{ t: "php", code: code.join("\n") + "\n", exp: out, post }],
+    };
+  }
+  throw new Error("P3");
+}
+cat("P3", "伺服器端檢驗", { tag: "指引 常考 易錯", hint: [["先寫出每個欄位提交的值（沒有勾選的複選框不會傳送）。", "由上而下逐個檢查 if／elseif 條件；第一個成立的便輸出，之後不再檢查。", "`empty(\"0\")` 是 true；`is_numeric(\"12a\")` 是 false；`isset` 檢查有沒有傳送。"], "if (empty($_POST['qty'])) …　輸入 0 → 「請輸入數量」"] });
+addType("P3", "顯示哪個訊息", genP3);
+
+// ---------- D1：PHP＋數據庫 ----------
+const DBS = [
+  { t: "SCORE", cols: ["SNAME", "CLASS", "SUBJECT", "MARK"], key: "CLASS", num: "MARK", vals: { SNAME: ["Amy", "Ben", "Carl", "Dora", "Eric", "Fiona", "Gary", "Helen", "Ivan", "Jade"], CLASS: ["5A", "5B", "5C"], SUBJECT: ["ICT", "BAFS", "ECON"] }, rng: [30, 95], step: 1, flag: ["<", 50, "（不合格）", "不合格人數"], sumL: "總分" },
+  { t: "BOOKING", cols: ["BDATE", "ROOM", "TEAM", "HOURS"], key: "ROOM", num: "HOURS", vals: { BDATE: ["2026-03-02", "2026-03-04", "2026-03-05", "2026-03-09", "2026-03-11", "2026-03-12", "2026-03-16", "2026-03-18", "2026-03-20", "2026-03-23"], ROOM: ["R101", "R102", "LAB"], TEAM: ["1A", "2B", "3C", "4D"] }, rng: [1, 6], step: 1, flag: [">=", 4, "（長時間）", "長時間預約"], sumL: "總時數" },
+  { t: "RESULT", cols: ["EVENT", "HOUSE", "ATHLETE", "POINTS"], key: "HOUSE", num: "POINTS", vals: { EVENT: ["100m", "200m", "跳遠", "跳高", "鉛球", "400m"], HOUSE: ["紅社", "藍社", "黃社"], ATHLETE: ["Kit", "Lok", "Man", "Nam", "Oscar", "Pat", "Queenie", "Ray"] }, rng: [1, 10], step: 1, flag: [">=", 8, "（獎牌）", "獎牌數目"], sumL: "總分數", noSortFirst: true },
+];
+const SQLDB = {   // 小型 SQL 引擎（只限題目用到的 SELECT * … WHERE … ORDER BY）
+  match: (row, w) => { const v = row[w.col]; if (typeof w.val === "number") return w.op === "=" ? v === w.val : w.op === ">=" ? v >= w.val : w.op === ">" ? v > w.val : w.op === "<" ? v < w.val : v <= w.val; return String(v).toLowerCase() === String(w.val).toLowerCase(); },
+  run(T, q) {
+    let rows = T.rows.filter((r) => q.where.every((w) => SQLDB.match(r, w)));
+    if (q.order && !MUT.db_noOrder) { const c = q.order.col, d = q.order.dir === "DESC" ? -1 : 1; rows = rows.slice().sort((a, b) => (a[c] < b[c] ? -d : a[c] > b[c] ? d : 0)); }
+    return rows;
+  },
+  text: (q) => "SELECT * FROM " + q.t + (q.where.length ? " WHERE " + q.where.map((w) => w.col + " " + w.op + " " + (typeof w.val === "number" ? w.val : "'" + w.val + "'")).join(" AND ") : "") + (q.order ? " ORDER BY " + q.order.col + " " + q.order.dir : ""),
+};
+function dbTableHTML(T) { return '<div class="xs"><table class="dbt"><caption>' + esc(T.t) + "</caption><tr>" + T.cols.map((c) => "<th>" + c + "</th>").join("") + "</tr>" + T.rows.map((r) => "<tr>" + T.cols.map((c) => "<td" + (typeof r[c] === "number" ? ' class="n"' : "") + ">" + esc(r[c]) + "</td>").join("") + "</tr>").join("") + "</table></div>"; }
+function genD1() {
+  const S = pick(DBS), n = Math.min(R(5, 8), S.vals[S.cols[0]].length);
+  const rows = []; const used = {};
+  const firstCol = S.cols[0], uniqVals = sample(S.vals[firstCol], n);
+  for (let i = 0; i < n; i++) { const r = {}; S.cols.forEach((c) => { r[c] = c === firstCol ? uniqVals[i] : c === S.num ? R(S.rng[0], S.rng[1]) : pick(S.vals[c]); }); rows.push(r); }
+  if (S.t === "BOOKING") rows.sort((a, b) => (a.BDATE < b.BDATE ? -1 : 1));
+  const T = { t: S.t, cols: S.cols, rows };
+  const byText = coin(0.65), none = coin(0.15);
+  let qv, where, sqlExpr;
+  const orderCol = S.noSortFirst ? S.num : pick([S.num, firstCol]), dir = pick(["ASC", "DESC"]);
+  if (byText) {
+    qv = none ? pick(S.vals[S.key].filter((v) => !rows.some((r) => r[S.key] === v)).concat(["X9"])) : pick(rows)[S.key];
+    where = [{ col: S.key, op: "=", val: qv }];
+    sqlExpr = pO(".", pO(".", pS("SELECT * FROM " + S.t + " WHERE " + S.key + " = '"), pV("q")), pS("' ORDER BY " + orderCol + " " + dir));
+  } else {
+    const nums = rows.map((r) => r[S.num]).sort((a, b) => a - b);
+    qv = none ? nums[nums.length - 1] + 1 : pick(nums.slice(0, -1));
+    where = [{ col: S.num, op: ">=", val: qv }];
+    sqlExpr = pO(".", pO(".", pS("SELECT * FROM " + S.t + " WHERE " + S.num + " >= "), pV("q")), pS(" ORDER BY " + orderCol + " " + dir));
+  }
+  const q = { t: S.t, where, order: { col: orderCol, dir } };
+  const res = SQLDB.run(T, q);
+  const keys = res.map((r) => r[orderCol]); if (new Set(keys).size !== keys.length) return genD1();
+  if (!none && res.length < 2) return genD1();   // 排序欄不可有相同值
+  const fetch = pick(["mysqli_fetch_assoc", "mysqli_fetch_array"]);
+  const showC = [S.cols[0], pick(S.cols.slice(1).filter((c) => c !== S.key))];
+  const [fop, fval, fmark, fname] = S.flag;
+  const accSum = coin(0.4);
+  const rowE = (c) => pI(pV("row"), pS(c, "'"));
+  const loop = [pEcho(pO(".", pO(".", rowE(showC[0]), pS(" ")), rowE(showC[1]))), pIf([[pO(fop, rowE(S.num), pN(fval)), [pEcho(pS(fmark)), pInc("count")]]]), ...(accSum ? [pSet("total", rowE(S.num), "+=")] : []), pEcho(BR)];
+  const prog = [pSet("q", pI(pV("_GET"), pS("q", "'"))),
+    { k: "raw", lines: ['$conn = mysqli_connect("localhost", "root", "", "EBDB");', "if (!$conn) {", '  die("連接失敗：" . mysqli_connect_error());', "}"] },
+    pSet("sql", sqlExpr),
+    { k: "raw", lines: ["$result = mysqli_query($conn, $sql);"], run: (env) => { env.vars.result = { rows: SQLDB.run(T, q).map((r) => Object.assign({}, r)), pos: 0 }; } },
+    pIf([[pO("==", pC("mysqli_num_rows", pV("result")), pN(0)), [pEcho(pS("沒有記錄"))]]], [pSet("count", pN(0)), ...(accSum ? [pSet("total", pN(0))] : []), { k: "fetch", row: "row", fn: fetch, res: "result", body: loop }, pEcho(pO(".", pS(fname + "："), pV("count"))), ...(accSum ? [pEcho(pO(".", pO(".", BR, pS(S.sumL + "：")), pV("total")))] : [])]),
+    { k: "raw", lines: ["mysqli_close($conn);"] }];
+  const get = { q: String(qv) };
+  const env = PHP.exec(prog, { vars: { _GET: PHP.mkArr([["q", String(qv)]]) } });
+  if (env.vars.sql !== SQLDB.text(q)) throw new Error("SQL 文字不一致：" + env.vars.sql);
+  const raw = env.out, out = showLines(raw), code = PHP.lines(prog);
+  const traps = mutAns(() => showLines(PHP.exec(prog, { vars: { _GET: PHP.mkArr([["q", String(qv)]]) } }).out), [["db_noOrder", "要按 `ORDER BY " + orderCol + " " + dir + "` 排列（" + (dir === "ASC" ? "由小至大" : "由大至小") + "）。"]]).filter((t) => t.v.join("\n") !== out.join("\n"));
+  return {
+    prompt: "<p>數據表 " + S.t + " 的記錄如下。用戶開啟 <code>search.php?q=" + esc(encodeURIComponent(String(qv))) + "</code>，網頁顯示甚麼？</p>" + dbTableHTML(T) + codeHTML(code) + '<p class="small">假設連接成功。mysqli 部分以模擬層核對，未經 MySQL 實機測試。</p>',
+    input: parts(P.lines("瀏覽器顯示（每個 <br> 換一行）", out, { traps: traps.map((t) => ({ v: t.v, msg: t.msg })) })), show: out.join("／"),
+    explain: ["`$q` 是 \"" + qv + "\"，所以執行的 SQL 是：`" + SQLDB.text(q) + "`。", res.length ? "符合條件的記錄有 " + res.length + " 筆，按 " + orderCol + " " + (dir === "ASC" ? "由小至大" : "由大至小") + "排列：" + res.map((r) => r[S.cols[0]]).join("、") + "。" : "沒有記錄符合條件：`mysqli_num_rows($result)` 是 0，只顯示「沒有記錄」。",
+      "`while ($row = " + fetch + "($result))` 每次取出一筆記錄（取完傳回 null，循環結束）；`$row['" + S.num + "']` 的鍵要與欄名大小寫相同。", ...(res.length ? ["每筆記錄如 `" + S.num + " " + fop + " " + fval + "` 便加上「" + fmark + "」並把 `$count` 加 1。"] : [])],
+    chk: [{ t: "phpdb", code: code.join("\n") + "\n", exp: raw, get, tables: { [S.t]: [S.cols, rows.map((r) => S.cols.map((c) => r[c]))] }, sql: SQLDB.text(q), rows: res.map((r) => S.cols.map((c) => r[c])) }],
+  };
+}
+cat("D1", "PHP＋數據庫", { tag: "指引 易錯", hint: [["把 `$_GET['q']` 的值代入，寫出完整的 SQL。", "按 WHERE 篩選數據表，再按 ORDER BY 排列（ASC 由小至大，DESC 由大至小）。", "沒有記錄時 `mysqli_num_rows()` 是 0；否則 `while` 逐筆處理並累計。"], "\"SELECT * FROM SCORE WHERE CLASS = '\" . $q . \"' ORDER BY MARK DESC\""] });
+addType("D1", "網頁顯示", genD1);
+// =================== 表單：序列化、客戶端檢驗 ===================
+const FORM = (() => {
+  const enc = (s) => encodeURIComponent(s).replace(/%20/g, "+").replace(/[!'()~]/g, (c) => "%" + c.charCodeAt(0).toString(16).toUpperCase());
+  // 控制項 {kind:'text'|'number'|'hidden'|'select'|'checkbox'|'radio', name, id, value, opts:[{v, t, noval}], label}；狀態 st {id: 值或 checked}
+  function data(ctrls, st) {
+    const out = [];
+    for (const c of ctrls) {
+      if (!c.name) continue;
+      if (c.kind === "text" || c.kind === "number" || c.kind === "date") out.push([c.name, st[c.id] !== undefined ? st[c.id] : c.value || ""]);
+      else if (c.kind === "hidden") out.push([c.name, c.value]);
+      else if (c.kind === "select") { const o = c.opts.find((x) => x.v === st[c.id]) || c.opts[0]; out.push([c.name, MUT.form_selectText ? o.t : o.v]); }
+      else if (c.kind === "checkbox" || c.kind === "radio") { if (st[c.id] || MUT.form_uncheckedSent && c.kind === "checkbox") out.push([c.name, c.value !== undefined ? c.value : "on"]); }
+    }
+    return out;
+  }
+  const query = (pairs) => pairs.map(([k, v]) => enc(k) + "=" + enc(v)).join("&");
+  // 客戶端檢驗（required、number／date 的 min、max、step）：傳回 [{id, why}]
+  const dec = (s) => Math.round(Number(s) * 1000);
+  function invalid(ctrls, st) {
+    const bad = [];
+    for (const c of ctrls) {
+      if (!["text", "number", "date"].includes(c.kind)) continue;
+      const v = st[c.id] !== undefined ? st[c.id] : "";
+      if (v === "") { if (c.required) bad.push({ id: c.id, why: "required：不可留空" }); continue; }
+      if (c.kind === "number") {
+        if (c.min !== undefined && (MUT.valid_minExclusive ? dec(v) <= dec(c.min) : dec(v) < dec(c.min))) { bad.push({ id: c.id, why: "小於 min=" + c.min }); continue; }
+        if (c.max !== undefined && dec(v) > dec(c.max)) { bad.push({ id: c.id, why: "大於 max=" + c.max }); continue; }
+        if (c.step !== "any" && !MUT.valid_stepIgnored) { const step = dec(c.step || "1"), base = c.min !== undefined ? dec(c.min) : 0; if ((dec(v) - base) % step !== 0) { bad.push({ id: c.id, why: "不符合 step=" + (c.step || "1（預設）") + (c.min !== undefined ? "（由 min=" + c.min + " 起計）" : "") }); continue; } }
+      }
+      if (c.kind === "date") {
+        if (c.min && (MUT.valid_minExclusive ? v <= c.min : v < c.min)) { bad.push({ id: c.id, why: "早於 min=" + c.min }); continue; }
+        if (c.max && v > c.max) { bad.push({ id: c.id, why: "遲於 max=" + c.max }); continue; }
+      }
+    }
+    return bad;
+  }
+  function html(ctrls, o) {
+    const attrs = (c) => (c.required ? " required" : "") + (c.min !== undefined ? ' min="' + c.min + '"' : "") + (c.max !== undefined ? ' max="' + c.max + '"' : "") + (c.step !== undefined ? ' step="' + c.step + '"' : "");
+    const lines = ['<form action="' + o.action + '" method="' + o.method + '">'];
+    for (const c of ctrls) {
+      if (c.kind === "hidden") lines.push('  <input type="hidden" name="' + c.name + '" value="' + c.value + '">');
+      else if (c.kind === "select") { lines.push("  " + c.label + '<select id="' + c.id + '" name="' + c.name + '">'); c.opts.forEach((x) => lines.push("    <option" + (x.noval ? "" : ' value="' + x.v + '"') + ">" + x.t + "</option>")); lines.push("  </select><br>"); }
+      else if (c.kind === "checkbox" || c.kind === "radio") lines.push('  <input type="' + c.kind + '" id="' + c.id + '" name="' + c.name + '"' + (c.value !== undefined ? ' value="' + c.value + '"' : "") + "> " + c.label + (c.br ? "<br>" : ""));
+      else lines.push("  " + c.label + '<input type="' + c.kind + '" id="' + c.id + '" name="' + c.name + '"' + attrs(c) + "><br>");
+    }
+    lines.push('  <input type="submit" id="send" value="提交">', "</form>");
+    return ["<!DOCTYPE html>", "<html>", "<head>", '  <meta charset="utf-8">', "</head>", "<body>", ...lines.map((l) => "  " + l), "</body>", "</html>"];
+  }
+  return { data, query, invalid, html, enc };
+})();
+
+// ---------- F1：表單提交 ----------
+function mkForm() {
+  const ctrls = [];
+  const pool = shuffle(["name", "qty", "size", "sex", "news", "src"]).slice(0, R(4, 6));
+  if (!pool.includes("size")) pool[0] = "size";
+  const st = {}, acts = [];
+  for (const f of pool) {
+    if (f === "name") { const v = pick(["Chan Tai Man", "Amy", "Lee Ka Yan", "ken@mail.hk", "Ho Ho"]); ctrls.push({ kind: "text", id: "name", name: "name", label: "姓名：" }); if (coin(0.85)) { st.name = v; acts.push("在「姓名」輸入 <code>" + esc(v) + "</code>"); } else acts.push("「姓名」留空"); }
+    if (f === "qty") { const v = String(R(1, 12)); ctrls.push({ kind: "number", id: "qty", name: "qty", label: "數量：" }); st.qty = v; acts.push("在「數量」輸入 <code>" + v + "</code>"); }
+    if (f === "size") { const opts = shuffle([{ v: "S", t: "細碼" }, { v: "M", t: "中碼" }, { v: "L", t: "大碼" }]).slice(0, 2).concat(coin(0.5) ? [{ v: "XL", t: "XL", noval: true }] : [{ v: "F", t: "均碼" }]); const o = pick(opts); ctrls.push({ kind: "select", id: "size", name: pick(["size", "s"]), label: "尺碼：", opts }); if (o !== opts[0] || coin(0.5)) { st.size = o.v; acts.push("在「尺碼」選擇「" + esc(o.t) + "」"); } else acts.push("「尺碼」不作改動"); }
+    if (f === "sex") { ctrls.push({ kind: "radio", id: "g1", name: "gender", value: "M", label: "男" }, { kind: "radio", id: "g2", name: "gender", value: "F", label: "女", br: true }); const k = R(0, 2); if (k) { st["g" + k] = true; acts.push("選擇「" + (k === 1 ? "男" : "女") + "」"); } else acts.push("性別兩個單選按鈕都沒有選"); }
+    if (f === "news") { const hasV = coin(0.7); ctrls.push({ kind: "checkbox", id: "news", name: "news", value: hasV ? "yes" : undefined, label: "訂閱通訊", br: true }); if (coin(0.5)) { st.news = true; acts.push("勾選「訂閱通訊」"); } else acts.push("沒有勾選「訂閱通訊」"); }
+    if (f === "src") ctrls.push({ kind: "hidden", name: "src", value: pick(["web", "app", "s1"]) });
+  }
+  const method = pick(["get", "get", "post"]), action = pick(["order.php", "join.php", "reg.php"]);
+  return { ctrls, st, acts, method, action };
+}
+const fillsOf = (F) => {
+  const f = [];
+  for (const c of F.ctrls) {
+    if (F.st[c.id] === undefined) continue;
+    if (c.kind === "text" || c.kind === "number" || c.kind === "date") f.push(["fill", "#" + c.id, F.st[c.id]]);
+    else if (c.kind === "select") f.push(["select", "#" + c.id, F.st[c.id]]);
+    else if (F.st[c.id] === true) f.push(["check", "#" + c.id]);
+  }
+  return f;
+};
+function genF1(kind) {
+  const F = mkForm(); if (kind === "query") F.method = "get";
+  const pairs = FORM.data(F.ctrls, F.st), qs = FORM.query(pairs), code = FORM.html(F.ctrls, F);
+  const sv = F.method === "get" ? "$_GET" : "$_POST";
+  const chk = [{ t: "form", files: { "index.html": code.join("\n") + "\n" }, fills: fillsOf(F), method: F.method, exp: pairs, query: F.method === "get" ? qs : null }];
+  const intro = "<p>用戶在以下表單依次：</p><ol class=\"acts\">" + F.acts.map((a) => "<li>" + a + "</li>").join("") + "<li>按「提交」</li></ol>";
+  const tbl = mini(["名稱（name）", "傳送的值"], pairs.map(([k, v]) => ["<code>" + esc(k) + "</code>", "<code>" + esc(v) + "</code>"]));
+  const explain = ["只有有 name 屬性的控制項會傳送；文字欄留空亦會傳送（值是空字串）。", "下拉式選單傳送所選選項的 **value**（沒有 value 屬性才用顯示的文字）。", "沒有勾選的複選框、沒有選的單選按鈕組**不會傳送**；勾選了但沒有 value 屬性的複選框傳送 \"on\"。隱藏欄（hidden）一定傳送。"];
+  if (kind === "query") {
+    const traps = mutAns(() => FORM.query(FORM.data(F.ctrls, F.st)), [["form_uncheckedSent", "沒有勾選的複選框不會傳送。"], ["form_selectText", "下拉式選單傳送的是選項的 value，不是顯示的文字。"]]).filter((t) => t.v !== qs);
+    return { prompt: intro + "<p>表單以 GET 方法提交。寫出提交後網址中「?」之後的<b>查詢字串</b>。（空格編碼為 +，@ 編碼為 %40）</p>" + codeHTML(code), input: parts(P.text("查詢字串", qs, { alt: ["?" + qs, F.action + "?" + qs], cls: "l", traps })), show: qs,
+      explain: [...explain, "按表單中控制項的次序，每項寫成「名稱=值」，以 & 分隔。"], after: '<p class="iolab">傳送的數據</p>' + tbl, chk };
+  }
+  // 某個鍵的值
+  const names = uniq(F.ctrls.filter((c) => c.name).map((c) => c.name));
+  const key = pick(names.filter((n) => F.ctrls.some((c) => c.name === n && (c.kind === "select" || c.kind === "checkbox" || c.kind === "radio"))).concat(names));
+  const hit = pairs.find((p) => p[0] === key), NONE = "（沒有傳送：isset 為 false）";
+  const ans = hit ? '"' + hit[1] + '"' : NONE;
+  const c0 = F.ctrls.filter((c) => c.name === key);
+  const cand = [ans, NONE, ...c0.flatMap((c) => (c.kind === "select" ? c.opts.flatMap((o) => ['"' + o.v + '"', '"' + o.t + '"']) : c.kind === "checkbox" || c.kind === "radio" ? ['"' + (c.value !== undefined ? c.value : "on") + '"', '"' + c.label + '"', '"on"'] : ['""']))];
+  const opts = uniq(cand).slice(0, 5);
+  if (!opts.includes(ans)) opts[0] = ans;
+  const why = {}; mutAns(() => { const h = FORM.data(F.ctrls, F.st).find((p) => p[0] === key); return h ? '"' + h[1] + '"' : NONE; }, [["form_uncheckedSent", "沒有勾選的複選框不會傳送，`isset()` 為 false。"], ["form_selectText", "下拉式選單傳送的是 value 屬性的值，不是顯示的文字。"]]).forEach((t) => { if (t.v !== ans) why[t.v] = t.msg; });
+  return { prompt: intro + "<p>表單以 <b>" + F.method.toUpperCase() + "</b> 方法提交到 " + F.action + "。<code>" + sv + "['" + esc(key) + "']</code> 的值是甚麼？</p>" + codeHTML(code),
+    input: choiceIn(shuffle(uniq(opts)), ans, { why }), show: ans, explain, after: '<p class="iolab">傳送的數據</p>' + tbl, chk };
+}
+cat("F1", "表單提交", { tag: "指引", hint: [["按控制項次序，逐項寫出「name=值」。", "下拉式選單送 value；沒有勾選的複選框、沒有選的單選按鈕不送；hidden 一定送。", "GET：數據在網址「?」之後；POST：數據在請求主體。"], "name=Chan+Tai+Man&size=M&news=yes"] });
+addType("F1", "查詢字串", () => genF1("query"));
+addType("F1", "$_GET／$_POST 的值", () => genF1("value"));
+
+// ---------- F2：GET 或 POST ----------
+const GP_REASONS = {
+  G1: { m: "GET", ok: true, t: "數據成為網址的一部分，可以加入書籤或把連結分享給別人", src: "p.142–143" },
+  G2: { m: "GET", ok: true, t: "部分 GET 請求的回應可以被緩存，常用的查詢載入較快", src: "p.143" },
+  G3: { m: "GET", ok: true, t: "只是從伺服器取得資源，不會改變伺服器上的數據", src: "p.144" },
+  P1: { m: "POST", ok: true, t: "數據放在請求主體，不會顯示在網址列，亦不會儲存在瀏覽歷史", src: "p.142–143" },
+  P2: { m: "POST", ok: true, t: "可以傳送圖像、檔案等二進制數據，不受網址長度（通常約 2 KB）限制", src: "p.143" },
+  P3: { m: "POST", ok: true, t: "執行會改變伺服器狀態的動作（例如在數據庫加入記錄）", src: "p.144" },
+  W1: { m: "GET", ok: false, t: "數據放在請求主體，不會顯示在網址列", src: "p.142（GET 的數據在網址）" },
+  W2: { m: "POST", ok: false, t: "可以加入書籤，下次直接開啟便得到相同結果", src: "p.143（POST 不能加入書籤）" },
+  W3: { m: "GET", ok: false, t: "可以上載相片等二進制數據", src: "p.143（GET 只允許文字數據）" },
+  W4: { m: "POST", ok: false, t: "回應一定會被緩存，所以載入較快", src: "p.143（POST 的回應一般不能緩存）" },
+  W5: { m: "GET", ok: false, t: "使用 HTTPS 時，GET 的數據在傳輸中不會加密，所以較快", src: "p.142 常見錯誤（HTTPS 會加密整個請求）" },
+};
+const GP_SCEN = [
+  { s: "圖書館網站的搜尋表單：輸入書名關鍵字，顯示搜尋結果；學生常把結果頁的連結傳給同學", m: "GET", ok: ["G1"] },
+  { s: "網上商店的商品篩選表單（類別、價格範圍），用戶希望把結果頁加入書籤", m: "GET", ok: ["G1"] },
+  { s: "天氣網站查詢某地區的天氣，很多人重複查詢同一地區", m: "GET", ok: ["G2", "G3", "G1"] },
+  { s: "學校內聯網的登入表單（用戶名稱及密碼）", m: "POST", ok: ["P1"] },
+  { s: "活動報名表：輸入香港身份證號碼及電話，提交後記錄會加入數據庫", m: "POST", ok: ["P1", "P3"] },
+  { s: "上載作業相片的表單", m: "POST", ok: ["P2"] },
+  { s: "網上投票：每次提交都會在數據庫加入一票", m: "POST", ok: ["P3"] },
+  { s: "新聞網站按日期查看舊新聞的表單", m: "GET", ok: ["G1", "G3"] },
+];
+function genF2() {
+  const sc = pick(GP_SCEN), good = pick(sc.ok);
+  const other = Object.keys(GP_REASONS).filter((k) => !(GP_REASONS[k].ok && GP_REASONS[k].m === sc.m));
+  const wr = sample(other, 3);
+  const lab = (k) => GP_REASONS[k].m + "：" + GP_REASONS[k].t;
+  const why = {}; wr.forEach((k) => { const r = GP_REASONS[k]; why[lab(k)] = r.ok ? "這是 " + r.m + " 的特點，但這個情境應用 " + sc.m + "。" : "說法錯誤（教科書 " + r.src + "）。"; });
+  return { prompt: "<p>以下情境的表單應使用哪一個 HTTP 請求方法？選出方法及理由都正確的一項。</p><p><b>情境：</b>" + esc(sc.s) + "。</p>", input: choiceIn(shuffle([lab(good), ...wr.map(lab)]), lab(good), { why, wide: true }), show: lab(good),
+    explain: ["GET：數據在網址（可書籤、可分享、部分回應可緩存；只限文字、長度受網址限制），用於取得資源。", "POST：數據在請求主體（不顯示在網址列、不會成為書籤），可傳送二進制數據，用於改變伺服器狀態的動作及敏感數據。", "教科書第 3 章 3.3 節 p.142–144。"],
+    chk: [{ t: "fact", kind: "gp", scen: GP_SCEN.indexOf(sc), opts: [good, ...wr], ans: good }] };
+}
+cat("F2", "GET 或 POST", { tag: "指引", hint: [["敏感數據（密碼、身份證號碼）、上載檔案、寫入數據庫 → POST。", "要加入書籤／分享連結、只是查詢 → GET。", "理由要配合情境，並且說法正確。"], "登入表單 → POST：密碼不會顯示在網址列"] });
+addType("F2", "選擇方法及理由", genF2);
+
+// ---------- V1：客戶端檢驗 ----------
+function genV1() {
+  const ctrls = [], st = {}, acts = [];
+  const pool = shuffle(["name", "age", "height", "day", "ppl"]).slice(0, R(3, 4));
+  for (const f of pool) {
+    if (f === "name") { const c = { kind: "text", id: "name", name: "name", label: "姓名：", required: coin(0.8) }; ctrls.push(c); const v = coin(0.7) ? pick(["Amy", "Chan Siu Ming"]) : ""; st.name = v; }
+    if (f === "age") { const lo = pick([10, 12, 15]), hi = lo + pick([5, 6, 8]); const c = { kind: "number", id: "age", name: "age", label: "年齡：", min: String(lo), max: String(hi), required: coin(0.6) }; ctrls.push(c); st.age = pick(["", String(lo), String(hi), String(lo - 1), String(hi + 1), String(lo + 2), String(lo + 2) + ".5"]); }
+    if (f === "height") { const c = { kind: "number", id: "height", name: "height", label: "身高（米）：", min: "1", max: "2.2" }; const s = R(0, 2); if (s === 1) c.step = "0.01"; if (s === 2) c.step = "any"; ctrls.push(c); st.height = pick(["1.65", "1.7", "2.5", "0.9", "2"]); }
+    if (f === "day") { const c = { kind: "date", id: "day", name: "day", label: "日期：", min: "2026-07-01", max: "2026-07-31", required: true }; ctrls.push(c); st.day = pick(["2026-07-01", "2026-07-15", "2026-07-31", "2026-08-01", "2026-06-30", ""]); }
+    if (f === "ppl") { const c = { kind: "number", id: "ppl", name: "ppl", label: "人數：", min: "2", max: "20", step: pick(["2", "1", "5"]) }; ctrls.push(c); st.ppl = pick(["4", "5", "10", "12", "1", "20"]); }
+  }
+  const LAB = { name: "姓名", age: "年齡", height: "身高", day: "日期", ppl: "人數" };
+  ctrls.forEach((c) => { acts.push(st[c.id] === "" ? "「" + LAB[c.id] + "」留空" : "在「" + LAB[c.id] + "」輸入 <code>" + esc(st[c.id]) + "</code>"); });
+  const F = { ctrls, st, method: "post", action: "join.php" };
+  const bad = FORM.invalid(ctrls, st), code = FORM.html(ctrls, F);
+  const OK = "可以提交（全部通過檢驗）", lab = (id) => "不能提交：瀏覽器首先提示「" + LAB[id] + "」欄";
+  const ans = bad.length ? lab(bad[0].id) : OK;
+  const why = {}; mutAns(() => { const b = FORM.invalid(ctrls, st); return b.length ? lab(b[0].id) : OK; }, [["valid_stepIgnored", "type=\"number\" 沒有寫 step 時預設 step=1：小數不能通過；有 step 時值要由 min 起計符合步長。"], ["valid_minExclusive", "min 及 max 包括端點本身（等於 min 可以通過）。"]]).forEach((t) => { if (t.v !== ans) why[t.v] = t.msg; });
+  const all = bad.length ? ["不通過的欄位：" + bad.map((b) => "「" + LAB[b.id] + "」（" + b.why + "）").join("、") + "；瀏覽器提示表單中第一個不通過的欄位，表單不會提交。"] : ["每一欄都符合 required、min、max、step 的要求，所以表單會提交。"];
+  return { prompt: "<p>用戶在以下表單依次：</p><ol class=\"acts\">" + acts.map((a) => "<li>" + a + "</li>").join("") + "<li>按「提交」</li></ol><p>按「提交」後會怎樣？</p>" + codeHTML(code),
+    input: choiceIn(shuffle(uniq([OK, ...ctrls.filter((c) => c.kind !== "hidden").map((c) => lab(c.id))])), ans, { why, wide: true }), show: ans,
+    explain: [...all, "required：不可留空；min／max：包括端點；type=\"number\" 預設 step=1（不接受小數，選B-20），step=\"any\" 才接受任何小數；type=\"date\" 以 yyyy-mm-dd 比較。", "客戶端檢驗只為方便用戶，可被略過；伺服器端仍要再檢驗。"],
+    chk: [{ t: "valid", files: { "index.html": code.join("\n") + "\n" }, fills: ctrls.filter((c) => st[c.id] !== "").map((c) => ["fill", "#" + c.id, st[c.id]]), exp: { blocked: bad.length > 0, first: bad.length ? bad[0].id : null, invalid: bad.map((b) => b.id) } }] };
+}
+cat("V1", "客戶端檢驗", { tag: "指引 常考 易錯", hint: [["逐欄檢查：required 不可留空；number／date 的值要在 min 至 max 之間（包括端點）。", "number 沒有 step 屬性 ＝ step 1：小數會被拒；有 step 時由 min 起計。", "有任何一欄不通過，表單便不會提交，瀏覽器提示第一個不通過的欄位。"], '<input type="number" min="12" max="18"> 輸入 12.5 → 不通過（step 預設 1）'] });
+addType("V1", "能否提交", genV1);
+// =================== 網絡服務、HTTP、權限（只用教科書第 2、3、6 章及 2025 評卷參考的說法） ===================
+const PORTS = [["20／21", "FTP（檔案傳輸）"], ["22", "SSH（安全外殼存取）"], ["25", "SMTP（發送電郵）"], ["53", "DNS（網域名稱系統）"], ["80", "HTTP"], ["110", "POP3"], ["143", "IMAP"], ["443", "HTTPS"], ["3306", "MySQL（數據庫）"], ["3389", "Microsoft Remote Desktop（遠端桌面）"]];
+const SERVERS = [
+  { n: "網頁伺服器", f: ["按客戶機的 HTTP 請求傳回網頁、圖像等檔案", "執行伺服器端程式（例如 PHP）以動態產生網頁"], p: "p.314" },
+  { n: "數據庫伺服器", f: ["以數據庫管理系統管理多個數據庫，接收 SQL 查詢並傳回結果"], p: "p.315" },
+  { n: "檔案伺服器", f: ["集中儲存檔案，讓網絡中的用戶按權限存取"], p: "p.316" },
+  { n: "DHCP 伺服器", f: ["自動為網絡中的裝置派發 IP 位址"], p: "p.319" },
+  { n: "網域控制器", f: ["為網域提供登入認證及用戶權限控制"], p: "p.321" },
+  { n: "代理伺服器", f: ["作為網絡與互聯網之間的中介，提供內容緩存及內容過濾"], p: "p.323" },
+  { n: "網間連接器", f: ["連接不同的網絡（例如 LAN 與 WAN），並轉換協定"], p: "p.327" },
+  { n: "打印伺服器", f: ["接收網絡中所有打印工作，分發給它管理的多部打印機"], p: "p.330" },
+  { n: "交換器", f: ["在同一個網絡內連接多部設備"], p: "p.327" },
+];
+const PROCON = [
+  { n: "DHCP 伺服器", pro: ["自動分派 IP 位址，減少位址衝突及人手設定的錯誤", "集中管理網絡設定（子網掩碼、預設網間連接器、DNS 伺服器）", "新裝置無須手動設定便可快速連接網絡"], con: ["單一故障點：伺服器故障時新裝置無法取得 IP 位址"], p: "p.321" },
+  { n: "網域控制器", pro: ["集中管理用戶帳戶及資源", "以登入認證及權限控制提高網絡安全性", "以群組規則集中定義系統設定及保安措施"], con: [], p: "p.323" },
+  { n: "代理伺服器", pro: ["隱藏客戶機的 IP 位址，提供匿名性及保護私隱", "緩存常用網頁，減少載入時間及頻寬消耗"], con: ["請求和回應都要經過它，可能造成延遲", "如未妥善維護，可能成為攻擊者的目標", "設置和維護較為複雜"], p: "p.326" },
+  { n: "檔案伺服器（與雲端儲存比較）", pro: ["長遠而言每單位儲存成本較低", "用戶與伺服器在同一網絡時傳輸速度較快"], con: ["設置成本較高、需時較長", "擴展容量需要專業技術知識"], p: "p.336" },
+  { n: "雲端儲存（與檔案伺服器比較）", pro: ["設置容易而且快速", "只要有互聯網便可隨時隨地存取檔案"], con: ["要按月或按年付訂閱費，長期成本較高", "數據經互聯網傳輸，速度較慢"], p: "p.336" },
+  { n: "網絡打印機（與打印伺服器比較）", pro: ["較易設置和維護"], con: ["打印機多時每部獨立運行，管理困難"], p: "p.329" },
+  { n: "打印伺服器（與網絡打印機比較）", pro: ["集中管理及監控多部打印機", "沒有內建網絡功能的打印機也可以共享"], con: [], p: "p.330" },
+];
+const factChk = (kind, o) => ({ t: "fact", kind, ...o });
+function genN1(kind) {
+  if (kind === "port") {
+    const pr = pick(PORTS), others = sample(PORTS.filter((x) => x !== pr), 3);
+    if (coin(0.5)) return { prompt: "<p>一般情況下，伺服器在<b>埠 " + pr[0] + "</b> 提供哪一項服務？</p>", input: choiceIn(shuffle([pr[1], ...others.map((x) => x[1])]), pr[1]), show: pr[1], explain: ["常用埠號碼（教科書 p.310）：" + PORTS.map((x) => x[0] + " " + x[1].replace(/（.*）/, "")).join("；") + "。", "埠號碼識別同一網絡位址上運行的不同服務；使用預設埠時，網址不用寫埠號碼。"], chk: [factChk("port", { q: pr[0], ans: pr[1], opts: [pr[1], ...others.map((x) => x[1])] })] };
+    return { prompt: "<p><b>" + esc(pr[1]) + "</b> 的預設埠號碼是甚麼？</p>", input: choiceIn(shuffle([pr[0], ...others.map((x) => x[0])]), pr[0]), show: pr[0], explain: ["常用埠號碼（教科書 p.310）：" + PORTS.map((x) => x[0] + " " + x[1].replace(/（.*）/, "")).join("；") + "。"], chk: [factChk("port_r", { q: pr[1], ans: pr[0], opts: [pr[0], ...others.map((x) => x[0])] })] };
+  }
+  if (kind === "func") {
+    const s = pick(SERVERS), f = pick(s.f), others = sample(SERVERS.filter((x) => x !== s), 3);
+    return { prompt: "<p>某網絡中的一部裝置／伺服器的功能是：「" + esc(f) + "」。它是甚麼？</p>", input: choiceIn(shuffle([s.n, ...others.map((x) => x.n)]), s.n), show: s.n,
+      explain: [s.n + (s.n === "網頁伺服器" ? "（教科書稱「網絡伺服器」）" : "") + "：" + s.f.join("；") + "（教科書 " + s.p + "）。", "答題時要寫出**名稱及功能**：2025 8(b) 多於一半考生只列名稱、沒有說明功能而失分。"], chk: [factChk("func", { q: f, ans: s.n, opts: [s.n, ...others.map((x) => x.n)] })] };
+  }
+  if (kind === "match") {
+    const ss = sample(SERVERS, 3), names = uniq([...ss.map((x) => x.n), ...sample(SERVERS.filter((x) => !ss.includes(x)), 3).map((x) => x.n)]);
+    const fs = ss.map((x) => pick(x.f));
+    const ps = ss.map((x, i) => P.sel("功能 " + (i + 1) + "：" + fs[i], ["—", ...names.slice().sort()], x.n));
+    return { prompt: "<p>為以下每項功能選出對應的伺服器／裝置。</p>", input: parts(...ps), show: ss.map((x) => x.n).join("／"),
+      explain: ss.map((x, i) => "功能 " + (i + 1) + " → " + x.n + "（教科書 " + x.p + "）。"), chk: [factChk("match", { qs: fs, ans: ss.map((x) => x.n), opts: names })] };
+  }
+  // 好處／壞處
+  const pc = pick(PROCON.filter((x) => x.con.length)), wantPro = coin(0.5) || !pc.con.length;
+  const good = pick(wantPro ? pc.pro : pc.con);
+  const pool = wantPro ? [...pc.con, ...PROCON.filter((x) => x.n.split("（")[0] !== pc.n.split("（")[0] && x.n.split("（")[1] === undefined).flatMap((x) => x.pro)] : [...pc.pro];
+  const fill = PROCON.filter((x) => x !== pc && !x.n.includes("（")).flatMap((x) => x.pro);
+  const wr = sample(pool, 3).concat(sample(fill, 3)).filter((v, i, a) => a.indexOf(v) === i && v !== good).slice(0, 3);
+  const why = {}; wr.forEach((w) => { why[w] = pc.con.includes(w) ? "這是壞處，不是好處。" : pc.pro.includes(w) ? "這是好處，不是壞處。" : "這是其他伺服器／方案的特點。"; });
+  return { prompt: "<p>下列哪一項是使用<b>" + esc(pc.n) + "</b>的" + (wantPro ? "好處" : "壞處") + "？</p>", input: choiceIn(shuffle([good, ...wr]), good, { why, wide: true }), show: good,
+    explain: [pc.n + "（教科書 " + pc.p + "）：好處—" + pc.pro.join("；") + (pc.con.length ? "。壞處—" + pc.con.join("；") : "") + "。"], chk: [factChk("procon", { n: pc.n, pro: wantPro, ans: good, opts: [good, ...wr] })] };
+}
+cat("N1", "網絡服務配對", { tag: "指引 常考 易錯", hint: [["先想該伺服器在網絡中「做甚麼」：派 IP、登入認證、緩存及過濾、轉換協定、管理打印……", "常用埠：HTTP 80、HTTPS 443、FTP 20／21、SMTP 25、DNS 53、MySQL 3306。", "寫答案時要寫名稱＋功能，並配合情境。"], "自動為網絡中的裝置派發 IP 位址 → DHCP 伺服器"] });
+addType("N1", "埠號碼", () => genN1("port")); addType("N1", "功能 → 名稱", () => genN1("func")); addType("N1", "配對功能", () => genN1("match")); addType("N1", "好處與壞處", () => genN1("pc"));
+
+// ---------- H1：HTTP 與 Cookie ----------
+const HOSTS = ["www.mysite.net", "school.edu.hk", "shop.example.com", "lib.abc.org"];
+function genH1(kind) {
+  if (kind === "status") {
+    const f = pick(["notice.html", "about.php", "photo.jpg", "news.html"]), exists = coin(0.5);
+    const ans = exists ? "200" : "404";
+    return { prompt: "<p>瀏覽器請求 <code>https://" + pick(HOSTS) + "/" + f + "</code>。網頁伺服器的目錄中" + (exists ? "<b>有</b>" : "<b>沒有</b>") + "這個檔案。HTTP 回應的狀態碼是甚麼？</p>", input: choiceIn(["200", "404", "443", "80"], ans, { why: { "443": "443 是 HTTPS 的埠號碼，不是狀態碼。", "80": "80 是 HTTP 的埠號碼，不是狀態碼。" } }), show: ans,
+      explain: ["狀態碼 200：成功處理；404：找不到網頁（請求的檔案不存在於伺服器）（教科書 p.54–55）。"], chk: [factChk("status", { exists, ans })] };
+  }
+  if (kind === "port") {
+    const h = pick(HOSTS), sch = pick(["http", "https"]), explicit = coin(0.35) ? pick(["8080", "8443", "9999"]) : null;
+    const url = sch + "://" + h + (explicit ? ":" + explicit : "") + "/" + pick(["index.html", "login.php", "notice.html"]);
+    const ans = explicit || (sch === "https" ? "443" : "80");
+    return { prompt: "<p>在瀏覽器網址列輸入 <code>" + esc(url) + "</code>。HTTP 請求會傳送到伺服器的哪一個埠？</p>", input: choiceIn(shuffle(uniq([ans, "80", "443", "8080", "3306"]).slice(0, 4)), ans), show: ans,
+      explain: ["網址沒有寫埠號碼時用協定的預設埠：HTTP 80、HTTPS 443；要用其他埠，須在網域名稱後加「:埠號碼」（教科書 p.311–312）。"], chk: [factChk("url_port", { url, ans })] };
+  }
+  if (kind === "cookie") {
+    const key = pick(["lang", "theme", "size"]), vals = { lang: ["en", "zh", "jp"], theme: ["dark", "light"], size: ["big", "small"] }[key];
+    const v1 = pick(vals), v2 = pick(vals.filter((x) => x !== v1)), over = coin(0.5);
+    const ans = '"' + (over ? v2 : v1) + '"';
+    const steps = ["用戶開啟 <code>set.php</code>，HTTP 回應包含標頭 <code>Set-Cookie: " + key + "=" + v1 + "</code>。", ...(over ? ["用戶再開啟 <code>change.php</code>，回應包含 <code>Set-Cookie: " + key + "=" + v2 + "</code>。"] : []), "用戶之後開啟同一網站的 <code>show.php</code>。"];
+    return { prompt: "<p>瀏覽器沒有停用 Cookie。</p><ol class=\"acts\">" + steps.map((s) => "<li>" + s + "</li>").join("") + "</ol><p>在 <code>show.php</code> 中，<code>$_COOKIE['" + key + "']</code> 的值是甚麼？</p>", input: choiceIn(shuffle(uniq([ans, '"' + v1 + '"', '"' + v2 + '"', "（沒有這個 Cookie）"])), ans, { why: { "（沒有這個 Cookie）": "Cookie 儲存在瀏覽器；之後向同一網域發出的每個請求都會附上 Cookie。" } }), show: ans,
+      explain: ["伺服器在 HTTP 回應加上 Set-Cookie 標頭，瀏覽器把鍵和值儲存為 Cookie；之後向同一網域發出的每個 HTTP 請求都會附上 Cookie，PHP 以 `$_COOKIE` 讀取（教科書 p.168–169）。", "伺服器再送出同一個鍵的 Set-Cookie 會覆寫舊值。"], chk: [{ t: "cookie", key, seq: over ? [v1, v2] : [v1], exp: over ? v2 : v1 }] };
+  }
+  if (kind === "parts") {
+    const reqP = ["請求方法（例如 GET）", "請求 URL", "Cookie（瀏覽器附上的 Cookie）"], resP = ["狀態碼（例如 200）", "內容類型（例如 text/html）", "Set-Cookie 標頭"];
+    const askResp = coin(0.5), good = pick(askResp ? resP : reqP), wr = (askResp ? reqP : resP);
+    return { prompt: "<p>以下哪一項是 HTTP <b>" + (askResp ? "回應" : "請求") + "</b>的一部分？</p>", input: choiceIn(shuffle([good, ...wr]), good), show: good,
+      explain: ["HTTP 請求：請求方法、請求 URL、標頭（例如 Cookie）、主體（POST 的表單數據）。", "HTTP 回應：狀態碼、內容類型、標頭（例如 Set-Cookie）、回應主體（例如 HTML 檔案）（教科書 p.53–55、p.168）。"], chk: [factChk("http_part", { resp: askResp, ans: good, opts: [good, ...wr] })] };
+  }
+  // 請求方法
+  const act = pick(["在網址列輸入網址並按 Enter", "按網頁上的超連結", "提交 method=\"post\" 的表單", "提交 method=\"get\" 的表單"]);
+  const ans = act.includes("post") ? "POST" : "GET";
+  return { prompt: "<p>用戶" + esc(act) + "。瀏覽器傳送的 HTTP 請求使用哪一個請求方法？</p>", input: choiceIn(["GET", "POST"], ans), show: ans,
+    explain: ["在網址列輸入 URL 或按連結時，瀏覽器用 GET 方法（教科書 p.53）；表單按 method 屬性用 GET 或 POST（p.140）。"], chk: [factChk("method", { act, ans })] };
+}
+cat("H1", "HTTP 與 Cookie", { tag: "指引", hint: [["請求：方法、URL、標頭（Cookie）、主體；回應：狀態碼、內容類型、Set-Cookie、主體。", "狀態碼 200 成功、404 找不到；預設埠 HTTP 80、HTTPS 443。", "Set-Cookie 在回應；之後同一網域的請求都附上 Cookie。"], "https://school.edu.hk/index.html → 埠 443"] });
+addType("H1", "狀態碼", () => genH1("status")); addType("H1", "預設埠號碼", () => genH1("port")); addType("H1", "Cookie 往返", () => genH1("cookie")); addType("H1", "請求與回應", () => genH1("parts")); addType("H1", "請求方法", () => genH1("method"));
+
+// ---------- R1：檔案權限（規則同第 6 章筆記：繼承、合併、拒絕優先） ----------
+const PERM = (() => {
+  const sub = (nodes, n) => nodes.filter((x) => x === n || x.startsWith(n + "/"));
+  function eff(nodes, settings, user, groups, node) {
+    const P = new Set([user, "所有用戶", ...(groups[user] || [])]);
+    const allow = new Set(), deny = new Set();
+    for (const s of settings) {
+      const targets = s.scope === "this" || MUT.perm_noInherit ? [s.node] : sub(nodes, s.node);
+      if (!targets.includes(node) || !P.has(s.who)) continue;
+      [...s.allow].forEach((c) => allow.add(c)); [...s.deny].forEach((c) => deny.add(c));
+    }
+    return "RW".split("").filter((c) => allow.has(c) && (MUT.perm_denyNotFirst || !deny.has(c))).join("");
+  }
+  return { eff, sub };
+})();
+const PNAME = { RW: "讀取及寫入", R: "只可讀取", W: "只可寫入", "": "沒有權限" };
+const pTxt = (s) => (s === "RW" ? "讀取、寫入" : s === "R" ? "讀取" : s === "W" ? "寫入" : "—");
+function genR1() {
+  const top = "學校", F = [["公告", ["通告.pdf", "校曆.docx"]], ["作業", ["ICT習作.docx", "評分表.xlsx"]], ["相片", ["陸運會.jpg", "畢業禮.jpg"]]];
+  const nodes = [top]; F.forEach(([d, fs]) => { nodes.push(top + "/" + d); fs.forEach((f) => nodes.push(top + "/" + d + "/" + f)); });
+  const users = { 陳老師: ["老師"], 李同學: ["學生"], 張同學: ["學生", "學生會"], 何先生: ["家長"] };
+  const who = ["所有用戶", "老師", "學生", "學生會", "家長", "李同學", "陳老師"];
+  for (let t = 0; t < 80; t++) {
+    const settings = [];
+    settings.push({ node: top, who: pick(["所有用戶", "老師"]), allow: pick(["R", "RW"]), deny: "", scope: "tree" });
+    for (let i = 0; i < R(2, 4); i++) {
+      const node = pick(nodes.filter((n) => n.split("/").length <= 2)), w = pick(who), deny = coin(0.45);
+      const p = pick(["R", "W", "RW"]);
+      settings.push({ node, who: w, allow: deny ? "" : p, deny: deny ? p : "", scope: node.split("/").length === 2 && coin(0.25) ? "this" : "tree" });
+    }
+    const user = pick(Object.keys(users)), mine = new Set([user, "所有用戶", ...users[user]]);
+    const hot = settings.filter((x) => x.node !== top && mine.has(x.who)).map((x) => x.node);
+    const node = pick(nodes.filter((n) => n.split("/").length === 3 && (!hot.length || hot.some((h) => n.startsWith(h + "/")))));
+    const ans = PERM.eff(nodes, settings, user, users, node);
+    const traps = mutAns(() => PERM.eff(nodes, settings, user, users, node), [["perm_denyNotFirst", "拒絕權限凌駕允許權限：只要其中一個設定拒絕，便沒有該權限。"], ["perm_noInherit", "在資料夾設定的權限會繼承到其中的子資料夾及檔案（除非註明只套用到此資料夾）。"]]).filter((x) => x.v !== ans);
+    if (!traps.length && t < 70) continue;
+    const rel = settings.filter((s) => (s.scope === "this" ? s.node === node : node === s.node || node.startsWith(s.node + "/")) && new Set([user, "所有用戶", ...users[user]]).has(s.who));
+    const tree = [top, ...F.flatMap(([d, fs], i) => [(i === F.length - 1 ? "└─ " : "├─ ") + d, ...fs.map((f, j) => (i === F.length - 1 ? "   " : "│  ") + (j === fs.length - 1 ? "└─ " : "├─ ") + f)])];
+    const stbl = mini(["設定", "資料夾", "用戶／群組", "允許", "拒絕", "套用到"], settings.map((s, i) => [String(i + 1), esc(s.node.replace(top + "/", "") || top), esc(s.who), pTxt(s.allow), pTxt(s.deny), s.scope === "this" ? "只此資料夾" : "此資料夾及其中所有子項"]));
+    const fname = node.split("/").pop();
+    const why = {}; traps.forEach((x) => { why[PNAME[x.v]] = x.msg; });
+    return {
+      prompt: "<p>學校檔案伺服器的資料夾結構及權限設定如下。用戶的群組：" + Object.entries(users).map(([u, g]) => esc(u) + "（" + g.join("、") + "）").join("；") + "；所有用戶都屬「所有用戶」。</p><pre class=\"tree\">" + esc(tree.join("\n")) + "</pre>" + stbl +
+        "<p>規則：設定會繼承到子項（註明「只此資料夾」者除外）；同一用戶由不同設定得到的允許權限合併；拒絕權限凌駕允許權限。</p><p><b>" + esc(user) + "</b> 對 <code>" + esc(fname) + "</code> 的有效權限是甚麼？</p>",
+      input: choiceIn(["讀取及寫入", "只可讀取", "只可寫入", "沒有權限"], PNAME[ans], { why }), show: PNAME[ans],
+      explain: [esc(user) + " 屬於：" + [user, "所有用戶", ...users[user]].join("、") + "。", rel.length ? "適用於 " + fname + " 的設定：" + rel.map((s) => "設定 " + (settings.indexOf(s) + 1) + "（" + s.who + "：" + (s.allow ? "允許 " + pTxt(s.allow) : "拒絕 " + pTxt(s.deny)) + "）").join("；") + "。" : "沒有任何設定適用於這個檔案。", "允許合併後再減去拒絕的權限，得「" + PNAME[ans] + "」。"],
+      chk: [{ t: "perm", nodes, settings, user, groups: users, node, exp: ans }],
+    };
+  }
+  throw new Error("R1");
+}
+cat("R1", "檔案權限", { tag: "指引 常考 易錯", hint: [["找出用戶所屬的所有主體（本人、群組、所有用戶）。", "找出適用於該檔案的設定：檔案所在資料夾及其上層資料夾的設定都會繼承（「只此資料夾」除外）。", "把允許的權限合併，再減去任何被拒絕的權限（拒絕優先）。"], "所有用戶：允許讀取；學生：拒絕寫入 → 學生只可讀取"] });
+addType("R1", "有效權限", genR1);
+
+// ---------- X1：延伸 ----------
+cat("X1", "延伸", { ext: true, tag: "延伸", hint: [["`!important` 凌駕一般優先性；後代選擇器（如 `div p`）的優先性是各部分相加。", "`strlen()` 傳回字節數：UTF-8 中文每字 3 字節；`mb_strlen()` 傳回字符數。", "`==` 先轉換類型再比較；`===` 類型和值都要相同。"], 'strlen("陳大文") → 9；mb_strlen("陳大文") → 3'] });
+addType("X1", "!important 與後代選擇器", () => { const q = genC1({ prop: pick(["color", "font-size"]), imp: true, desc: true, inline: true, nmin: 3, nmax: 5 }); return q; });
+addType("X1", "中文 strlen", () => {
+  const words = ["陳大文", "李小芬", "ICT", "香港", "Amy 陳", "網頁", "PHP 8"], a = pick(words), b = pick(words.filter((x) => x !== a)), lim = pick([6, 9, 10]);
+  const prog = [pSet("a", pS(a)), pSet("b", pS(b)), pEcho(brCat(pC("strlen", pV("a")))), pEcho(brCat(pC("mb_strlen", pV("a")))), pEcho(brCat(pC("strlen", pV("b")))), pIf([[pO(">", pC("strlen", pV("b")), pN(lim)), [pEcho(pS("太長<br>"))]]], [pEcho(pS("可以<br>"))])];
+  return phpQuestion(prog, "寫出瀏覽器執行以下 PHP 代碼後顯示的內容。（檔案以 UTF-8 儲存；英文字母、數字及空格每個 1 字節，中文字每個 3 字節）", { explain: ["`strlen()` 傳回**字節數**（教科書 p.161 說「字符數」不準確，選B-45）；`mb_strlen()` 傳回字符數。", "以 `strlen()` 檢查中文姓名長度會出錯：「陳大文」是 9 字節。"] });
+});
+addType("X1", "== 與 ===", () => {
+  const pairs = shuffle([[jN(5), jS("5")], [jN(0), jS("")], [jS("1"), jN(1)], [jN(10), jS("10.0")], [jB("+", jS("1"), jN(1)), jS("11")], [jN(7), jN(7)], [jS("abc"), jS("ABC")]]).slice(0, 4);
+  const prog = pairs.map(([l, r]) => jLog(jB(pick(["==", "==="]), l, r)));
+  return jsQuestion(prog, "寫出以下 JavaScript 代碼的輸出（true 或 false）。", { explain: ["`==` 會先轉換類型再比較（`5 == \"5\"` 是 true）；`===` 要類型及值都相同（`5 === \"5\"` 是 false）。", "字串比較區分大小寫。"] });
+});
+addType("X1", "Cookie 到期", () => {
+  const secs = pick([60, 3600, 86400, 604800]), lab = { 60: "1 分鐘", 3600: "1 小時", 86400: "1 天", 604800: "7 天" }[secs], key = pick(["lang", "theme"]);
+  const mode = R(0, 2);
+  if (mode === 2) { const good = "瀏覽器會刪除這個 Cookie"; return { prompt: "<p>PHP 程式執行 <code>setcookie(\"" + key + "\", \"\", time() - 3600);</code>（到期時間設為一小時之前）。瀏覽器收到回應後會怎樣？</p>", input: choiceIn(shuffle([good, "Cookie 的值改為空字串，一小時後才刪除", "沒有影響，Cookie 保留原值", "瀏覽器停用所有 Cookie"]), good), show: good, explain: ["把到期時間設為過去的時間，瀏覽器便會刪除該 Cookie（常用的刪除方法）。", "`setcookie()` 的參數屬延伸內容。"], chk: [{ t: "cookie_exp", code: 'setcookie("' + key + '", "", time() - 3600);', exp: "delete" }] }; }
+  const good = mode === 0 ? "在 " + lab + " 後到期，之前每次請求都會附上這個 Cookie" : "關閉瀏覽器後便會被刪除";
+  const code = mode === 0 ? 'setcookie("' + key + '", "en", time() + ' + secs + ");" : 'setcookie("' + key + '", "en");';
+  return { prompt: "<p>PHP 程式執行 <code>" + esc(code) + "</code>。下列哪一項正確？</p>", input: choiceIn(shuffle([good, "永遠不會到期", "只會在下一次請求附上，之後自動刪除", mode === 0 ? "關閉瀏覽器後便會被刪除" : "在 1 小時後到期，之前每次請求都會附上這個 Cookie"]), good, { wide: true }), show: good,
+    explain: ["`setcookie(名稱, 值, 到期時間)`：第三個參數是到期的時間（`time()` ＋ 秒數）；沒有設定到期時間的 Cookie 在關閉瀏覽器時刪除（會話 Cookie）。", "Cookie 有有效期限（教科書 p.168）；`setcookie()` 的參數屬延伸內容。"], chk: [{ t: "cookie_exp", code, exp: mode === 0 ? "max-age=" + secs : "session" }] };
+});
+addType("X1", "元數據與替代文字（重溫 C c）", () => {
+  const B = [
+    ["<meta name=\"description\" content=\"…\">", "提供網頁的描述，供搜尋器在搜尋結果中顯示", ["令網頁在所有瀏覽器以相同字型顯示", "把網頁的文字翻譯成其他語言", "加快網頁的載入速度"]],
+    ["<meta name=\"keywords\" content=\"…\">", "列出網頁的關鍵字，供搜尋器索引", ["設定網頁在手機上的闊度", "指定網頁的背景顏色", "防止網頁被複製"]],
+    ["<meta charset=\"utf-8\">", "指定網頁使用 UTF-8 字元編碼，正確顯示中文", ["令搜尋器把網頁排在第一位", "把網頁設為只可讀取", "壓縮網頁檔案"]],
+    ["<img src=\"map.png\" alt=\"學校平面圖\">", "圖像未能載入或用戶使用屏幕閱讀器時，以替代文字說明圖像內容", ["在圖像上加上可點擊的連結", "令圖像自動放大至全螢幕", "在滑鼠移過時播放聲音"]],
+    ["<video src=\"intro.mp4\" controls>", "顯示播放、暫停、音量等控制項，讓用戶自行控制播放", ["影片載入後自動重複播放", "隱藏影片畫面只播放聲音", "把影片轉換為 GIF 動畫"]],
+  ];
+  const b = pick(B);
+  return { prompt: "<p>（重溫必修 C c）以下 HTML 的作用是甚麼？</p>" + codeHTML([b[0]]), input: choiceIn(shuffle([b[1], ...b[2]]), b[1], { wide: true }), show: b[1],
+    explain: ["元數據（<meta>）描述網頁本身，供瀏覽器及搜尋器使用；alt 替代文字有助無障礙（屏幕閱讀器）及圖像未能載入時說明內容。", "舊卷二C 常考（2016C 4(d)(iii)、2019C 1(b) 等）；新課程屬必修 C c，見必修 C2 資源。"], chk: [factChk("cc", { html: b[0], ans: b[1], opts: [b[1], ...b[2]] })] };
+});
+/*GEN:END*/
+// =================== 介面 ===================
+const $ = (id) => document.getElementById(id);
+const h = (tag, attrs = {}, html) => { const e = document.createElement(tag); Object.entries(attrs).forEach(([k, v]) => { if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else e.setAttribute(k, v); }); if (html !== undefined) e.innerHTML = html; return e; };
+const LS = { get(k, d) { try { const v = localStorage.getItem("eblab-" + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem("eblab-" + k, JSON.stringify(v)); } catch (e) { /* 被封鎖：照常運作 */ } } };
+const S = { q: null, cat: null, type: null, n: 0, answered: false, right: 0, total: 0, streak: LS.get("streak", 0), best: LS.get("best", 0), sel: null, on: new Set(GEN.filter((c) => !c.ext).map((c) => c.id)) };
+if (typeof S.streak !== "number") S.streak = 0; if (typeof S.best !== "number") S.best = 0;
+(() => { const saved = LS.get("filter", null); if (!Array.isArray(saved)) return; const ids = new Set(GEN.map((c) => c.id)); S.on = new Set(saved.filter((x) => ids.has(x))); })();
+const saveFilter = () => LS.set("filter", [...S.on]);
+const hintHTML = (c) => (c.hint ? "<h4>方法：" + esc(c.name) + "</h4><ol>" + c.hint[0].map((t) => "<li>" + md(t) + "</li>").join("") + "</ol>" + (c.hint[1] ? '<div class="ex">例：' + esc(c.hint[1]) + "</div>" : "") : "");
+function renderCount() { const all = GEN.length, on = S.on.size, el = $("fcount"); el.textContent = on === all ? "全部 " + all + " 個分類" : "已選 " + on + "／" + all + " 個分類"; el.classList.toggle("partial", on !== all); }
+function renderFilter() {
+  const box = $("fchips"); box.innerHTML = "";
+  GEN.forEach((c) => {
+    const b = h("button", { type: "button", class: "chip", "aria-pressed": String(S.on.has(c.id)), "data-id": c.id }, '<span class="cid">' + c.id + "</span>" + esc(c.name) + (c.ext ? '<span class="tag">延伸</span>' : ""));
+    b.addEventListener("click", () => { S.on.has(c.id) ? S.on.delete(c.id) : S.on.add(c.id); b.setAttribute("aria-pressed", String(S.on.has(c.id))); saveFilter(); renderCount(); afterFilter(); });
+    box.appendChild(b);
+  });
+  renderCount();
+}
+function afterFilter() { if (!S.on.size) { showEmpty(); return; } if (!S.q || !S.cat || !S.on.has(S.cat.id)) next(); }
+$("f-all").addEventListener("click", () => { S.on = new Set(GEN.map((c) => c.id)); saveFilter(); renderFilter(); afterFilter(); });
+$("f-none").addEventListener("click", () => { S.on = new Set(); saveFilter(); renderFilter(); afterFilter(); });
+function renderScore() { $("sc-right").textContent = S.right; $("sc-total").textContent = S.total; $("sc-streak").textContent = S.streak; $("sc-best").textContent = S.best; }
+function showEmpty() {
+  S.q = null; S.cat = null; $("qtype").textContent = ""; $("qno").textContent = "";
+  $("prompt").innerHTML = '<p class="empty">請在上方「分類篩選」選擇至少一個分類。</p>'; $("input-area").innerHTML = ""; $("feedback").hidden = true;
+  $("btn-check").disabled = true; $("btn-show").disabled = true; $("btn-next").disabled = true; $("filter").open = true; $("btn-hint").hidden = true; $("hintbox").hidden = true;
+}
+
+// ---------- 作答區 ----------
+function renderInput(q) {
+  const area = $("input-area"); area.innerHTML = ""; S.sel = null;
+  if (q.input.kind === "choice") {
+    const box = h("div", { class: "choices" + (q.input.wide || q.input.opts.some((o) => o.length > 22) ? " wide" : "") });
+    q.input.opts.forEach((o) => { const b = h("button", { type: "button", class: "choice", "aria-pressed": "false", text: o });
+      b.addEventListener("click", () => { if (S.answered) return; S.sel = o; box.querySelectorAll(".choice").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }); box.appendChild(b); });
+    area.appendChild(box); return;
+  }
+  const wrap = h("div", { class: "parts" });
+  q.input.parts.forEach((p, k) => {
+    const id = "ans-" + k, row = h("div", { class: "part" + (p.type === "lines" ? " col" : "") });
+    if (p.type === "lines") row.innerHTML = '<label for="' + id + '">' + esc(p.label) + '</label><textarea id="' + id + '" class="out" data-p="' + k + '" rows="' + Math.min(8, Math.max(3, p.ans.length + 1)) + '" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>';
+    else if (p.type === "sel") row.innerHTML = '<label for="' + id + '">' + esc(p.label) + '</label><select id="' + id + '" data-p="' + k + '">' + p.opts.map((o) => '<option value="' + (o === "—" ? "" : esc(o)) + '">' + esc(o) + "</option>").join("") + "</select>";
+    else if (p.type === "choice") { row.innerHTML = '<span class="plab">' + esc(p.label) + "</span>"; const box = h("div", { class: "choices" }); p.opts.forEach((o) => { const b = h("button", { type: "button", class: "choice", "aria-pressed": "false", text: o, "data-p": k }); b.addEventListener("click", () => { if (S.answered) return; box.querySelectorAll(".choice").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }); box.appendChild(b); }); row.appendChild(box); }
+    else row.innerHTML = '<label for="' + id + '">' + esc(p.label) + '</label><input id="' + id + '" type="text" class="' + (p.type === "num" ? "n" : p.cls || "") + '" data-p="' + k + '" autocomplete="off" autocapitalize="off" spellcheck="false"' + (p.type === "num" ? ' inputmode="decimal"' : "") + ">" + (p.sfx ? '<span class="sfx">' + esc(p.sfx) + "</span>" : "");
+    wrap.appendChild(row);
+  });
+  area.appendChild(wrap);
+  area.querySelectorAll("input,select").forEach((inp) => inp.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); S.answered ? next() : check(); } }));
+  area.querySelectorAll("textarea").forEach((inp) => inp.addEventListener("keydown", (ev) => { if (ev.key === "Enter" && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); S.answered ? next() : check(); } }));
+}
+function readParts(q) {
+  const area = $("input-area");
+  return q.input.parts.map((p, k) => {
+    if (p.type === "choice") { const b = area.querySelector('.choice[data-p="' + k + '"][aria-pressed="true"]'); return b ? b.textContent : null; }
+    return area.querySelector('[data-p="' + k + '"]').value;
+  });
+}
+function trapMsg(p, raw) {
+  if (!p.traps || !p.traps.length) return "";
+  for (const t of p.traps) {
+    let hit = false;
+    try { hit = GR.grade(Object.assign({}, p, { ans: t.v, alt: [] }), raw).ok; } catch (e) { hit = false; }
+    if (hit) return t.msg;
+  }
+  return "";
+}
+
+// ---------- 出題、核對 ----------
+function next() {
+  const pool = GEN.filter((c) => S.on.has(c.id)); if (!pool.length) { showEmpty(); return; }
+  let c = pick(pool); if (pool.length > 1 && S.cat && c.id === S.cat.id && coin(0.7)) c = pick(pool.filter((x) => x.id !== S.cat.id));
+  const t = pick(c.types); let q = null;
+  for (let i = 0; i < 6 && !q; i++) { try { q = t.fn(); } catch (e) { q = null; } }
+  if (!q) { $("prompt").innerHTML = '<p class="empty">未能產生題目，請按「跳過此題」。</p>'; $("input-area").innerHTML = ""; S.q = null; updNext(); return; }
+  S.cat = c; S.type = t; S.q = q; S.n++; S.answered = false; $("btn-next").disabled = false;
+  $("qtype").textContent = c.id + " · " + c.name + " · " + t.name; $("qno").textContent = "第 " + S.n + " 題";
+  $("hintbox").innerHTML = hintHTML(c); $("btn-hint").hidden = !$("hintbox").innerHTML; setHint(false); updNext();
+  $("prompt").innerHTML = q.prompt;
+  renderInput(q); $("feedback").hidden = true; $("btn-check").disabled = false; $("btn-show").disabled = false;
+}
+function finish(correct, revealed, results, raws) {
+  S.answered = true; $("btn-check").disabled = true; $("btn-show").disabled = true;
+  if (!revealed) { S.total++; if (correct) { S.right++; S.streak++; if (S.streak > S.best) S.best = S.streak; } else S.streak = 0; } else S.streak = 0;
+  LS.set("streak", S.streak); LS.set("best", S.best); renderScore();
+  const q = S.q, area = $("input-area"); let extra = "";
+  if (q.input.kind === "choice") {
+    area.querySelectorAll(".choice").forEach((b) => { if (b.textContent === q.input.answer) b.classList.add("ok"); else if (b.textContent === S.sel) b.classList.add("no"); });
+    if (!revealed && !correct && q.input.why && q.input.why[S.sel]) extra += '<p class="trap">' + md(q.input.why[S.sel]) + "</p>";
+  } else {
+    q.input.parts.forEach((p, k) => {
+      const r = results ? results[k] : null;
+      if (p.type === "choice") area.querySelectorAll('.choice[data-p="' + k + '"]').forEach((b) => { if (b.textContent === p.ans) b.classList.add("ok"); else if (b.getAttribute("aria-pressed") === "true") b.classList.add("no"); });
+      else { const x = area.querySelector('[data-p="' + k + '"]'); if (x.tagName === "SELECT") x.disabled = true; else x.readOnly = true; if (r) x.classList.add(r.ok ? "ok" : "no"); }
+      if (r && !r.ok && !revealed) { const tm = trapMsg(p, raws[k]); if (tm) extra += '<p class="trap">' + md(tm) + "</p>"; if (r.msg) extra += '<p class="trap">' + esc(r.msg) + "</p>"; }
+      if (revealed || (r && !r.ok)) {
+        if (p.type === "lines") extra += '<p class="iolab">正確輸出</p><pre class="ansbox">' + esc(p.ans.join("\n")) + "</pre>";
+        else if (p.type === "sel") extra += '<p class="small">' + esc(p.label) + " → <b>" + esc(p.ans) + "</b></p>";
+      }
+    });
+  }
+  const fb = $("feedback"); fb.className = "feedback " + (correct ? "good" : "bad"); fb.hidden = false;
+  const head = revealed ? "答案" : correct ? "答對了" : "未答對";
+  const showTxt = q.input.kind !== "choice" && q.input.parts.some((p) => p.type === "lines") ? "" : q.show ? "：" + esc(q.show) : "";
+  fb.innerHTML = '<div class="verdict">' + head + showTxt + "</div>" + extra + '<ol class="steps">' + (q.explain || []).filter(Boolean).map((x) => "<li>" + md(x) + "</li>").join("") + "</ol>" + (q.after || "");
+  updNext(); try { $("btn-next").focus({ preventScroll: true }); } catch (e) { /* 無 */ }
+}
+function warn(msg) { const fb = $("feedback"); fb.className = "feedback bad"; fb.hidden = false; fb.innerHTML = '<div class="verdict">' + msg + "</div>"; }
+function check() {
+  if (S.answered || !S.q) return; const q = S.q;
+  if (q.input.kind === "choice") { if (S.sel === null) return warn("請先選擇一個答案，或按「顯示答案」。"); return finish(S.sel === q.input.answer, false); }
+  const raws = readParts(q); if (q.input.parts.some((p, k) => GR.isBlank(p, raws[k]))) return warn("請先完成所有空格，或按「顯示答案」。");
+  const results = q.input.parts.map((p, k) => GR.grade(p, raws[k]));
+  finish(results.every((r) => r.ok), false, results, raws);
+}
+function setHint(open) { $("hintbox").hidden = !open; $("btn-hint").setAttribute("aria-expanded", String(open)); }
+$("btn-hint").addEventListener("click", () => setHint($("hintbox").hidden));
+$("btn-check").addEventListener("click", check);
+$("btn-show").addEventListener("click", () => { if (!S.answered && S.q) finish(false, true, null, null); });
+let skipTimer = null;
+function updNext(confirming) {
+  const b = $("btn-next"); clearTimeout(skipTimer); b.classList.remove("primary", "ghost", "skip", "confirm");
+  if (S.answered) { b.classList.add("primary"); b.textContent = "下一題 →"; }
+  else if (confirming) { b.classList.add("ghost", "confirm"); b.textContent = "再按一次確認跳過"; skipTimer = setTimeout(() => updNext(false), 3000); }
+  else { b.classList.add("ghost", "skip"); b.textContent = "跳過此題"; }
+}
+$("btn-next").addEventListener("click", () => { if (S.answered || !S.q || $("btn-next").classList.contains("confirm")) return next(); updNext(true); });
+
+// 測試用：以正確或錯誤答案填寫目前的題目（不會自動核對）
+window.__eblab = {
+  fill(ok) {
+    const q = S.q; if (!q || S.answered) return false; const area = $("input-area");
+    if (q.input.kind === "choice") { const t = ok ? q.input.answer : q.input.opts.find((o) => o !== q.input.answer); [...area.querySelectorAll(".choice")].find((b) => b.textContent === t).click(); return true; }
+    q.input.parts.forEach((p, k) => { const v = GR.fill(p, ok || k > 0);
+      if (p.type === "choice") [...area.querySelectorAll('.choice[data-p="' + k + '"]')].find((b) => b.textContent === v).click();
+      else area.querySelector('[data-p="' + k + '"]').value = v; });
+    if (!ok && q.input.parts.length > 1) { const p = q.input.parts[0]; area.querySelector('[data-p="0"]').value = GR.fill(p, false); }
+    return true;
+  },
+  only(id) { S.on = new Set([id]); renderFilter(); next(); }, cats: () => GEN.map((c) => c.id),
+  state: () => ({ cat: S.cat && S.cat.id, type: S.type && S.type.name, answered: S.answered, right: S.right, total: S.total, streak: S.streak, best: S.best, on: [...S.on] }),
+};
+renderFilter(); renderScore(); next();
+})();
+</script>
+
+</body></html>

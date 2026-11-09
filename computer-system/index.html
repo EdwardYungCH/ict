@@ -1,0 +1,1565 @@
+<!doctype html><html lang="zh-Hant-HK"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style></head><body>
+<title>電腦系統練習室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --bg:#EDF0F5; --surface:#FFFFFF; --sunk:#E2E7EF; --ink:#15202E; --muted:#556275; --line:#C7D0DC;
+  --accent:#2457C5; --accent-ink:#FFFFFF; --led:#E0950E; --led-ink:#1A1204;
+  --good:#1F7A3A; --good-bg:#E3F3E7; --bad:#B3261E; --bad-bg:#FBE7E5;
+  --sel:#DCE6FA; --hd:#E6EBF2; --hd-ink:#566377; --ext:#7A3E9D; --ext-bg:#EEDDF6; --trace:#F5F7FB;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D131C; --surface:#151E2B; --sunk:#1C2737; --ink:#E3E9F2; --muted:#98A6BA; --line:#2B394D;
+    --accent:#6F9BFF; --accent-ink:#0A1222; --led:#F4B23C; --led-ink:#1A1204;
+    --good:#5BD17E; --good-bg:#15301F; --bad:#FF8A80; --bad-bg:#3A1A18;
+    --sel:#1C2E52; --hd:#1E2A3B; --hd-ink:#A2B0C3; --ext:#D7A8F0; --ext-bg:#3A2648; --trace:#121A26; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D131C; --surface:#151E2B; --sunk:#1C2737; --ink:#E3E9F2; --muted:#98A6BA; --line:#2B394D;
+  --accent:#6F9BFF; --accent-ink:#0A1222; --led:#F4B23C; --led-ink:#1A1204;
+  --good:#5BD17E; --good-bg:#15301F; --bad:#FF8A80; --bad-bg:#3A1A18;
+  --sel:#1C2E52; --hd:#1E2A3B; --hd-ink:#A2B0C3; --ext:#D7A8F0; --ext-bg:#3A2648; --trace:#121A26; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;margin:0;overflow-x:hidden}
+.wrap{max-width:900px;margin:0 auto;padding-inline:16px;padding-block:24px 48px;display:flex;flex-direction:column;gap:20px}
+.wrap>*,.card>*{min-width:0}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--muted)}
+h1{font-size:30px;font-weight:900;margin:0;letter-spacing:.02em;text-wrap:balance}
+h1 .bits{display:inline-block;white-space:nowrap;font-family:var(--mono);font-weight:600;color:var(--accent);font-size:.56em;margin-left:.4em;letter-spacing:.04em}
+.score{display:flex;gap:16px;font-variant-numeric:tabular-nums}
+.score div{display:flex;flex-direction:column;align-items:flex-end}
+.score b{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1.1}
+.score span{font-size:12px;color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav button{font:inherit;font-size:15px;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+nav button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.topic-note{font-size:14px;color:var(--muted);margin:-6px 0 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.qhead{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.qtype{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--accent)}
+.qno{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.qright{display:flex;align-items:center;gap:12px;margin-left:auto}
+.hintbtn{font:inherit;font-size:14px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--led);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.hintbtn::before{content:"?";display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--led);color:var(--led-ink);font-family:var(--mono);font-size:12px}
+.hintbtn[aria-expanded="true"]{background:var(--led);color:var(--led-ink)}
+.hintbtn[aria-expanded="true"]::before{background:var(--led-ink);color:var(--led)}
+.hintbox{border:1px solid var(--led);border-left-width:4px;border-radius:10px;padding:12px 14px;background:var(--sunk);font-size:15px;line-height:1.7;display:flex;flex-direction:column;gap:6px}
+.hintbox h4{margin:0;font-size:13px;letter-spacing:.06em;color:var(--muted)}
+.hintbox ol{margin:0;padding-left:1.3em}
+.hintbox .ex{font-family:var(--mono);font-size:14px;background:var(--surface);border-radius:8px;padding:6px 10px;max-width:100%;overflow-wrap:anywhere}
+.prompt{font-size:17px;line-height:1.7;display:flex;flex-direction:column;gap:10px;min-width:0}
+.prompt p{margin:0}
+.mono{font-family:var(--mono);font-weight:600;letter-spacing:.01em}
+.small,.prompt p.small{font-size:14px;color:var(--muted)}
+.xs{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
+code{font-family:var(--mono);font-size:.92em;background:var(--sunk);border-radius:5px;padding:1px 5px;overflow-wrap:anywhere}
+ol.stl{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+ol.stl li{display:flex;gap:10px;align-items:baseline}
+ol.stl .sn{font-family:var(--mono);font-weight:600;color:var(--accent);flex:0 0 auto}
+table.mini,table.mem{border-collapse:collapse;font-size:14px;background:var(--surface)}
+.mini th,.mini td,.mem th,.mem td{border:1px solid var(--line);padding:4px 10px}
+.mini th,.mem th{background:var(--sunk);font-weight:500;font-size:13px;white-space:nowrap}
+.mini td{text-align:left}
+.mem td{white-space:nowrap}
+.mem tr.hl td,.mini tr.hl td{background:var(--sel)}
+.mini.trace{font-size:13px;background:var(--trace)}
+.mini.trace td{white-space:nowrap;text-align:center;padding:3px 8px}
+.mini.ref th{text-align:left}
+.row2{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}
+.row2>*{min-width:0;max-width:100%}
+.simr{display:flex;flex-direction:column;gap:8px;flex:1 1 260px}
+.layer{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px}
+.layer span{border:1.5px solid var(--ink);border-radius:8px;padding:4px 18px;min-width:9em;text-align:center;background:var(--surface);font-weight:700}
+.layer span.q{border-color:var(--accent);color:var(--accent);font-family:var(--mono)}
+.layer i{font-style:normal;font-size:13px;color:var(--muted)}
+/* 作答 */
+.parts{display:flex;flex-direction:column;gap:12px}
+.part{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.part>label{font-size:15px;color:var(--ink);overflow-wrap:anywhere;min-width:0}
+.part .sfx{font-size:14px;color:var(--muted)}
+input[type=text]{font-family:var(--mono);font-size:17px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:min(260px,100%)}
+input[type=text].n{width:min(11em,100%);text-align:center}
+input[type=text].b{width:min(9em,100%);text-align:center}
+input[type=text].l{width:min(320px,100%)}
+input.ok{border-color:var(--good)!important;background:var(--good-bg)!important}
+input.no{border-color:var(--bad)!important;background:var(--bad-bg)!important}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:8px;width:100%}
+.choices.wide{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
+.choice{font:inherit;text-align:left;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;min-width:0;overflow-wrap:anywhere}
+.choice[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.choice.ok{border-color:var(--good);background:var(--good-bg)}
+.choice.no{border-color:var(--bad);background:var(--bad-bg)}
+.btn{font:inherit;font-weight:700;padding:10px 18px;border-radius:10px;border:1px solid var(--accent);cursor:pointer}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.sm{padding:6px 12px;font-size:14px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#btn-next{margin-left:auto}
+#btn-next.skip{border-color:var(--line);color:var(--muted);font-weight:500}
+#btn-next.confirm{border-color:var(--bad);color:var(--bad);font-weight:700}
+.feedback{border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.feedback.good{background:var(--good-bg)}
+.feedback.bad{background:var(--bad-bg)}
+.feedback .verdict{font-weight:700;overflow-wrap:anywhere}
+.feedback.good .verdict{color:var(--good)}
+.feedback.bad .verdict{color:var(--bad)}
+.feedback .trap{margin:0;padding:8px 12px;border-left:4px solid var(--led);background:var(--surface);border-radius:6px;font-size:15px}
+.feedback .src{margin:0;font-size:13px;color:var(--muted)}
+.steps{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.steps li{line-height:1.6;overflow-wrap:anywhere}
+.tips{font-size:14px;color:var(--muted);border-top:1px dashed var(--line);padding-top:14px}
+.tips b{color:var(--ink)}
+/* 篩選 */
+.filter{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.filter summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:10px 14px;font-weight:700;font-size:15px}
+.filter summary::-webkit-details-marker{display:none}
+.filter summary::after{content:"▾";color:var(--muted);transition:transform .15s}
+.filter[open] summary::after{transform:rotate(180deg)}
+.fcount{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--muted);margin-left:auto}
+.fcount.partial{color:var(--accent);font-weight:600}
+.fbody{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.fbody>*{min-width:0}
+.fact{display:flex;flex-wrap:wrap;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:14px;line-height:1.4;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer}
+.chip .cid{font-family:var(--mono);font-size:12px}
+.chip[aria-pressed="true"]{background:var(--sunk);border-color:var(--accent);color:var(--ink);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip[aria-pressed="true"]::before{content:"✓ ";color:var(--accent);font-weight:700}
+.chip .tag{font-size:11px;font-weight:700;color:var(--ext);background:var(--ext-bg);border-radius:999px;padding:0 6px;margin-left:6px}
+.mini-b{font:inherit;font-size:13px;padding:4px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer}
+.fhint{margin:0;font-size:12px;color:var(--muted)}
+.empty{color:var(--muted);font-size:16px}
+.sbx{display:flex;flex-direction:column;gap:10px;min-width:0}
+.sbx .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.msg{font-size:15px;background:var(--sunk);border-radius:10px;padding:8px 12px;line-height:1.6;overflow-wrap:anywhere}
+@media (max-width:480px){h1{font-size:24px}.prompt{font-size:16px}.card{padding:18px 14px 16px}.score{gap:12px}.score b{font-size:19px}.fbody{padding:0 10px 12px}}
+@media (prefers-reduced-motion:reduce){.filter summary::after{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">HKDSE ICT · 必修 B 電腦系統基礎</span>
+      <h1>電腦系統練習室<span class="bits">CPU·I/O</span></h1>
+    </div>
+    <div class="score" aria-live="polite">
+      <div><b id="sc-right">0</b><span>答對</span></div>
+      <div><b id="sc-total">0</b><span>已答</span></div>
+      <div><b id="sc-streak">0</b><span>連續答對</span></div>
+      <div><b id="sc-best">0</b><span>最高紀錄</span></div>
+    </div>
+  </header>
+
+  <nav id="modes" aria-label="練習類別"></nav>
+  <p class="topic-note" id="mode-note"></p>
+
+  <details class="filter" id="filter">
+    <summary><span>分類篩選</span><span class="fcount" id="fcount"></span></summary>
+    <div class="fbody">
+      <div class="fact"><button type="button" class="mini-b" id="f-all">全選</button><button type="button" class="mini-b" id="f-none">全部取消</button></div>
+      <div class="chips" id="fchips"></div>
+      <p class="fhint">點按分類可加入或移除；標「延伸」的分類屬教科書「擴闊視野」內容，預設不選。選擇會記在這部裝置上。每題的數據及選項都是隨機產生的，答案由頁內的知識表及計算引擎得出。</p>
+    </div>
+  </details>
+
+  <section class="card" id="card">
+    <div class="qhead"><span class="qtype" id="qtype"></span><div class="qright"><span class="qno" id="qno"></span><button class="hintbtn" id="btn-hint" type="button" aria-expanded="false" aria-controls="hintbox">提示：方法</button></div></div>
+    <div class="hintbox" id="hintbox" hidden></div>
+    <div class="prompt" id="prompt"></div>
+    <div id="input-area"></div>
+    <div class="actions">
+      <button class="btn primary" id="btn-check" type="button">核對答案</button>
+      <button class="btn ghost" id="btn-show" type="button">顯示答案</button>
+      <button class="btn ghost skip" id="btn-next" type="button">跳過此題</button>
+    </div>
+    <div id="feedback" aria-live="polite" hidden></div>
+    <div class="tips" id="tips"></div>
+  </section>
+
+  <details class="filter" id="explorer">
+    <summary><span id="ex-title">機器周期模擬器</span></summary>
+    <div class="fbody" id="explorer-body"></div>
+  </details>
+
+  <p class="topic-note">本頁內容按教科書 B 第 1–3 章及 DSE 卷一評卷參考；儲存容量一律以 1,024 換算，頻率及時間以 1,000 換算。按 Enter 可核對答案；答題後再按 Enter 出下一題。</p>
+</div>
+<script>
+(() => {
+/*GEN:BEGIN*/
+// =================== 共用小工具 ===================
+const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sample = (a, n) => shuffle(a).slice(0, n);
+const coin = (p = 0.5) => Math.random() < p;
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const range = (a, b) => { const o = []; for (let i = a; i < b; i++) o.push(i); return o; };
+const uniq = (a) => [...new Set(a)];
+
+// =================== 知識表 KB ===================
+// 每個條目只來自教科書（書頁）或 BRIEF「過時資料」表的寫法；DSE 選項中教科書沒有的判斷註明題號。
+// 陳述以「鍵」表示（例：["io", "滑鼠", "只屬輸入設備"]），T(鍵) 由本表推出真假；verify/kb_b.py 另以 Python 獨立輸入。
+const KB = {};
+
+// ---------- E1 設備分類：入＝只屬輸入、出＝只屬輸出、兩＝輸入及輸出、存＝儲存 ----------
+KB.io = {
+  "鍵盤": ["入", "p.8"], "數字鍵盤": ["入", "p.8"], "電腦滑鼠": ["入", "p.10"], "追蹤球": ["入", "p.12"], "控制桿": ["入", "p.12"], "賽車軚盤": ["入", "p.12"],
+  "觸控板": ["入", "p.13"], "繪圖板": ["入", "p.14"], "麥克風": ["入", "p.15"], "MIDI 鍵盤": ["入", "p.16"], "平板圖像掃描器": ["入", "p.16"], "3D 掃描器": ["入", "p.17"],
+  "數碼相機": ["入", "p.18"], "數碼錄影機": ["入", "p.18"], "網絡攝影機": ["入", "p.19"], "條碼掃描器": ["入", "p.20"], "二維碼（QR 碼）掃描器": ["入", "p.20"],
+  "光學標記閱讀器": ["入", "p.21"], "智能卡閱讀器": ["入", "p.22"], "磁帶卡閱讀器": ["入", "p.22"], "光感應器": ["入", "p.23"], "超聲波感應器": ["入", "p.23"], "陀螺儀": ["入", "p.23"], "指紋掃描器": ["入", "p.23"],
+  "顯示器": ["出", "p.26"], "投影機": ["出", "p.30"], "感熱式（熱敏）打印機": ["出", "p.31"], "噴墨打印機": ["出", "p.32"], "激光（鐳射）打印機": ["出", "p.32"], "繪圖儀": ["出", "p.34"], "3D 打印機": ["出", "p.34"],
+  "揚聲器": ["出", "p.34"], "頭戴式耳機": ["出", "p.34"], "入耳式耳機": ["出", "p.34"],
+  "觸控式屏幕": ["兩", "p.14"], "VR 頭戴式設備": ["兩", "p.28（擴闊視野）"], "附麥克風的耳機": ["兩", "p.35"],
+  "硬碟（HDD）": ["存", "p.75"], "固態硬碟（SSD）": ["存", "p.76"], "USB 快閃記憶體": ["存", "p.77"], "記憶卡（SD 卡）": ["存", "p.76"], "光碟": ["存", "p.77"], "磁帶": ["存", "p.75"],
+};
+KB.ioLab = { "只屬輸入設備": ["入"], "只屬輸出設備": ["出"], "既是輸入亦是輸出設備": ["兩"], "儲存設備": ["存"], "輸入設備": ["入", "兩"], "輸出設備": ["出", "兩"] };
+
+// ---------- E2 規格屬哪種設備：yes＝可以是該設備的規格；no＝不是；不在兩者之內的組合不會出題 ----------
+KB.devs = ["掃描器", "打印機", "顯示器", "投影機", "硬碟", "CPU"];
+KB.spec = {
+  dpi: { s: "1200 dpi", yes: ["掃描器", "打印機"], no: ["投影機", "硬碟", "CPU"], p: "p.17 表1.2、p.31 表1.9；2022 甲14", w: "dpi（每吋點數）是掃描器的像素密度或打印機的點密度。" },
+  dpi2: { s: "4800 dpi", yes: ["掃描器", "打印機"], no: ["投影機", "硬碟", "CPU"], p: "p.17 表1.2、p.31 表1.9；例題1.1(2)", w: "dpi（每吋點數）是掃描器的像素密度或打印機的點密度。" },
+  depth: { s: "24 位元色深", yes: ["掃描器", "顯示器"], no: ["硬碟", "CPU"], p: "p.17 表1.2、p.29 表1.6；2021 甲14", w: "色深是每個像素用多少位元表示顏色，掃描器及顯示器的規格都有。" },
+  ram: { s: "內置 64 MB RAM", yes: ["掃描器", "打印機"], no: [], p: "p.17 表1.2、p.31 表1.9；2021 甲14", w: "掃描器和打印機在傳輸數據時要暫存影像，所以有內置 RAM。" },
+  wifi: { s: "支援 802.11ac", yes: ["掃描器", "打印機", "投影機"], no: ["硬碟", "CPU"], p: "p.17、p.31；2023 甲17（投影機）", w: "802.11ac 是無線網絡標準：掃描器、打印機、投影機可經網絡連接。" },
+  wifin: { s: "支援 802.11n", yes: ["掃描器", "打印機"], no: ["硬碟", "CPU"], p: "p.17、p.31；2021 甲14、2022 甲14", w: "802.11n 是無線網絡標準：掃描器、打印機可經網絡連接電腦。" },
+  ppm: { s: "30 ppm", yes: ["打印機"], no: ["顯示器", "投影機", "硬碟", "CPU"], p: "p.31 表1.9；2017 甲25", w: "ppm（每分鐘頁數）是打印機的打印速度。" },
+  hz: { s: "144 Hz 更新率", yes: ["顯示器"], no: ["掃描器", "打印機", "硬碟"], p: "p.29 表1.6", w: "更新率（刷新率）是顯示器每秒可更新影像的次數。" },
+  k4: { s: "3840 × 2160（4K）", yes: ["顯示器", "投影機"], no: ["掃描器", "打印機", "硬碟", "CPU"], p: "p.28 表1.6；2023 甲17（投影機 4K UHD）", w: "3840 × 2160 是顯示器或投影機的解像度。" },
+  ratio: { s: "長寬比 16 : 10", yes: ["顯示器"], no: ["掃描器", "打印機", "硬碟", "CPU"], p: "p.29 表1.6", w: "長寬比是屏幕寬度與高度的比率，屬顯示器規格。" },
+  lm: { s: "3800 lm（流明）", yes: ["投影機"], no: ["打印機", "掃描器", "硬碟", "CPU"], p: "DSE 2023 甲17、2017 甲25（教科書未有提及流明）", w: "流明（lm）表示光度，是投影機的規格（2023 甲17）；打印機不用考慮（2017 甲25）。" },
+  rpm: { s: "5400 rpm", yes: ["硬碟"], no: ["投影機", "打印機", "掃描器", "顯示器", "CPU"], p: "DSE 2023 甲17（考生認不出 5400 rpm 是硬碟規格）", w: "rpm（每分鐘轉數）是硬碟碟片的轉速；其他設備沒有轉動的碟片。" },
+  ghz: { s: "8 核心，3.6 GHz", yes: ["CPU"], no: ["掃描器", "打印機", "顯示器", "投影機", "硬碟"], p: "p.67–68", w: "核心數目及時鐘頻率是 CPU 的規格。" },
+  hdmi: { s: "HDMI 界面", yes: ["顯示器", "投影機"], no: ["硬碟", "CPU"], p: "p.29 表1.7、p.54 表2.3", w: "HDMI 連接顯示單元，例如顯示器和投影機（表2.3）。" },
+  inch: { s: "屏幕尺寸 24 吋", yes: ["顯示器"], no: ["掃描器", "打印機", "CPU"], p: "p.28 表1.6", w: "屏幕尺寸以對角線長度（吋）量度，屬顯示器規格。" },
+};
+
+// ---------- E3 情境選設備：yes＝最合適；no＝不合適（附原因） ----------
+KB.scen = {
+  receipt: { t: "快餐店收銀處要即時打印收據，打印機要快、安靜、體積細小，購買價格要低。", yes: "感熱式（熱敏）打印機", p: "p.31、p.38；2018 甲23、2022 甲16",
+    no: { "噴墨打印機": "噴墨打印機打印速度較慢。", "激光（鐳射）打印機": "激光打印機購買價格非常昂貴，體積亦較大。", "繪圖儀": "繪圖儀昂貴，用於打印向量繪圖。", "3D 打印機": "3D 打印機打印實體，不是紙本收據。" } },
+  warranty: { t: "電器店要為顧客打印保養單據，顧客會保存單據數年。", yes: "激光（鐳射）打印機", p: "例題1.3(2) p.42–43",
+    no: { "感熱式（熱敏）打印機": "感熱紙上的文字會隨時間褪色，不適合長期存放的文件。", "繪圖儀": "繪圖儀昂貴，專門打印高質素向量繪圖，太高規格。", "3D 打印機": "3D 打印機打印 3D 模型，不是紙本文件。" } },
+  office: { t: "辦公室每天要打印大量文件，要求打印速度快、每頁成本低，打印成品不易受水影響。", yes: "激光（鐳射）打印機", p: "p.32 表1.10",
+    no: { "噴墨打印機": "噴墨打印機速度較慢、每頁成本較高，弄濕會模糊。", "感熱式（熱敏）打印機": "感熱紙會褪色，通常只能黑白打印，不適合一般文件。", "3D 打印機": "3D 打印機打印實體。", "繪圖儀": "繪圖儀昂貴，用於向量繪圖。" } },
+  photo: { t: "家中想打印高質素彩色相片，打印量不多，希望購買價格較低。", yes: "噴墨打印機", p: "p.32 表1.10",
+    no: { "激光（鐳射）打印機": "激光打印機購買價格非常昂貴，點密度亦不及噴墨打印機。", "感熱式（熱敏）打印機": "感熱式打印機通常只支援黑白打印，點密度較低。", "繪圖儀": "繪圖儀昂貴，用於向量繪圖。", "3D 打印機": "3D 打印機打印實體。" } },
+  carbon: { t: "物流公司要一次過把送貨單印到多張過底紙上（一式三份）。", yes: "點陣打印機", p: "p.33（古往今來；B-13 列作指引）；2013 甲19",
+    no: { "噴墨打印機": "噴墨不會施加壓力，不能同時印到多張過底紙。", "激光（鐳射）打印機": "激光打印機不能同時印到多張過底紙。", "感熱式（熱敏）打印機": "感熱式要用感熱紙，不能印過底紙。" } },
+  vector: { t: "建築師事務所要精確地打印大幅的高質素向量工程圖。", yes: "繪圖儀", p: "p.34",
+    no: { "感熱式（熱敏）打印機": "感熱式點密度低、只印黑白，會褪色。", "3D 打印機": "3D 打印機打印實體模型。", "點陣打印機": "點陣打印機點密度非常低。" } },
+  model: { t: "醫院要為病人度身訂造義肢的實體模型。", yes: "3D 打印機", p: "p.34",
+    no: { "繪圖儀": "繪圖儀在紙上繪畫，不能製作實體。", "激光（鐳射）打印機": "激光打印機只印紙本。", "噴墨打印機": "噴墨打印機只印紙本。", "感熱式（熱敏）打印機": "感熱式只印感熱紙。" } },
+  backup: { t: "公司每晚要備份大量數據，備份很少讀取，要求每容量價格最低。", yes: "磁帶", p: "p.75、表2.14 p.78",
+    no: { "固態硬碟（SSD）": "SSD 每容量價格高。", "USB 快閃記憶體": "USB 快閃記憶體容量較小，不適合大量備份。", "CD-ROM": "CD-ROM 不能寫入，容量只有約 700 MB。" } },
+  carry: { t: "子進要攜帶約 12 GB 的檔案往返家中和辦公室，並要經常修改檔案。", yes: "USB 快閃記憶體", p: "例題2.4(1) p.80–81",
+    no: { "磁帶": "磁帶機甚少於家居使用，而且只可順序存取。", "CD-ROM": "CD-ROM 的數據不能重寫。", "軟磁碟": "軟磁碟不能提供 12 GB 的容量。" } },
+  camera: { t: "數碼相機需要一種體積小巧的儲存媒體來儲存相片。", yes: "記憶卡（SD 卡）", p: "p.76",
+    no: { "磁帶": "磁帶體積大，只可順序存取。", "硬碟（HDD）": "硬碟體積較大，怕撞擊。", "光碟": "相機不會內置光碟機；光碟刮花時容易受損。" } },
+  nas: { t: "辦公室同一區域網絡內的十位同事要同時讀取和寫入共用檔案。", yes: "網絡儲存設備（NAS）", p: "p.78",
+    no: { "USB 快閃記憶體": "USB 快閃記憶體一次只可連接一部電腦。", "磁帶": "磁帶只可順序存取，用於備份。", "光碟": "光碟容量小，不能讓多人同時寫入。" } },
+  omr: { t: "老師要在數秒內讀取大量已填黑圓圈的多項選擇題答題紙。", yes: "光學標記閱讀器", p: "p.21",
+    no: { "條碼掃描器": "條碼掃描器讀取條碼，不是答題紙上的圓圈。", "麥克風": "麥克風輸入聲音。", "繪圖板": "繪圖板用筆繪畫。" } },
+  isbn: { t: "圖書館借書時要快速輸入圖書的 ISBN。", yes: "條碼掃描器", p: "p.20、表1.13 p.41",
+    no: { "光學標記閱讀器": "光學標記閱讀器讀取答題紙上的特定符號。", "繪圖板": "繪圖板用筆繪畫。", "MIDI 鍵盤": "MIDI 鍵盤輸入音符。" } },
+  comic: { t: "漫畫家要以筆在電腦上繪畫，並感應筆壓。", yes: "繪圖板", p: "p.14；課題練習1 p.47",
+    no: { "電腦滑鼠": "滑鼠不能用筆控制，不能感應筆壓。", "追蹤球": "追蹤球以滾球控制游標。", "條碼掃描器": "條碼掃描器讀取條碼。" } },
+  music: { t: "作曲人要把音符輸入電腦，而且不受環境噪音影響。", yes: "MIDI 鍵盤", p: "p.16",
+    no: { "麥克風": "麥克風錄下現實世界的聲波，會受環境噪音影響。", "繪圖板": "繪圖板用筆繪畫。", "光學標記閱讀器": "光學標記閱讀器讀取答題紙。" } },
+  video: { t: "公司要舉行視像會議，需要一部連接電腦、在網上串流播出錄像的設備。", yes: "網絡攝影機", p: "p.19；測試站1.3(1)",
+    no: { "數碼相機": "數碼相機主要拍攝相片並存入記憶卡。", "MIDI 鍵盤": "MIDI 鍵盤輸入音符。", "平板圖像掃描器": "掃描器掃描平面文件。" } },
+  kiosk: { t: "商場資訊站的定點設備要固定位置、所需空間少，並且不受擺放表面影響。", yes: "追蹤球", p: "p.12",
+    no: { "電腦滑鼠": "滑鼠要在平面上移動，表面會影響其表現。", "繪圖板": "繪圖板用筆繪畫，筆容易遺失。", "控制桿": "控制桿主要用於遊戲及培訓駕駛者。" } },
+  tap: { t: "洗手間的自動水龍頭要偵測手與水龍頭之間的距離。", yes: "超聲波感應器", p: "p.23 表1.3",
+    no: { "光感應器": "光感應器量度亮度。", "陀螺儀": "陀螺儀量度定向。", "溫度與濕度計": "溫度與濕度計量度溫度與濕度。" } },
+  bright: { t: "智能手機要按環境亮度自動調校屏幕亮度。", yes: "光感應器", p: "p.23 表1.3",
+    no: { "超聲波感應器": "超聲波感應器量度距離。", "陀螺儀": "陀螺儀量度定向。", "溫度與濕度計": "溫度與濕度計量度溫度與濕度。" } },
+  rotate: { t: "手機轉向時，屏幕畫面要自動轉為橫向。", yes: "陀螺儀", p: "p.23 表1.3",
+    no: { "超聲波感應器": "超聲波感應器量度距離。", "光感應器": "光感應器量度亮度。", "溫度與濕度計": "溫度與濕度計量度溫度與濕度。" } },
+  drill: { t: "電鑽偵測到過熱時要自動停止運作。", yes: "溫度與濕度計", p: "p.23 表1.3；課題練習5 p.47",
+    no: { "超聲波感應器": "超聲波感應器量度距離。", "光感應器": "光感應器量度亮度。", "陀螺儀": "陀螺儀量度定向。" } },
+};
+
+// ---------- E3「A 勝於 B 的優點」：只有 B 做不到或較差的地方才算（例題1.2(1)） ----------
+KB.adv = {
+  proj: { a: "投影機", b: "顯示器", p: "p.30 表1.8；測試站1.2(1)", st: {
+    light: ["較輕、便於攜帶", true], size: ["屏幕尺寸可調校，通常遠大於顯示器", true], crowd: ["適合大量觀眾", true],
+    quality: ["影像質素更高", false, "這是顯示器的優點。"], amb: ["受環境光線的影響較小", false, "顯示器受環境光線影響較小；投影機日間在室外效果較差。"], plane: ["無需素色平面作投影", false, "投影機需要素色平面，這是顯示器的優點。"] } },
+  mon: { a: "顯示器", b: "投影機", p: "p.30 表1.8", st: {
+    quality: ["影像質素更高", true], amb: ["受環境光線的影響較小", true], plane: ["無需素色平面作投影", true], personal: ["適合個人使用", true],
+    light: ["較輕、便於攜帶", false, "投影機較輕、便於攜帶。"], crowd: ["適合大量觀眾", false, "這是投影機的優點。"] } },
+  spk: { a: "揚聲器", b: "耳機", p: "p.35 表1.11；測試站1.2(2)", st: {
+    crowd: ["讓大量觀眾聽到聲音", true], hear: ["通常不會損害使用者的聽力", true], move: ["不妨礙使用者移動", true], surround: ["可同時使用多個揚聲器製造環迴聲響", true],
+    priv: ["私隱度高，對他人的干擾較少", false, "這是耳機的優點。"], noise: ["受環境噪音的影響較少", false, "揚聲器容易受環境噪音影響；這是耳機的優點。"], port: ["更小、更輕、更易於攜帶", false, "這是耳機的優點。"] } },
+  ear: { a: "耳機", b: "揚聲器", p: "p.35 表1.11", st: {
+    priv: ["私隱度高，對他人的干擾較少", true], noise: ["受環境噪音的影響較少", true], port: ["更小、更輕、更易於攜帶", true],
+    crowd: ["讓大量觀眾聽到聲音", false, "這是揚聲器的優點。"], hear: ["通常不會損害使用者的聽力", false, "這是揚聲器的優點。"] } },
+  oled: { a: "OLED 顯示器（有機發光二極管）", b: "LCD 顯示器", p: "p.27 表1.5", st: {
+    contrast: ["對比度更高", true], even: ["亮度更一致", true], angle: ["視角更廣", true], fold: ["某些型號可折疊或彎曲", true],
+    cheap: ["價格較低", false, "價格較低是 LCD 顯示器的優點。"], backlight: ["需要背光", false, "OLED 本身是光源，不需要背光；需要背光是 LCD 的特點，不是優點。"] } },
+  lcd: { a: "LCD 顯示器", b: "OLED 顯示器（有機發光二極管）", p: "p.27 表1.5", st: {
+    cheap: ["價格較低", true], sizes: ["有更多不同屏幕大小的選項", true],
+    contrast: ["對比度更高", false, "這是 OLED 顯示器的優點。"], angle: ["視角更廣", false, "這是 OLED 顯示器的優點。"], even: ["亮度更一致", false, "這是 OLED 顯示器的優點。"] } },
+  mouse: { a: "電腦滑鼠", b: "觸控式屏幕", p: "p.14；測試站1.1(1)", st: {
+    cheap: ["價格（生產成本）較低", true], hover: ["可以把游標移至物件上而不按鍵", true],
+    eye: ["手眼協調配合更佳", false, "觸控式屏幕的手眼協調較佳。"], space: ["所需空間較少", false, "觸控式屏幕所需空間較少。"], type: ["文字輸入更快", false, "教科書沒有這項比較；測試站 1.1(1) 判為不是滑鼠的優點。"] } },
+  touch: { a: "觸控式屏幕", b: "電腦滑鼠", p: "p.14；2013 甲18", st: {
+    eye: ["手眼協調配合更佳，更易於操作", true], space: ["所需空間較少", true],
+    cheap: ["生產成本較低", false, "觸控式屏幕的生產成本較高。"], hover: ["可以把游標移至物件上而不按鍵", false, "觸控式屏幕難以做到這種互動。"] } },
+  laser: { a: "激光（鐳射）打印機", b: "噴墨打印機", p: "例題1.2(1) p.35–36；表1.10 p.33", st: {
+    wet: ["打印本遇水不會變模糊", true], clog: ["不會有墨盒堵塞的問題", true], cost: ["每頁打印成本較低", true], fast: ["打印速度較快", true],
+    keep: ["打印本可以持久存放", false, "噴墨打印本亦可持久存放，兩者都有的特點不算優點。"], price: ["購買價格較低", false, "激光打印機購買價格非常昂貴。"], energy: ["耗電量較少", false, "激光打印機通常比噴墨打印機消耗更多能源。"] } },
+  thermal: { a: "感熱式（熱敏）打印機", b: "激光（鐳射）打印機", p: "表1.10 p.33；2022 甲16", st: {
+    small: ["體積較小", true], price: ["購買價格較低", true], quiet: ["打印較安靜", true],
+    keep: ["打印本可保存較長時間", false, "感熱紙上的文字會隨時間褪色。"], colour: ["支援彩色打印", false, "感熱式通常只支援黑白打印。"] } },
+  thermdm: { a: "感熱式（熱敏）打印機", b: "點陣打印機", p: "2013 甲19；p.31、p.33", st: {
+    quiet: ["打印時噪音較低", true], fast: ["打印時間較短", true],
+    keep: ["打印本的耐用性較高", false, "感熱紙上的文字會褪色（2013 甲19）。"], copies: ["可同時印到多張過底紙", false, "這是點陣打印機的特點。"] } },
+  smart: { a: "智能卡", b: "磁帶卡", p: "p.22；測試站1.1(2)", st: {
+    copy: ["較難被人複製", true], durable: ["較耐用", true], contactless: ["部分有 RFID／NFC 標籤，可無接觸通訊", true],
+    magnet: ["以感應磁場讀取數據", false, "這是磁帶卡的讀取方法。"] } },
+  qr: { a: "二維碼（QR 碼）", b: "條碼", p: "p.20；2018 甲13、2019 甲17", st: {
+    chars: ["可包含任何類型的字符，不只數字", true], more: ["能夠表示更多數據", true], damage: ["即使部分損毀，資料仍可被解碼", true],
+    phone: ["只有它可以用智能手機閱讀", false, "條碼亦可用手機應用程式掃描（p.20 圖1.31）。"], area: ["面積一定較小", false, "教科書沒有這項比較（2018 甲13 判為不是主要差別）。"] } },
+  ssd: { a: "固態硬碟（SSD）", b: "硬碟（HDD）", p: "p.76 表2.14；測試站2.4(2)；2020 甲16", st: {
+    speed: ["數據存取速度較高", true], durable: ["較耐用，對撞擊的承受力更強", true], power: ["耗電量較少", true], small: ["體積較小、重量較輕", true],
+    price: ["每容量價格較低", false, "SSD 每容量價格較高。"], random: ["支援直接（隨機）存取", false, "硬碟亦支援直接存取，兩者都有（2020 甲16）。"], cap: ["儲存容量較大", false, "表2.14：硬碟容量「大」、SSD「中」。"] } },
+  hdd: { a: "硬碟（HDD）", b: "固態硬碟（SSD）", p: "表2.14 p.78；課題練習4 p.88", st: {
+    price: ["每容量價格較低", true], cap: ["儲存容量較大", true],
+    speed: ["數據存取速度較高", false, "SSD 存取速度較高。"], durable: ["抗震能力較好", false, "硬碟容易因撞擊損壞。"], nonvol: ["是非易失性的", false, "兩者都是非易失性的，不算優點。"] } },
+  tablet: { a: "平板電腦", b: "桌上電腦", p: "表2.15 p.82；例題2.5 p.84", st: {
+    port: ["更便於攜帶", true], power: ["耗電量更低", true],
+    screen: ["屏幕更大", false, "桌上電腦的外接顯示器通常較大。"], cpu: ["運算能力更高", false, "平板電腦運算能力較低。"], cap: ["儲存容量更大", false, "平板電腦儲存容量較小。"] } },
+  desktop: { a: "桌上電腦", b: "平板電腦", p: "表2.15 p.82", st: {
+    cpu: ["運算能力較高", true], cap: ["儲存容量較大", true], screen: ["可接較大的顯示器", true],
+    port: ["更便於攜帶", false, "平板電腦較便攜。"], power: ["耗電量更低", false, "平板電腦耗電量較低。"] } },
+};
+
+// ---------- H1 部件與寄存器 ----------
+KB.comp = ["控制部件（CU）", "算術及邏輯運算部件（ALU）", "程式計數器（PC）", "記憶體位址寄存器（MAR）", "記憶體數據寄存器（MDR）", "現行指令寄存器（CIR）", "累加器", "快取記憶體"];
+KB.role = {
+  decode: ["為指令譯碼", "控制部件（CU）", "p.63；測試站2.2(1)；2021 甲21"],
+  flow: ["控制 CPU、其他部件和設備之間的數據流動", "控制部件（CU）", "p.63"],
+  alu: ["進行加減等算術運算及比較、AND、OR 等邏輯運算", "算術及邏輯運算部件（ALU）", "p.63；2020 甲22"],
+  next: ["儲存下一個要執行的指令的位址", "程式計數器（PC）", "p.64；課題練習6 p.88"],
+  mar: ["儲存須讀取或寫入數據的記憶體位址", "記憶體位址寄存器（MAR）", "p.64"],
+  mdr: ["儲存從記憶體讀取或將要寫入記憶體的數據或指令", "記憶體數據寄存器（MDR）", "p.64"],
+  cir: ["存放現行（正在執行的）指令", "現行指令寄存器（CIR）", "p.64；B-25"],
+  acc: ["儲存 ALU 的運算結果", "累加器", "p.64；2019 甲15、2020 甲22"],
+  cache: ["暫存預計最常存取的數據或指令，存取速度比 RAM 快", "快取記憶體", "p.65；2024 甲20"],
+};
+KB.swapWhy = { "記憶體位址寄存器（MAR）|記憶體數據寄存器（MDR）": "MAR 放位址（Address），MDR 放數據（Data）：不要調換。", "程式計數器（PC）|記憶體位址寄存器（MAR）": "PC 放「下一個」指令的位址；MAR 放現在要讀寫的位址。",
+  "控制部件（CU）|算術及邏輯運算部件（ALU）": "CU 譯碼及控制；ALU 計算。", "現行指令寄存器（CIR）|記憶體數據寄存器（MDR）": "MDR 是記憶體與 CPU 之間的「中轉站」；指令複製到 CIR 後才譯碼。", "累加器|現行指令寄存器（CIR）": "累加器放運算結果，CIR 放指令。" };
+KB.regs = ["程式計數器（PC）", "記憶體位址寄存器（MAR）", "記憶體數據寄存器（MDR）", "現行指令寄存器（CIR）", "累加器"];
+KB.regprop = {
+  data: { q: "會暫存數據或指令", yes: ["累加器", "現行指令寄存器（CIR）", "記憶體數據寄存器（MDR）"], no: ["程式計數器（PC）", "記憶體位址寄存器（MAR）"], p: "p.64；2024 甲22（答案：累加器、指令寄存器；MAR 放的是位址）" },
+  addr: { q: "儲存記憶體位址", yes: ["程式計數器（PC）", "記憶體位址寄存器（MAR）"], no: ["現行指令寄存器（CIR）", "記憶體數據寄存器（MDR）", "累加器"], p: "p.64；例題2.2(1) p.69" },
+  fetch: { q: "在提取階段（表2.9 步驟 1–5）會用到", yes: ["程式計數器（PC）", "記憶體位址寄存器（MAR）", "記憶體數據寄存器（MDR）", "現行指令寄存器（CIR）"], no: ["累加器"], p: "表2.9 p.66；2013 甲22" },
+};
+KB.regfact = {
+  fast: ["寄存器是 CPU 可快速存取的記憶體", true, "p.63；2017 甲18"],
+  rate: ["寄存器的數據傳輸速率高於主記憶體", true, "2020 甲22；p.80 圖2.30"],
+  small: ["CPU 內的寄存器數目有限，每個的儲存容量細小", true, "p.63"],
+  accalu: ["累加器被 ALU 用作計算之用", true, "2019 甲15"],
+  used: ["機器周期中會使用寄存器", true, "2018 甲22；表2.9"],
+  cudec: ["CU 負責為指令譯碼", true, "p.63；測試站2.2(1)"],
+  same: ["CPU 內各寄存器的功能相同", false, "2017 甲18", "寄存器種類繁多，各有不同用途（p.63）。"],
+  sec: ["寄存器用作輔助儲存器", false, "2017 甲18", "寄存器在 CPU 內暫存處理中的數據，不是輔助儲存器。"],
+  gb: ["寄存器的總儲存容量通常大過 1 GB", false, "2017 甲18", "每個寄存器通常只有 32 或 64 位元。"],
+  accnext: ["累加器儲存下一個要執行的指令的位址", false, "2019 甲15", "這是程式計數器（PC）的工作。"],
+  mardata: ["MAR 儲存從記憶體讀取的數據", false, "課題練習6 p.88", "MAR 儲存位址；數據在 MDR。"],
+  accins: ["累加器儲存 CPU 正在處理的指令", false, "課題練習6 p.88", "正在處理的指令在 CIR；累加器存運算結果。"],
+  culogic: ["CU 負責進行邏輯運算", false, "課題練習6 p.88", "邏輯運算由 ALU 進行。"],
+  clock: ["機器周期內指令的次序主要取決於 CPU 的時鐘頻率", false, "2018 甲22", "時鐘只控制每一步的時間，指令次序由程式及 PC 決定。"],
+  arith: ["機器周期主要用作執行算術運算", false, "2018 甲22", "機器周期包括提取、譯碼、執行和儲存，不只算術運算。"],
+};
+
+// ---------- H2 匯流排（表2.6 p.59） ----------
+KB.busNames = ["控制匯流排", "位址匯流排", "數據匯流排", "通用串列匯流排（USB）"];
+KB.busObj = { ctrl: ["控制訊號", "控制匯流排"], addr: ["記憶體位址", "位址匯流排"], data: ["數據或指令", "數據匯流排"] };
+KB.busDir = { "位址匯流排": "單向（由處理器傳至其他部件）", "數據匯流排": "雙向（在處理器和其他部件之間）" };
+KB.dirOpts = ["單向（由處理器傳至其他部件）", "單向（由其他部件傳至處理器）", "雙向（在處理器和其他部件之間）"];
+KB.busStep = {
+  s3: ["提取階段：MAR 內的位址傳送至主記憶體", "位址匯流排"], s4: ["提取階段：該位址的指令由主記憶體傳送至 MDR", "數據匯流排"],
+  ldA: ["執行 LOAD 時：數據的位址由 MAR 傳送至主記憶體", "位址匯流排"], ldD: ["執行 ADD 時：數據由主記憶體傳送至 MDR", "數據匯流排"],
+  stD: ["執行 STORE 時：MDR 內的結果寫入主記憶體", "數據匯流排"], ctl: ["CPU 向主記憶體發出「讀取」的訊號，確保傳輸時間正確", "控制匯流排"],
+};
+KB.busfact = {
+  addr1: ["位址匯流排是單向的，由處理器把記憶體位址傳至其他部件", true, "表2.6 p.59"],
+  data2: ["數據匯流排可在處理器和其他部件之間雙向傳輸數據或指令", true, "表2.6 p.59"],
+  ctrl: ["控制匯流排傳輸控制訊號，確保數據傳輸的時間正確", true, "p.58"],
+  marbus: ["MAR 由位址匯流排連接至主記憶體", true, "p.64"],
+  mdrbus: ["MDR 由數據匯流排連接至主記憶體", true, "p.64"],
+  width: ["電腦的匯流排寬度通常與 CPU 的字長相同", true, "p.58"],
+  addrrev: ["位址匯流排把記憶體位址由不同部件傳輸至處理器", false, "例題2.1(3) p.62", "方向錯：位址由處理器傳至其他部件。"],
+  dataone: ["數據匯流排只能把數據由處理器傳輸至其他部件", false, "例題2.1(3) p.62", "數據匯流排是雙向的。"],
+  datactl: ["數據匯流排用於傳送控制訊號", false, "2020 甲22", "控制訊號由控制匯流排傳送。"],
+  addrdata: ["位址匯流排用於傳送數據", false, "表2.6 p.59", "位址匯流排只傳送記憶體位址。"],
+};
+
+// ---------- H3 機器周期（表2.9 p.66；2017 甲16） ----------
+KB.step7 = ["PC 儲存的記憶體位址複製至 MAR", "PC 更新為下一個指令的位址", "MAR 的位址經位址匯流排傳送至主記憶體", "該位址的指令經數據匯流排由主記憶體傳送至 MDR", "MDR 的指令複製至 CIR", "CU 為 CIR 的指令譯碼，然後由 ALU 執行", "處理結果存入累加器"];
+KB.stage7 = ["提取", "提取", "提取", "提取", "提取", "譯碼和執行", "儲存"];
+KB.step4 = ["從記憶體內提取指令", "將指令翻譯為操作碼和操作數（譯碼）", "執行指令", "把結果寫入累加器或記憶體內（儲存）"];
+
+// ---------- H4 記憶體與儲存 ----------
+KB.mprop = {
+  vol: { q: "是易失性的（關機後數據消失）", yes: ["RAM", "快取記憶體", "寄存器"], no: ["ROM", "硬碟（HDD）", "固態硬碟（SSD）", "USB 快閃記憶體", "磁帶", "光碟"], p: "p.56 表2.5、p.65、p.73" },
+  nonvol: { q: "是非易失性的（關機後數據仍保存）", yes: ["ROM", "硬碟（HDD）", "固態硬碟（SSD）", "USB 快閃記憶體", "磁帶"], no: ["RAM", "快取記憶體", "寄存器"], p: "p.56 表2.5、p.73" },
+  seq: { q: "只支援順序存取", yes: ["磁帶"], no: ["硬碟（HDD）", "固態硬碟（SSD）", "光碟", "USB 快閃記憶體", "DVD-RW"], p: "p.74–75；表2.14；2020 甲21" },
+  direct: { q: "支援直接（隨機）存取", yes: ["硬碟（HDD）", "固態硬碟（SSD）", "光碟", "USB 快閃記憶體", "軟磁碟"], no: ["磁帶"], p: "p.74–75；課題練習5 p.88" },
+  boot: { q: "通常用來儲存啟動電腦的韌體（啟動程式）", yes: ["ROM"], no: ["RAM", "快取記憶體", "寄存器"], p: "p.71；2024 甲19" },
+  move: { q: "包含會移動的部件", yes: ["硬碟（HDD）", "磁帶"], no: ["固態硬碟（SSD）", "USB 快閃記憶體", "記憶卡（SD 卡）"], p: "p.75–76" },
+  rom1: { q: "不可寫入與重寫", yes: ["CD-ROM", "DVD-ROM", "BD-ROM"], no: ["CD-R", "DVD-R", "CD-RW", "DVD-RW", "BD-RE"], p: "表2.13 p.78" },
+  once: { q: "只可寫入一次", yes: ["CD-R", "DVD-R", "BD-R"], no: ["CD-ROM", "DVD-ROM", "CD-RW", "DVD-RW", "BD-RE"], p: "表2.13 p.78" },
+  rw: { q: "可重寫", yes: ["CD-RW", "DVD-RW", "BD-RE"], no: ["CD-ROM", "DVD-ROM", "BD-ROM", "CD-R", "DVD-R", "BD-R"], p: "表2.13 p.78" },
+};
+// 記憶體階層（圖2.30 p.80）：數字愈大，存取速度愈高、每容量價格愈高、容量愈小
+KB.rank = { "寄存器": 6, "快取記憶體": 5, "RAM": 4, "固態硬碟（SSD）": 3, "硬碟（HDD）": 2, "磁帶": 1 };
+KB.disc = { "光碟（CD）": [700, "通常為 700 MB"], "數碼多用途光碟（DVD）": [4813, "通常為 4.7 GB"], "藍光光碟（BD）": [25600, "通常為 25 GB 至 128 GB"] };
+KB.memfact = {
+  ramoff: ["RAM 的數據於電腦關機時消失", true, "p.70"],
+  romfw: ["ROM 儲存啟動電腦所需的韌體（例如 BIOS）", true, "p.71"],
+  romnv: ["ROM 是非易失性的", true, "p.56 表2.5"],
+  cachefast: ["快取記憶體的存取速度比 RAM 快", true, "p.65；2015 甲17"],
+  cachefreq: ["快取記憶體暫存經常使用的數據和指令", true, "p.65；2015 甲17、2024 甲20"],
+  ramsec: ["RAM 的數據存取速度高於輔助儲存設備", true, "p.70；測試站2.3(1)"],
+  secnv: ["所有輔助儲存器都是非易失性的", true, "p.57、p.73"],
+  dirseq: ["使用直接存取的儲存設備亦可使用順序存取", true, "p.75 常見錯誤"],
+  tape: ["磁帶只可使用順序存取", true, "p.74"],
+  ssdmove: ["SSD 沒有會移動的部件", true, "p.76"],
+  peri: ["打印機和掃描器等周邊設備亦有 RAM 與 ROM", true, "p.71"],
+  ramcache: ["RAM 的數據存取速度高於 CPU 快取", false, "測試站2.3(1) p.73", "快取比 RAM 快（p.70）。"],
+  cachenv: ["快取記憶體是非易失性的", false, "p.65；2015 甲17", "快取記憶體如同 RAM，是易失性的。"],
+  cacherom: ["快取記憶體是 ROM 的一種", false, "2024 甲20", "快取記憶體是易失性、可高速讀寫的記憶體，不是 ROM。"],
+  noseq: ["使用直接存取的儲存設備不可使用順序存取", false, "p.75 常見錯誤", "直接存取的設備亦可順序存取。"],
+  hddseq: ["硬碟只支援順序存取", false, "表2.14 p.78", "硬碟用直接存取。"],
+  ssdcheap: ["SSD 的每容量價格一般比硬碟低", false, "p.76；表2.14", "SSD 每容量價格較高。"],
+  tapefast: ["磁帶的數據存取速度高於硬碟", false, "p.75；表2.14", "磁帶要捲動，存取速度最低。"],
+  romperf: ["加大 ROM 的容量可顯著提升電腦執行程式的表現", false, "例題2.4(2) p.81；2021 甲19", "ROM 只在啟動時用到，容量對表現影響極小。"],
+  power: ["電源故障後，RAM 內的數據可以復原", false, "2024 甲16", "RAM 是易失性的；能復原的數據是已存入硬碟的。"],
+};
+
+// ---------- H5 CPU 規格（參數陳述：n 核心、f GHz、c MB 快取；位址 64／32 位元） ----------
+KB.cpuSt = {
+  clk: { f: (o) => "時鐘頻率是 " + o.f + " GHz", v: () => true, p: "p.67；2023 甲14" },
+  cyc: { f: (o) => "CPU 每秒進行 " + o.f + " × 10⁹ 個時鐘周期", v: () => true, p: "p.67 表2.11；2016 甲20" },
+  ins: { f: (o) => "CPU 每秒執行 " + o.f + " × 10⁹ 個指令", v: () => false, p: "2016 甲20；B-24", w: "時鐘頻率是每秒的時鐘周期數，不是每秒執行的指令數。" },
+  alu: { f: (o) => "ALU 運算一個指令需要 " + o.f + " × 10⁹ 個時鐘周期", v: () => false, p: "2016 甲20", w: "時鐘頻率是每秒的周期數，與每個指令需要多少周期無關。" },
+  prog: { f: (o) => "這 CPU 能同時處理最多 " + o.n + " 個程式", v: () => false, p: "2023 甲14；B-31", w: "核心是 CPU 內的處理單元；核心較多可同時執行較多指令，但不等於最多可處理的程式數目。" },
+  more: { f: () => "核心較多的 CPU 可同時執行較多指令", v: () => true, p: "p.68；2014 甲17" },
+  cache: { f: () => "這 CPU 存取快取記憶體中的數據比存取 RAM 中的數據快", v: () => true, p: "p.65；2023 甲14" },
+  times: { f: (o) => "這 CPU 的處理速度一定是單核心 CPU 的 " + o.n + " 倍", v: () => false, p: "p.68", w: "核心數目與整體處理速度並非直接成比例（有些工作要按次序進行）。" },
+  dbl: { f: () => "時鐘頻率加倍，電腦的表現一定加倍", v: () => false, p: "p.68", w: "時鐘頻率與電腦表現並非直接成比例。" },
+  power: { f: () => "降低 CPU 的時鐘頻率可能令耗電量減少", v: () => true, p: "p.68；2019 甲16" },
+  word: { f: () => "字長是 CPU 每次處理的位元數目", v: () => true, p: "p.55、p.68" },
+  wmin: { f: () => "字長是電腦所儲存最小單位的數據", v: () => false, p: "B-27", w: "最小單位是位元；字長是 CPU 每次處理的位元數（B-27：教科書此句有誤）。" },
+  x2: { f: () => "64 位元處理器的效率是 32 位元處理器的兩倍", v: () => false, p: "p.55 常見錯誤", w: "字長與表現並非直接成比例。" },
+  addr: { f: () => "記憶體位址的位元數愈多，可接達的記憶體空間愈大", v: () => true, p: "2025 甲17、2013 甲21；B-45" },
+  addrclk: { f: () => "記憶體位址為 64 位元的電腦，時鐘頻率一定比 32 位元的高", v: () => false, p: "2025 甲17", w: "位址大小與時鐘頻率無關。" },
+  addrslow: { f: () => "記憶體位址為 64 位元的電腦，傳輸數據的速率比 32 位元的慢", v: () => false, p: "2025 甲17", w: "位址大小決定可接達的記憶體空間，與傳輸數據較慢無關。" },
+};
+KB.cpuMean = {
+  ghz: { s: (o) => o.f + " GHz", a: "時鐘頻率：CPU 每秒進行的時鐘周期數目", p: "p.67" },
+  core: { s: (o) => o.n + " 核心", a: "核心數目：CPU 內處理器單元的數目", p: "p.68" },
+  cache: { s: (o) => o.c + " MB 快取", a: "CPU 內快取記憶體的容量", p: "p.65；2023 甲14" },
+  bit: { s: () => "64 位元", a: "字長：CPU 每次處理的位元數目", p: "p.55、p.68" },
+};
+KB.cpuMeanWrong = ["每秒執行的指令數目", "CPU 可同時處理的程式的最多數目", "RAM 的數據傳輸速率", "主記憶體的大小"];
+
+// ---------- S1 軟件分類 ----------
+KB.swCat = ["系統軟件（操作系統）", "系統軟件（實用程式）", "系統軟件（驅動程式）", "應用軟件（生產力軟件）", "應用軟件（通訊軟件）", "應用軟件（媒體開發軟件）", "應用軟件（教育軟件）"];
+KB.sw = {
+  "Microsoft Windows": [0, "p.98 表3.6"], "macOS": [0, "p.98 表3.6"], "Linux": [0, "p.98 表3.6"], "Android": [0, "p.98 表3.6"], "iOS": [0, "p.98 表3.6"],
+  "Windows 的工作管理員（系統監察軟件）": [1, "p.98 表3.7"], "7-Zip（數據壓縮程式）": [1, "p.99 表3.7"], "Avast Antivirus（病毒偵測程式）": [1, "p.99 表3.7"], "磁碟機最佳化程式（磁碟重組軟件）": [1, "p.99 表3.7"],
+  "macOS 的 Time Machine（備份軟件）": [1, "p.99 表3.7"], "macOS 的 Finder（檔案管理程式）": [1, "p.98 表3.7"], "Oracle VM VirtualBox（虛擬化）": [1, "p.110"], "解除安裝程式": [1, "p.100 表3.7"],
+  "打印機的驅動程式": [2, "p.103"], "滑鼠的驅動程式": [2, "p.103 圖3.2"], "掃描器的驅動程式": [2, "p.103；2020 甲17"],
+  "Microsoft Word": [3, "p.105 表3.10"], "Microsoft Excel": [3, "p.105 表3.10"], "Microsoft PowerPoint": [3, "p.105 表3.10"], "Microsoft Access": [3, "p.105 表3.10"], "OpenOffice Calc": [3, "p.105 表3.10"],
+  "Google Chrome": [4, "p.106 表3.11"], "Mozilla Firefox": [4, "p.106 表3.11"], "Microsoft Outlook": [4, "p.106 表3.11"], "WhatsApp": [4, "p.106 表3.11；B-34"], "Zoom Cloud Meetings": [4, "p.106 表3.11"], "FileZilla（檔案傳輸）": [4, "p.106 表3.11；B-41"],
+  "Adobe Photoshop": [5, "p.107 表3.12"], "Audacity": [5, "p.107 表3.12"], "Adobe Premiere": [5, "p.107 表3.12"], "Paint.NET": [5, "p.107 表3.12"], "會聲會影": [5, "p.107 表3.12"],
+  "Moodle（學習管理系統）": [6, "p.108 表3.13"], "Google Classroom": [6, "p.108 表3.13"], "WolframAlpha": [6, "p.108 表3.13"], "牛津英漢辭書（字典軟件）": [6, "p.108 表3.13"],
+};
+KB.swGen = { "操作系統": true, "驅動程式": true, "實用程式": true, "試算表軟件": false, "文書處理器": false, "網絡瀏覽器": false, "影片編輯軟件": false, "學習管理系統": false };
+KB.layer = ["應用軟件", "系統軟件", "硬件"];   // 用戶 → 應用軟件 → 系統軟件 → 硬件（圖3.1 p.93）
+
+// ---------- S2 操作系統功能 ----------
+KB.osf = {
+  proc: ["安排 CPU 要執行的處理程序（處理程序管理）", true, "表3.2 p.94；2016 甲19「控制程序」"],
+  mem: ["為處理程序分配 RAM 記憶體（記憶體管理）", true, "表3.2 p.94；2015 甲16、2016 甲19"],
+  io: ["藉驅動程式控制周邊設備的輸入和輸出", true, "表3.2 p.94；2018 甲17、2025 甲12"],
+  fs: ["建立檔案系統以整理資料夾和檔案", true, "表3.2 p.94"],
+  disk: ["格式化及分區輔助儲存設備（硬碟管理）", true, "表3.2 p.94"],
+  ui: ["提供用戶界面，讓用戶與電腦互動", true, "表3.2 p.94；2015 甲16"],
+  user: ["讓用戶建立帳戶，並管理密碼和存取權限", true, "表3.2 p.94"],
+  multi: ["支援多工處理", true, "表3.2 p.94"],
+  sec: ["管理系統保安", true, "2025 甲12"],
+  net: ["記錄網絡流量", true, "2016 甲19（DSE 答案；教科書未有）"],
+  comm: ["允許電腦之間的通訊", true, "2019 甲20"],
+  guard: ["提供網絡安全措施，保護電腦免被未經授權存取", true, "2019 甲20"],
+  conn: ["便利電腦連接網絡", true, "2024 甲21"],
+  hw: ["調配硬件資源", true, "2023 甲16"],
+  sched: ["把工作排程", true, "2023 甲16"],
+  db: ["數據庫管理", false, "例題3.1(1) p.103–104", "數據庫管理是數據庫管理系統（DBMS）的功能。"],
+  mail: ["電郵管理", false, "2018 甲17", "電郵由電子郵件用戶端（應用軟件）管理。"],
+  whatif: ["分析假設情境", false, "2015 甲16", "這是試算表（應用軟件）的工作。"],
+  web: ["製作網頁", false, "2015 甲16", "這是應用軟件的工作。"],
+  video: ["播放視像檔", false, "2024 甲21", "播放視像是媒體播放軟件（應用軟件）的工作。"],
+  perm: ["永久地儲存用戶的程式", false, "2023 甲16", "永久儲存是輔助儲存器的作用。"],
+  virus: ["偵測系統裏是否有病毒", false, "課題練習3 p.115", "這是病毒偵測程式（實用程式）的工作。"],
+  bw: ["控制兩台電腦之間連接的網絡頻寬", false, "2019 甲20", "DSE 判為不是操作系統的主要網絡功能。"],
+  more: ["增加應用程式的數量", false, "2013 甲20", "操作系統不會增加應用程式的數量。"],
+  gui: ["必定提供圖形用戶界面（GUI）", false, "例題3.1(1) p.104", "一些操作系統只支援命令行界面（CLI），GUI 不是必備。"],
+};
+KB.uifact = {
+  clikey: ["命令行界面（CLI）只需鍵盤而不需定點設備", true, "表3.5 p.96；課題練習2 p.115"],
+  clires: ["命令行界面（CLI）需要的系統資源（如記憶體）較少", true, "表3.5 p.96"],
+  guinew: ["對新用戶而言，圖形用戶界面（GUI）較易明和易用", true, "表3.5 p.96"],
+  cliexp: ["對有經驗的用戶而言，CLI 更靈活和有效率", true, "表3.5 p.96；活動3.2"],
+  linux: ["Linux 支援 CLI，部分發行版亦支援 GUI", true, "表3.6 p.98；例題3.1(2)"],
+  ios: ["iOS 由蘋果開發，不是開放源碼", true, "表3.6 p.98；例題3.1(2)"],
+  android: ["Android 以 Linux 為基礎，屬開放源碼", true, "表3.6 p.98；B-35"],
+  mobile: ["流動設備操作系統會關閉在背景執行的應用程式，以延長電池壽命", true, "表3.4 p.95"],
+  nolinux: ["Linux 不支援 GUI", false, "例題3.1(2) p.104", "Debian、Fedora、Ubuntu 等發行版支援 GUI。"],
+  guires: ["有 GUI 的操作系統通常使用更少系統資源", false, "課題練習2 p.115", "CLI 沒有圖形，使用的系統資源較少。"],
+  guicmd: ["有 GUI 的操作系統無法通過文字指令控制", false, "課題練習2 p.115；活動3.2", "Windows 有 GUI，亦可用命令提示字元輸入指令。"],
+  iosopen: ["iOS 是開放源碼", false, "例題3.1(2) p.104", "iOS 由蘋果開發並擁有。"],
+  clinew: ["對新用戶而言，CLI 比 GUI 較易明", false, "表3.5 p.96", "CLI 要學習文字指令；GUI 對新用戶較易用。"],
+};
+
+// ---------- S3 實用程式與驅動程式 ----------
+KB.util = ["檔案管理程式", "系統監察軟件", "病毒偵測程式", "防火牆軟件", "數據壓縮程式", "磁碟重組軟件", "備份軟件", "解除安裝程式", "驅動程式"];
+KB.task = {
+  copy: ["展示、新增、複製或刪除檔案", "檔案管理程式", "表3.7 p.98"],
+  hang: ["中止無回應的處理程序，並查看 CPU 及記憶體用量", "系統監察軟件", "表3.7 p.98；2017 甲19"],
+  start: ["停止某程式於電腦啟動時自動執行", "系統監察軟件", "表3.7 p.98"],
+  virus: ["檢查電腦是否有病毒，並剷除病毒", "病毒偵測程式", "表3.7 p.99"],
+  fw: ["監察及過濾網絡流量，阻止未經授權的連線", "防火牆軟件", "表3.7 p.99；B-36"],
+  zip: ["把 100 個文件檔合成一個較小的檔案再以電郵寄出", "數據壓縮程式", "表3.7 p.99；2013 甲4"],
+  defrag: ["重新排列硬碟上零散的數據段，縮短存取檔案所需的時間", "磁碟重組軟件", "表3.7 p.99；2018 甲19"],
+  backup: ["建立檔案和系統設定的備份，系統故障時復原至先前狀態", "備份軟件", "表3.7 p.99"],
+  remove: ["移除電腦上不再需要的軟件", "解除安裝程式", "表3.7 p.100"],
+  printer: ["讓操作系統能控制剛連接的新打印機", "驅動程式", "p.103；2021 甲15、2020 甲17"],
+};
+KB.drv = {
+  trans: ["驅動程式把請求翻譯成機器層面的指令，以控制周邊設備", true, "p.103"],
+  os: ["每個驅動程式為特定操作系統而設計", true, "p.103；2024 甲17"],
+  built: ["有些驅動程式已內置於操作系統，連接設備後可立即使用", true, "p.103；2014 甲18、2023 甲19"],
+  web: ["驅動程式可以從設備生產商的網站下載", true, "p.103"],
+  hot: ["驅動程式可能支援熱插拔", true, "p.103"],
+  install: ["驅動程式可能會在安裝操作系統的同時被安裝", true, "課題練習6 p.115"],
+  cam: ["視像會議用的驅動程式容許操作系統與視像鏡頭互動", true, "2024 甲17"],
+  indep: ["驅動程式的運作獨立於操作系統", false, "課題練習6 p.115", "驅動程式由操作系統使用（圖3.2）。"],
+  usb: ["USB 打印機不需要驅動程式", false, "2023 甲19", "能即時使用是因為操作系統已內置該打印機的驅動程式。"],
+  basic: ["鍵盤和滑鼠等基本設備無須使用驅動程式", false, "課題練習6 p.115；p.116 長題目2(c)", "基本設備的驅動程式多已內置於操作系統。"],
+  multi: ["同一個驅動程式可以在不同操作系統中執行", false, "p.103；2024 甲17", "每個驅動程式為特定操作系統而設計。"],
+  file: ["驅動程式讓操作系統能管理檔案", false, "2020 甲17", "管理檔案是操作系統（檔案系統管理）的功能。"],
+  ram: ["驅動程式監視 RAM 的使用量", false, "2020 甲17", "監視 RAM 用量是系統監察軟件的工作。"],
+  perm: ["打印機的驅動程式控制使用打印機的用戶權限", false, "2024 甲17", "用戶權限由操作系統的用戶管理負責。"],
+};
+KB.zipfact = {
+  small: ["檔案大小變小，傳送需時較短", true, "表3.7 p.99；2013 甲4、2025 甲15"],
+  one: ["多個檔案變成一個檔案，更容易傳送和接收", true, "表3.7 p.99；2013 甲4"],
+  folder: ["資料夾結構保持不變，解壓縮後即可還原", true, "表3.7 p.99；2016 甲6"],
+  pwd: ["壓縮檔可以使用密碼保護", true, "表3.7 p.99；2016 甲6"],
+  preview: ["朋友在下載壓縮檔前可以預覽圖像", false, "2016 甲6", "要先下載並解壓縮才可看到圖像。"],
+  cross: ["檔案會變成跨平台的", false, "2013 甲4", "壓縮不會改變檔案格式能否在其他平台使用。"],
+  bw: ["增加網絡頻寬", false, "2025 甲15", "壓縮令檔案變小，網絡頻寬不變。"],
+  virus: ["預防感染病毒", false, "2025 甲15", "壓縮不能防毒；防毒靠病毒偵測程式。"],
+};
+KB.defrag = {
+  speed: ["磁碟重組會重新分配檔案在磁碟上的物理位置，從而加快存取速度", true, "表3.7 p.99；課題練習5 p.115"],
+  frag: ["碎片化的儲存會導致數據存取速度低下", true, "表3.7 p.99"],
+  space: ["磁碟重組可以騰出更多可用儲存空間", false, "2018 乙3(c)(ii)；B-44", "磁碟重組只重新排列數據段，不會增加可用空間。"],
+  ssd: ["磁碟重組通常用於固態硬碟（SSD）", false, "p.102 試想想；課題練習5 p.115", "SSD 一般不需磁碟重組，重組反而增加損耗。"],
+  del: ["磁碟重組會刪除儲存空間中多餘的數據", false, "課題練習5 p.115", "重組只移動數據段，不刪除數據。"],
+  drv: ["磁碟重組軟件是一個驅動程式", false, "課題練習5 p.115", "它是實用程式。"],
+};
+
+// ---------- S4 運作方式 ----------
+KB.modes = ["成批工件處理", "實時處理", "並行式處理", "分布式處理", "虛擬化"];
+KB.modeScen = {
+  atm: ["銀行客戶在自動櫃員機提取現金，戶口結餘要即時更新。", 1, "p.109；2017 甲22"],
+  car: ["自動駕駛系統收集周遭的圖像數據，並即時作出反應。", 1, "p.109；2022 甲19"],
+  ticket: ["電影院網上購票系統：顧客要知道哪些座位仍可選擇。", 1, "測試站3.2(1) p.112"],
+  gps: ["手機應用程式顯示用戶的即時位置，並即時更新交通情況。", 1, "課題練習8 p.116；2014 甲20"],
+  game: ["多名玩家一起玩網上遊戲。", 1, "p.109；2021 甲16"],
+  bank: ["銀行在清晨製作所有客戶的月結單。", 0, "p.108"],
+  report: ["學校在學期完結後一次過印刷全校學生的成績表。", 0, "p.108"],
+  post: ["郵差每天六時從郵箱取出所有信件，然後送到目的地。", 0, "測試站3.2(2) p.112"],
+  install: ["技術員逢星期六上午為教師的電腦安裝軟件。", 0, "2018 乙2(b)(i)"],
+  mailam: ["耀文每天早上一次過回覆前一天收到的電子郵件。", 0, "長題目4(a) p.117"],
+  shop: ["網上購物平台同時處理多筆交易，不同交易分配給同一系統內不同的處理器。", 2, "課題練習9 p.116"],
+  split: ["一部有多個處理器的伺服器把一項工作分成三部分，由三個處理器共用記憶體同時處理。", 2, "p.109 圖3.7"],
+  render: ["電影公司以網絡中的多部電腦合力渲染視覺效果，由一部電腦分配工作。", 3, "長題目5 p.117"],
+  farm: ["研究所把一項大型運算分成多個子工作，經高速網絡分配給多部電腦處理。", 3, "p.109–110 圖3.8"],
+  vm: ["在一部 Windows 電腦上建立虛擬機器，以運行另一個操作系統。", 4, "p.110"],
+  incompat: ["要在電腦上安裝與其操作系統不兼容的軟件。", 4, "課題練習10 p.116"],
+  server: ["把一個實體伺服器劃分為多個虛擬伺服器，以執行多個應用程式。", 4, "2025 甲13"],
+};
+KB.modef = {
+  distnet: ["分布式處理需要網絡連接", true, "例題3.2(1) p.111；2019 甲18"],
+  batchnot: ["成批工件處理不會在收到數據後立刻處理", true, "例題3.2(1) p.111"],
+  rtnow: ["實時處理一旦接收數據就馬上處理", true, "p.109"],
+  parmem: ["並行式處理系統通常包含多個處理器，記憶體由這些處理器共用", true, "p.109"],
+  distmem: ["分布式處理中，每部電腦各自有記憶體，記憶體不共用", true, "p.110；2025 甲14"],
+  distx: ["分布式處理的資訊會在各電腦（處理器）之間交換", true, "2025 甲14"],
+  scale: ["分布式處理可按需要增加或減少系統中的電腦數目", true, "p.109"],
+  vmos: ["虛擬機器可以運行與主電腦不同的操作系統", true, "p.110"],
+  night: ["成批工件處理可把程序編排至深夜，善用閒置的系統資源", true, "p.108"],
+  rtpow: ["實時處理需要強大的運算能力和主記憶體以保持短應答時間", true, "p.109"],
+  rtdelay: ["實時系統的數據輸入和數據處理之間不應有時間延遲", true, "2022 甲19"],
+  parpc: ["並行式處理把子工作分配予不同電腦同時處理", false, "例題3.2(1) p.111", "並行式處理分配予不同處理器；分配予不同電腦的是分布式處理。"],
+  distshare: ["分布式處理中各電腦共用同一記憶體", false, "p.110", "分布式處理的記憶體並不共用。"],
+  batchnow: ["成批工件處理需要即時應答", false, "p.108", "成批處理不須即時應答，所以成本較低。"],
+  allfast: ["所有工作都可以因並行式處理而加快", false, "p.109", "像接力賽般須按次序進行的工作不能得益。"],
+  vmcost: ["虛擬化需要購買更多實體電腦", false, "p.110", "虛擬化能節省購買實體硬件的成本。"],
+  wait: ["分布式處理中，一個處理器只能在另一個完成其進程後才可執行", false, "2025 甲14", "分布式處理可同時進行多項工作或子工作。"],
+  disk: ["把多個實體硬碟結合為一個虛擬儲存裝置，屬於虛擬化", false, "2025 甲13", "DSE 2025 甲13 答案不包括此項（把硬件分成多個虛擬部分才是虛擬化，p.110）。"],
+};
+KB.offline = { q: "可以在一部沒有連接任何網絡的電腦上執行", yes: ["實時處理", "成批工件處理", "虛擬化"], no: ["分布式處理"], p: "2023 甲3、2019 甲18；p.109–110" };
+
+// ---------- X1 擴闊視野（延伸） ----------
+KB.ext = {
+  prom: ["編程完成後，內容不能重寫", "可編程唯讀記憶體（PROM）", "p.72（擴闊視野）"],
+  eprom: ["內容可藉曝露於紫外光刪去", "可刪可編程唯讀記憶體（EPROM）", "p.72（擴闊視野）"],
+  eeprom: ["內容可藉電力刪去", "可電刪可編程唯讀記憶體（EEPROM）", "p.72（擴闊視野）"],
+  uefi: ["可代替 BIOS 的新韌體，表現或較 BIOS 更好", "統一可延伸韌體界面（UEFI）", "p.72（擴闊視野）"],
+  sata: ["把硬碟、SSD 和光碟機等輔助儲存設備連接至電腦", "SATA 匯流排", "p.59（擴闊視野）"],
+  pcie: ["主要連接圖形卡、聲效卡和網絡界面卡（NIC）", "PCIe 匯流排", "p.59（擴闊視野）"],
+};
+KB.extGroups = [["prom", "eprom", "eeprom", "uefi"], ["sata", "pcie", "prom", "uefi"]];
+KB.letterbox = {
+  ratio: ["影片的長寬比與顯示器的長寬比不同", true, "p.30（擴闊視野）；課題練習11 p.48"],
+  contrast: ["顯示器的對比度太低", false, "課題練習11 p.48", "對比度與黑邊無關。"],
+  power: ["顯示器沒有足夠的能源", false, "課題練習11 p.48", "能源不足不會令畫面出現黑邊。"],
+  fault: ["電腦出現了故障", false, "課題練習11 p.48", "加上黑邊是為了不拉闊畫面，不是故障。"],
+  res: ["顯示器的解像度太高", false, "p.30（擴闊視野）", "黑邊由長寬比不同造成，與解像度高低無關。"],
+};
+
+// =================== 真假判斷（陳述鍵 → 真／假） ===================
+function T(k) {
+  const [t, a, b, c] = k;
+  switch (t) {
+    case "io": return KB.ioLab[b].includes(KB.io[a][0]);
+    case "spec": { const s = KB.spec[a]; if (s.yes.includes(b)) return true; if (s.no.includes(b)) return false; throw new Error("spec 未定義 " + a + "/" + b); }
+    case "scen": { const s = KB.scen[a]; if (s.yes === b) return true; if (b in s.no) return false; throw new Error("scen 未定義 " + a + "/" + b); }
+    case "adv": return KB.adv[a].st[b][1];
+    case "role": return KB.role[a][1] === b;
+    case "regprop": { const s = KB.regprop[a]; if (s.yes.includes(b)) return true; if (s.no.includes(b)) return false; throw new Error("regprop " + b); }
+    case "mprop": { const s = KB.mprop[a]; if (s.yes.includes(b)) return true; if (s.no.includes(b)) return false; throw new Error("mprop " + a + "/" + b); }
+    case "offline": { if (KB.offline.yes.includes(a)) return true; if (KB.offline.no.includes(a)) return false; throw new Error("offline " + a); }
+    case "busobj": return KB.busObj[a][1] === b;
+    case "busdir": return KB.busDir[a] === b;
+    case "busstep": return KB.busStep[a][1] === b;
+    case "stage": return KB.stage7[a] === b;
+    case "cpu": return KB.cpuSt[a].v(b || {});
+    case "cpumean": return KB.cpuMean[a].a === b;
+    case "sw": return KB.swCat[KB.sw[a][0]] === b;
+    case "swsys": return KB.swGen[a];
+    case "swkind": return (KB.sw[a][0] <= 2) === (b === "系統軟件");
+    case "task": return KB.task[a][1] === b;
+    case "mode": return KB.modes[KB.modeScen[a][1]] === b;
+    case "ext": return KB.ext[a][1] === b;
+    case "f": return KB[a][b][1];   // 事實表：regfact、busfact、memfact、osf、uifact、drv、zipfact、defrag、modef
+  }
+  throw new Error("未知陳述 " + t);
+}
+// 陳述的出處及說明（回饋用）
+function SRC(k) {
+  const [t, a, b] = k;
+  switch (t) {
+    case "io": return KB.io[a][1];
+    case "spec": return KB.spec[a].p;
+    case "scen": return KB.scen[a].p;
+    case "adv": return KB.adv[a].p;
+    case "role": return KB.role[a][2];
+    case "regprop": return KB.regprop[a].p;
+    case "mprop": return KB.mprop[a].p;
+    case "offline": return KB.offline.p;
+    case "busobj": case "busdir": return "表2.6 p.59";
+    case "busstep": return "表2.9 p.66；p.64";
+    case "stage": return "表2.9 p.66";
+    case "cpu": return KB.cpuSt[a].p;
+    case "cpumean": return KB.cpuMean[a].p;
+    case "sw": return KB.sw[a][1];
+    case "swsys": return "表3.1 p.92；2017 甲15";
+    case "swkind": return KB.sw[a][1];
+    case "task": return KB.task[a][2];
+    case "mode": return KB.modeScen[a][2];
+    case "ext": return KB.ext[a][2];
+    case "f": return KB[a][b][2];
+  }
+  return "";
+}
+function WHY(k) {
+  const [t, a, b] = k;
+  if (t === "f") return KB[a][b][3] || "";
+  if (t === "adv") return KB.adv[a].st[b][2] || "";
+  if (t === "cpu") return KB.cpuSt[a].w || "";
+  if (t === "spec") return KB.spec[a].w;
+  if (t === "scen") return KB.scen[a].no[b] || "";
+  if (t === "io") return a + "是" + { 入: "輸入設備", 出: "輸出設備", 兩: "輸入及輸出設備", 存: "儲存設備" }[KB.io[a][0]] + "。";
+  return "";
+}
+// =================== 計算引擎（BigInt 分數；最後才按題目取整／取小數） ===================
+const F = (() => {
+  const gcd = (a, b) => { a = a < 0n ? -a : a; b = b < 0n ? -b : b; while (b) { [a, b] = [b, a % b]; } return a; };
+  class Q {
+    constructor(n, d = 1n) { n = BigInt(n); d = BigInt(d); if (d === 0n) throw new Error("除以 0"); if (d < 0n) { n = -n; d = -d; } const g = gcd(n, d) || 1n; this.n = n / g; this.d = d / g; }
+    add(o) { o = q(o); return new Q(this.n * o.d + o.n * this.d, this.d * o.d); }
+    sub(o) { o = q(o); return new Q(this.n * o.d - o.n * this.d, this.d * o.d); }
+    mul(o) { o = q(o); return new Q(this.n * o.n, this.d * o.d); }
+    div(o) { o = q(o); return new Q(this.n * o.d, this.d * o.n); }
+    cmp(o) { o = q(o); const x = this.n * o.d, y = o.n * this.d; return x < y ? -1 : x > y ? 1 : 0; }
+    eq(o) { return this.cmp(o) === 0; }
+    floor() { let r = this.n / this.d; if (this.n < 0n && r * this.d !== this.n) r -= 1n; return new Q(r); }
+    ceil() { const f = this.floor(); return f.eq(this) ? f : f.add(1); }
+    isInt() { return this.d === 1n; }
+    num() { return Number(this.n) / Number(this.d); }
+    // 四捨五入至 dp 位小數（正數；5 進位）
+    round(dp) { const s = 10n ** BigInt(dp); return new Q((this.n * s * 2n + this.d) / (this.d * 2n), s); }
+    trunc(dp) { const s = 10n ** BigInt(dp); return new Q((this.n * s) / this.d, s); }
+    // 以小數字串表示（只用於有限小數）；dp 指定時先四捨五入
+    dec(dp) {
+      const v = dp === undefined ? this : this.round(dp);
+      let places = dp === undefined ? 0 : dp; if (dp === undefined) { let t = v.d; while (t % 2n === 0n) { t /= 2n; } while (t % 5n === 0n) { t /= 5n; } if (t !== 1n) places = 6; else { let x = 1n; while ((v.n * x) % v.d !== 0n) { x *= 10n; places++; } } }
+      const s = 10n ** BigInt(places), w = (v.n * s * 2n + v.d) / (v.d * 2n); const neg = w < 0n; let str = (neg ? -w : w).toString().padStart(places + 1, "0");
+      if (places) { str = str.slice(0, -places) + "." + str.slice(-places); if (dp === undefined) str = str.replace(/\.?0+$/, ""); }
+      return (neg ? "-" : "") + str;
+    }
+    toString() { return this.n + "/" + this.d; }
+  }
+  const q = (x) => (x instanceof Q ? x : typeof x === "string" ? parse(x) : new Q(BigInt(x)));
+  // 解析學生輸入或題目數值：整數、小數、逗號分隔千位
+  function parse(s) {
+    const t = String(s).replace(/[,，\s]/g, "").replace(/^＋/, "");
+    const fr2 = /^(-?\d+)\/(\d+)$/.exec(t); if (fr2) return new Q(BigInt(fr2[1]), BigInt(fr2[2]));
+    const m = /^([+-]?)(\d+)(?:\.(\d+))?$/.exec(t) || /^([+-]?)()\.(\d+)$/.exec(t);
+    if (!m) return null; const fr = m[3] || ""; const n = BigInt((m[2] || "0") + fr) * (m[1] === "-" ? -1n : 1n); return new Q(n, 10n ** BigInt(fr.length));
+  }
+  const fmtInt = (x) => { const s = (x instanceof Q ? x.n : BigInt(x)).toString(); return s.replace(/\B(?=(\d{3})+(?!\d))/g, ","); };
+  return { Q, q, parse, gcd, fmtInt };
+})();
+const Fq = F.q;
+// 數字顯示：整數加千位逗號；有限小數照寫
+const fmtQ = (x, dp) => { const v = Fq(x); if (dp !== undefined) return v.dec(dp); return v.isInt() ? F.fmtInt(v) : v.dec(); };
+
+// ---------- 單位（儲存容量 1,024；頻率 1,000；BRIEF「單位及計算」） ----------
+const UNITS = {
+  store: { names: ["位元", "字節", "KB", "MB", "GB", "TB"], step: (i) => (i === 0 ? 8n : 1024n) },
+  freq: { names: ["Hz", "kHz", "MHz", "GHz"], step: () => 1000n },
+  time: { names: ["ps", "ns", "μs", "ms", "秒"], step: () => 1000n },
+};
+// 由單位 a 換算至單位 b 的倍數（1 a = ? b）
+function unitFactor(kind, a, b, base) {
+  const u = UNITS[kind], ia = u.names.indexOf(a), ib = u.names.indexOf(b); let f = Fq(1);
+  const st = base ? () => base : u.step;
+  if (ia > ib) for (let i = ib; i < ia; i++) f = f.mul(i === 0 && kind === "store" ? 8n : st(i));
+  else for (let i = ia; i < ib; i++) f = f.div(i === 0 && kind === "store" ? 8n : st(i));
+  return f;
+}
+
+// ---------- 像素密度：√(w² + h²) ÷ d，四捨五入至兩位小數（以整數平方根精確判斷，不用浮點比較） ----------
+function isqrt(n) { if (n < 0n) throw new Error("負數"); if (n < 2n) return n; let x = BigInt(Math.floor(Math.sqrt(Number(n)))); while (x * x > n) x--; while ((x + 1n) * (x + 1n) <= n) x++; return x; }
+function ppi2(w, h, d) { // d 為分數（吋）；回傳 Q（兩位小數）
+  const D = Fq(d), N = BigInt(w) * BigInt(w) + BigInt(h) * BigInt(h);
+  // X = 100·√N·D.d / D.n；求 k = floor(X + 1/2)：最大 k 使 (2·D.n·k − D.n)² ≤ 40000·D.d²·N
+  const p = D.n, qd = D.d, rhs = 40000n * qd * qd * N; let k = BigInt(Math.floor(Math.sqrt(N.toString() * 1) * 100 * Number(qd) / Number(p) + 0.5));
+  const ok = (k) => { const l = 2n * p * k - p; return l <= 0n || l * l <= rhs; };
+  while (!ok(k)) k--; while (ok(k + 1n)) k++;
+  return new F.Q(k, 100n);
+}
+const diagExact = (w, h) => { const N = BigInt(w * w + h * h), s = isqrt(N); return s * s === N ? s : null; };
+
+// ---------- 機器周期模擬器（與 WP2 check_b2.py 同一模型；累加器式，DSE 2012 乙3(d)(i)） ----------
+// 提取：1 PC→MAR；2 PC+1；3 MAR→位址匯流排→主記憶體；4 主記憶體→數據匯流排→MDR；5 MDR→CIR；
+// 6 CU 譯碼，ALU 執行：MAR←運算元位址；LOAD/ADD/SUB：MDR←M[位址]；STORE：MDR←ACC，M[位址]←MDR；
+// 7 儲存：LOAD/ADD/SUB 結果存入累加器。數據 0–255，產生器避免溢出。
+const CPU = {
+  run(mem0, pc, acc, n) {
+    const mem = Object.assign({}, mem0), R = { PC: pc, MAR: null, MDR: null, CIR: null, ACC: acc }, snaps = [];
+    for (let i = 0; i < n; i++) {
+      const s = (k) => snaps.push({ ins: i, step: k, ...R, mem: Object.assign({}, mem) });
+      R.MAR = R.PC; s(1); R.PC = R.PC + 1; s(2); s(3); R.MDR = mem[R.MAR]; s(4); R.CIR = R.MDR; s(5);
+      const [op, as] = String(R.CIR).split(" "); const a = +as; let val = null;
+      R.MAR = a;
+      if (op === "STORE") { R.MDR = R.ACC; mem[a] = R.MDR; }
+      else { R.MDR = mem[a]; val = op === "LOAD" ? R.MDR : op === "ADD" ? R.ACC + R.MDR : R.ACC - R.MDR; if (val < 0 || val > 255) throw new Error("溢出"); }
+      s(6); if (op !== "STORE") R.ACC = val; s(7);
+    }
+    return { snaps, mem, R };
+  },
+};
+const bin8 = (v) => { const s = (v >>> 0).toString(2).padStart(8, "0"); return s.slice(0, 4) + " " + s.slice(4); };
+// =================== 顯示（只產生 HTML 字串） ===================
+const mini = (head, rows, o = {}) => '<div class="xs"><table class="mini' + (o.cls ? " " + o.cls : "") + '">' + (head ? "<tr>" + head.map((x) => "<th>" + x + "</th>").join("") + "</tr>" : "") + rows.map((r, i) => "<tr" + (o.hl && o.hl.includes(i) ? ' class="hl"' : "") + ">" + r.map((x, j) => (j === 0 && o.th ? "<th>" + x + "</th>" : "<td>" + x + "</td>")).join("") + "</tr>").join("") + "</table></div>";
+const NUMS = ["(1)", "(2)", "(3)", "(4)", "(5)"];
+const stList = (sts) => '<ol class="stl">' + sts.map((s, i) => "<li><span class=\"sn\">" + NUMS[i] + "</span>" + esc(s.text) + "</li>").join("") + "</ol>";
+const p_ = (s) => "<p>" + s + "</p>";
+const srcLine = (s) => "出處：" + s;
+// 記憶體表：mem {位址: 內容}；addrs 依序；bin 以 8 位元二進制顯示
+function memHTML(mem, addrs, bin, hl) {
+  const fa = (a) => (bin ? bin8(a) : String(a));
+  const fv = (v) => (typeof v === "number" ? (bin ? bin8(v) : String(v)) : bin ? v.replace(/ (\d+)$/, (m, x) => " " + bin8(+x)) : v);
+  return '<div class="xs"><table class="mem"><tr><th>位址</th><th>內容</th></tr>' + addrs.map((a) => "<tr" + (hl && hl.includes(a) ? ' class="hl"' : "") + '><td class="mono">' + fa(a) + '</td><td class="mono">' + esc(fv(mem[a])) + "</td></tr>").join("") + "</table></div>";
+}
+const regHTML = (R, bin) => { const f = (v) => (v === null || v === undefined ? "—" : typeof v === "number" ? (bin ? bin8(v) : v) : bin ? String(v).replace(/ (\d+)$/, (m, x) => " " + bin8(+x)) : v);
+  return mini(["PC", "MAR", "MDR", "CIR", "累加器"], [["PC", "MAR", "MDR", "CIR", "ACC"].map((k) => '<span class="mono">' + esc(f(R[k])) + "</span>")]); };
+
+// =================== 作答部分及評分 ===================
+const P = {
+  num: (label, ans, o = {}) => Object.assign({ type: "num", label, ans: Fq(ans).toString(), dp: 0 }, o),
+  order: (label, ans, o = {}) => Object.assign({ type: "order", label, ans }, o),
+  reg: (label, ans, fmt, o = {}) => Object.assign({ type: "reg", label, ans, fmt }, o),
+};
+const parts = (...ps) => ({ kind: "parts", parts: ps });
+const choiceIn = (opts, answer, o = {}) => Object.assign({ kind: "choice", opts, answer }, o);
+const GR = (() => {
+  const clean = (s) => String(s === null || s === undefined ? "" : s).replace(/　/g, " ").trim();
+  const normT = (s) => clean(s).toUpperCase().replace(/\s+/g, " ");
+  function numOk(p, raw, target) {
+    const x = F.parse(clean(raw)); if (!x) return false; const e = Fq(target || p.ans);
+    if (!p.dp) return x.eq(e); const tol = new F.Q(1n, 10n ** BigInt(p.dp)); const d = x.sub(e); return d.cmp(tol) <= 0 && d.cmp(tol.mul(-1)) >= 0;
+  }
+  const digits = (s) => clean(s).replace(/[\s,，、→>\-()（）]/g, "");
+  function regVal(p, raw) {
+    const t = clean(raw).replace(/\s+/g, "");
+    if (p.fmt === "text") return normT(raw).replace(/\s+/g, "") === String(p.ans).toUpperCase().replace(/\s+/g, "");
+    if (p.fmt === "bin") return /^[01]{1,8}$/.test(t) && parseInt(t, 2) === p.ans;
+    return /^\d+$/.test(t) && +t === p.ans;
+  }
+  function grade(p, raw) {
+    if (p.type === "num") { const x = F.parse(clean(raw)); if (!x) return { ok: false, msg: "請輸入數字（可用逗號分隔千位，不要加單位）。" }; return { ok: numOk(p, raw) }; }
+    if (p.type === "order") { const d = digits(raw); if (!/^\d+$/.test(d)) return { ok: false, msg: "請只輸入項目編號，例如 " + p.ans.split("").sort().join("") + "。" }; return { ok: d === p.ans }; }
+    if (p.type === "reg") { const t = clean(raw).replace(/\s+/g, ""); const ok = regVal(p, raw);
+      let msg = ""; if (!ok && p.fmt === "bin" && /^\d+$/.test(t) && !/^[01]+$/.test(t)) msg = "這題要以 8 位元二進制作答（例如 0110 1011），不是十進制。";
+      if (!ok && p.fmt === "dec" && /^[01]{8}$/.test(t)) msg = "這題要以十進制作答。"; return { ok, msg }; }
+    return { ok: false };
+  }
+  function trap(p, raw) {
+    if (!p.traps) return "";
+    for (const t of p.traps) { try { if (p.type === "num" && numOk(p, raw, t.v)) return t.msg; if (p.type === "order" && digits(raw) === t.v) return t.msg; if (p.type === "reg" && regVal(Object.assign({}, p, { ans: t.v }), raw)) return t.msg; } catch (e) {} }
+    return "";
+  }
+  const isBlank = (p, raw) => !clean(raw);
+  // 測試用：正確／錯誤的作答
+  function fill(p, ok) {
+    if (p.type === "num") { const e = Fq(p.ans); if (ok) return p.dp ? e.dec(p.dp) : e.dec(); return e.add(p.dp ? 1 : 1).dec(p.dp || undefined); }
+    if (p.type === "order") return ok ? p.ans : p.ans.split("").reverse().join("") === p.ans ? p.ans + "9" : p.ans.split("").reverse().join("");
+    if (p.type === "reg") { if (p.fmt === "text") return ok ? p.ans : p.ans + "9"; const v = ok ? p.ans : (p.ans + 1) % 256; return p.fmt === "bin" ? bin8(v) : String(v); }
+  }
+  return { clean, grade, trap, isBlank, fill };
+})();
+
+// =================== 題目建構（選項由陳述真假推出） ===================
+// 單選：items [{text, key}]；want=true 時要求只有一個真（「哪項正確」），want=false 時只有一個假（「哪項不正確」）
+function oneQ(o) {
+  const items = o.items, tv = items.map((x) => T(x.key)), hit = tv.map((v, i) => (v === o.want ? i : -1)).filter((i) => i >= 0);
+  if (hit.length !== 1) throw new Error("選項不唯一");
+  const ans = items[hit[0]].text, why = {};
+  items.forEach((x, i) => { if (i !== hit[0]) why[x.text] = (o.whyOf ? o.whyOf(x) : WHY(x.key)) || ""; });
+  return { input: choiceIn(items.map((x) => x.text), ans, { why, mono: o.mono }), show: ans, chk: [{ t: "one", st: items.map((x) => x.key), want: o.want, ans: hit[0] }], ansIdx: hit[0] };
+}
+// 組合題：sts [{text, key}]，選項為 DSE 式「只有 (1) 和 (2)」等
+const subsetLabel = (s, n) => (s.length === n && n > 1 ? s.slice(0, -1).map((i) => NUMS[i]).join("、") + " 和 " + NUMS[s[s.length - 1]] : "只有 " + (s.length === 1 ? NUMS[s[0]] : s.slice(0, -1).map((i) => NUMS[i]).join("、") + " 和 " + NUMS[s[s.length - 1]]));
+function comboQ(sts) {
+  const n = sts.length, tv = sts.map((x) => T(x.key)), right = range(0, n).filter((i) => tv[i]);
+  if (!right.length) throw new Error("沒有正確陳述");
+  const all = []; for (let m = 1; m < 1 << n; m++) all.push(range(0, n).filter((i) => m & (1 << i)));
+  const key = (s) => s.join(",");
+  const near = all.filter((s) => key(s) !== key(right) && Math.abs(s.length - right.length) <= 1);
+  const others = sample(near.length >= 3 ? near : all.filter((s) => key(s) !== key(right)), 3);
+  const sets = [right, ...others].sort((a, b) => a.length - b.length || key(a).localeCompare(key(b)));
+  const opts = sets.map((s, i) => "ABCD"[i] + ". " + subsetLabel(s, n)), ai = sets.findIndex((s) => key(s) === key(right));
+  const why = {}; sets.forEach((s, i) => { if (i === ai) return; const extra = s.filter((x) => !tv[x]), miss = right.filter((x) => !s.includes(x)); why[opts[i]] = (extra.length ? "陳述 " + extra.map((x) => NUMS[x]).join("、") + " 不正確。" : "") + (miss.length ? "漏了正確的陳述 " + miss.map((x) => NUMS[x]).join("、") + "。" : ""); });
+  const explain = sts.map((x, i) => NUMS[i] + " " + (tv[i] ? "✓ " : "✗ ") + x.text + (tv[i] ? "" : "：" + (WHY(x.key) || "不正確。")) + "（" + SRC(x.key) + "）");
+  return { input: choiceIn(opts, opts[ai], { why }), show: opts[ai], explain, chk: [{ t: "combo", st: sts.map((x) => x.key), sets, ans: ai }] };
+}
+const srcOf = (keys) => uniq(keys.map(SRC).filter(Boolean).flatMap((s) => s.split("；"))).join("；");
+// =================== 題目產生器：設備（E1–E3） ===================
+// 每題：{ prompt, input, show, explain:[…], chk:[核對項目], src }
+const IO_LABS = ["只屬輸入設備", "只屬輸出設備", "既是輸入亦是輸出設備", "儲存設備"];
+const IO_NOTE = { 入: "輸入設備把數據或指令輸入電腦（IPO 周期第一步，p.7）。", 出: "輸出設備輸出處理結果，例如影像、實體副本、聲音（IPO 周期最後一步，p.25）。", 兩: "這設備同時負責輸入及輸出（例如觸控式屏幕是觸控板與顯示器的結合，p.14）。", 存: "儲存設備（輔助儲存器）儲存數據供日後使用（p.57）。" };
+const ioItems = (cls) => Object.keys(KB.io).filter((d) => cls === undefined || KB.io[d][0] === cls);
+
+const GEN_DEV = [
+  { id: "E1", name: "輸入／輸出／儲存", types: [
+    { name: "設備屬哪一類", fn() {
+      const d = pick(ioItems(pick(["入", "出", "兩", "存", "入", "出"])));
+      const o = oneQ({ items: IO_LABS.map((l) => ({ text: l, key: ["io", d, l] })), want: true });
+      return Object.assign(o, { prompt: p_("「" + esc(d) + "」屬於下列哪一類？"), explain: [d + "：" + o.show + "。" + IO_NOTE[KB.io[d][0]], "觸控式屏幕、VR 頭戴式設備、附麥克風的耳機既是輸入亦是輸出設備。"], src: KB.io[d][1] }); } },
+    { name: "選出該類設備", fn() {
+      const lab = pick(["輸入設備", "輸出設備", "既是輸入亦是輸出設備", "儲存設備"]);
+      const yes = Object.keys(KB.io).filter((d) => T(["io", d, lab])), no = Object.keys(KB.io).filter((d) => !T(["io", d, lab]));
+      const items = shuffle([pick(yes), ...sample(no, 3)]).map((d) => ({ text: d, key: ["io", d, lab] }));
+      const o = oneQ({ items, want: true, whyOf: (x) => x.text + "是" + { 入: "輸入設備", 出: "輸出設備", 兩: "輸入及輸出設備", 存: "儲存設備" }[KB.io[x.text][0]] + "（" + KB.io[x.text][1] + "）。" });
+      return Object.assign(o, { prompt: p_("下列哪一項" + (lab.startsWith("既是") ? "" : "是") + lab + "？"), explain: items.map((x) => x.text + "：" + { 入: "輸入", 出: "輸出", 兩: "輸入及輸出", 存: "儲存" }[KB.io[x.text][0]] + "（" + KB.io[x.text][1] + "）"), src: srcOf(items.map((x) => x.key)) }); } },
+    { name: "組合題", fn() {
+      const lab = pick(["輸入設備", "輸出設備", "儲存設備"]);
+      let ds; do { ds = sample(Object.keys(KB.io), 3); } while (!ds.some((d) => T(["io", d, lab])));
+      const sts = ds.map((d) => ({ text: d, key: ["io", d, lab] })), o = comboQ(sts);
+      return Object.assign(o, { prompt: p_("下列哪項／些是" + lab + "？") + stList(sts), src: srcOf(sts.map((x) => x.key)) }); } },
+  ] },
+  { id: "E2", name: "規格屬哪種設備", types: [
+    { name: "哪項是／不是該設備的規格", fn() {
+      for (;;) {
+        const dev = pick(KB.devs), want = coin(0.55), grp = (k) => k.replace(/2$|n$/, "");
+        const yes = Object.keys(KB.spec).filter((k) => KB.spec[k].yes.includes(dev)), no = Object.keys(KB.spec).filter((k) => KB.spec[k].no.includes(dev));
+        const [one, many] = want ? [yes, no] : [no, yes]; if (!one.length || many.length < 3) continue;
+        const a = pick(one); const rest = shuffle(many.filter((k) => grp(k) !== grp(a))); const chosen = [];
+        for (const k of rest) { if (chosen.length < 3 && !chosen.some((c) => grp(c) === grp(k))) chosen.push(k); }
+        if (chosen.length < 3) continue;
+        const items = shuffle([a, ...chosen]).map((k) => ({ text: KB.spec[k].s, key: ["spec", k, dev] }));
+        const o = oneQ({ items, want, whyOf: (x) => KB.spec[x.key[1]].w });
+        return Object.assign(o, { prompt: p_("下列哪一項" + (want ? "可以是" : "<b>不是</b>") + dev + "的規格？"), explain: items.map((x) => x.text + "：" + KB.spec[x.key[1]].w), src: srcOf(items.map((x) => x.key)) });
+      } } },
+    { name: "規格屬哪種設備", fn() {
+      for (;;) {
+        const k = pick(Object.keys(KB.spec)), s = KB.spec[k]; if (s.no.length < 3) continue;
+        const items = shuffle([pick(s.yes), ...sample(s.no, 3)]).map((d) => ({ text: d, key: ["spec", k, d] }));
+        const o = oneQ({ items, want: true, whyOf: (x) => "「" + s.s + "」不是" + x.text + "的規格。" });
+        return Object.assign(o, { prompt: p_("某產品規格表上有「<span class=\"mono\">" + esc(s.s) + "</span>」一項。這產品最可能是下列哪一種設備？"), explain: [s.w, "可以有這項規格的設備：" + s.yes.join("、") + "。"], src: s.p });
+      } } },
+    { name: "組合題：可以是哪些規格", fn() {
+      for (;;) {
+        const dev = pick(KB.devs), grp = (k) => k.replace(/2$|n$/, ""); const ks = shuffle(Object.keys(KB.spec).filter((k) => KB.spec[k].yes.includes(dev) || KB.spec[k].no.includes(dev)));
+        const chosen = []; for (const k of ks) if (chosen.length < 3 && !chosen.some((c) => grp(c) === grp(k))) chosen.push(k);
+        if (chosen.length < 3 || !chosen.some((k) => KB.spec[k].yes.includes(dev))) continue;
+        const sts = chosen.map((k) => ({ text: KB.spec[k].s, key: ["spec", k, dev] })), o = comboQ(sts);
+        return Object.assign(o, { prompt: p_("下列哪項／些可以是" + dev + "的規格？") + stList(sts), src: srcOf(sts.map((x) => x.key)) });
+      } } },
+  ] },
+  { id: "E3", name: "情境選設備", types: [
+    { name: "選最合適的設備", fn() {
+      const k = pick(Object.keys(KB.scen)), s = KB.scen[k]; const no = sample(Object.keys(s.no), 3);
+      const items = shuffle([s.yes, ...no]).map((d) => ({ text: d, key: ["scen", k, d] }));
+      const o = oneQ({ items, want: true });
+      return Object.assign(o, { prompt: p_(esc(s.t)) + p_("下列哪一種設備最合適？"), explain: [s.yes + "最合適。", ...no.map((d) => d + "：" + s.no[d])], src: s.p }); } },
+    { name: "A 勝於 B 的優點（單選）", fn() {
+      for (;;) {
+        const k = pick(Object.keys(KB.adv)), A = KB.adv[k], ks = Object.keys(A.st), t = ks.filter((x) => A.st[x][1]), f = ks.filter((x) => !A.st[x][1]); if (f.length < 3) continue;
+        const items = shuffle([pick(t), ...sample(f, 3)]).map((x) => ({ text: A.st[x][0], key: ["adv", k, x] }));
+        const o = oneQ({ items, want: true });
+        return Object.assign(o, { prompt: p_("下列哪一項是" + A.a + "勝於" + A.b + "的優點？"), explain: ["「A 勝於 B 的優點」只計 B 做不到或較差的地方；兩者都有的特點不算（例題1.2(1)）。", ...items.map((x) => (T(x.key) ? "✓ " : "✗ ") + x.text + (T(x.key) ? "" : "：" + WHY(x.key)))], src: A.p });
+      } } },
+    { name: "A 勝於 B 的優點（組合題）", fn() {
+      for (;;) {
+        const k = pick(Object.keys(KB.adv)), A = KB.adv[k], ks = sample(Object.keys(A.st), 3);
+        if (!ks.some((x) => A.st[x][1])) continue;
+        const sts = ks.map((x) => ({ text: A.st[x][0], key: ["adv", k, x] })), o = comboQ(sts);
+        o.explain.unshift("只計" + A.b + "做不到或較差的地方；兩者都有的特點不算（例題1.2(1)）。");
+        return Object.assign(o, { prompt: p_("下列哪項／些是使用" + A.a + "而非" + A.b + "的優點？") + stList(sts), src: A.p });
+      } } },
+  ] },
+];
+// =================== 題目產生器：硬件（H1–H5、X1） ===================
+const swapMsg = (a, b) => KB.swapWhy[a + "|" + b] || KB.swapWhy[b + "|" + a] || "";
+const roleOf = (c) => Object.keys(KB.role).filter((r) => KB.role[r][1] === c);
+const CONFUSE = { "記憶體位址寄存器（MAR）": ["記憶體數據寄存器（MDR）", "程式計數器（PC）"], "記憶體數據寄存器（MDR）": ["記憶體位址寄存器（MAR）", "現行指令寄存器（CIR）"], "程式計數器（PC）": ["記憶體位址寄存器（MAR）"],
+  "控制部件（CU）": ["算術及邏輯運算部件（ALU）"], "算術及邏輯運算部件（ALU）": ["控制部件（CU）", "累加器"], "現行指令寄存器（CIR）": ["記憶體數據寄存器（MDR）", "累加器"], "累加器": ["算術及邏輯運算部件（ALU）", "現行指令寄存器（CIR）"], "快取記憶體": ["記憶體數據寄存器（MDR）"] };
+const distract = (ans, pool, n) => { const c = (CONFUSE[ans] || []).filter((x) => pool.includes(x)); const pre = sample(c, Math.min(c.length, coin(0.8) ? 2 : 1)); return shuffle([...pre, ...sample(pool.filter((x) => x !== ans && !pre.includes(x)), n - pre.length)]); };
+const factOne = (tab, want, n = 4) => { const ks = Object.keys(KB[tab]), t = ks.filter((k) => KB[tab][k][1]), f = ks.filter((k) => !KB[tab][k][1]); const [one, many] = want ? [t, f] : [f, t]; return shuffle([pick(one), ...sample(many, n - 1)]).map((k) => ({ text: KB[tab][k][0], key: ["f", tab, k] })); };
+const factCombo = (tab, n = 3) => { for (;;) { const ks = sample(Object.keys(KB[tab]), n); if (ks.some((k) => KB[tab][k][1])) return ks.map((k) => ({ text: KB[tab][k][0], key: ["f", tab, k] })); } };
+const factExplain = (items) => items.map((x) => (T(x.key) ? "✓ " : "✗ ") + x.text + (T(x.key) ? "" : "：" + WHY(x.key)) + "（" + SRC(x.key) + "）");
+
+// ---------- 機器周期追蹤題 ----------
+function makeProg() {
+  for (;;) {
+    const bin = coin(0.35), pc = bin ? R(128, 200) : R(100, 220), n = R(1, 3);
+    const pats = { 1: [["LOAD"], ["ADD"], ["SUB"], ["STORE"]], 2: [["LOAD", "ADD"], ["LOAD", "SUB"], ["ADD", "STORE"], ["SUB", "STORE"], ["LOAD", "STORE"]], 3: [["LOAD", "ADD", "STORE"], ["LOAD", "SUB", "STORE"], ["ADD", "SUB", "STORE"], ["LOAD", "ADD", "SUB"]] };
+    const ops = pick(pats[n]), base = pc + n + R(2, 9); if (base + 4 > 255) continue;
+    const data = sample(range(base, base + 5), 4), mem = {}, acc = R(5, 120);
+    ops.forEach((op, i) => { mem[pc + i] = op + " " + data[i]; });
+    data.forEach((a) => { mem[a] = R(1, 99); });
+    let run; try { run = CPU.run(mem, pc, acc, n); } catch (e) { continue; }
+    const addrs = uniq([...range(pc, pc + n), ...data.slice().sort((a, b) => a - b)]);
+    return { bin, pc, n, ops, mem, acc, run, addrs };
+  }
+}
+function traceTable(G) {
+  const f = (v) => (v === null ? "—" : typeof v === "number" ? (G.bin ? bin8(v) : v) : G.bin ? String(v).replace(/ (\d+)$/, (m, x) => " " + bin8(+x)) : v);
+  return mini(["指令", "步驟", "PC", "MAR", "MDR", "CIR", "累加器"], G.run.snaps.map((s) => [String(s.ins + 1), String(s.step), ...["PC", "MAR", "MDR", "CIR", "ACC"].map((k) => '<span class="mono">' + esc(f(s[k])) + "</span>")]), { cls: "trace" });
+}
+
+const GEN_HW = [
+  { id: "H1", name: "部件與寄存器", types: [
+    { name: "作用 → 部件", fn() {
+      const r = pick(Object.keys(KB.role)), ans = KB.role[r][1], opts = shuffle([ans, ...distract(ans, KB.comp, 3)]);
+      const items = opts.map((c) => ({ text: c, key: ["role", r, c] }));
+      const o = oneQ({ items, want: true, whyOf: (x) => swapMsg(ans, x.text) || x.text + "的作用：" + roleOf(x.text).map((k) => KB.role[k][0]).join("；") + "。" });
+      return Object.assign(o, { prompt: p_("下列哪一個 CPU 部件或記憶體負責「" + KB.role[r][0] + "」？"), explain: [ans + "：" + KB.role[r][0] + "。", ...opts.filter((c) => c !== ans).map((c) => c + "：" + roleOf(c).map((k) => KB.role[k][0]).join("；"))], src: KB.role[r][2] }); } },
+    { name: "部件 → 作用", fn() {
+      const c = pick(KB.comp), r = pick(roleOf(c)), others = distract(c, KB.comp, 3).map((x) => pick(roleOf(x)));
+      const items = shuffle([r, ...others]).map((k) => ({ text: KB.role[k][0], key: ["role", k, c] }));
+      const o = oneQ({ items, want: true, whyOf: (x) => "這是" + KB.role[x.key[1]][1] + "的作用。" + swapMsg(c, KB.role[x.key[1]][1]) });
+      return Object.assign(o, { prompt: p_("「" + c + "」的作用是甚麼？"), explain: items.map((x) => x.text + " → " + KB.role[x.key[1]][1]), src: KB.role[r][2] }); } },
+    { name: "組合題：哪些寄存器", fn() {
+      for (;;) {
+        const k = pick(Object.keys(KB.regprop)), s = KB.regprop[k], pool = [...s.yes, ...s.no], rs = sample(pool, 3); if (!rs.some((x) => s.yes.includes(x))) continue;
+        const sts = rs.map((x) => ({ text: x, key: ["regprop", k, x] })), o = comboQ(sts);
+        o.explain = rs.map((x, i) => NUMS[i] + " " + (s.yes.includes(x) ? "✓ " : "✗ ") + x + "：" + roleOf(x).map((r) => KB.role[r][0]).join("；"));
+        return Object.assign(o, { prompt: p_("下列哪項／些寄存器" + s.q + "？") + stList(sts), src: s.p });
+      } } },
+    { name: "描述是否正確", fn() {
+      const want = coin(0.6), items = factOne("regfact", want), o = oneQ({ items, want });
+      return Object.assign(o, { prompt: p_("下列哪一項關於 CPU 部件及寄存器的描述是" + (want ? "正確" : "<b>不正確</b>") + "的？"), explain: factExplain(items), src: srcOf(items.map((x) => x.key)) }); } },
+  ] },
+  { id: "H2", name: "系統匯流排", types: [
+    { name: "傳送的物件 → 匯流排", fn() {
+      const k = pick(Object.keys(KB.busObj)), items = KB.busNames.map((b) => ({ text: b, key: ["busobj", k, b] }));
+      const o = oneQ({ items, want: true, whyOf: (x) => x.text === "通用串列匯流排（USB）" ? "USB 連接外部設備（如鍵盤、滑鼠），不是系統匯流排（p.60）。" : x.text + "傳輸" + Object.values(KB.busObj).find((v) => v[1] === x.text)[0] + "。" });
+      return Object.assign(o, { prompt: p_("下列哪一種匯流排在處理器和其他部件之間傳輸<b>" + KB.busObj[k][0] + "</b>？"), explain: ["控制匯流排：控制訊號；位址匯流排：記憶體位址；數據匯流排：數據或指令（表2.6）。"], src: "表2.6 p.59；測試站2.1(3)" }); } },
+    { name: "傳輸方向", fn() {
+      const b = pick(["位址匯流排", "數據匯流排"]), items = KB.dirOpts.map((d) => ({ text: d, key: ["busdir", b, d] }));
+      const o = oneQ({ items, want: true, whyOf: () => (b === "位址匯流排" ? "位址匯流排只由處理器把記憶體位址送出（例題2.1(3)）。" : "數據匯流排是雙向的：處理器既會發送，亦會接收數據（例題2.1(3)）。") });
+      return Object.assign(o, { prompt: p_(b + "的傳輸方向是怎樣的？"), explain: ["位址匯流排：單向，由處理器傳至不同部件。", "數據匯流排：雙向，在處理器和不同部件之間傳輸。"], src: "表2.6 p.59；例題2.1(3) p.62" }); } },
+    { name: "機器周期中經哪條匯流排", fn() {
+      const k = pick(Object.keys(KB.busStep)), items = KB.busNames.slice(0, 3).map((b) => ({ text: b, key: ["busstep", k, b] }));
+      const o = oneQ({ items, want: true, whyOf: (x) => (x.text === "位址匯流排" ? "位址匯流排只傳送記憶體位址。" : x.text === "數據匯流排" ? "數據匯流排傳送數據或指令，不是位址。" : "控制匯流排傳送控制訊號。") });
+      return Object.assign(o, { prompt: p_("「" + KB.busStep[k][0] + "」經哪一條匯流排？"), explain: ["位址（MAR → 主記憶體）經位址匯流排；指令或數據（主記憶體 ⇄ MDR）經數據匯流排（p.64）。"], src: "表2.9 p.66；p.64；2020 甲22" }); } },
+    { name: "描述是否正確（組合題）", fn() {
+      const sts = factCombo("busfact"), o = comboQ(sts);
+      return Object.assign(o, { prompt: p_("下列哪項／些關於系統匯流排的描述是正確的？") + stList(sts), src: srcOf(sts.map((x) => x.key)) }); } },
+  ] },
+  { id: "H3", name: "機器周期", types: [
+    { name: "步驟排序", fn() {
+      const four = coin(0.4); const src = four ? KB.step4 : KB.step7;
+      const idx = four ? [0, 1, 2, 3] : sample(range(0, 7), 4).sort((a, b) => a - b);
+      let shown; do { shown = shuffle(idx); } while (shown.every((x, j) => x === idx[j]));
+      const ans = idx.map((i) => String(shown.indexOf(i) + 1)).join("");
+      const rev = ans.split("").reverse().join("");
+      return { prompt: p_("把下列" + (four ? "某指令在機器周期內的步驟" : "機器周期（表2.9）的步驟") + "按正確次序排列。") + stList(shown.map((i) => ({ text: src[i] }))) + '<p class="small">依次輸入項目編號，例如 (1) → (2) → (3) → (4) 便輸入 1234。</p>',
+        input: parts(P.order("次序", ans, { traps: rev !== ans ? [{ v: rev, msg: "你把次序倒轉了：機器周期由提取開始，最後才儲存結果。" }] : [] })), show: ans.split("").map((x) => "(" + x + ")").join(" → "),
+        explain: [four ? "提取 → 譯碼 → 執行 → 儲存（2017 甲16：先從記憶體提取指令，譯碼後執行，最後寫入）。" : "表2.9 的七步：", ...(four ? [] : KB.step7.map((s, i) => (i + 1) + ". " + s))],
+        chk: [{ t: "order", kind: four ? "step4" : "step7", items: shown, ans }], src: four ? "2017 甲16；p.65" : "表2.9 p.66" }; } },
+    { name: "步驟屬哪個階段", fn() {
+      const i = R(0, 6), items = ["提取", "譯碼和執行", "儲存"].map((s) => ({ text: s, key: ["stage", i, s] }));
+      const o = oneQ({ items, want: true, whyOf: () => "表2.9：步驟 1–5 屬提取，步驟 6 屬譯碼和執行，步驟 7 屬儲存。" });
+      return Object.assign(o, { prompt: p_("機器周期中「" + KB.step7[i] + "」屬於哪一個階段？"), explain: ["這是表2.9 的第 " + (i + 1) + " 步。", "步驟 1–5：提取；步驟 6：譯碼和執行；步驟 7：儲存。"], src: "表2.9 p.66" }); } },
+    { name: "追蹤寄存器", fn() {
+      const G = makeProg(), when = coin(0.4) ? "fetch" : "end", fm = G.bin ? "bin" : "dec", fl = G.bin ? "（8 位元二進制）" : "（十進制）";
+      const snaps = G.run.snaps, at = when === "fetch" ? snaps[4] : snaps[snaps.length - 1];
+      const ps = [], insTxt = (v) => (G.bin ? String(v).replace(/ (\d+)$/, (m, x) => " " + bin8(+x)) : String(v));
+      const firstAddr = +String(G.mem[G.pc]).split(" ")[1];
+      if (when === "fetch") {
+        ps.push(P.reg("PC" + fl, at.PC, fm, { k: "PC", traps: [{ v: G.pc, msg: "步驟 2 已把 PC 更新為下一個指令的位址。" }] }));
+        ps.push(P.reg("MAR" + fl, at.MAR, fm, { k: "MAR", traps: [{ v: at.PC, msg: "MAR 在步驟 1 複製 PC 的值（現行指令的位址），之後 PC 才更新為下一個指令的位址。" }, { v: firstAddr, msg: "提取階段 MAR 仍是指令的位址；要到執行階段才放數據的位址。" }] }));
+        ps.push(P.reg("CIR（寫出指令，例如 " + insTxt("ADD " + G.pc) + "）", insTxt(at.CIR), "text", { k: "CIR" }));
+      } else {
+        const lastOp = G.ops[G.n - 1];
+        ps.push(P.reg("PC" + fl, at.PC, fm, { k: "PC", traps: [{ v: G.pc + G.n - 1, msg: "PC 存的是「下一個」指令的位址：最後一條指令提取後 PC 已更新為下一個指令的位址。" }] }));
+        ps.push(P.reg("MAR" + fl, at.MAR, fm, { k: "MAR", traps: [{ v: G.pc + G.n - 1, msg: "執行階段 MAR 已改為數據的位址（2012 乙3(d)(i)：執行後 MAR 是運算元的位址）。" }] }));
+        ps.push(P.reg("MDR" + fl, at.MDR, fm, { k: "MDR", traps: lastOp !== "STORE" && at.MDR !== at.ACC ? [{ v: at.ACC, msg: "MDR 存的是由記憶體讀出的數據；運算結果在累加器。" }] : [] }));
+        ps.push(P.reg("累加器" + fl, at.ACC, fm, { k: "ACC", traps: [{ v: G.acc, msg: "累加器的值已被指令改變（LOAD 載入、ADD 加、SUB 減）。" }] }));
+        if (G.ops.includes("STORE")) { const sa = +String(G.mem[G.pc + G.ops.indexOf("STORE")]).split(" ")[1]; ps.push(P.reg("位址 " + (G.bin ? bin8(sa) : sa) + " 的內容" + fl, G.run.mem[sa], fm, { k: "M" + sa, traps: [{ v: G.mem[sa], msg: "STORE 把累加器的值寫入該位址，原來的值已被覆蓋。" }] })); }
+      }
+      const ask = when === "fetch" ? "執行<b>第 1 條指令</b>的提取階段（表2.9 步驟 1–5）之後" : "執行完這 " + G.n + " 條指令（每條都經過步驟 1–7）之後";
+      const desc = mini(["指令", "意思"], [["LOAD a", "把位址 a 的數據載入累加器"], ["ADD a", "累加器 ← 累加器 + 位址 a 的數據"], ["SUB a", "累加器 ← 累加器 − 位址 a 的數據"], ["STORE a", "把累加器的值存入位址 a"]].map((r) => ['<span class="mono">' + r[0] + "</span>", r[1]]));
+      const ans = {}; ["PC", "MAR", "MDR", "ACC", "CIR"].forEach((k) => { ans[k] = at[k]; });
+      return { prompt: p_("下表是主記憶體的內容。開始時 PC = <span class=\"mono\">" + (G.bin ? bin8(G.pc) : G.pc) + "</span>，累加器 = <span class=\"mono\">" + (G.bin ? bin8(G.acc) : G.acc) + "</span>" + (G.bin ? "（所有位址和數據均為 8 位元）" : "") + "。") + '<div class="row2">' + memHTML(G.mem, G.addrs, G.bin) + desc + "</div>" + p_(ask + "，寫出下列各項的值" + fl + "。"),
+        input: parts(...ps), show: ps.map((p) => p.label.replace(/（.*$/, "") + " = " + (p.fmt === "text" ? p.ans : G.bin ? bin8(p.ans) : p.ans)).join("；"),
+        explain: ["提取：1 PC → MAR；2 PC 更新為下一個指令的位址；3 位址經位址匯流排送到主記憶體；4 指令經數據匯流排到 MDR；5 MDR → CIR。", "執行（本頁與筆記一致，按 2012 乙3(d)(i)）：MAR ← 數據的位址；LOAD／ADD／SUB 把該位址的數據讀入 MDR，結果存入累加器；STORE 把累加器的值經 MDR 寫入該位址。", "逐步追蹤見下表。"],
+        after: traceTable(G), chk: [{ t: "trace", mem: G.mem, pc: G.pc, acc: G.acc, n: G.n, when, bin: G.bin, ask: Object.fromEntries(ps.map((p) => [p.k, p.ans])) }], sim: { mem: G.mem, pc: G.pc, acc: G.acc, addrs: G.addrs, bin: G.bin }, src: "表2.9 p.66；p.64；2012 乙3(d)(i)、2020 甲18" }; } },
+  ] },
+  { id: "H4", name: "記憶體與儲存", types: [
+    { name: "特性判斷", fn() {
+      for (;;) {
+        const k = pick(Object.keys(KB.mprop)), s = KB.mprop[k], want = s.no.length >= 3 ? true : s.yes.length >= 3 ? false : null; if (want === null) continue;
+        const [one, many] = want ? [s.yes, s.no] : [s.no, s.yes];
+        const items = shuffle([pick(one), ...sample(many, 3)]).map((x) => ({ text: x, key: ["mprop", k, x] }));
+        const o = oneQ({ items, want, whyOf: (x) => x.text + (want ? "不是" : "是") + "：" + s.q.replace(/（.*）/, "") + "。" });
+        return Object.assign(o, { prompt: p_(want ? "下列哪一項" + s.q + "？" : "下列哪一項<b>不</b>符合「" + s.q + "」？"),
+          explain: ["符合「" + s.q + "」的：" + s.yes.join("、") + "。", "不符合的：" + s.no.join("、") + "。"], src: s.p });
+      } } },
+    { name: "按速度／容量排列", fn() {
+      const crit = pick(["speed", "speed", "price", "cap", "disc"]), up = coin();
+      let items, val;
+      if (crit === "disc") { items = shuffle(Object.keys(KB.disc)); val = (x) => KB.disc[x][0]; }
+      else { items = sample(Object.keys(KB.rank), R(3, 4)); val = (x) => (crit === "cap" ? -KB.rank[x] : KB.rank[x]); }
+      for (let g = 0; g < 20 && items.every((x, j, a) => j === 0 || (up ? val(a[j - 1]) < val(x) : val(a[j - 1]) > val(x))); g++) items = shuffle(items);
+      const sorted = items.slice().sort((a, b) => (up ? val(a) - val(b) : val(b) - val(a))), ans = sorted.map((x) => String(items.indexOf(x) + 1)).join(""), rev = ans.split("").reverse().join("");
+      const cname = { speed: "數據存取速度", price: "每容量價格", cap: "儲存容量（一般而言）", disc: "儲存容量" }[crit];
+      return { prompt: p_("把下列各項按" + cname + (up ? "<b>由低至高（遞增）</b>" : "<b>由高至低（遞減）</b>") + "排列。") + stList(items.map((x) => ({ text: x }))) + '<p class="small">依次輸入項目編號，例如 (1) → (2) → (3) 便輸入 ' + items.map((x, j) => j + 1).join("") + '。</p>',
+        input: parts(P.order("次序", ans, { traps: [{ v: rev, msg: "次序倒轉了：題目要求" + (up ? "遞增（由低至高）" : "遞減（由高至低）") + "。" }] })), show: sorted.join(" → "),
+        explain: crit === "disc" ? ["CD 通常 700 MB；DVD 通常 4.7 GB；藍光光碟通常 25 GB 至 128 GB（表2.12）。"] : ["記憶體階層（圖2.30）由上至下：寄存器 → 快取記憶體 → RAM → SSD → 硬碟 → 磁帶。", "位置越高：存取速度越高、儲存容量越小、每容量價格越高。"],
+        chk: [{ t: "order", kind: crit, up, items, ans }], src: crit === "disc" ? "表2.12 p.77" : "圖2.30 p.80；測試站2.4(1)；2019 甲19" }; } },
+    { name: "描述是否正確", fn() {
+      if (coin(0.5)) { const want = coin(0.6), items = factOne("memfact", want), o = oneQ({ items, want }); return Object.assign(o, { prompt: p_("下列哪一項關於記憶體及儲存設備的描述是" + (want ? "正確" : "<b>不正確</b>") + "的？"), explain: factExplain(items), src: srcOf(items.map((x) => x.key)) }); }
+      const sts = factCombo("memfact"), o = comboQ(sts); return Object.assign(o, { prompt: p_("下列哪項／些關於記憶體及儲存設備的描述是正確的？") + stList(sts), src: srcOf(sts.map((x) => x.key)) }); } },
+  ] },
+  { id: "H5", name: "CPU 規格", types: [
+    { name: "規格的意思", fn() {
+      const o0 = { n: pick([4, 6, 8, 12, 16]), f: pick(["2.4", "2.8", "3.2", "3.6", "4.4", "5"]), c: pick([8, 12, 16, 24, 30]) }, k = pick(Object.keys(KB.cpuMean));
+      const others = Object.keys(KB.cpuMean).filter((x) => x !== k).map((x) => KB.cpuMean[x].a);
+      const opts = shuffle([KB.cpuMean[k].a, ...sample([...others, ...KB.cpuMeanWrong], 3)]);
+      const items = opts.map((t) => ({ text: t, key: ["cpumean", k, t] }));
+      const o = oneQ({ items, want: true, whyOf: (x) => (x.text === "每秒執行的指令數目" ? "時鐘頻率不是每秒執行的指令數目（2016 甲20）。" : x.text.indexOf("程式的最多數目") >= 0 ? "核心數目不等於最多可處理的程式數目（2023 甲14）。" : "這不是「" + KB.cpuMean[k].s(o0) + "」的意思。") });
+      return Object.assign(o, { prompt: p_("某 CPU 的規格為 <span class=\"mono\">" + o0.n + " 核心、" + o0.f + " GHz、" + o0.c + " MB 快取、64 位元</span>。") + p_("規格「<span class=\"mono\">" + KB.cpuMean[k].s(o0) + "</span>」代表甚麼？"), explain: Object.keys(KB.cpuMean).map((x) => KB.cpuMean[x].s(o0) + "：" + KB.cpuMean[x].a), src: KB.cpuMean[k].p }); } },
+    { name: "組合題（DSE 2023 甲14 式）", fn() {
+      for (;;) {
+        const o0 = { n: pick([4, 6, 8, 12, 16]), f: pick(["2.4", "2.8", "3.2", "3.6", "4.4", "5"]), c: pick([8, 12, 16, 24, 30]) };
+        const ks = sample(["clk", "cyc", "ins", "alu", "prog", "cache", "times", "more"], 3); if (!ks.some((k) => KB.cpuSt[k].v(o0))) continue;
+        const sts = ks.map((k) => ({ text: KB.cpuSt[k].f(o0), key: ["cpu", k, o0] })), o = comboQ(sts);
+        return Object.assign(o, { prompt: p_("某 CPU 的規格為 <span class=\"mono\">" + o0.n + " 個核心、" + o0.f + " GHz 和 " + o0.c + " MB 快取記憶體</span>。下列哪項／些句子是正確的？") + stList(sts), src: srcOf(sts.map((x) => x.key)) });
+      } } },
+    { name: "時鐘頻率、核心、字長", fn() {
+      for (;;) {
+        const o0 = { n: pick([4, 8, 16]), f: pick(["2", "2.4", "3.6", "4.4"]) }, want = coin(0.6);
+        const ks = ["more", "dbl", "power", "word", "wmin", "x2", "addr", "addrclk", "addrslow", "times", "ins", "cyc"], t = ks.filter((k) => KB.cpuSt[k].v(o0)), f = ks.filter((k) => !KB.cpuSt[k].v(o0));
+        const [one, many] = want ? [t, f] : [f, t]; const items = shuffle([pick(one), ...sample(many, 3)]).map((k) => ({ text: KB.cpuSt[k].f(o0), key: ["cpu", k, o0] }));
+        const o = oneQ({ items, want });
+        return Object.assign(o, { prompt: p_("（設 CPU 有 " + o0.n + " 個核心、時鐘頻率 " + o0.f + " GHz。）下列哪一項是" + (want ? "正確" : "<b>不正確</b>") + "的？"), explain: items.map((x) => (T(x.key) ? "✓ " : "✗ ") + x.text + (T(x.key) ? "" : "：" + WHY(x.key)) + "（" + SRC(x.key) + "）"), src: srcOf(items.map((x) => x.key)) });
+      } } },
+  ] },
+  { id: "X1", name: "擴闊視野", ext: true, types: [
+    { name: "ROM 種類、UEFI、SATA、PCIe", fn() {
+      const g = pick(KB.extGroups), k = pick(g), items = g.map((x) => ({ text: KB.ext[x][1], key: ["ext", k, KB.ext[x][1]] }));
+      const o = oneQ({ items, want: true, whyOf: (x) => x.text + "：" + KB.ext[Object.keys(KB.ext).find((y) => KB.ext[y][1] === x.text)][0] + "。" });
+      return Object.assign(o, { prompt: p_("下列哪一項符合以下描述：「" + KB.ext[k][0] + "」？"), explain: g.map((x) => KB.ext[x][1] + "：" + KB.ext[x][0]), src: KB.ext[k][2] }); } },
+    { name: "黑邊的原因", fn() {
+      const ks = ["ratio", ...sample(["contrast", "power", "fault", "res"], 3)], items = shuffle(ks).map((k) => ({ text: KB.letterbox[k][0], key: ["f", "letterbox", k] }));
+      const o = oneQ({ items, want: true });
+      return Object.assign(o, { prompt: p_("志強在顯示器觀看影片時，發現影片" + pick(["左右兩端", "上下兩端"]) + "都有黑邊。最可能的原因是甚麼？"), explain: ["影片的長寬比與顯示器不同；為免拉闊畫面，影片會加上空位（加上黑邊，letterboxing）或作剪裁（p.30）。"], src: "p.30（擴闊視野）；課題練習11 p.48" }); } },
+    { name: "計算黑邊闊度", fn() {
+      let scr, vid, w, bar; do { scr = pick([[1600, 900], [1920, 1080], [1280, 720], [2560, 1440]]); vid = pick([[4, 3], [5, 4]]); w = Fq(scr[1]).mul(vid[0]).div(vid[1]); bar = Fq(scr[0]).sub(w).div(2); } while (!w.isInt() || !bar.isInt());
+      return { prompt: p_("一段長寬比為 " + vid[0] + " : " + vid[1] + " 的影片在解像度 " + scr[0] + " × " + scr[1] + " 的屏幕上播放。影片放大至與屏幕同高，不拉闊畫面，左右加上黑邊。") + p_("每邊的黑邊闊多少像素？"),
+        input: parts(P.num("每邊黑邊", bar.toString(), { sfx: "像素", traps: [{ v: Fq(scr[0]).sub(w).toString(), msg: "這是兩邊黑邊的總闊度，每邊要再除以 2。" }] })), show: fmtQ(bar) + " 像素",
+        explain: ["影片高度 = 屏幕高度 = " + scr[1] + " 像素。", "影片闊度 = " + scr[1] + " × " + vid[0] + " ÷ " + vid[1] + " = " + fmtQ(w) + " 像素。", "每邊黑邊 = (" + scr[0] + " − " + fmtQ(w) + ") ÷ 2 = " + fmtQ(bar) + " 像素。"],
+        chk: [{ t: "calc", kind: "letterbox", p: { W: scr[0], H: scr[1], a: vid[0], b: vid[1] }, ans: bar.toString() }], src: "p.30 圖1.42–1.43（擴闊視野）" }; } },
+  ] },
+];
+// =================== 題目產生器：計算（C1–C4） ===================
+// 所有計算以 BigInt 分數進行；只在最後按題目取整（向下／向上）或取兩位小數。
+const POW = (b, e) => { let r = Fq(1); for (let i = 0; i < e; i++) r = r.mul(b); return r; };
+const SU = UNITS.store.names, FU = UNITS.freq.names, TU = UNITS.time.names;
+const capStr = (v, u) => fmtQ(v) + " " + u;
+const toBytes = (v, u) => Fq(v).mul(POW(1024, SU.indexOf(u) - 1));   // u ∈ 字節、KB、MB、GB、TB
+const notes = { round: "「最多可儲存／拍攝多少」要向下取整：不足一個便不計。", ceil: "「需要多少個」要向上取整；檔案不可分拆時，先計算每個設備放得下多少個檔案。", k1024: "儲存容量一律用 1,024：1 KB = 1,024 字節、1 MB = 1,024 KB、1 GB = 1,024 MB、1 TB = 1,024 GB。" };
+const numP = (label, ans, o = {}) => P.num(label, Fq(ans).toString(), o);
+
+const GEN_CALC = [
+  { id: "C1", name: "單位換算", types: [
+    { name: "儲存單位", fn() {
+      for (;;) {
+        const a = R(0, 5), b = R(0, 5); if (a === b || Math.abs(a - b) > 3) continue;
+        let v, ans; const f = unitFactor("store", SU[a], SU[b]);
+        if (a > b) { v = Fq(pick(["1", "2", "3", "4", "5", "6", "8", "12", "16", "1.5", "2.5", "0.5"])); ans = v.mul(f); }
+        else { ans = Fq(pick(["1", "2", "3", "4", "5", "6", "8", "10", "12", "1.5", "2.5", "0.5"])); v = ans.div(f); }
+        if (!v.isInt() && !ans.isInt()) continue;
+        const wrong = Fq(v).mul(unitFactor("store", SU[a], SU[b], 1000n)), inv = Fq(v).div(f);
+        const traps = []; if (!wrong.eq(ans) && (a > 1 || b > 1)) traps.push({ v: wrong.toString(), msg: notes.k1024 + "（你用了 1,000。）" }); if (!inv.eq(ans)) traps.push({ v: inv.toString(), msg: "換算方向錯了：大單位換成小單位要乘，小單位換成大單位要除。" });
+        return { prompt: p_("<span class=\"mono\">" + capStr(v, SU[a]) + " = ? " + SU[b] + "</span>"), input: parts(numP(SU[b], ans, { sfx: SU[b], traps })), show: fmtQ(ans) + " " + SU[b],
+          explain: [notes.k1024, "1 字節 = 8 位元。", (a > b ? "1 " + SU[a] + " = " + fmtQ(f) + " " + SU[b] + "，所以 " + fmtQ(v) + " × " + fmtQ(f) : "1 " + SU[b] + " = " + fmtQ(Fq(1).div(f)) + " " + SU[a] + "，所以 " + fmtQ(v) + " ÷ " + fmtQ(Fq(1).div(f))) + " = " + fmtQ(ans) + " " + SU[b] + "。"], chk: [{ t: "calc", kind: "conv", p: { k: "store", v: v.toString(), a: SU[a], b: SU[b] }, ans: ans.toString() }], src: "p.75（1 TB = 2⁴⁰ 字節）；p.17；BRIEF 單位表" };
+      } } },
+    { name: "頻率及時間單位", fn() {
+      for (;;) {
+        const kind = pick(["freq", "time"]), U = UNITS[kind].names, a = R(0, U.length - 1), b = R(0, U.length - 1); if (a === b || Math.abs(a - b) > 3) continue;
+        const f = unitFactor(kind, U[a], U[b]); let v, ans;
+        if (a > b) { v = Fq(pick(["1", "2", "2.4", "3.6", "1.8", "0.5", "4", "5", "1.25"])); ans = v.mul(f); } else { ans = Fq(pick(["1", "2", "2.4", "3.6", "0.8", "0.5", "4", "1.5"])); v = ans.div(f); }
+        const w = Fq(v).mul(unitFactor(kind, U[a], U[b], 1024n)), inv = Fq(v).div(f), traps = [];
+        if (!w.eq(ans)) traps.push({ v: w.toString(), msg: "頻率及時間單位以 1,000 換算（10³），不是 1,024。" }); if (!inv.eq(ans)) traps.push({ v: inv.toString(), msg: "換算方向錯了：大單位換成小單位要乘。" });
+        return { prompt: p_("<span class=\"mono\">" + fmtQ(v) + " " + U[a] + " = ? " + U[b] + "</span>"), input: parts(numP(U[b], ans, { sfx: U[b], traps })), show: fmtQ(ans) + " " + U[b],
+          explain: [kind === "freq" ? "1 kHz = 10³ Hz；1 MHz = 10⁶ Hz；1 GHz = 10⁹ Hz（表2.11）。" : "1 ms = 10⁻³ 秒；1 μs = 10⁻⁶ 秒；1 ns = 10⁻⁹ 秒；1 ps = 10⁻¹² 秒（表2.11）。", (a > b ? "1 " + U[a] + " = " + fmtQ(f) + " " + U[b] + "，所以 " + fmtQ(v) + " × " + fmtQ(f) : "1 " + U[b] + " = " + fmtQ(Fq(1).div(f)) + " " + U[a] + "，所以 " + fmtQ(v) + " ÷ " + fmtQ(Fq(1).div(f))) + " = " + fmtQ(ans) + " " + U[b] + "。"],
+          chk: [{ t: "calc", kind: "conv", p: { k: kind, v: v.toString(), a: U[a], b: U[b] }, ans: ans.toString() }], src: "表2.11 p.68" };
+      } } },
+  ] },
+  { id: "C2", name: "儲存容量", types: [
+    { name: "最多可儲存多少個檔案", fn() {
+      for (;;) {
+        const [cv, cu] = pick([[16, "GB"], [32, "GB"], [64, "GB"], [128, "GB"], [256, "GB"], [1, "TB"], [2, "TB"]]), [sv, su] = pick([[3, "MB"], [4, "MB"], [5, "MB"], [6, "MB"], [12, "MB"], [25, "MB"], [700, "MB"], [3, "GB"], [5, "GB"]]);
+        const what = su === "MB" && sv < 30 ? pick(["相片", "歌曲", "文件"]) : "影片";
+        const ex = toBytes(cv, cu).div(toBytes(sv, su)); const ans = ex.floor(); if (ans.cmp(2) < 0 || ex.isInt()) continue;
+        const w1000 = Fq(cv).mul(POW(1000, SU.indexOf(cu) - SU.indexOf(su))).div(sv).floor();
+        return { prompt: p_("一個 <span class=\"mono\">" + cv + " " + cu + "</span> 的儲存設備，每個" + what + "檔案 <span class=\"mono\">" + sv + " " + su + "</span>。這設備最多可儲存多少個這樣的檔案？（設備容量全部可用）"),
+          input: parts(numP("檔案數目", ans, { sfx: "個", traps: [{ v: ex.ceil().toString(), msg: notes.round }, ...(w1000.eq(ans) ? [] : [{ v: w1000.toString(), msg: notes.k1024 }])] })), show: fmtQ(ans) + " 個",
+          explain: [notes.k1024, cv + " " + cu + " ÷ " + sv + " " + su + " = " + fmtQ(toBytes(cv, cu).div(POW(1024, SU.indexOf(su) - 1))) + " " + su + " ÷ " + sv + " " + su + " ≈ " + ex.dec(4).replace(/0+$/, "").replace(/\.$/, ""), notes.round + "答案：" + fmtQ(ans) + " 個。"],
+          chk: [{ t: "calc", kind: "fit", p: { cv, cu, sv, su }, ans: ans.toString() }], src: "2019 甲9、2017 乙2(b) 題型；p.75" };
+      } } },
+    { name: "需要多少個硬碟", fn() {
+      for (;;) {
+        const n = R(20, 150), s = pick([150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 900]), cap = pick([1, 2, 4]);
+        const per = Fq(cap * 1024).div(s).floor(); if (per.cmp(1) < 0) continue; const ans = Fq(n).div(per).ceil();
+        const tot = Fq(n * s).div(cap * 1024).ceil(), t1000 = Fq(n * s).div(cap * 1000).ceil(); if (tot.eq(ans)) continue;
+        return { prompt: p_("有 <span class=\"mono\">" + n + "</span> 個 <span class=\"mono\">" + s + " GB</span> 的監控視像檔案。在沒有任何檔案分拆和壓縮下，需要多少個 <span class=\"mono\">" + cap + " TB</span> 硬碟來儲存所有視像檔案？"),
+          input: parts(numP("硬碟數目", ans, { sfx: "個", traps: [{ v: tot.toString(), msg: "檔案不可分拆：要先計算每個硬碟放得下多少個完整的檔案，不可以只用總容量 ÷ 硬碟容量。" }, ...(t1000.eq(tot) ? [] : [{ v: t1000.toString(), msg: notes.k1024 }]), { v: Fq(n).div(per).floor().toString(), msg: notes.ceil }] })), show: fmtQ(ans) + " 個",
+          explain: [cap + " TB = " + cap * 1024 + " GB。", "每個硬碟放得下：" + cap * 1024 + " ÷ " + s + " = " + Fq(cap * 1024).div(s).dec(2) + " → " + fmtQ(per) + " 個檔案（向下取整）。", "需要：" + n + " ÷ " + fmtQ(per) + " = " + Fq(n).div(per).dec(2) + " → " + fmtQ(ans) + " 個硬碟（向上取整）。"],
+          chk: [{ t: "calc", kind: "need", p: { n, s, cap }, ans: ans.toString() }], src: "2022 甲20（題庫答對率 7%）" };
+      } } },
+    { name: "可儲存多少筆記錄", fn() {
+      for (;;) {
+        const k = pick([1, 2, 4, 8]), used = pick([100, 120, 200, 256, 300, 500]), rec = pick([16, 20, 24, 30, 32, 40, 48, 50, 64]);
+        const ex = Fq(k * 1024 - used).div(rec), ans = ex.floor(); if (ex.isInt() || ans.cmp(3) < 0) continue;
+        const w = Fq(k * 1000 - used).div(rec).floor(), noSub = Fq(k * 1024).div(rec).floor();
+        return { prompt: p_("某職員證的 RFID 標籤儲存容量為 <span class=\"mono\">" + k + " KB</span>。職員的個人資料佔 <span class=\"mono\">" + used + "</span> 個字節。每次出入辦公室會建立一筆 <span class=\"mono\">" + rec + "</span> 個字節的記錄並儲存在職員證內。該職員證最多可儲存多少筆記錄？"),
+          input: parts(numP("記錄數目", ans, { sfx: "筆", traps: [...(w.eq(ans) ? [] : [{ v: w.toString(), msg: notes.k1024 }]), { v: noSub.toString(), msg: "要先扣除個人資料已用的空間。" }, { v: ex.ceil().toString(), msg: notes.round }] })), show: fmtQ(ans) + " 筆",
+          explain: [k + " KB = " + k * 1024 + " 字節。", "可用空間 = " + k * 1024 + " − " + used + " = " + (k * 1024 - used) + " 字節。", (k * 1024 - used) + " ÷ " + rec + " = " + ex.dec(2) + " → " + fmtQ(ans) + " 筆（向下取整）。"],
+          chk: [{ t: "calc", kind: "records", p: { k, used, rec }, ans: ans.toString() }], src: "2019 甲9（答案 46）" };
+      } } },
+    { name: "最長可拍攝多少分鐘", fn() {
+      for (;;) {
+        const rate = pick([5, 8, 10, 12, 15, 20, 25, 30]), lim = pick([4, 8, 10, 16, 20, 30, 32]);
+        const sec = Fq(lim * 1024).div(rate), min = sec.div(60), ans = min.floor(); if (min.isInt() || ans.cmp(1) < 0) continue;
+        const w = Fq(lim * 1000).div(rate).div(60).floor();
+        return { prompt: p_("志明估計 1 秒視像需 <span class=\"mono\">" + rate + " MB</span> 儲存空間。老師只接受不超過 <span class=\"mono\">" + lim + " GB</span> 的視像作品。志明最長可拍攝多少分鐘的視像？（以完整分鐘計，不足一分鐘不計）"),
+          input: parts(numP("最長", ans, { sfx: "分鐘", traps: [...(w.eq(ans) ? [] : [{ v: w.toString(), msg: notes.k1024 + "（2017 乙2(b) 評卷：✗ 30 × 1000）" }]), { v: min.ceil().toString(), msg: notes.round }] })), show: fmtQ(ans) + " 分鐘",
+          explain: [lim + " GB = " + lim * 1024 + " MB。", lim * 1024 + " ÷ " + rate + " = " + sec.dec(2) + " 秒。", sec.dec(2) + " ÷ 60 = " + min.dec(2) + " 分鐘 → " + fmtQ(ans) + " 分鐘（向下取整）。"],
+          chk: [{ t: "calc", kind: "video", p: { rate, lim }, ans: ans.toString() }], src: "2017 乙2(b)（1228.8 秒 ≈ 20 分鐘）" };
+      } } },
+    { name: "可錄影多少小時", fn() {
+      for (;;) {
+        const cap = pick([1, 2, 3, 4, 6, 8]), gbh = pick([2.5, 3, 4.5, 5, 6, 7, 8, 9, 11, 12]);
+        const ex = Fq(cap * 1024).div(F.parse(String(gbh))); if (ex.isInt()) continue; const ans = ex.round(2);
+        return { prompt: p_("某大學把課堂錄影，每小時錄影需要 <span class=\"mono\">" + gbh + " GB</span>。一個 <span class=\"mono\">" + cap + " TB</span> 的儲存設備最多可儲存多少小時的錄影？（答案取兩位小數）"),
+          input: parts(numP("最多", ex.toString(), { dp: 2, sfx: "小時", traps: [{ v: Fq(cap * 1000).div(F.parse(String(gbh))).toString(), msg: notes.k1024 }] })), show: ans.dec(2) + " 小時",
+          explain: [cap + " TB = " + cap * 1024 + " GB。", cap * 1024 + " ÷ " + gbh + " = " + ex.dec(4) + " ≈ " + ans.dec(2) + " 小時。", "計算題要展示算式（2018 乙3(b) 評卷接受 93／93.1／93.09 等近似值）。"],
+          chk: [{ t: "calc", kind: "hours", p: { cap, gbh: String(gbh) }, ans: ex.toString() }], src: "2018 乙3(b) 題型" };
+      } } },
+    { name: "每月所需儲存空間", fn() {
+      for (;;) {
+        const mpm = pick([15, 20, 25, 30, 40, 45, 50, 60]), hrs = pick([8, 10, 12, 16, 24]), days = pick([7, 30, 31]), cams = pick([1, 2, 4]);
+        const mb = Fq(mpm * 60 * hrs * days * cams), gb = mb.div(1024); if (gb.isInt()) continue;
+        return { prompt: p_("某店舖有 <span class=\"mono\">" + cams + "</span> 部閉路電視攝錄機，每部每分鐘錄影需 <span class=\"mono\">" + mpm + " MB</span>，每天錄影 <span class=\"mono\">" + hrs + "</span> 小時。" + days + " 天合共需要多少 GB 儲存空間？（答案取兩位小數）"),
+          input: parts(numP("合共", gb.toString(), { dp: 2, sfx: "GB", traps: [{ v: mb.div(1000).toString(), msg: notes.k1024 }, { v: Fq(mpm * hrs * days * cams).div(1024).toString(), msg: "每小時有 60 分鐘：要把每分鐘的數據量乘以 60。" }] })), show: gb.dec(2) + " GB",
+          explain: ["每天：" + mpm + " × 60 × " + hrs + " = " + F.fmtInt(mpm * 60 * hrs) + " MB（每部）。", "合共：" + F.fmtInt(mpm * 60 * hrs) + " × " + days + " × " + cams + " = " + F.fmtInt(mb) + " MB。", F.fmtInt(mb) + " ÷ 1,024 = " + gb.dec(4) + " ≈ " + gb.dec(2) + " GB。"],
+          chk: [{ t: "calc", kind: "month", p: { mpm, hrs, days, cams }, ans: gb.toString() }], src: "樣本試卷 乙7(c)(ii) 題型（改編）" };
+      } } },
+  ] },
+  { id: "C3", name: "掃描與屏幕", types: [
+    { name: "掃描影像的像素", fn() {
+      const [w, h, nm] = pick([["8.3", "11.7", " A4 文件"], ["5.8", "8.3", " A5 文件"], ["4", "6", " 4R 相片"], ["5", "7", " 5R 相片"], ["3.5", "5", " 3R 相片"]]), dpi = pick([150, 200, 300, 400, 600, 1200]);
+      const pw = F.parse(w).mul(dpi), ph = F.parse(h).mul(dpi);
+      return { prompt: p_("以 <span class=\"mono\">" + dpi + " dpi</span> 掃描一張 " + w + " 吋 × " + h + " 吋的" + nm + "。所得圖像的解像度是多少？"),
+        input: parts(numP("闊", pw, { sfx: "像素" }), numP("高", ph, { sfx: "像素" })), show: fmtQ(pw) + " × " + fmtQ(ph) + " 像素",
+        explain: ["每邊像素 = 吋 × dpi。", "闊：" + w + " × " + dpi + " = " + fmtQ(pw) + "；高：" + h + " × " + dpi + " = " + fmtQ(ph) + "。"], chk: [{ t: "calc", kind: "scanpx", p: { w, h, dpi }, ans: [pw.toString(), ph.toString()] }], src: "p.17 例子" }; } },
+    { name: "未壓縮掃描檔案大小", fn() {
+      for (;;) {
+        const [w, h] = pick([["8.3", "11.7"], ["5.8", "8.3"], ["4", "6"], ["5", "7"], ["3.5", "5"], ["8.5", "11"]]), dpi = pick([150, 200, 300, 600]), depth = pick([8, 16, 24, 32]);
+        const px = F.parse(w).mul(dpi).mul(F.parse(h).mul(dpi)), bytes = px.mul(depth).div(8), mb = bytes.div(1024 * 1024); if (mb.cmp(Fq(1)) < 0) continue;
+        const w1000 = bytes.div(1000000), nod = px.mul(depth).div(1024 * 1024);
+        return { prompt: p_("以 <span class=\"mono\">" + dpi + " dpi</span>、<span class=\"mono\">" + depth + " 位元</span>色深掃描一張 " + w + " 吋 × " + h + " 吋的文件，以未壓縮格式儲存。檔案大小是多少 MB？（答案取兩位小數）"),
+          input: parts(numP("檔案大小", mb.toString(), { dp: 2, sfx: "MB", traps: [{ v: w1000.toString(), msg: "1 MB = 1,024 × 1,024 字節，不是 1,000,000。" }, { v: nod.toString(), msg: "色深以位元計：要先 ÷ 8 換成字節。" }] })), show: mb.dec(2) + " MB",
+          explain: ["像素：(" + w + " × " + dpi + ") × (" + h + " × " + dpi + ") = " + fmtQ(F.parse(w).mul(dpi)) + " × " + fmtQ(F.parse(h).mul(dpi)) + "。", "字節：" + fmtQ(F.parse(w).mul(dpi)) + " × " + fmtQ(F.parse(h).mul(dpi)) + " × " + depth + " ÷ 8 = " + fmtQ(bytes) + " 字節。", fmtQ(bytes) + " ÷ 1,024² = " + mb.dec(4) + " ≈ " + mb.dec(2) + " MB。", "點陣圖、音頻、視頻的檔案大小及傳輸時間見《位元練習室》。"],
+          chk: [{ t: "calc", kind: "scanmb", p: { w, h, dpi, depth }, ans: mb.toString() }], src: "p.17 例子（A4 300 dpi 24 位元 ≈ 25.0 MB）" };
+      } } },
+    { name: "像素密度", fn() {
+      const [w, h] = pick([[1366, 768], [1600, 900], [1920, 1080], [2560, 1440], [3840, 2160], [1680, 1050], [1920, 1200], [1280, 800], [2224, 1668]]), d = pick(["10", "13", "14", "15.6", "21.5", "22", "24", "27", "32", "43", "55"]);
+      const ans = ppi2(w, h, F.parse(d)), sum = Fq(w + h).div(F.parse(d)), wd = Fq(w).div(F.parse(d));
+      const ex = diagExact(w, h);
+      return { prompt: p_("一個 <span class=\"mono\">" + d + " 吋</span>屏幕的解像度為 <span class=\"mono\">" + w + " × " + h + "</span>。它的像素密度是多少？（答案取兩位小數）"),
+        input: parts(P.num("像素密度", ans.toString(), { dp: 2, sfx: "ppi", traps: [{ v: sum.toString(), msg: "對角線解像度要用畢氏定理：√(闊² + 高²)，不是闊 + 高。" }, { v: wd.toString(), msg: "要用對角線解像度 √(闊² + 高²)，不是只用闊度。" }] })), show: ans.dec(2) + " ppi",
+        explain: ["像素密度 = 對角線解像度 ÷ 屏幕尺寸（p.29）。", "對角線解像度 = √(" + w + "² + " + h + "²) = √" + F.fmtInt(w * w + h * h) + (ex ? " = " + ex : " ≈ " + Math.sqrt(w * w + h * h).toFixed(2)) + "。", "像素密度 ≈ " + (ex ? ex : Math.sqrt(w * w + h * h).toFixed(4)) + " ÷ " + d + " ≈ " + ans.dec(2) + " ppi。"],
+        chk: [{ t: "calc", kind: "ppi", p: { w, h, d }, ans: ans.toString() }], src: "p.29（24 吋 1920 × 1080 ≈ 91.79 ppi）；長題目2(b) p.48" }; } },
+    { name: "長寬比", fn() {
+      const [w, h] = pick([[1366, 768], [1600, 900], [1920, 1080], [2560, 1440], [3840, 2160], [1680, 1050], [1920, 1200], [1280, 800], [1024, 768], [1280, 1024], [2224, 1668], [800, 600], [2560, 1600]]);
+      const g = Number(F.gcd(BigInt(w), BigInt(h))), a = w / g, b = h / g;
+      return { prompt: p_("解像度為 <span class=\"mono\">" + w + " × " + h + "</span> 的屏幕，長寬比是多少？（以最簡整數比表示）"),
+        input: parts(numP("闊", a, { sfx: ":" }), numP("高", b)), show: a + " : " + b,
+        explain: ["長寬比 = 闊 ÷ 高，以最大公因數約簡（p.29）。", "最大公因數 = " + g + "；" + w + " ÷ " + g + " = " + a + "，" + h + " ÷ " + g + " = " + b + "。", "所以長寬比 = " + a + " : " + b + "。"],
+        chk: [{ t: "calc", kind: "ratio", p: { w, h }, ans: [String(a), String(b)] }], src: "p.29（2560 × 1440 → 16 : 9）；例題1.2(2)" }; } },
+    { name: "由長寬比求高度", fn() {
+      for (;;) {
+        const [a, b] = pick([[16, 9], [16, 10], [4, 3], [21, 9]]), w = pick([800, 1024, 1280, 1440, 1600, 1680, 1920, 2560, 3440, 3840]);
+        const hq = Fq(w).mul(b).div(a); if (!hq.isInt()) continue;
+        return { prompt: p_("某屏幕的長寬比為 <span class=\"mono\">" + a + " : " + b + "</span>，闊 <span class=\"mono\">" + w + "</span> 像素。高是多少像素？"),
+          input: parts(numP("高", hq, { sfx: "像素", traps: [{ v: Fq(w).mul(a).div(b).toString(), msg: "長寬比是「闊 : 高」：高 = 闊 × " + b + " ÷ " + a + "。" }] })), show: fmtQ(hq) + " 像素",
+          explain: ["闊 : 高 = " + a + " : " + b + "。", "高 = " + w + " × " + b + " ÷ " + a + " = " + fmtQ(hq) + " 像素。"], chk: [{ t: "calc", kind: "height", p: { a, b, w }, ans: hq.toString() }], src: "p.29" };
+      } } },
+  ] },
+  { id: "C4", name: "時鐘與打印", types: [
+    { name: "時鐘周期", fn() {
+      const [fv, fu] = pick([["1.6", "GHz"], ["2", "GHz"], ["2.4", "GHz"], ["2.5", "GHz"], ["3", "GHz"], ["3.2", "GHz"], ["4", "GHz"], ["5", "GHz"], ["800", "MHz"], ["500", "MHz"], ["250", "MHz"]]);
+      const hz = F.parse(fv).mul(fu === "GHz" ? 1e9 : 1e6), ns = Fq(1e9).div(hz);
+      return { prompt: p_("某 CPU 的時鐘頻率為 <span class=\"mono\">" + fv + " " + fu + "</span>。它的時鐘周期是多少納秒（ns）？（如有需要，答案取兩位小數）"),
+        input: parts(P.num("時鐘周期", ns.toString(), { dp: 2, sfx: "ns", traps: [{ v: F.parse(fv).toString(), msg: "時鐘周期 = 1 ÷ 時鐘頻率，不是時鐘頻率本身。" }] })), show: (ns.isInt() || ns.mul(100).isInt() ? ns.dec() : ns.dec(2)) + " ns",
+        explain: ["時鐘周期 = 1 ÷ 時鐘頻率（表2.11）。", fv + " " + fu + " = " + fv + " × 10" + (fu === "GHz" ? "⁹" : "⁶") + " Hz。", "時鐘周期 = 1 ÷ (" + fv + " × 10" + (fu === "GHz" ? "⁹" : "⁶") + ") 秒 = " + ns.dec(4).replace(/0+$/, "").replace(/\.$/, "") + " × 10⁻⁹ 秒 = " + (ns.mul(100).isInt() ? ns.dec() : ns.dec(2)) + " ns。"],
+        chk: [{ t: "calc", kind: "period", p: { fv, fu }, ans: ns.toString() }], src: "表2.11 p.68；p.67" }; } },
+    { name: "一段時間內的時鐘周期數", fn() {
+      const fv = pick(["1.8", "2", "2.4", "3", "3.6", "4.2"]), [tv, tu] = pick([["1", "ms"], ["2", "ms"], ["5", "ms"], ["10", "μs"], ["50", "μs"], ["1", "秒"]]);
+      const cyc = F.parse(fv).mul(1e9).mul(F.parse(tv)).div(tu === "ms" ? 1000 : tu === "μs" ? 1e6 : 1);
+      return { prompt: p_("時鐘頻率為 <span class=\"mono\">" + fv + " GHz</span> 的 CPU 在 <span class=\"mono\">" + tv + " " + tu + "</span> 內進行多少個時鐘周期？"),
+        input: parts(numP("時鐘周期數", cyc, { sfx: "個", traps: [] })), show: F.fmtInt(cyc) + " 個",
+        explain: ["時鐘頻率 = 每秒的時鐘周期數（不是每秒執行的指令數，2016 甲20）。", fv + " GHz = " + fv + " × 10⁹ 個周期／秒。", "周期數 = " + fv + " × 10⁹ × " + tv + " " + tu + " = " + F.fmtInt(cyc) + "。"],
+        chk: [{ t: "calc", kind: "cycles", p: { fv, tv, tu }, ans: cyc.toString() }], src: "p.67–68 表2.11；2016 甲20" }; } },
+    { name: "打印所需時間", fn() {
+      for (;;) {
+        const ppm = pick([8, 12, 15, 18, 20, 24, 25, 30, 36, 40, 45]), n = R(10, 400), secs = Fq(n * 60).div(ppm); if (!secs.isInt()) continue;
+        const m = secs.div(60).floor(), s = secs.sub(m.mul(60)); if (s.eq(0) && coin(0.7)) continue;
+        return { prompt: p_("一部打印機的打印速度是 <span class=\"mono\">" + ppm + " ppm</span>。打印 <span class=\"mono\">" + n + "</span> 頁需要多少時間？（不計準備時間）"),
+          input: parts(numP("", m, { sfx: "分鐘" }), numP("", s, { sfx: "秒" })), show: fmtQ(m) + " 分鐘 " + fmtQ(s) + " 秒",
+          explain: ["打印速度 ppm = 每分鐘頁數（B-12：不是「文件數目」）。", n + " ÷ " + ppm + " = " + Fq(n).div(ppm).dec(4).replace(/0+$/, "").replace(/\.$/, "") + " 分鐘 = " + fmtQ(secs) + " 秒。", fmtQ(secs) + " 秒 = " + fmtQ(m) + " 分鐘 " + fmtQ(s) + " 秒。"],
+          chk: [{ t: "calc", kind: "print", p: { ppm, n }, ans: [m.toString(), s.toString()] }], src: "表1.9 p.31" };
+      } } },
+    { name: "一段時間內可打印多少頁", fn() {
+      for (;;) {
+        const ppm = pick([8, 12, 15, 18, 20, 24, 25, 30, 36, 40]), sec = R(25, 300), ex = Fq(ppm * sec).div(60); if (ex.isInt()) continue; const ans = ex.floor();
+        return { prompt: p_("一部 <span class=\"mono\">" + ppm + " ppm</span> 的打印機在 <span class=\"mono\">" + sec + "</span> 秒內最多可完成多少頁？"),
+          input: parts(numP("最多", ans, { sfx: "頁", traps: [{ v: ex.ceil().toString(), msg: "未印完的一頁不計：「最多可完成多少」要向下取整。" }] })), show: fmtQ(ans) + " 頁",
+          explain: [ppm + " ppm = 每分鐘 " + ppm + " 頁 = 每秒 " + ppm + "/60 頁。", ppm + " × " + sec + " ÷ 60 = " + ex.dec(2) + " → " + fmtQ(ans) + " 頁（向下取整）。"], chk: [{ t: "calc", kind: "pages", p: { ppm, sec }, ans: ans.toString() }], src: "表1.9 p.31" };
+      } } },
+  ] },
+];
+// =================== 題目產生器：軟件（S1–S4） ===================
+const swOf = (c) => Object.keys(KB.sw).filter((x) => KB.sw[x][0] === c);
+const LAYER_PERMS = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+
+const GEN_SW = [
+  { id: "S1", name: "軟件分類", types: [
+    { name: "軟件屬哪一類", fn() {
+      const c = pick([0, 1, 1, 2, 3, 4, 5, 6]), item = pick(swOf(c)), others = sample(range(0, 7).filter((x) => x !== c), 3);
+      const items = shuffle([c, ...others]).map((x) => ({ text: KB.swCat[x], key: ["sw", item, KB.swCat[x]] }));
+      const o = oneQ({ items, want: true, whyOf: () => item + "屬於" + KB.swCat[c] + "。" });
+      return Object.assign(o, { prompt: p_("「" + esc(item) + "」屬於下列哪一類軟件？"), explain: ["系統軟件：操作系統、實用程式、驅動程式——控制硬件運作，為應用軟件提供平台（表3.1）。", "應用軟件：生產力、通訊、媒體開發、教育軟件——讓用戶進行特定工作（p.105）。", item + "：" + KB.swCat[c] + "。"], src: KB.sw[item][1] }); } },
+    { name: "組合題：哪些是系統／應用軟件", fn() {
+      for (;;) {
+        if (coin(0.4)) {
+          const sts = sample(Object.keys(KB.swGen), 3).map((x) => ({ text: x, key: ["swsys", x] })); if (!sts.some((s) => T(s.key))) continue;
+          const o = comboQ(sts); o.explain = sts.map((s, i) => NUMS[i] + " " + s.text + "：" + (T(s.key) ? "系統軟件" : "應用軟件"));
+          return Object.assign(o, { prompt: p_("下列哪項／些是系統軟件？") + stList(sts), src: "表3.1 p.92；2017 甲15、2014 甲21" });
+        }
+        const lab = pick(["系統軟件", "應用軟件"]), sts = sample(Object.keys(KB.sw), 3).map((x) => ({ text: x, key: ["swkind", x, lab] })); if (!sts.some((s) => T(s.key))) continue;
+        const o = comboQ(sts); o.explain = sts.map((s, i) => NUMS[i] + " " + s.text + "：" + KB.swCat[KB.sw[s.text][0]] + "（" + KB.sw[s.text][1] + "）");
+        return Object.assign(o, { prompt: p_("下列哪項／些是" + lab + "？") + stList(sts), src: srcOf(sts.map((x) => x.key)) });
+      } } },
+    { name: "層次圖", fn() {
+      const right = [0, 1, 2], others = sample(LAYER_PERMS.slice(1), 3), sets = shuffle([right, ...others]);
+      const lab = (pm) => pm.map((i) => KB.layer[i]);
+      const opts = sets.map((pm, i) => "ABCD"[i] + ". P " + lab(pm)[0] + "；Q " + lab(pm)[1] + "；R " + lab(pm)[2]);
+      const ai = sets.indexOf(right), why = {}; opts.forEach((o, i) => { if (i !== ai) why[o] = "用戶使用應用軟件；應用軟件運作於系統軟件提供的平台上；系統軟件控制硬件（圖3.1）。"; });
+      const svg = '<div class="xs"><div class="layer"><span>用戶</span><i>使用 ↓</i><span class="q">P</span><i>運作於…提供的平台上 ↓</i><span class="q">Q</span><i>控制 ↓</i><span class="q">R</span></div></div>';
+      return { prompt: p_("下圖顯示用戶、軟件及硬件之間的關係。在一般情況下，P、Q 和 R 會是甚麼？") + svg, input: choiceIn(opts, opts[ai], { why }), show: opts[ai],
+        explain: ["用戶 → 應用軟件（例：Microsoft Word）→ 系統軟件（例：Microsoft Windows）→ 硬件（例：CPU、顯示器）（圖3.1 p.93）。"], chk: [{ t: "layer", sets, ans: ai }], src: "圖3.1 p.93；2022 甲21（題庫答對率 49%）、2013 甲20" }; } },
+  ] },
+  { id: "S2", name: "操作系統功能", types: [
+    { name: "組合題：哪些是 OS 功能", fn() {
+      const sts = factCombo("osf"), o = comboQ(sts);
+      return Object.assign(o, { prompt: p_("下列哪項／些是操作系統的功能？") + stList(sts), src: srcOf(sts.map((x) => x.key)) }); } },
+    { name: "哪項不是 OS 功能", fn() {
+      const want = coin(0.5), items = factOne("osf", want), o = oneQ({ items, want });
+      return Object.assign(o, { prompt: p_("下列哪一項" + (want ? "是" : "<b>不是</b>") + "操作系統的功能？"), explain: ["操作系統的功能：處理程序管理、記憶體管理、周邊設備管理、檔案系統管理、硬碟管理、用戶界面、用戶管理、多工處理（表3.2）。", ...factExplain(items)], src: srcOf(items.map((x) => x.key)) }); } },
+    { name: "用戶界面與操作系統種類", fn() {
+      if (coin(0.5)) { const want = coin(0.6), items = factOne("uifact", want), o = oneQ({ items, want }); return Object.assign(o, { prompt: p_("下列哪一項關於操作系統及用戶界面的描述是" + (want ? "正確" : "<b>不正確</b>") + "的？"), explain: factExplain(items), src: srcOf(items.map((x) => x.key)) }); }
+      const sts = factCombo("uifact"), o = comboQ(sts); return Object.assign(o, { prompt: p_("下列哪項／些關於操作系統及用戶界面的描述是正確的？") + stList(sts), src: srcOf(sts.map((x) => x.key)) }); } },
+  ] },
+  { id: "S3", name: "實用程式與驅動程式", types: [
+    { name: "任務 → 實用程式", fn() {
+      const k = pick(Object.keys(KB.task)), ans = KB.task[k][1], opts = shuffle([ans, ...sample(KB.util.filter((x) => x !== ans), 3)]);
+      const items = opts.map((u) => ({ text: u, key: ["task", k, u] }));
+      const o = oneQ({ items, want: true, whyOf: (x) => x.text + "的功能：" + (Object.values(KB.task).find((v) => v[1] === x.text) || ["見表3.7"])[0] + "。" });
+      return Object.assign(o, { prompt: p_("要「" + KB.task[k][0] + "」，應使用下列哪一個程式？"), explain: [ans + "：" + KB.task[k][0] + "。", "實用程式維護電腦系統並改善效率（p.98）；驅動程式令操作系統可控制特定周邊設備（p.103）。"], src: KB.task[k][2] }); } },
+    { name: "驅動程式陳述", fn() {
+      if (coin(0.5)) { const want = coin(0.6), items = factOne("drv", want), o = oneQ({ items, want }); return Object.assign(o, { prompt: p_("下列哪一項關於驅動程式的描述是" + (want ? "正確" : "<b>不正確</b>") + "的？"), explain: factExplain(items), src: srcOf(items.map((x) => x.key)) }); }
+      const sts = factCombo("drv"), o = comboQ(sts); return Object.assign(o, { prompt: p_("下列哪項／些關於驅動程式的描述是正確的？") + stList(sts), src: srcOf(sts.map((x) => x.key)) }); } },
+    { name: "壓縮與磁碟重組", fn() {
+      const tab = pick(["zipfact", "defrag"]);
+      if (tab === "zipfact") { const sts = factCombo("zipfact"), o = comboQ(sts); return Object.assign(o, { prompt: p_(pick(["莉莉把多個資料夾中的圖像檔案壓縮成一個壓縮檔，再上載至互聯網與朋友分享。", "瑪莉用實用程式把 100 個文件檔組成一個 ZIP 檔案，然後以電郵寄出。"]) + "這樣做有甚麼好處？") + stList(sts), src: srcOf(sts.map((x) => x.key)) }); }
+      const want = coin(0.6), items = factOne("defrag", want, 4), o = oneQ({ items, want });
+      return Object.assign(o, { prompt: p_("下列哪一項關於磁碟重組的描述是" + (want ? "正確" : "<b>不正確</b>") + "的？"), explain: factExplain(items), src: srcOf(items.map((x) => x.key)) }); } },
+  ] },
+  { id: "S4", name: "運作方式", types: [
+    { name: "情境 → 運作方式", fn() {
+      const k = pick(Object.keys(KB.modeScen)), ans = KB.modes[KB.modeScen[k][1]], opts = shuffle([ans, ...sample(KB.modes.filter((x) => x !== ans), 3)]);
+      const items = opts.map((m) => ({ text: m, key: ["mode", k, m] }));
+      const W = { 成批工件處理: "成批處理收集數據後每隔一段時間才一次過處理。", 實時處理: "實時處理一接收數據就馬上處理。", 並行式處理: "並行式處理由同一系統內共用記憶體的多個處理器同時工作。", 分布式處理: "分布式處理以網絡連接多部電腦（記憶體不共用）。", 虛擬化: "虛擬化把電腦硬件分成多個虛擬部分（虛擬機器）。" };
+      const o = oneQ({ items, want: true, whyOf: (x) => W[x.text] });
+      return Object.assign(o, { prompt: p_(esc(KB.modeScen[k][0])) + p_("下列哪一種運作方式最能描述這個系統？"), explain: [ans + "：" + W[ans]], src: KB.modeScen[k][2] }); } },
+    { name: "特徵判斷（組合題）", fn() {
+      const sts = factCombo("modef"), o = comboQ(sts);
+      return Object.assign(o, { prompt: p_("下列哪項／些關於運作方式的陳述是正確的？") + stList(sts), src: srcOf(sts.map((x) => x.key)) }); } },
+    { name: "哪個需要網絡", fn() {
+      if (coin(0.5)) { const items = shuffle(["分布式處理", ...sample(KB.offline.yes, 3)]).map((m) => ({ text: m, key: ["offline", m] })); const o = oneQ({ items, want: false, whyOf: () => "這種運作方式可以在一部電腦內進行，不一定要網絡。" });
+        return Object.assign(o, { prompt: p_("下列哪一種系統依賴網絡連接？"), explain: ["分布式處理系統包含一個高速網絡和多部電腦（p.109）；其他運作方式可以在單一電腦進行。"], src: KB.offline.p }); }
+      for (;;) { const ms = sample([...KB.offline.yes, ...KB.offline.no], 3); if (!ms.some((m) => T(["offline", m]))) continue; const sts = ms.map((m) => ({ text: m, key: ["offline", m] })), o = comboQ(sts);
+        o.explain = ms.map((m, i) => NUMS[i] + " " + m + "：" + (T(["offline", m]) ? "可以在單一電腦執行" : "需要網絡和多部電腦"));
+        return Object.assign(o, { prompt: p_("莉莉只有一部沒有連接任何網絡的電腦。她可以執行下列哪項／些系統？") + stList(sts), src: KB.offline.p }); } } },
+  ] },
+];
+// =================== 分類索引及方法提示 ===================
+const GEN = { dev: GEN_DEV, hw: GEN_HW, calc: GEN_CALC, sw: GEN_SW };
+const HINTS = {
+  E1: [["輸入設備把數據或指令送入電腦；輸出設備把結果送出（影像、紙本、聲音）。", "觸控式屏幕、VR 頭戴式設備、附麥克風的耳機既是輸入亦是輸出設備。", "硬碟、SSD、USB 快閃記憶體、記憶卡、光碟、磁帶是儲存設備，不是輸入或輸出設備。"], "麥克風 → 輸入；揚聲器 → 輸出；觸控式屏幕 → 兩者"],
+  E2: [["dpi：掃描器（像素密度）或打印機（點密度）。ppm：打印機速度。", "Hz 更新率、長寬比、屏幕尺寸（吋）：顯示器。lm（流明）：投影機。rpm：硬碟。", "802.11n／ac：可經無線網絡連接的掃描器、打印機、投影機。", "「24 位元色深」：掃描器、顯示器；「內置 RAM」：掃描器、打印機。"], "5400 rpm → 硬碟（不是投影機，2023 甲17）"],
+  E3: [["先找出情境的關鍵要求（速度、成本、耐久、人數、便攜……）。", "「A 勝於 B 的優點」只計 B 做不到或較差的地方；兩者都有的不算。", "收據 → 感熱式；長期存放的單據 → 激光；高質彩色相片 → 噴墨；多份過底紙 → 點陣。"], "激光勝於噴墨：遇水不模糊、墨盒不堵塞（但兩者都可持久存放）"],
+  H1: [["CU：譯碼、控制數據流動；ALU：算術及邏輯運算。", "PC：下一個指令的位址；MAR：要讀寫的記憶體位址；MDR：讀寫的數據或指令。", "CIR：現行指令；累加器：ALU 的運算結果；快取：經常使用的數據及指令。", "放「位址」的：PC、MAR；放「數據或指令」的：MDR、CIR、累加器。"], "MAR 放 Address、MDR 放 Data"],
+  H2: [["控制匯流排：控制訊號（由處理器發出）。", "位址匯流排：記憶體位址，單向（處理器 → 其他部件）。", "數據匯流排：數據或指令，雙向。", "MAR 經位址匯流排、MDR 經數據匯流排連接主記憶體。"], ""],
+  H3: [["提取：① PC → MAR ② PC 更新為下一個指令的位址 ③ MAR 經位址匯流排到主記憶體 ④ 指令經數據匯流排到 MDR ⑤ MDR → CIR。", "譯碼和執行：⑥ CU 譯碼，ALU 執行；儲存：⑦ 結果存入累加器。", "本頁追蹤題（與筆記一致，按 2012 乙3(d)(i)）：執行時 MAR 改為數據的位址；LOAD／ADD／SUB 把數據讀入 MDR；STORE 把累加器的值經 MDR 寫入記憶體。", "PC 永遠指向「下一個」指令。"], "LOAD 105：MAR = 105，MDR = M[105]，累加器 = M[105]"],
+  H4: [["易失：RAM、快取、寄存器；非易失：ROM 及所有輔助儲存器。", "記憶體階層由快至慢：寄存器 → 快取 → RAM → SSD → 硬碟 → 磁帶；越快，容量越小、每容量價格越高。", "只可順序存取：磁帶；直接存取的設備亦可順序存取。", "ROM 存韌體（BIOS）；RAM 暫存處理中的數據。"], "遞增 = 由低至高；遞減 = 由高至低"],
+  H5: [["時鐘頻率 = 每秒時鐘周期數（不是每秒指令數）。", "核心較多可同時執行較多指令，但不等於「最多可處理的程式數目」，亦不成正比。", "字長 = CPU 每次處理的位元數；記憶體位址的位元數愈多，可接達的記憶體空間愈大。", "快取比 RAM 快。"], "2 GHz：每秒 2 × 10⁹ 個時鐘周期"],
+  X1: [["PROM：編程後不能重寫；EPROM：紫外光刪除；EEPROM：電力刪除；UEFI：可代替 BIOS。", "SATA：連接儲存設備；PCIe：圖形卡、聲效卡、網絡界面卡。", "影片與屏幕長寬比不同 → 加上黑邊或剪裁。"], ""],
+  C1: [["儲存：1 字節 = 8 位元；KB、MB、GB、TB 之間一律 × 1,024。", "頻率：kHz、MHz、GHz 之間 × 1,000；時間：ms、μs、ns、ps 之間 × 1,000。", "大單位 → 小單位：乘；小單位 → 大單位：除。"], "3 GB = 3 × 1,024 = 3,072 MB"],
+  C2: [["先把單位統一（1,024）。", "「最多可放／拍攝多少」→ 向下取整。", "「需要多少個」→ 向上取整；檔案不可分拆時，先計每個設備放得下幾個完整檔案。", "記錄數目：先扣除已用的空間。"], "100 個 300 GB 檔案，2 TB 硬碟：2,048 ÷ 300 → 6 個／硬碟；100 ÷ 6 → 17 個"],
+  C3: [["掃描像素：每邊 = 吋 × dpi。", "未壓縮檔案大小（字節）= 闊 × 高 × 色深 ÷ 8；÷ 1,024² 得 MB。", "像素密度 = √(闊² + 高²) ÷ 對角線吋數。", "長寬比：闊 : 高，以最大公因數約簡。"], "24 吋 1920 × 1080：√(1920² + 1080²) ÷ 24 ≈ 91.79 ppi"],
+  C4: [["時鐘周期 = 1 ÷ 時鐘頻率；1 GHz → 1 ns。", "時鐘周期數 = 時鐘頻率 × 時間。", "打印時間 = 頁數 ÷ ppm（分鐘）；「最多可完成多少頁」向下取整。"], "2.5 GHz：1 ÷ (2.5 × 10⁹) = 0.4 ns"],
+  S1: [["系統軟件：操作系統、實用程式、驅動程式；應用軟件：生產力、通訊、媒體開發、教育軟件。", "用戶 → 應用軟件 → 系統軟件 → 硬件（圖3.1）。"], "7-Zip → 實用程式；Excel → 生產力軟件"],
+  S2: [["表3.2：處理程序管理、記憶體管理、周邊設備管理、檔案系統管理、硬碟管理、用戶界面、用戶管理、多工處理。", "DSE 亦接受：記錄網絡流量、系統保安、電腦之間的通訊、連接網絡。", "不是 OS 功能：數據庫管理、電郵管理、製作網頁、播放視像、偵測病毒。", "GUI 不是必備；CLI 只需鍵盤、用較少資源。"], ""],
+  S3: [["檔案管理、系統監察、病毒偵測、防火牆、數據壓縮、磁碟重組、備份、解除安裝（表3.7）。", "驅動程式為特定操作系統而設計；很多已內置於操作系統。", "磁碟重組加快存取，不會增加可用空間；SSD 一般不需重組。"], ""],
+  S4: [["成批：收集後每隔一段時間處理；實時：一收到便處理。", "並行：同一系統多個處理器，共用記憶體；分布式：網絡上多部電腦，不共用記憶體，需要網絡。", "虛擬化：把硬件分成虛擬部分（虛擬機器），可運行另一個操作系統。"], "ATM 提款 → 實時；月結單 → 成批"],
+};
+/*GEN:END*/
+// =================== 介面 ===================
+const $ = (id) => document.getElementById(id);
+const h = (tag, attrs = {}, html) => { const e = document.createElement(tag); Object.entries(attrs).forEach(([k, v]) => { if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else e.setAttribute(k, v); }); if (html !== undefined) e.innerHTML = html; return e; };
+// localStorage 只存「分類選擇」「連續答對」「最高紀錄」；鍵名以 blab- 開頭；失敗時照常運作
+const LS = { get(k, d) { try { const v = localStorage.getItem("blab-" + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem("blab-" + k, JSON.stringify(v)); } catch (e) {} } };
+const MODES = [
+  { id: "dev", name: "設備", note: "第 1 章：輸入、輸出及儲存設備的分類；規格屬哪種設備；按情境選設備及「A 勝於 B 的優點」。",
+    tips: "<b>答題提醒：</b>「A 勝於 B 的優點」只答 B 做不到或較差的地方（例題1.2(1)）；答案要結合情境，不可只寫「更快、更方便」（2023 乙5(a) 報告）。" },
+  { id: "hw", name: "硬件", note: "第 2 章：CPU 部件與寄存器、系統匯流排、機器周期（提取─譯碼─執行周期）、記憶體與儲存、CPU 規格。",
+    tips: "<b>答題提醒：</b>DSE 稱現行指令寄存器（CIR）為「指令寄存器（IR）」；時鐘頻率寫「每秒的時鐘周期數目」，不要寫「每秒執行的指令數目」（2016 甲20）。" },
+  { id: "calc", name: "計算", note: "儲存容量（1 KB = 1,024 字節）、單位換算、掃描影像、像素密度、長寬比、時鐘周期、打印時間。點陣圖、音頻、視頻的檔案大小及傳輸時間見《位元練習室》。",
+    tips: "<b>答題提醒：</b>每步一行，先寫算式再寫答案及單位（2017 乙2(b)、2018 乙3(b) 評卷須展示計算）；儲存容量用 1,024（2020 乙3(a)(ii) 報告：弱者錯用 1,000）。" },
+  { id: "sw", name: "軟件", note: "第 3 章：系統軟件與應用軟件、操作系統功能及用戶界面、實用程式與驅動程式、運作方式（成批、實時、並行、分布式、虛擬化）。",
+    tips: "<b>答題提醒：</b>用準確術語：寫「操作系統」不寫「系統」（2025 乙7(b)(ii) 報告）；判斷成批／實時要說明「何時處理」，不可只抄情境（2023 乙5(b)(i)）。" },
+];
+const S = { mode: "dev", q: null, cat: null, type: null, n: 0, answered: false, right: 0, total: 0, streak: LS.get("streak", 0), best: LS.get("best", 0), sel: null, on: {} };
+if (typeof S.streak !== "number") S.streak = 0; if (typeof S.best !== "number") S.best = 0;
+const CATS = (m) => GEN[m];
+const hsh = (() => { try { return location.hash.replace("#", ""); } catch (e) { return ""; } })(); if (MODES.some((x) => x.id === hsh)) S.mode = hsh;
+MODES.forEach((m) => { S.on[m.id] = new Set(CATS(m.id).filter((c) => !c.ext).map((c) => c.id)); });
+(() => { const saved = LS.get("filter", null); if (!saved || typeof saved !== "object") return; MODES.forEach((m) => { if (!Array.isArray(saved[m.id])) return; const ids = new Set(CATS(m.id).map((c) => c.id)); S.on[m.id] = new Set(saved[m.id].filter((x) => ids.has(x))); }); })();
+const saveFilter = () => { const o = {}; MODES.forEach((m) => { o[m.id] = [...S.on[m.id]]; }); LS.set("filter", o); };
+const md = (s) => esc(s).replace(/`([^`]+)`/g, (m, a) => "<code>" + a + "</code>");
+const hintHTML = (c) => { const x = HINTS[c.id]; if (!x) return ""; return "<h4>方法：" + esc(c.name) + "</h4><ol>" + x[0].map((t) => "<li>" + esc(t) + "</li>").join("") + "</ol>" + (x[1] ? '<div class="ex">例：' + esc(x[1]) + "</div>" : ""); };
+const nav = $("modes");
+MODES.forEach((m) => { const b = h("button", { type: "button", "data-id": m.id, text: m.name }); b.addEventListener("click", () => { if (S.mode === m.id) return; S.mode = m.id; try { history.replaceState(null, "", "#" + m.id); } catch (e) {} renderNav(); renderFilter(); next(); buildExplorer(); }); nav.appendChild(b); });
+function renderNav() { [...nav.children].forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === S.mode))); const m = MODES.find((x) => x.id === S.mode); $("mode-note").textContent = m.note; $("tips").innerHTML = m.tips;
+  $("explorer").hidden = !(S.mode === "hw" || S.mode === "calc"); $("ex-title").textContent = S.mode === "hw" ? "機器周期模擬器：逐步看寄存器的變化" : "單位對照表"; }
+function renderCount() { const all = CATS(S.mode).length, on = S.on[S.mode].size, el = $("fcount"); el.textContent = on === all ? "全部 " + all + " 個分類" : "已選 " + on + "／" + all + " 個分類"; el.classList.toggle("partial", on !== all); }
+function renderFilter() {
+  const box = $("fchips"); box.innerHTML = "";
+  CATS(S.mode).forEach((c) => { const b = h("button", { type: "button", class: "chip", "aria-pressed": String(S.on[S.mode].has(c.id)), "data-id": c.id }, '<span class="cid">' + c.id + "</span> " + esc(c.name) + (c.ext ? '<span class="tag">延伸</span>' : ""));
+    b.addEventListener("click", () => { const set = S.on[S.mode]; set.has(c.id) ? set.delete(c.id) : set.add(c.id); b.setAttribute("aria-pressed", String(set.has(c.id))); saveFilter(); renderCount(); afterFilter(); }); box.appendChild(b); });
+  renderCount();
+}
+function afterFilter() { if (!S.on[S.mode].size) { showEmpty(); return; } if (!S.q || !S.cat || !S.on[S.mode].has(S.cat.id)) next(); }
+$("f-all").addEventListener("click", () => { S.on[S.mode] = new Set(CATS(S.mode).map((c) => c.id)); saveFilter(); renderFilter(); afterFilter(); });
+$("f-none").addEventListener("click", () => { S.on[S.mode] = new Set(); saveFilter(); renderFilter(); afterFilter(); });
+function renderScore() { $("sc-right").textContent = S.right; $("sc-total").textContent = S.total; $("sc-streak").textContent = S.streak; $("sc-best").textContent = S.best; }
+function showEmpty() { S.q = null; S.cat = null; $("qtype").textContent = ""; $("qno").textContent = "";
+  $("prompt").innerHTML = '<p class="empty">請在上方「分類篩選」選擇至少一個分類。</p>'; $("input-area").innerHTML = ""; $("feedback").hidden = true;
+  $("btn-check").disabled = true; $("btn-show").disabled = true; $("btn-next").disabled = true; $("filter").open = true; $("btn-hint").hidden = true; $("hintbox").hidden = true; }
+
+// ---------- 作答區 ----------
+function renderInput(q) {
+  const area = $("input-area"); area.innerHTML = ""; S.sel = null;
+  if (q.input.kind === "choice") {
+    const box = h("div", { class: "choices" + (q.input.opts.length > 4 || q.input.opts.some((o) => o.length > 22) ? " wide" : "") });
+    q.input.opts.forEach((o) => { const b = h("button", { type: "button", class: "choice", "aria-pressed": "false", text: o });
+      b.addEventListener("click", () => { if (S.answered) return; S.sel = o; box.querySelectorAll(".choice").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }); box.appendChild(b); });
+    area.appendChild(box); return;
+  }
+  const wrap = h("div", { class: "parts" });
+  q.input.parts.forEach((p, k) => {
+    const row = h("div", { class: "part" }), id = "ans-" + k, cls = p.type === "reg" && p.fmt === "text" ? "l" : p.type === "reg" && p.fmt === "bin" ? "b" : "n";
+    row.innerHTML = (p.label ? '<label for="' + id + '">' + esc(p.label) + "</label>" : "") + '<input id="' + id + '" type="text" class="' + cls + '" data-p="' + k + '" autocomplete="off" autocapitalize="off" spellcheck="false"' + (p.type === "num" ? ' inputmode="decimal"' : p.type === "order" || (p.type === "reg" && p.fmt !== "text") ? ' inputmode="numeric"' : "") + (p.label ? "" : ' aria-label="' + esc(p.sfx || "答案") + '"') + (p.ph ? ' placeholder="' + esc(p.ph) + '"' : p.type === "reg" && p.fmt === "bin" ? ' placeholder="0000 0000"' : "") + ">" + (p.sfx ? '<span class="sfx">' + esc(p.sfx) + "</span>" : "") + (p.dp ? '<span class="sfx">（兩位小數）</span>' : "");
+    wrap.appendChild(row);
+  });
+  area.appendChild(wrap);
+  area.querySelectorAll("input").forEach((inp) => inp.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); S.answered ? next() : check(); } }));
+}
+const readParts = (q) => q.input.parts.map((p, k) => $("input-area").querySelector('input[data-p="' + k + '"]').value);
+
+// ---------- 出題、核對 ----------
+function next() {
+  const pool = CATS(S.mode).filter((c) => S.on[S.mode].has(c.id)); if (!pool.length) { showEmpty(); return; }
+  let c = pick(pool); if (pool.length > 1 && S.cat && c.id === S.cat.id && coin(0.7)) c = pick(pool.filter((x) => x.id !== S.cat.id));
+  const t = pick(c.types); let q = null;
+  for (let i = 0; i < 8 && !q; i++) { try { q = t.fn(); } catch (e) { q = null; } }
+  if (!q) { $("prompt").innerHTML = '<p class="empty">未能產生題目，請按「跳過此題」。</p>'; return; }
+  S.cat = c; S.type = t; S.q = q; S.n++; S.answered = false; $("btn-next").disabled = false;
+  $("qtype").textContent = MODES.find((m) => m.id === S.mode).name + " · " + c.id + " " + c.name + " · " + t.name; $("qno").textContent = "第 " + S.n + " 題";
+  $("hintbox").innerHTML = hintHTML(c); $("btn-hint").hidden = !$("hintbox").innerHTML; setHint(false); updNext();
+  $("prompt").innerHTML = q.prompt;
+  renderInput(q); $("feedback").hidden = true; $("btn-check").disabled = false; $("btn-show").disabled = false;
+}
+function finish(correct, revealed, results, raws) {
+  S.answered = true; $("btn-check").disabled = true; $("btn-show").disabled = true;
+  if (!revealed) { S.total++; if (correct) { S.right++; S.streak++; if (S.streak > S.best) S.best = S.streak; } else S.streak = 0; } else S.streak = 0;
+  LS.set("streak", S.streak); LS.set("best", S.best); renderScore();
+  const q = S.q, area = $("input-area"); let extra = "";
+  if (q.input.kind === "choice") {
+    area.querySelectorAll(".choice").forEach((b) => { if (b.textContent === q.input.answer) b.classList.add("ok"); else if (b.textContent === S.sel) b.classList.add("no"); });
+    if (!revealed && !correct && q.input.why && q.input.why[S.sel]) extra += '<p class="trap">' + md(q.input.why[S.sel]) + "</p>";
+  } else {
+    q.input.parts.forEach((p, k) => {
+      const r = results ? results[k] : null, x = area.querySelector('input[data-p="' + k + '"]'); x.readOnly = true; if (r) x.classList.add(r.ok ? "ok" : "no");
+      if (r && !r.ok && !revealed) { const tm = GR.trap(p, raws[k]); if (tm) extra += '<p class="trap">' + md(tm) + "</p>"; if (r.msg) extra += '<p class="trap">' + md(r.msg) + "</p>"; }
+    });
+  }
+  const fb = $("feedback"); fb.className = "feedback " + (correct ? "good" : "bad"); fb.hidden = false;
+  const head = revealed ? "答案" : correct ? "答對了" : "未答對";
+  fb.innerHTML = '<div class="verdict">' + head + (q.show ? "：" + esc(q.show) : "") + "</div>" + extra + '<ol class="steps">' + (q.explain || []).filter(Boolean).map((x) => "<li>" + md(x) + "</li>").join("") + "</ol>" + (q.after || "") + (q.src ? '<p class="src">' + esc(srcLine(q.src)) + "</p>" : "") + (q.sim ? '<div class="actions"><button type="button" class="btn ghost sm" id="btn-sim">用機器周期模擬器逐步看 ↓</button></div>' : "");
+  const bs = $("btn-sim"); if (bs) bs.addEventListener("click", () => { SIM.load(q.sim); $("explorer").open = true; buildExplorer(); try { $("explorer").scrollIntoView({ block: "start" }); } catch (e) {} });
+  updNext(); try { $("btn-next").focus({ preventScroll: true }); } catch (e) {}
+}
+function warn(msg) { const fb = $("feedback"); fb.className = "feedback bad"; fb.hidden = false; fb.innerHTML = '<div class="verdict">' + msg + "</div>"; }
+function check() {
+  if (S.answered || !S.q) return; const q = S.q;
+  if (q.input.kind === "choice") { if (S.sel === null) return warn("請先選擇一個答案，或按「顯示答案」。"); return finish(S.sel === q.input.answer, false); }
+  const raws = readParts(q); if (q.input.parts.some((p, k) => GR.isBlank(p, raws[k]))) return warn("請先完成所有空格，或按「顯示答案」。");
+  const results = q.input.parts.map((p, k) => GR.grade(p, raws[k]));
+  finish(results.every((r) => r.ok), false, results, raws);
+}
+function setHint(open) { $("hintbox").hidden = !open; $("btn-hint").setAttribute("aria-expanded", String(open)); }
+$("btn-hint").addEventListener("click", () => setHint($("hintbox").hidden));
+$("btn-check").addEventListener("click", check);
+$("btn-show").addEventListener("click", () => { if (!S.answered && S.q) finish(false, true, null, null); });
+let skipTimer = null;
+function updNext(confirming) { const b = $("btn-next"); clearTimeout(skipTimer); b.classList.remove("primary", "ghost", "skip", "confirm");
+  if (S.answered) { b.classList.add("primary"); b.textContent = "下一題 →"; }
+  else if (confirming) { b.classList.add("ghost", "confirm"); b.textContent = "再按一次確認跳過"; skipTimer = setTimeout(() => updNext(false), 3000); }
+  else { b.classList.add("ghost", "skip"); b.textContent = "跳過此題"; } }
+$("btn-next").addEventListener("click", () => { if (S.answered || $("btn-next").classList.contains("confirm")) return next(); updNext(true); });
+
+// =================== 機器周期模擬器（試算區） ===================
+const SIM_DEMO = { mem: { 100: "LOAD 105", 101: "ADD 106", 102: "STORE 107", 105: 23, 106: 42, 107: 0 }, pc: 100, acc: 0, addrs: [100, 101, 102, 105, 106, 107], bin: false };
+const SIM_DESC = ["① PC 的位址複製至 MAR", "② PC 更新為下一個指令的位址", "③ MAR 的位址經位址匯流排送到主記憶體", "④ 指令經數據匯流排由主記憶體送到 MDR", "⑤ MDR 的指令複製至 CIR", "⑥ CU 譯碼，ALU 執行：MAR ← 數據的位址；MDR ← 數據（STORE：MDR ← 累加器，再寫入記憶體）", "⑦ 結果存入累加器（STORE 沒有改變累加器）"];
+const SIM = { P: SIM_DEMO, i: -1, snaps: [], custom: false,
+  load(p) { this.P = p; this.custom = p !== SIM_DEMO; this.i = -1; const n = p.addrs.filter((a) => typeof p.mem[a] === "string").length; try { this.snaps = CPU.run(p.mem, p.pc, p.acc, n).snaps; } catch (e) { this.snaps = []; } } };
+SIM.load(SIM_DEMO);
+function buildExplorer() {
+  const body = $("explorer-body"); body.innerHTML = "";
+  if (S.mode === "calc") {
+    body.innerHTML = '<div class="sbx">' + mini(["項目", "換算"], [["儲存容量", "1 字節 = 8 位元；1 KB = 1,024 字節；1 MB = 1,024 KB；1 GB = 1,024 MB；1 TB = 1,024 GB"], ["時鐘頻率", "1 kHz = 10³ Hz；1 MHz = 10⁶ Hz；1 GHz = 10⁹ Hz"], ["時間", "1 ms = 10⁻³ 秒；1 μs = 10⁻⁶ 秒；1 ns = 10⁻⁹ 秒；1 ps = 10⁻¹² 秒"], ["時鐘周期", "時鐘周期 = 1 ÷ 時鐘頻率"], ["掃描影像", "每邊像素 = 吋 × dpi；未壓縮檔案大小 = 闊 × 高 × 色深 ÷ 8（字節）"], ["像素密度", "√(闊² + 高²) ÷ 屏幕尺寸（吋），單位 ppi"], ["傳輸率（只作對照，屬 C a）", "1 kbps = 1,000 bps；1 Mbps = 10⁶ bps；GB 是字節、Gbps 是位元"]], { th: true, cls: "ref" }) + '<p class="small">出處：教科書 p.17、p.29、表2.11 p.68、p.75；傳輸率及檔案傳輸時間見《位元練習室》。</p></div>';
+    return;
+  }
+  if (S.mode !== "hw") return;
+  const P0 = SIM.P, s = SIM.i >= 0 ? SIM.snaps[SIM.i] : null, R0 = s || { PC: P0.pc, MAR: null, MDR: null, CIR: null, ACC: P0.acc }, mem = s ? s.mem : P0.mem;
+  const hl = s ? [s.step <= 4 ? (s.step >= 3 ? s.MAR : null) : s.step >= 6 ? s.MAR : null].filter((x) => x !== null) : [];
+  const desc = s ? "指令 " + (s.ins + 1) + "：" + SIM_DESC[s.step - 1] : "開始：PC = " + (P0.bin ? bin8(P0.pc) : P0.pc) + "，累加器 = " + (P0.bin ? bin8(P0.acc) : P0.acc) + "。按「下一步」逐步執行。";
+  body.innerHTML = '<div class="sbx"><p class="small">' + (SIM.custom ? "以下是上一題的程式。" : "以下是示範程式。") + "每按一次「下一步」執行表2.9 的一個步驟（執行階段按 2012 乙3(d)(i)，與筆記相同）。</p>" +
+    '<div class="row2">' + memHTML(mem, P0.addrs, P0.bin, hl) + '<div class="simr">' + regHTML(R0, P0.bin) + '<div class="msg" id="sim-desc">' + esc(desc) + "</div></div></div>" +
+    '<div class="row"><button type="button" class="btn primary sm" id="sim-step"' + (SIM.i >= SIM.snaps.length - 1 ? " disabled" : "") + '>下一步</button><button type="button" class="btn ghost sm" id="sim-reset">重新開始</button>' + (SIM.custom ? '<button type="button" class="btn ghost sm" id="sim-demo">改用示範程式</button>' : "") + "</div></div>";
+  $("sim-step").addEventListener("click", () => { if (SIM.i < SIM.snaps.length - 1) { SIM.i++; buildExplorer(); } });
+  $("sim-reset").addEventListener("click", () => { SIM.i = -1; buildExplorer(); });
+  if ($("sim-demo")) $("sim-demo").addEventListener("click", () => { SIM.load(SIM_DEMO); buildExplorer(); });
+}
+$("explorer").addEventListener("toggle", () => { if ($("explorer").open) buildExplorer(); });
+
+// 測試用：以正確或錯誤答案填寫目前的題目（不會自動核對）
+window.__blab = {
+  fill(ok) { const q = S.q; if (!q || S.answered) return false; const area = $("input-area");
+    if (q.input.kind === "choice") { const t = ok ? q.input.answer : q.input.opts.find((o) => o !== q.input.answer); [...area.querySelectorAll(".choice")].find((b) => b.textContent === t).click(); return true; }
+    q.input.parts.forEach((p, k) => { area.querySelector('input[data-p="' + k + '"]').value = GR.fill(p, ok || k > 0); }); return true; },
+  only(id) { S.on[S.mode] = new Set([id]); renderFilter(); next(); }, cats: () => CATS(S.mode).map((c) => c.id), types: (id) => CATS(S.mode).find((c) => c.id === id).types.map((t) => t.name),
+  onlyType(id, name) { S.on[S.mode] = new Set([id]); renderFilter(); for (let i = 0; i < 60; i++) { next(); if (S.type.name === name) return true; } return false; },
+  mode: (m) => [...nav.children].find((b) => b.dataset.id === m).click(),
+  state: () => ({ mode: S.mode, cat: S.cat && S.cat.id, type: S.type && S.type.name, answered: S.answered, right: S.right, total: S.total, streak: S.streak, best: S.best, on: [...S.on[S.mode]], kind: S.q && S.q.input.kind }),
+};
+renderNav(); renderFilter(); renderScore(); next();
+})();
+</script>
+
+</body></html>

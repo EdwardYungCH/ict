@@ -1,0 +1,1657 @@
+<!doctype html><html lang="zh-Hant-HK"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style></head><body>
+<title>SQL 進階與數據庫設計練習室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --bg:#F0EFF5; --surface:#FFFFFF; --sunk:#E6E4EF; --ink:#1D1B2E; --muted:#5D5A73; --line:#CFCCDD;
+  --accent:#4338A8; --accent-ink:#FFFFFF; --led:#D9822B; --led-ink:#1E1205;
+  --str:#A04A0C; --kw:#4338A8; --good:#1F7A3A; --good-bg:#E2F2E6; --bad:#B3261E; --bad-bg:#FBE6E4;
+  --sel:#E0DDF6; --del:#F6D9D6; --chg:#FBE9C6; --nul:#8E8AA3; --ext:#8A3B7A; --ext-bg:#F4DDEF;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12111B; --surface:#1B1A28; --sunk:#252336; --ink:#E7E5F2; --muted:#A3A0B8; --line:#353348;
+    --accent:#A49CF5; --accent-ink:#14122A; --led:#F0A65A; --led-ink:#1E1205;
+    --str:#F2B880; --kw:#B3ACFA; --good:#62D387; --good-bg:#16301F; --bad:#FF8E84; --bad-bg:#3B1B19;
+    --sel:#2E2A52; --del:#4A2422; --chg:#45361A; --nul:#7D7A93; --ext:#E7A6D8; --ext-bg:#43263D; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12111B; --surface:#1B1A28; --sunk:#252336; --ink:#E7E5F2; --muted:#A3A0B8; --line:#353348;
+  --accent:#A49CF5; --accent-ink:#14122A; --led:#F0A65A; --led-ink:#1E1205;
+  --str:#F2B880; --kw:#B3ACFA; --good:#62D387; --good-bg:#16301F; --bad:#FF8E84; --bad-bg:#3B1B19;
+  --sel:#2E2A52; --del:#4A2422; --chg:#45361A; --nul:#7D7A93; --ext:#E7A6D8; --ext-bg:#43263D; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;margin:0;overflow-x:hidden}
+.wrap{max-width:920px;margin:0 auto;padding-inline:16px;padding-block:24px 48px;display:flex;flex-direction:column;gap:20px}
+.wrap>*,.card>*{min-width:0}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--muted)}
+h1{font-size:30px;font-weight:900;margin:0;letter-spacing:.02em;text-wrap:balance}
+h1 .bits{display:inline-block;white-space:nowrap;font-family:var(--mono);font-weight:600;color:var(--accent);font-size:.58em;margin-left:.4em}
+.score{display:flex;gap:16px;font-variant-numeric:tabular-nums}
+.score div{display:flex;flex-direction:column;align-items:flex-end}
+.score b{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1.1}
+.score span{font-size:12px;color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav button{font:inherit;font-size:15px;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+nav button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.topic-note{font-size:14px;color:var(--muted);margin:-6px 0 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.qhead{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.qtype{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--accent)}
+.qno{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.qright{display:flex;align-items:center;gap:12px;margin-left:auto}
+.hintbtn{font:inherit;font-size:14px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--led);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.hintbtn::before{content:"?";display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--led);color:var(--led-ink);font-family:var(--mono);font-size:12px}
+.hintbtn[aria-expanded="true"]{background:var(--led);color:var(--led-ink)}
+.hintbox{border:1px solid var(--led);border-left-width:4px;border-radius:10px;padding:12px 14px;background:var(--sunk);font-size:15px;line-height:1.7;display:flex;flex-direction:column;gap:6px}
+.hintbox h4{margin:0;font-size:13px;letter-spacing:.06em;color:var(--muted)}
+.hintbox ol{margin:0;padding-left:1.3em}
+.hintbox .ex{font-family:var(--mono);font-size:14px;background:var(--surface);border-radius:8px;padding:6px 10px;max-width:100%;overflow-x:auto;white-space:pre}
+.prompt{font-size:17px;line-height:1.7;display:flex;flex-direction:column;gap:10px;min-width:0}
+.prompt p{margin:0}
+.small{font-size:14px;color:var(--muted)}
+.prompt p.small{font-size:14px}
+.xs{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
+code{font-family:var(--mono);font-size:.92em;background:var(--sunk);border-radius:5px;padding:1px 5px;overflow-wrap:anywhere}
+.schema{font-family:var(--mono);font-size:15px;font-weight:500;overflow-wrap:anywhere}
+.schema u{text-decoration-thickness:2px;text-underline-offset:3px}
+ul.fds{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:2px}
+/* 數據表、SQL */
+.tset{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:flex-start}
+.tset>.xs{flex:0 1 auto}
+table.dbt,table.mini{border-collapse:collapse;font-size:14px;background:var(--surface)}
+.dbt caption{caption-side:top;text-align:left;font-family:var(--mono);font-weight:600;font-size:13px;color:var(--muted);padding-bottom:2px}
+.dbt th,.dbt td,.mini th,.mini td{border:1px solid var(--line);padding:4px 10px;white-space:nowrap}
+.dbt th{background:var(--sunk);font-family:var(--mono);font-weight:600;font-size:13px}
+.dbt th.pk{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+.dbt td{font-family:var(--mono)}
+.dbt td.n{text-align:right}
+.dbt tr.hl td{background:var(--sel)}
+.dbt tr.del td{background:var(--del);text-decoration:line-through}
+.dbt td.chg{background:var(--chg)}
+.nul{color:var(--nul);font-family:var(--mono);font-size:.86em;letter-spacing:.04em}
+.mini th{background:var(--sunk);font-weight:500;font-size:13px}
+.mini td{text-align:center;font-family:var(--mono);white-space:normal;min-width:3em}
+.mini tr.hl td{background:var(--sel)}
+.mini .ok{color:var(--good);font-weight:700}.mini .no{color:var(--bad);font-weight:700}.nl{color:var(--nul);font-size:12px;font-family:var(--mono)}
+.sqlc{font-family:var(--mono);font-size:15px;line-height:1.7;background:var(--sunk);border-radius:10px;padding:10px 14px;margin:0;overflow-x:auto;max-width:100%}
+.sqlc .ln{display:block;white-space:pre}
+.kw{color:var(--kw);font-weight:700}
+.st{color:var(--str)}
+/* 實體關係圖 */
+.erbox{max-width:460px;width:100%}
+svg.er{width:100%;height:auto;display:block;font-family:var(--sans)}
+.er .ere,.er .erd{fill:var(--surface);stroke:var(--ink);stroke-width:1.6}
+.er .erl,.er .erm{stroke:var(--ink);stroke-width:1.6}
+.er .erc{fill:var(--surface);stroke:var(--ink);stroke-width:1.6}
+.er .ern{fill:var(--ink);font-size:14px;font-weight:500}
+.er .ert{fill:var(--ink);font-size:14px;font-weight:700;font-family:var(--mono)}
+.er .erq{fill:var(--accent);font-size:15px;font-weight:700}
+/* 作答 */
+.parts{display:flex;flex-direction:column;gap:12px}
+.part{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.part>label,.part>.plab{font-size:15px;color:var(--ink);overflow-wrap:anywhere;min-width:0}
+input[type=text]{font-family:var(--mono);font-size:17px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:min(260px,100%)}
+input[type=text].n{width:7em;text-align:center}
+select{font:inherit;font-size:15px;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);max-width:100%}
+input.ok,select.ok,.gridin input.ok{border-color:var(--good)!important;background:var(--good-bg)!important}
+input.no,select.no,.gridin input.no{border-color:var(--bad)!important;background:var(--bad-bg)!important}
+table.gridin{border-collapse:collapse;font-family:var(--mono)}
+.gridin th{background:var(--sunk);font-size:13px;font-weight:600;border:1px solid var(--line);padding:4px 8px;white-space:nowrap}
+.gridin td{border:1px solid var(--line);padding:3px;white-space:nowrap;font-size:14px}
+.gridin td.fx{padding:4px 8px}
+.gridin input{font-family:var(--mono);font-size:15px;width:8em;padding:5px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:8px;width:100%}
+.choices.wide{grid-template-columns:1fr}
+.choice{font:inherit;text-align:left;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;min-width:0;overflow-wrap:anywhere;display:flex;gap:10px;align-items:flex-start}
+.choice .lt{font-family:var(--mono);font-weight:700;color:var(--accent);flex:0 0 auto}
+.choice .cb{min-width:0;flex:1 1 auto}
+.choice .sqlc{background:transparent;padding:0;font-size:14px}
+.choice[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.choice.ok{border-color:var(--good);background:var(--good-bg)}
+.choice.no{border-color:var(--bad);background:var(--bad-bg)}
+.choice.m{font-family:var(--mono);font-size:15px}
+.btn{font:inherit;font-weight:700;padding:10px 18px;border-radius:10px;border:1px solid var(--accent);cursor:pointer}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.sm{padding:6px 12px;font-size:14px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#btn-next{margin-left:auto}
+#btn-next.skip{border-color:var(--line);color:var(--muted);font-weight:500}
+#btn-next.confirm{border-color:var(--bad);color:var(--bad);font-weight:700}
+.feedback{border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.feedback.good{background:var(--good-bg)}
+.feedback.bad{background:var(--bad-bg)}
+.feedback .verdict{font-weight:700;overflow-wrap:anywhere}
+.feedback.good .verdict{color:var(--good)}
+.feedback.bad .verdict{color:var(--bad)}
+.feedback .trap{margin:0;padding:8px 12px;border-left:4px solid var(--led);background:var(--surface);border-radius:6px;font-size:15px}
+.feedback code,.feedback .sqlc{background:var(--surface)}
+.iolab{font-size:13px;color:var(--muted);margin:0 0 4px}
+.steps{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.steps li{line-height:1.6;overflow-wrap:anywhere}
+.tips{font-size:14px;color:var(--muted);border-top:1px dashed var(--line);padding-top:14px}
+.tips b{color:var(--ink)}
+/* 篩選 */
+.filter{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.filter summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:10px 14px;font-weight:700;font-size:15px}
+.filter summary::-webkit-details-marker{display:none}
+.filter summary::after{content:"▾";color:var(--muted);transition:transform .15s}
+.filter[open] summary::after{transform:rotate(180deg)}
+.fcount{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--muted);margin-left:auto}
+.fcount.partial{color:var(--accent);font-weight:600}
+.fbody{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.fbody>*{min-width:0}
+.fact{display:flex;flex-wrap:wrap;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:14px;line-height:1.4;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sunk);border-color:var(--accent);color:var(--ink);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip[aria-pressed="true"]::before{content:"✓ ";color:var(--accent);font-weight:700}
+.chip .cid{font-family:var(--mono);font-size:12px;font-weight:600;margin-right:4px}
+.chip .tag{font-size:11px;font-weight:700;color:var(--ext);background:var(--ext-bg);border-radius:999px;padding:0 6px;margin-left:6px}
+.mini-b{font:inherit;font-size:13px;padding:4px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer}
+.fhint{margin:0;font-size:12px;color:var(--muted)}
+.empty{color:var(--muted);font-size:16px}
+/* 試算區 */
+.sbx{display:flex;flex-direction:column;gap:10px;min-width:0}
+.sbx .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sbx textarea,.sbx input[type=text]{display:block;font-family:var(--mono);font-size:15px;line-height:1.55;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.sbx textarea{min-height:6.5em;resize:vertical}
+.msg{font-size:15px;background:var(--sunk);border-radius:10px;padding:8px 12px;line-height:1.6;overflow-wrap:anywhere;display:flex;flex-direction:column;gap:6px}
+.msg.err{background:var(--bad-bg);color:var(--bad);font-weight:700}
+.msg.ok{background:var(--good-bg)}
+@media (max-width:480px){h1{font-size:24px}.prompt{font-size:16px}.card{padding:18px 14px 16px}.score{gap:12px}.score b{font-size:19px}.fbody{padding:0 10px 12px}.sqlc{font-size:14px}.gridin input{width:6.5em}}
+@media (prefers-reduced-motion:reduce){.filter summary::after{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">HKDSE ICT · 選修部分 A 數據庫</span>
+      <h1>SQL 進階與數據庫設計練習室<span class="bits">⋈ 3NF</span></h1>
+    </div>
+    <div class="score" aria-live="polite">
+      <div><b id="sc-right">0</b><span>答對</span></div>
+      <div><b id="sc-total">0</b><span>已答</span></div>
+      <div><b id="sc-streak">0</b><span>連續答對</span></div>
+      <div><b id="sc-best">0</b><span>最高紀錄</span></div>
+    </div>
+  </header>
+
+  <nav id="modes" aria-label="練習類別"></nav>
+  <p class="topic-note" id="mode-note"></p>
+
+  <details class="filter" id="filter">
+    <summary><span>分類篩選</span><span class="fcount" id="fcount"></span></summary>
+    <div class="fbody">
+      <div class="fact"><button type="button" class="mini-b" id="f-all">全選</button><button type="button" class="mini-b" id="f-none">全部取消</button></div>
+      <div class="chips" id="fchips"></div>
+      <p class="fhint">點按分類可加入或移除；標「延伸」的分類屬教科書延伸內容，預設不選。選擇會記在這部裝置上。每題的數據都是隨機產生的，答案由頁內的計算引擎得出。</p>
+    </div>
+  </details>
+
+  <section class="card" id="card">
+    <div class="qhead"><span class="qtype" id="qtype"></span><div class="qright"><span class="qno" id="qno"></span><button class="hintbtn" id="btn-hint" type="button" aria-expanded="false" aria-controls="hintbox">提示：方法</button></div></div>
+    <div class="hintbox" id="hintbox" hidden></div>
+    <div class="prompt" id="prompt"></div>
+    <div id="input-area"></div>
+    <div class="actions">
+      <button class="btn primary" id="btn-check" type="button">核對答案</button>
+      <button class="btn ghost" id="btn-show" type="button">顯示答案</button>
+      <button class="btn ghost skip" id="btn-next" type="button">跳過此題</button>
+    </div>
+    <div id="feedback" aria-live="polite" hidden></div>
+    <div class="tips" id="tips"></div>
+  </section>
+
+  <details class="filter" id="explorer">
+    <summary><span id="ex-title">試算區</span></summary>
+    <div class="fbody" id="explorer-body"></div>
+  </details>
+
+  <p class="topic-note">本頁的 SQL 規則按 MySQL 8.0（字串比較及 LIKE 不分大小寫、/ 是實數除法、聚合函數不計 NULL、ONLY_FULL_GROUP_BY）；語句用 DSE 卷二寫法（單引號、% _、MINUS）。FULL JOIN 及 MINUS 是 DSE 附頁的寫法，MySQL 不支援（上機改用 LEFT JOIN … UNION … RIGHT JOIN 及 EXCEPT／NOT IN）。實體關係圖記法按 DSE 2025 附頁。</p>
+</div>
+<script>
+(() => {
+/*GEN:BEGIN*/
+// ====== 共用小工具 ======
+const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sample = (a, n) => shuffle(a).slice(0, n);
+const coin = (p = 0.5) => Math.random() < p;
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const range = (a, b) => { const o = []; for (let i = a; i < b; i++) o.push(i); return o; };
+const uniq = (a) => [...new Set(a)];
+const dp2 = (x) => typeof x !== "number" || (Number.isFinite(x) && Math.abs(x * 100 - Math.round(x * 100)) < 1e-7);
+const fmtNum = (x) => { if (Object.is(x, -0)) return "0"; if (Number.isInteger(x) && Math.abs(x) < 1e15) return String(x); return String(parseFloat(x.toPrecision(12))); };
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const sameSet = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+// =================== SQL 引擎（模擬 MySQL 8.0：字串比較不分大小寫；三值邏輯；/ 是實數除法） ===================
+// 數據表：{表名: [欄名陣列, 記錄陣列（每筆為陣列）, 主關鍵碼陣列（可省）]}；NULL 以 null 表示。
+const SQL = (() => {
+  class SErr extends Error {}
+  const KW = new Set(("SELECT DISTINCT ALL FROM WHERE GROUP BY HAVING ORDER ASC DESC AND OR NOT IN BETWEEN LIKE IS NULL AS TRUE FALSE " +
+    "JOIN INNER LEFT RIGHT FULL OUTER CROSS NATURAL ON UNION INTERSECT EXCEPT MINUS EXISTS ANY SOME UPDATE SET DELETE INSERT INTO VALUES").split(" "));
+  const AGG = new Set(["COUNT", "SUM", "AVG", "MAX", "MIN"]);
+  function tokenize(src) {
+    const s = String(src).replace(/ /g, " "), out = []; let i = 0;
+    while (i < s.length) {
+      const c = s[i], rest = s.slice(i), i0 = i; let m;
+      if (/\s/.test(c)) { i++; continue; }
+      if (c === "'" || c === '"') { let j = i + 1, str = ""; for (;;) { if (j >= s.length) throw new SErr("字串缺少收尾的引號。"); if (s[j] === c) { if (s[j + 1] === c) { str += c; j += 2; continue; } break; } str += s[j++]; } i = j + 1; out.push({ t: "str", v: str, i0, i1: i }); continue; }
+      if (c === "`") { const j = s.indexOf("`", i + 1); if (j < 0) throw new SErr("反引號不配對。"); out.push({ t: "id", v: s.slice(i + 1, j).toUpperCase(), i0, i1: j + 1 }); i = j + 1; continue; }
+      if ((m = /^(\d+\.?\d*|\.\d+)/.exec(rest))) { i += m[0].length; out.push({ t: "num", v: Number(m[0]), i0, i1: i }); continue; }
+      if ((m = /^[A-Za-z_㐀-鿿][A-Za-z0-9_㐀-鿿]*/.exec(rest))) { i += m[0].length; const u = m[0].toUpperCase(); out.push({ t: KW.has(u) ? "kw" : "id", v: u, i0, i1: i }); continue; }
+      if ((m = /^(<=|>=|<>|!=)/.exec(rest))) { i += 2; out.push({ t: "op", v: m[1] === "!=" ? "<>" : m[1], i0, i1: i }); continue; }
+      if ("=<>+-*/,().;".includes(c)) { i++; out.push({ t: "op", v: c, i0, i1: i }); continue; }
+      if ("≤≥≠".includes(c)) throw new SErr("SQL 不接受「≤」「≥」「≠」，要寫 <=、>=、<>。");
+      if ("，（）‘’“”；".includes(c)) throw new SErr("請用半形（英文）符號（「" + c + "」是全形）。");
+      throw new SErr("不認識的符號「" + c + "」。");
+    }
+    while (out.length && out[out.length - 1].t === "op" && out[out.length - 1].v === ";") out.pop();
+    return out;
+  }
+  // ---------------- 語法分析 ----------------
+  function parse(src) {
+    const toks = tokenize(src), s = String(src); let p = 0;
+    if (toks.some((t) => t.t === "op" && t.v === ";")) throw new SErr("一次只可執行一句 SQL（分號只可放在最後）。");
+    const isK = (v) => toks[p] && toks[p].t === "kw" && toks[p].v === v, isO = (v) => toks[p] && toks[p].t === "op" && toks[p].v === v;
+    const isK2 = (v) => toks[p + 1] && toks[p + 1].t === "kw" && toks[p + 1].v === v;
+    const need = (k) => { if (!isK(k)) throw new SErr("缺少 " + k + (toks[p] ? "（在「" + s.slice(toks[p].i0, toks[p].i1) + "」附近）" : "") + "。"); p++; };
+    const eatO = (v) => { if (!isO(v)) throw new SErr("缺少「" + v + "」" + (toks[p] ? "（在「" + s.slice(toks[p].i0, toks[p].i1) + "」附近）" : "") + "。"); p++; };
+    const ident = (what) => { const t = toks[p]; if (!t || t.t !== "id") throw new SErr(what + (t && t.t === "kw" ? "（" + t.v + " 是保留字，不可用作名稱）" : "") + "。"); p++; return t.v; };
+    const span = (p0) => s.slice(toks[p0].i0, toks[p - 1].i1).replace(/\s+/g, " ");
+    const mk = (p0, n) => { n.src = span(p0); return n; };
+    function expr() { return or(); }
+    function or() { const p0 = p; let a = and(); while (isK("OR")) { p++; a = mk(p0, { k: "or", a, b: and() }); } return a; }
+    function and() { const p0 = p; let a = not(); while (isK("AND")) { p++; a = mk(p0, { k: "and", a, b: not() }); } return a; }
+    function not() { if (isK("NOT")) { const p0 = p; p++; return mk(p0, { k: "not", a: not() }); } return pred(); }
+    function subq() { eatO("("); if (!isK("SELECT") && !isO("(")) throw new SErr("這裏要寫子查詢（SELECT …）。"); const q = query(); eatO(")"); return q; }
+    function pred() {
+      const p0 = p, a = add();
+      if (toks[p] && toks[p].t === "op" && ["=", "<>", "<", ">", "<=", ">="].includes(toks[p].v)) {
+        const op = toks[p++].v;
+        if (isK("ANY") || isK("SOME") || isK("ALL")) { const qk = toks[p++].v === "ALL" ? "ALL" : "ANY"; if (!(isO("(") && toks[p + 1] && toks[p + 1].t === "kw" && toks[p + 1].v === "SELECT")) throw new SErr(qk + " 之後必須是子查詢（不可寫成一列數值）。"); return mk(p0, { k: "quant", op, qk, a, q: subq(), pred: 1 }); }
+        return mk(p0, { k: "cmp", op, a, b: add(), pred: 1 });
+      }
+      let neg = false; if (isK("NOT") && toks[p + 1] && toks[p + 1].t === "kw" && ["IN", "BETWEEN", "LIKE"].includes(toks[p + 1].v)) { neg = true; p++; }
+      if (isK("IN")) { p++; if (isO("(") && isK2("SELECT")) return mk(p0, { k: "insub", a, q: subq(), neg, pred: 1 }); eatO("("); const list = [add()]; while (isO(",")) { p++; list.push(add()); } eatO(")"); return mk(p0, { k: "in", a, list, neg, pred: 1 }); }
+      if (isK("BETWEEN")) { p++; const lo = add(); need("AND"); const hi = add(); return mk(p0, { k: "btw", a, lo, hi, neg, pred: 1 }); }
+      if (isK("LIKE")) { p++; return mk(p0, { k: "like", a, pat: add(), neg, pred: 1 }); }
+      if (isK("IS")) { p++; let n2 = false; if (isK("NOT")) { p++; n2 = true; } need("NULL"); return mk(p0, { k: "isnull", a, neg: n2, pred: 1 }); }
+      if (neg) throw new SErr("NOT 的位置不正確。");
+      return a;
+    }
+    function add() { const p0 = p; let a = mul(); while (isO("+") || isO("-")) { const op = toks[p++].v; a = mk(p0, { k: "ar", op, a, b: mul() }); } return a; }
+    function mul() { const p0 = p; let a = un(); while (isO("*") || isO("/")) { const op = toks[p++].v; a = mk(p0, { k: "ar", op, a, b: un() }); } return a; }
+    function un() { if (isO("-")) { const p0 = p; p++; return mk(p0, { k: "neg", a: un() }); } return prim(); }
+    function prim() {
+      const p0 = p, t = toks[p]; if (!t) throw new SErr("語句未完成。");
+      if (t.t === "num") { p++; return mk(p0, { k: "lit", v: t.v }); }
+      if (t.t === "str") { p++; return mk(p0, { k: "lit", v: t.v }); }
+      if (t.t === "kw" && t.v === "NULL") { p++; return mk(p0, { k: "lit", v: null }); }
+      if (t.t === "kw" && (t.v === "TRUE" || t.v === "FALSE")) { p++; return mk(p0, { k: "lit", v: t.v === "TRUE" ? 1 : 0 }); }
+      if (t.t === "kw" && t.v === "EXISTS") { p++; return mk(p0, { k: "exists", q: subq() }); }
+      if (t.t === "op" && t.v === "(") { if (isK2("SELECT")) return mk(p0, { k: "scalar", q: subq() }); p++; const a = expr(); eatO(")"); return mk(p0, { k: "paren", a }); }
+      if ((t.t === "id" || (t.t === "kw" && (t.v === "LEFT" || t.v === "RIGHT"))) && toks[p + 1] && toks[p + 1].t === "op" && toks[p + 1].v === "(") {
+        p += 2; const args = []; let star = false, distinct = false;
+        if (isO("*")) { p++; star = true; } else if (!isO(")")) { if (isK("DISTINCT")) { p++; distinct = true; } args.push(expr()); while (isO(",")) { p++; args.push(expr()); } }
+        eatO(")"); if ((star || distinct) && !AGG.has(t.v)) throw new SErr(t.v + " 不是聚合函數。"); return mk(p0, { k: "fn", name: t.v, args, star, distinct });
+      }
+      if (t.t === "id") {
+        p++;
+        if (isO(".")) { p++; if (isO("*")) throw new SErr("「" + t.v + ".*」只可寫在 SELECT 之後。"); const c = ident("「.」之後要寫欄名"); return mk(p0, { k: "col", q: t.v, name: c }); }
+        return mk(p0, { k: "col", q: null, name: t.v });
+      }
+      throw new SErr("「" + s.slice(t.i0, t.i1) + "」的位置不正確。");
+    }
+    function tableRef() {
+      const p0 = p;
+      if (isO("(")) { const q = subq(); if (isK("AS")) p++; const al = ident("以子查詢作數據表時要提供別名"); return { k: "tbl", sub: q, alias: al, src: span(p0) }; }
+      const name = ident("FROM／JOIN 之後要寫數據表名稱"); let alias = null;
+      if (isK("AS")) { p++; alias = ident("AS 之後要寫別名"); } else if (toks[p] && toks[p].t === "id") alias = toks[p++].v;
+      return { k: "tbl", name, alias };
+    }
+    function fromItem() {
+      let left = tableRef();
+      for (;;) {
+        let type = null;
+        if (isK("JOIN")) { p++; type = "INNER"; }
+        else if (isK("INNER") && isK2("JOIN")) { p += 2; type = "INNER"; }
+        else if ((isK("LEFT") || isK("RIGHT") || isK("FULL")) && (isK2("JOIN") || isK2("OUTER"))) { type = toks[p].v; p++; if (isK("OUTER")) p++; need("JOIN"); }
+        else if (isK("CROSS") && isK2("JOIN")) { p += 2; type = "CROSS"; }
+        else if (isK("NATURAL")) { p++; if (isK("INNER")) p++; need("JOIN"); type = "NATURAL"; }
+        if (!type) break;
+        const right = tableRef(); let on = null;
+        if (isK("ON")) { if (type === "CROSS" || type === "NATURAL") throw new SErr(type + " JOIN 不用 ON。"); p++; on = expr(); }
+        else if (type === "LEFT" || type === "RIGHT" || type === "FULL") throw new SErr(type + " JOIN 之後要寫 ON 連接條件。");
+        left = { k: "join", type, left, right, on };
+      }
+      return left;
+    }
+    function select() {
+      const p0 = p; need("SELECT"); const q = { k: "select", distinct: false, items: [], group: [], having: null, where: null };
+      if (isK("DISTINCT")) { p++; q.distinct = true; } else if (isK("ALL")) p++;
+      for (;;) {
+        const i0 = p;
+        if (isO("*")) { p++; q.items.push({ star: true }); }
+        else if (toks[p] && toks[p].t === "id" && toks[p + 1] && toks[p + 1].v === "." && toks[p + 2] && toks[p + 2].t === "op" && toks[p + 2].v === "*") { q.items.push({ star: true, q: toks[p].v }); p += 3; }
+        else { const e = expr(), text = span(i0); let alias = null; if (isK("AS")) { p++; if (toks[p] && toks[p].t === "str") alias = toks[p++].v.toUpperCase(); else alias = ident("AS 之後要寫別名"); } else if (toks[p] && toks[p].t === "id") alias = toks[p++].v; q.items.push({ e, text, alias }); }
+        if (isO(",")) { p++; continue; } break;
+      }
+      need("FROM"); q.from = [fromItem()]; while (isO(",")) { p++; q.from.push(fromItem()); }
+      if (isK("WHERE")) { p++; q.where = expr(); }
+      if (isK("GROUP")) { p++; need("BY"); q.group.push(expr()); while (isO(",")) { p++; q.group.push(expr()); } }
+      if (isK("HAVING")) { p++; q.having = expr(); }
+      q.src = span(p0); return q;
+    }
+    function operand() { if (isO("(") && (isK2("SELECT") || (toks[p + 1] && toks[p + 1].v === "("))) { p++; const q = query(); eatO(")"); return q; } return select(); }
+    function term() { let a = operand(); while (isK("INTERSECT")) { p++; if (isK("DISTINCT")) p++; a = { k: "set", op: "INTERSECT", a, b: operand() }; } return a; }
+    function orderBy() { const o = []; for (;;) { const p0 = p, e = add(), text = span(p0); let desc = false; if (isK("ASC")) p++; else if (isK("DESC")) { p++; desc = true; } o.push({ e, desc, text }); if (isO(",")) { p++; continue; } return o; } }
+    function query() {
+      let a = term();
+      while (isK("UNION") || isK("EXCEPT") || isK("MINUS")) { let op = toks[p++].v; if (op === "MINUS") op = "EXCEPT"; if (isK("ALL")) { if (op !== "UNION") throw new SErr("本頁只支援 UNION ALL。"); p++; op = "UNION ALL"; } else if (isK("DISTINCT")) p++; a = { k: "set", op, a, b: term() }; }
+      if (isK("ORDER")) { p++; need("BY"); a = Object.assign({}, a, { order: orderBy() }); }
+      return a;
+    }
+    let st;
+    if (isK("UPDATE")) {
+      p++; const t = tableRef(); if (t.sub) throw new SErr("UPDATE 之後要寫數據表名稱。"); need("SET"); const sets = [];
+      for (;;) { const q0 = toks[p] && toks[p + 1] && toks[p + 1].v === "." ? (p += 2, toks[p - 2].v) : null; const c = ident("SET 之後要寫欄名"); eatO("="); sets.push({ q: q0, col: c, e: expr() }); if (isO(",")) { p++; continue; } break; }
+      let where = null; if (isK("WHERE")) { p++; where = expr(); } st = { k: "update", name: t.name, alias: t.alias, sets, where };
+    } else if (isK("DELETE")) {
+      p++; need("FROM"); const t = tableRef(); let where = null; if (isK("WHERE")) { p++; where = expr(); } st = { k: "delete", name: t.name, alias: t.alias, where };
+    } else if (isK("INSERT")) {
+      p++; need("INTO"); const name = ident("INSERT INTO 之後要寫數據表名稱"); let cols = null;
+      if (isO("(") && !isK2("SELECT")) { p++; cols = [ident("要寫欄名")]; while (isO(",")) { p++; cols.push(ident("要寫欄名")); } eatO(")"); }
+      if (isK("VALUES")) { p++; const rows = []; for (;;) { eatO("("); const r = [expr()]; while (isO(",")) { p++; r.push(expr()); } eatO(")"); rows.push(r); if (isO(",")) { p++; continue; } break; } st = { k: "insert", name, cols, rows }; }
+      else if (isK("SELECT") || isO("(")) st = { k: "insert", name, cols, q: query() };
+      else throw new SErr("INSERT INTO … 之後要寫 VALUES (…)。");
+    } else if (isK("SELECT") || isO("(")) st = query();
+    else throw new SErr("本頁只可執行 SELECT、UPDATE、DELETE、INSERT 語句。");
+    if (p < toks.length) throw new SErr("「" + s.slice(toks[p].i0, toks[p].i1) + "」附近有語法錯誤（檢查子句次序：SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY）。");
+    return st;
+  }
+  // ---------------- 求值 ----------------
+  const isStr = (v) => typeof v === "string";
+  const fmtV = (v) => (v === null || v === undefined ? "NULL" : typeof v === "number" ? fmtNum(v) : String(v));
+  function cmpv(a, b) {
+    if (isStr(a) && isStr(b)) { const x = a.toLowerCase(), y = b.toLowerCase(); return x < y ? -1 : x > y ? 1 : 0; }
+    if (isStr(a) !== isStr(b)) throw new SErr("數據類型不相符：把文字與數字比較（MySQL 會把文字轉為數字，結果難以預料）；文字常數要加單引號，數字不加。");
+    return a < b ? -1 : a > b ? 1 : 0;
+  }
+  const likeRe = (pat) => new RegExp("^" + String(pat).split("").map((ch) => (ch === "%" ? "[\\s\\S]*" : ch === "_" ? "[\\s\\S]" : ch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))).join("") + "$", "i");
+  const findT = (T, name) => { const k = Object.keys(T).find((x) => x.toUpperCase() === name); if (k === undefined) throw new SErr("沒有數據表 " + name + "。"); return k; };
+  const keyOf = (r) => JSON.stringify(r.map((v) => (isStr(v) ? v.toLowerCase() : v)));
+  const b10 = (v) => (v === true ? 1 : v === false ? 0 : v);
+  // 環境：{f: {srcs:[{alias,name,cols,pk}], vals:[記錄或 null]}, up: 外層環境, grp: 組內各 f（分組後）, sel: SELECT 別名值, T: 數據表}
+  function lookup(env, q, name) {
+    for (let E = env; E; E = E.up) {
+      const f = E.f; if (!f) continue;
+      if (q) { const si = f.srcs.findIndex((x) => x.alias === q); if (si < 0) continue; const j = f.srcs[si].cols.indexOf(name); if (j < 0) throw new SErr("數據表 " + q + " 沒有欄位 " + name + "。"); return { E, si, j }; }
+      const hits = []; f.srcs.forEach((x, si) => { const j = x.cols.indexOf(name); if (j >= 0) hits.push({ E, si, j }); });
+      if (hits.length > 1) throw new SErr("欄名 " + name + " 不清楚（兩個數據表都有這個欄位），要寫成「表名." + name + "」。");
+      if (hits.length === 1) return hits[0];
+      if (E.sel && name in E.sel) return { E, sel: true };
+    }
+    return null;
+  }
+  function colVal(e, env) {
+    const L = lookup(env, e.q, e.name);
+    if (!L) { if (e.q) throw new SErr("找不到數據表或別名 " + e.q + "（用了別名後便要以別名稱呼該數據表）。"); throw new SErr("找不到欄位 " + e.name + "（文字常數要加單引號）。"); }
+    if (L.sel) return L.E.sel[e.name];
+    const rec = L.E.f.vals[L.si]; return rec ? rec[L.j] : null;
+  }
+  function aggVal(e, env) {
+    if (!env.grp) throw new SErr(env.inAgg ? "聚合函數不能嵌套（例如 MAX(COUNT(*))），要改用子查詢。" : "聚合函數 " + e.name + " 不可用在 WHERE 或 ON（分組後的篩選要用 HAVING，找最高／最低要用子查詢）。");
+    if (e.star) { if (e.name !== "COUNT") throw new SErr("只有 COUNT 可寫成 COUNT(*)。"); return env.grp.length; }
+    if (e.args.length !== 1) throw new SErr(e.name + " 只有一個參數。");
+    let vs = env.grp.map((f) => ev(e.args[0], { f, up: env.up, T: env.T, inAgg: true })).filter((v) => v !== null);
+    if (e.distinct) { const seen = new Set(); vs = vs.filter((v) => { const k = keyOf([v]); if (seen.has(k)) return false; seen.add(k); return true; }); }
+    if (e.name === "COUNT") return vs.length; if (!vs.length) return null;
+    if (e.name === "SUM" || e.name === "AVG") { if (vs.some(isStr)) throw new SErr(e.name + " 只可用於數字欄位。"); const t = vs.reduce((x, y) => x + y, 0); return e.name === "SUM" ? t : t / vs.length; }
+    return vs.reduce((x, y) => ((e.name === "MAX" ? cmpv(y, x) > 0 : cmpv(y, x) < 0) ? y : x));
+  }
+  const ymd = (v, i) => { if (v === null) return null; const m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(String(v)); if (!m) throw new SErr("日期要寫成 'yyyy-mm-dd'。"); return +m[i]; };
+  function fnVal(e, env) {
+    if (AGG.has(e.name)) return aggVal(e, env);
+    const a = e.args.map((x) => ev(x, env)), A0 = a[0];
+    const argN = (...n) => { if (!n.includes(a.length)) throw new SErr(e.name + " 的參數數目不正確。"); };
+    const S0 = () => (A0 === null ? null : isStr(A0) ? A0 : fmtNum(A0));
+    switch (e.name) {
+      case "INT": argN(1); return A0 === null ? null : Math.floor(A0);
+      case "ABS": argN(1); return A0 === null ? null : Math.abs(A0);
+      case "CHAR_LENGTH": case "CHARACTER_LENGTH": case "LEN": argN(1); return A0 === null ? null : [...S0()].length;
+      case "LENGTH": argN(1); return A0 === null ? null : new TextEncoder().encode(S0()).length;
+      case "SUBSTRING": case "SUBSTR": case "MID": { argN(2, 3); if (A0 === null || a[1] === null) return null; const t = [...S0()], st = Math.trunc(a[1]); const from = st > 0 ? st - 1 : st < 0 ? Math.max(0, t.length + st) : t.length; return t.slice(from, a.length === 3 ? from + Math.max(0, Math.trunc(a[2])) : undefined).join(""); }
+      case "LEFT": argN(2); return A0 === null ? null : [...S0()].slice(0, Math.max(0, a[1])).join("");
+      case "RIGHT": argN(2); { if (A0 === null) return null; const t = [...S0()]; return a[1] > 0 ? t.slice(-a[1]).join("") : ""; }
+      case "UPPER": case "UCASE": argN(1); return A0 === null ? null : S0().toUpperCase();
+      case "LOWER": case "LCASE": argN(1); return A0 === null ? null : S0().toLowerCase();
+      case "TRIM": argN(1); return A0 === null ? null : S0().replace(/^ +| +$/g, "");
+      case "SPACE": argN(1); return A0 === null ? null : " ".repeat(Math.max(0, Math.trunc(A0)));
+      case "CONCAT": return a.some((x) => x === null) ? null : a.map((x) => (isStr(x) ? x : fmtNum(x))).join("");
+      case "YEAR": argN(1); return ymd(A0, 1);
+      case "MONTH": argN(1); return ymd(A0, 2);
+      case "DAY": argN(1); return ymd(A0, 3);
+    }
+    throw new SErr("本頁不支援函數 " + e.name + "。");
+  }
+  function subRows(q, env) { return runQ(q, env.T, env).rows; }
+  function oneCol(rows) { if (rows.length && rows[0].length !== 1) throw new SErr("子查詢只可傳回一欄。"); return rows.map((r) => r[0]); }
+  function ev(e, env) {
+    switch (e.k) {
+      case "lit": return e.v;
+      case "paren": return ev(e.a, env);
+      case "col": return colVal(e, env);
+      case "neg": { const v = ev(e.a, env); if (isStr(v)) throw new SErr("文字不可用於算術運算。"); return v === null ? null : -v; }
+      case "ar": { const a = b10(ev(e.a, env)), b = b10(ev(e.b, env)); if (a === null || b === null) return null;
+        if (isStr(a) || isStr(b)) throw new SErr("文字不可用於算術運算（MySQL 串連文字要用 CONCAT）。");
+        if (e.op === "+") return a + b; if (e.op === "-") return a - b; if (e.op === "*") return a * b; if (b === 0) return null; return a / b; }
+      case "cmp": { const a = b10(ev(e.a, env)), b = b10(ev(e.b, env)); if (a === null || b === null) return null; const c = cmpv(a, b); return { "=": c === 0, "<>": c !== 0, "<": c < 0, ">": c > 0, "<=": c <= 0, ">=": c >= 0 }[e.op]; }
+      case "and": { const a = ev(e.a, env); if (a === false || a === 0) return false; const b = ev(e.b, env); if (b === false || b === 0) return false; if (a === null || b === null) return null; return true; }
+      case "or": { const a = ev(e.a, env); if (a === true || (typeof a === "number" && a !== 0)) return true; const b = ev(e.b, env); if (b === true || (typeof b === "number" && b !== 0)) return true; if (a === null || b === null) return null; return false; }
+      case "not": { const a = ev(e.a, env); return a === null ? null : !(a === true || (typeof a === "number" && a !== 0)); }
+      case "in": case "insub": {
+        const a = ev(e.a, env), list = e.k === "in" ? e.list.map((x) => ev(x, env)) : oneCol(subRows(e.q, env));
+        if (!list.length) return e.neg;
+        if (a === null) return null;
+        let r = false, unk = false; for (const v of list) { if (v === null) unk = true; else if (cmpv(a, v) === 0) { r = true; break; } }
+        const res = r ? true : unk ? null : false; return res === null ? null : e.neg ? !res : res;
+      }
+      case "quant": {
+        const a = b10(ev(e.a, env)), list = oneCol(subRows(e.q, env));
+        if (!list.length) return e.qk === "ALL";
+        const tv = (v) => (a === null || v === null ? null : { "=": cmpv(a, v) === 0, "<>": cmpv(a, v) !== 0, "<": cmpv(a, v) < 0, ">": cmpv(a, v) > 0, "<=": cmpv(a, v) <= 0, ">=": cmpv(a, v) >= 0 }[e.op]);
+        const rs = list.map(tv);
+        if (e.qk === "ALL") return rs.includes(false) ? false : rs.includes(null) ? null : true;
+        return rs.includes(true) ? true : rs.includes(null) ? null : false;
+      }
+      case "exists": return subRows(e.q, env).length > 0;
+      case "scalar": { const rows = subRows(e.q, env); if (rows.length > 1) throw new SErr("子查詢傳回多於一個值，不可用 = < > 直接比較（可改用 IN、ANY 或 ALL）。"); if (rows.length && rows[0].length !== 1) throw new SErr("子查詢只可傳回一欄。"); return rows.length ? rows[0][0] : null; }
+      case "btw": { const a = ev(e.a, env), lo = ev(e.lo, env), hi = ev(e.hi, env); if (a === null || lo === null || hi === null) return null; const r = cmpv(a, lo) >= 0 && cmpv(a, hi) <= 0; return e.neg ? !r : r; }
+      case "like": { const a = ev(e.a, env), pt = ev(e.pat, env); if (a === null || pt === null) return null; const r = likeRe(pt).test(isStr(a) ? a : fmtNum(a)); return e.neg ? !r : r; }
+      case "isnull": { const r = ev(e.a, env) === null; return e.neg ? !r : r; }
+      case "fn": return fnVal(e, env);
+    }
+    throw new SErr("無法計算。");
+  }
+  const truth = (v) => v === true || (typeof v === "number" && v !== 0);
+  const hasAgg = (e) => { if (!e || typeof e !== "object") return false; if (e.k === "fn" && AGG.has(e.name)) return true; if (e.k === "col") return false; return ["a", "b", "lo", "hi", "pat"].some((k) => hasAgg(e[k])) || (e.list || []).some(hasAgg) || (e.args || []).some(hasAgg); };
+  // FROM：每項產生一組 f（srcs 相同）
+  function fromSrc(it, T, env) {
+    if (it.k === "tbl") {
+      if (it.sub) { const r = runQ(it.sub, T, env); return { srcs: [{ alias: it.alias, name: it.alias, cols: r.cols.map((c) => c.toUpperCase()), pk: [] }], fs: r.rows.map((x) => [x]) }; }
+      const tn = findT(T, it.name), [cols, rows, pk] = T[tn];
+      return { srcs: [{ alias: it.alias || it.name, name: it.name, cols: cols.map((c) => c.toUpperCase()), pk: (pk || []).map((c) => c.toUpperCase()) }], fs: rows.map((r) => [r]) };
+    }
+    const L = fromSrc(it.left, T, env), Rt = fromSrc(it.right, T, env), srcs = L.srcs.concat(Rt.srcs);
+    srcs.forEach((x, i) => { if (srcs.findIndex((y) => y.alias === x.alias) !== i) throw new SErr("FROM 中有兩個數據表同名（" + x.alias + "），自連接要為數據表提供不同的別名。"); });
+    const nl = L.srcs.length, nr = Rt.srcs.length, out = [];
+    let on;
+    if (it.type === "NATURAL") {
+      const lc = [].concat(...L.srcs.map((x, si) => x.cols.map((c, j) => [c, si, j]))), rc = [].concat(...Rt.srcs.map((x, si) => x.cols.map((c, j) => [c, si, j])));
+      const common = uniq(lc.map((x) => x[0]).filter((c) => rc.some((y) => y[0] === c)));
+      on = (vals) => common.every((c) => { const a = lc.find((x) => x[0] === c), b = rc.find((x) => x[0] === c); const va = vals[a[1]] ? vals[a[1]][a[2]] : null, vb = vals[nl + b[1]] ? vals[nl + b[1]][b[2]] : null; return va !== null && vb !== null && cmpv(va, vb) === 0; });
+    } else if (it.on) {
+      if (hasAgg(it.on)) throw new SErr("ON 連接條件不可使用聚合函數。");
+      on = (vals) => truth(ev(it.on, { f: { srcs, vals }, up: env, T }));
+    } else on = () => true;
+    const nullL = range(0, nl).map(() => null), nullR = range(0, nr).map(() => null), usedR = new Set();
+    for (const a of L.fs) { let hit = false; Rt.fs.forEach((b, j) => { const v = a.concat(b); if (on(v)) { out.push(v); hit = true; usedR.add(j); } }); if (!hit && (it.type === "LEFT" || it.type === "FULL")) out.push(a.concat(nullR)); }
+    if (it.type === "RIGHT") { const o2 = []; Rt.fs.forEach((b) => { let hit = false; L.fs.forEach((a) => { const v = a.concat(b); if (on(v)) { o2.push(v); hit = true; } }); if (!hit) o2.push(nullL.concat(b)); }); return { srcs, fs: o2 }; }
+    if (it.type === "FULL") Rt.fs.forEach((b, j) => { if (!usedR.has(j)) out.push(nullL.concat(b)); });
+    return { srcs, fs: out };
+  }
+  function product(parts) {
+    let srcs = [], fs = [[]];
+    for (const p of parts) { srcs = srcs.concat(p.srcs); const nf = []; for (const a of fs) for (const b of p.fs) nf.push(a.concat(b)); fs = nf; }
+    srcs.forEach((x, i) => { if (srcs.findIndex((y) => y.alias === x.alias) !== i) throw new SErr("FROM 中有兩個數據表同名（" + x.alias + "），自連接要為數據表提供不同的別名。"); });
+    return { srcs, fs };
+  }
+  // ONLY_FULL_GROUP_BY：未聚合的欄位必須在 GROUP BY 中（或由 GROUP BY 中的主關鍵碼決定）
+  function groupCheck(q, srcs, env) {
+    const gl = q.group.map((g) => (g.k === "col" ? lookup({ f: { srcs, vals: [] }, up: null }, g.q, g.name) : null)).filter(Boolean);
+    const gtext = q.group.map((g) => g.src.replace(/\s/g, "").toUpperCase());
+    const pkOk = (si) => srcs[si].pk.length && srcs[si].pk.every((c) => gl.some((L) => L.si === si && srcs[si].cols[L.j] === c));
+    const walk = (e, where) => {
+      if (!e || typeof e !== "object") return;
+      if (e.k === "fn" && AGG.has(e.name)) return;
+      if (e.src && gtext.includes(e.src.replace(/\s/g, "").toUpperCase())) return;
+      if (e.k === "col") {
+        let L; try { L = lookup({ f: { srcs, vals: [] }, up: null, sel: where === "SELECT" ? null : q._sel }, e.q, e.name); } catch (x) { return; }
+        if (!L || L.sel) return;   // 外層欄位（相關子查詢）或 SELECT 別名
+        if (gl.some((g) => g.si === L.si && g.j === L.j) || pkOk(L.si)) return;
+        throw new SErr(where + " 中的 " + (e.q ? e.q + "." : "") + e.name + " 既不是聚合函數，也不在 GROUP BY 中（MySQL 的 ONLY_FULL_GROUP_BY 會報錯）。");
+      }
+      ["a", "b", "lo", "hi", "pat"].forEach((k) => walk(e[k], where)); (e.list || []).forEach((x) => walk(x, where)); (e.args || []).forEach((x) => walk(x, where));
+    };
+    q.items.forEach((it) => { if (it.star) throw new SErr("SELECT * 不可與 GROUP BY 或聚合函數一起使用。"); walk(it.e, "SELECT"); });
+    walk(q.having, "HAVING");
+  }
+  function runSelect(q, T, env, order) {
+    const parts = q.from.map((it) => fromSrc(it, T, env)), P = parts.length === 1 ? parts[0] : product(parts), srcs = P.srcs;
+    if (hasAgg(q.where)) throw new SErr("聚合函數不可用在 WHERE（分組後的篩選要用 HAVING，找最高／最低要用子查詢）。");
+    const kept = P.fs.filter((vals) => !q.where || truth(ev(q.where, { f: { srcs, vals }, up: env, T })));
+    const grouped = q.group.length > 0 || q.items.some((it) => !it.star && hasAgg(it.e)) || !!q.having || (order || []).some((o) => hasAgg(o.e));
+    const names = [], cols = [];
+    q.items.forEach((it) => {
+      if (it.star) { const ss = it.q ? srcs.filter((x) => x.alias === it.q) : srcs; if (it.q && !ss.length) throw new SErr("找不到數據表或別名 " + it.q + "。"); ss.forEach((x) => x.cols.forEach((c, j) => { names.push(c); cols.push({ si: srcs.indexOf(x), j }); })); }
+      else { names.push(it.alias || (it.e.k === "col" ? it.e.name : it.text)); cols.push({ e: it.e, alias: it.alias }); }
+    });
+    q._sel = {}; q.items.forEach((it) => { if (!it.star && it.alias) q._sel[it.alias] = 1; });
+    let out = [];
+    const rowOf = (env2) => cols.map((c) => b10(c.e ? ev(c.e, env2) : env2.f.vals[c.si] ? env2.f.vals[c.si][c.j] : null));
+    const selOf = (env2, vals) => { const o = {}; cols.forEach((c, i) => { if (c.alias) o[c.alias] = vals[i]; }); return o; };
+    if (grouped) {
+      groupCheck(q, srcs, env);
+      const gs = [], idx = {};
+      if (!q.group.length) gs.push(kept);
+      else for (const vals of kept) { const k = keyOf(q.group.map((g) => ev(g, { f: { srcs, vals }, up: env, T }))); if (!(k in idx)) { idx[k] = gs.length; gs.push([]); } gs[idx[k]].push(vals); }
+      for (const g of gs) {
+        const genv = { f: { srcs, vals: g[0] || srcs.map(() => null) }, up: env, grp: g.map((vals) => ({ srcs, vals })), T };
+        const vals = rowOf(genv); genv.sel = selOf(genv, vals);
+        if (q.having && !truth(ev(q.having, genv))) continue;
+        out.push({ vals, env: genv, g });
+      }
+    } else out = kept.map((vals) => { const env2 = { f: { srcs, vals }, up: env, T }; const v = rowOf(env2); env2.sel = selOf(env2, v); return { vals: v, env: env2 }; });
+    if (q.distinct) { const seen = new Set(); out = out.filter((r) => { const k = keyOf(r.vals); if (seen.has(k)) return false; seen.add(k); return true; }); }
+    if (order) out = sortRows(out, order, names, (o, r) => ev(o.e, r.env));
+    return { cols: names, rows: out.map((r) => r.vals), recs: out, srcs };
+  }
+  function sortRows(out, order, names, evf) {
+    const nm = names.map((n) => n.replace(/\s/g, "").toUpperCase());
+    const kf = (o, r) => {
+      if (o.e.k === "lit" && typeof o.e.v === "number") { if (o.e.v < 1 || o.e.v > names.length || !Number.isInteger(o.e.v)) throw new SErr("ORDER BY 的欄位次序不正確。"); return r.vals[o.e.v - 1]; }
+      const t = o.text.replace(/\s/g, "").toUpperCase(), k = nm.indexOf(t); if (k >= 0) return r.vals[k];
+      if (o.e.k === "col" && !o.e.q) { const k2 = nm.indexOf(o.e.name); if (k2 >= 0) return r.vals[k2]; }
+      if (!evf) throw new SErr("ORDER BY 的 " + o.text + " 不在輸出的欄位中。");
+      return b10(evf(o, r));
+    };
+    const ks = out.map((r, i) => ({ r, i, k: order.map((o) => kf(o, r)) }));
+    ks.sort((x, y) => { for (let j = 0; j < order.length; j++) { const a = x.k[j], b = y.k[j]; let c = a === null && b === null ? 0 : a === null ? -1 : b === null ? 1 : cmpv(a, b); if (order[j].desc) c = -c; if (c) return c; } return x.i - y.i; });
+    return ks.map((x) => x.r);
+  }
+  function runQ(q, T, env) {
+    if (q.k === "select") return runSelect(q, T, env || null, q.order);
+    const a = runQ(q.a, T, env), b = runQ(q.b, T, env);
+    if (a.cols.length !== b.cols.length) throw new SErr(q.op + " 兩邊的 SELECT 欄數不同（" + a.cols.length + " 欄與 " + b.cols.length + " 欄）。");
+    let rows;
+    const dd = (rs) => { const seen = new Set(); return rs.filter((r) => { const k = keyOf(r); if (seen.has(k)) return false; seen.add(k); return true; }); };
+    if (q.op === "UNION ALL") rows = a.rows.concat(b.rows);
+    else if (q.op === "UNION") rows = dd(a.rows.concat(b.rows));
+    else { const kb = new Set(b.rows.map(keyOf)); rows = dd(a.rows).filter((r) => (q.op === "INTERSECT" ? kb.has(keyOf(r)) : !kb.has(keyOf(r)))); }
+    let out = rows.map((vals) => ({ vals }));
+    if (q.order) out = sortRows(out, q.order, a.cols, null);
+    return { cols: a.cols, rows: out.map((r) => r.vals) };
+  }
+  // 子查詢有沒有用到某數據表（MySQL ERROR 1093）
+  function usesTable(e, name) {
+    if (!e || typeof e !== "object") return false;
+    if (Array.isArray(e)) return e.some((x) => usesTable(x, name));
+    if (e.k === "tbl" && e.name === name) return true;
+    return Object.keys(e).some((k) => k !== "src" && typeof e[k] === "object" && usesTable(e[k], name));
+  }
+  function run(T, sql) { const st = typeof sql === "string" ? parse(sql) : sql; if (st.k !== "select" && st.k !== "set") throw new SErr("這裏只可執行 SELECT 語句。"); const r = runQ(st, T, null); return { cols: r.cols, rows: r.rows }; }
+  // DML：在副本上執行，回傳 {T: 新數據表, kind, hit: 受影響記錄的原有位置}
+  function exec(T0, sql) {
+    const st = typeof sql === "string" ? parse(sql) : sql;
+    if (st.k === "select" || st.k === "set") return Object.assign({ kind: "select" }, run(T0, st));
+    const T = clone(T0), tn = findT(T, st.name), [cols0, rows] = T[tn], cols = cols0.map((c) => c.toUpperCase());
+    const srcs = [{ alias: st.alias || st.name, name: st.name, cols, pk: [] }];
+    if (st.k === "insert") {
+      let data;
+      if (st.q) data = runQ(st.q, T0, null).rows; else data = st.rows.map((r) => r.map((e) => ev(e, { f: null, up: null, T: T0 })));
+      const tc = st.cols || cols; tc.forEach((c) => { if (!cols.includes(c)) throw new SErr("數據表 " + st.name + " 沒有欄位 " + c + "。"); });
+      const hit = [];
+      data.forEach((r) => { if (r.length !== tc.length) throw new SErr("VALUES 的數值數目（" + r.length + "）與欄位數目（" + tc.length + "）不同。"); const rec = cols.map((c) => { const k = tc.indexOf(c); return k < 0 ? null : r[k]; }); hit.push(rows.length); rows.push(rec); });
+      return { T, kind: "insert", hit, name: tn };
+    }
+    const subs = st.k === "update" ? [st.where].concat(st.sets.map((x) => x.e)) : [st.where];
+    if (usesTable(subs, st.name)) throw new SErr("MySQL 不容許在 UPDATE／DELETE 的子查詢中使用正在修改的數據表 " + st.name + "（ERROR 1093）。");
+    const hit = [];
+    rows.forEach((r, i) => { const env = { f: { srcs, vals: [r] }, up: null, T: T0 }; if (st.where && hasAgg(st.where)) throw new SErr("聚合函數不可用在 WHERE。"); if (!st.where || truth(ev(st.where, env))) hit.push(i); });
+    if (st.k === "delete") { T[tn][1] = rows.filter((r, i) => !hit.includes(i)); return { T, kind: "delete", hit, name: tn }; }
+    st.sets.forEach((x) => { if (!cols.includes(x.col)) throw new SErr("數據表 " + st.name + " 沒有欄位 " + x.col + "。"); });
+    for (const i of hit) { const rec = rows[i]; for (const x of st.sets) { if (hasAgg(x.e)) throw new SErr("SET 之後不可直接用聚合函數（要用子查詢）。"); rec[cols.indexOf(x.col)] = b10(ev(x.e, { f: { srcs, vals: [rec] }, up: null, T: T0 })); } }
+    return { T, kind: "update", hit, name: tn };
+  }
+  // 逐行判斷：表達式的值（✓／✗／NULL）
+  function evalRow(T, tname, alias, rec, exprSrc) { const e = parse("SELECT " + exprSrc + " FROM " + tname).items[0].e; const tn = findT(T, tname); return ev(e, { f: { srcs: [{ alias: alias || tname, name: tname, cols: T[tn][0].map((c) => c.toUpperCase()), pk: [] }], vals: [rec] }, up: null, T }); }
+  return { SErr, tokenize, parse, run, exec, evalRow, fmtV, likeRe, cmpv };
+})();
+// =================== 設計引擎：功能相關性、候選鍵碼、範式、分拆（規則與 tools/fd_ea.py 相同） ===================
+const FDX = (() => {
+  const S = (x) => (Array.isArray(x) ? x.slice() : String(x).split(/[\s,，、]+/).filter(Boolean));
+  const has = (A, B) => B.every((b) => A.includes(b));      // A ⊇ B
+  const eqs = (A, B) => A.length === B.length && has(A, B);
+  // 功能相關性：[[左邊陣列], [右邊陣列]]
+  const FD = (spec) => String(spec).split(/[;\n]/).filter((x) => x.includes("->")).map((x) => { const [l, r] = x.split("->"); return [S(l), S(r)]; });
+  function closure(X, F) { const c = uniq(S(X)); let ch = true; while (ch) { ch = false; for (const [l, r] of F) if (has(c, l) && !has(c, r)) { r.forEach((a) => { if (!c.includes(a)) c.push(a); }); ch = true; } } return c; }
+  // 由小至大的組合（屬性按字母排序）
+  function* combos(arr, n, st = 0, cur = []) { if (cur.length === n) { yield cur.slice(); return; } for (let i = st; i < arr.length; i++) { cur.push(arr[i]); yield* combos(arr, n, i + 1, cur); cur.pop(); } }
+  const sorted = (a) => a.slice().sort();
+  const restrict = (F, R) => F.map(([l, r]) => [l.filter((a) => R.includes(a)), r.filter((a) => R.includes(a))]);
+  function keys(R0, F0) {
+    const R = sorted(uniq(S(R0))), F = restrict(F0, R), found = [];
+    for (let n = 1; n <= R.length; n++) for (const c of combos(R, n)) { if (found.some((k) => has(c, k))) continue; if (has(closure(c, F), R)) found.push(c); }
+    return found.map(sorted);
+  }
+  function project(F, S0) { const Sx = sorted(uniq(S(S0))), out = []; for (let n = 1; n < Sx.length; n++) for (const X of combos(Sx, n)) { const Y = closure(X, F).filter((a) => Sx.includes(a) && !X.includes(a)); if (Y.length) out.push([X, Y]); } return out; }
+  // 回傳 {nf: 1|2|3, partial: [[左, 右, 鍵碼]], trans: [[左, 右]], keys}
+  function nf(R0, F, projected) {
+    const R = sorted(uniq(S(R0))), G = projected ? project(F, R) : F.filter(([l]) => has(R, l)).map(([l, r]) => [l, r.filter((a) => R.includes(a))]);
+    const ks = keys(R, G), prime = uniq([].concat(...ks)), partial = [], trans = [];
+    for (const k of ks) for (let n = 1; n < k.length; n++) for (const part of combos(k, n)) { const dep = closure(part, G).filter((a) => R.includes(a) && !prime.includes(a) && !part.includes(a)); if (dep.length) partial.push([part, sorted(dep), k]); }
+    for (const [l, r] of G) {
+      if (has(closure(l, G), R)) continue;
+      let bad = r.filter((a) => !l.includes(a) && !prime.includes(a));
+      bad = bad.filter((x) => { for (let n = 1; n < l.length; n++) for (const sub of combos(sorted(l), n)) if (closure(sub, G).includes(x)) return false; return true; });
+      if (bad.length && !ks.some((k) => has(k, l) && k.length > l.length)) trans.push([sorted(l), sorted(bad)]);
+    }
+    return { nf: partial.length ? 1 : trans.length ? 2 : 3, partial, trans, keys: ks };
+  }
+  function checkSplit(R0, F, parts0) {
+    const R = sorted(uniq(S(R0))), parts = parts0.map((p) => sorted(uniq(S(p)))), U = uniq([].concat(...parts)), probs = [];
+    if (!eqs(U, R)) probs.push("欄位不齊或多出");
+    const rows = parts.map((p, i) => Object.fromEntries(R.map((a) => [a, p.includes(a) ? "a" : "b" + i + a])));
+    let ch = true;
+    while (ch) { ch = false; for (const [l, r] of F) for (let i = 0; i < rows.length; i++) for (let j = i + 1; j < rows.length; j++) if (l.every((a) => rows[i][a] === rows[j][a])) for (const a of r) if (R.includes(a) && rows[i][a] !== rows[j][a]) { const v = rows[i][a] === "a" || rows[j][a] === "a" ? "a" : rows[i][a] < rows[j][a] ? rows[i][a] : rows[j][a]; rows[i][a] = rows[j][a] = v; ch = true; } }
+    const lossless = rows.some((row) => R.every((a) => row[a] === "a"));
+    if (!lossless) probs.push("不是無損分拆");
+    const G = [].concat(...parts.map((p) => project(F, p)));
+    const preserving = F.every(([l, r]) => has(closure(l, G), r.filter((a) => R.includes(a))));
+    if (!preserving) probs.push("有功能相關性未能保留");
+    const nfs = parts.map((p) => nf(p, F, true));
+    nfs.forEach((x, i) => { if (x.nf < 3) probs.push(parts[i].join(",") + " 只達第 " + x.nf + " 範式"); });
+    return { lossless, preserving, nf: nfs.map((x) => x.nf), keys: nfs.map((x) => x.keys), problems: probs };
+  }
+  // 樣本數據有沒有違反相關性
+  function violates(cols, rows, F) { const bad = []; for (const [l, r] of F) { const seen = {}; for (const row of rows) { const k = JSON.stringify(l.map((a) => row[cols.indexOf(a)])), v = JSON.stringify(r.map((a) => row[cols.indexOf(a)])); if (k in seen && seen[k] !== v) { bad.push([l, r]); break; } seen[k] = v; } } return bad; }
+  // 閉包推導步驟（解說用）
+  function closureSteps(X, F) { const c = uniq(S(X)), st = []; let ch = true; while (ch) { ch = false; for (const [l, r] of F) if (has(c, l) && !has(c, r)) { const add = r.filter((a) => !c.includes(a)); add.forEach((a) => c.push(a)); st.push([l, r, add]); ch = true; } } return { all: c, steps: st }; }
+  const fdStr = ([l, r]) => l.join(", ") + " → " + r.join(", ");
+  return { FD, S, closure, keys, project, nf, checkSplit, violates, closureSteps, fdStr, has, eqs, sorted };
+})();
+// =================== 顯示（只產生 HTML 字串） ===================
+const NUL = '<span class="nul">NULL</span>';
+const cellV = (v) => (v === null || v === undefined ? NUL : esc(typeof v === "number" ? fmtNum(v) : v));
+// 數據表：o.hl 標示的行、o.strike 刪除的行、o.pk 主關鍵碼欄（加底線）、o.mark {行: 欄: 類別}
+function dbHTML(name, cols, rows, o = {}) {
+  const hl = new Set(o.hl || []), st = new Set(o.strike || []), pk = new Set(o.pk || []), ch = o.changed || {};
+  return '<div class="xs"><table class="dbt">' + (name ? "<caption>" + esc(name) + "</caption>" : "") + "<tr>" + cols.map((c) => "<th" + (pk.has(c) ? ' class="pk"' : "") + ">" + esc(c) + "</th>").join("") + "</tr>" +
+    rows.map((r, i) => "<tr" + (st.has(i) ? ' class="del"' : hl.has(i) ? ' class="hl"' : "") + ">" + r.map((v, j) => "<td" + (typeof v === "number" ? ' class="n' + (ch[i + "," + j] ? " chg" : "") + '"' : ch[i + "," + j] ? ' class="chg"' : "") + ">" + cellV(v) + "</td>").join("") + "</tr>").join("") + "</table></div>";
+}
+const tblOf = (T, n, o) => dbHTML(n, T[n][0], T[n][1], Object.assign({ pk: T[n][2] }, o || {}));
+const tables = (T, names, o) => '<div class="tset">' + (names || Object.keys(T)).map((n) => tblOf(T, n, o && o[n])).join("") + "</div>";
+const SQL_KW = /('(?:[^']|'')*')|\b(SELECT|DISTINCT|FROM|WHERE|GROUP BY|HAVING|ORDER BY|ASC|DESC|AND|OR|NOT|IN|BETWEEN|LIKE|IS|NULL|AS|INNER JOIN|LEFT JOIN|RIGHT JOIN|FULL JOIN|CROSS JOIN|NATURAL JOIN|JOIN|ON|UNION ALL|UNION|INTERSECT|EXCEPT|MINUS|EXISTS|ANY|SOME|ALL|UPDATE|SET|DELETE FROM|DELETE|INSERT INTO|VALUES|COUNT|SUM|AVG|MAX|MIN|CHAR_LENGTH|SUBSTRING|UPPER|LOWER|TRIM|YEAR|MONTH|DAY|ABS|INT)\b/g;
+const hiSQL = (line) => esc(line).replace(/&#39;/g, "'").replace(SQL_KW, (m, s, k) => (s ? '<span class="st">' + s + "</span>" : '<b class="kw">' + k + "</b>"));
+const sqlHTML = (sql) => '<pre class="sqlc">' + sql.split("\n").map((l) => '<span class="ln">' + hiSQL(l) + "</span>").join("") + "</pre>";
+const sqlI = (s) => "<code>" + esc(s) + "</code>";
+const flat = (sql) => sql.replace(/\s*\n\s*/g, " ").trim();
+const mini = (head, rows, o = {}) => '<div class="xs"><table class="mini">' + (head ? "<tr>" + head.map((x) => "<th>" + x + "</th>").join("") + "</tr>" : "") + rows.map((r, i) => "<tr" + (o.hl && o.hl.includes(i) ? ' class="hl"' : "") + ">" + r.map((x) => "<td>" + x + "</td>").join("") + "</tr>").join("") + "</table></div>";
+const TF = (v) => (v === null ? '<span class="nl">NULL</span>' : v === true || v === 1 ? '<span class="ok">✓</span>' : '<span class="no">✗</span>');
+const rowsTxt = (rows) => (rows.length ? rows.map((r) => r.map(SQL.fmtV).join("，")).join("／") : "（沒有記錄）");
+const schema = (n, cols, pk) => '<span class="schema">' + esc(n) + "(" + cols.map((c) => (pk && pk.includes(c) ? '<u>' + esc(c) + "</u>" : esc(c))).join(", ") + ")</span>";
+
+// =================== 實體關係圖（DSE 2025 附頁記法；SVG，顏色跟主題） ===================
+// ents: [{n, x, y}]（中心座標）；rels: [{n, x, y, a, b, ma:[基數, "|"|"o"], mb, blankA, blankB}]（ma＝靠近實體 a 一端的記號）
+function erSVG(ents, rels, W, H) {
+  const EW = 84, EH = 38, DW = 92, DH = 50, box = {};
+  let s = '<svg class="er" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="實體關係圖">';
+  ents.forEach((e) => { box[e.n] = e; });
+  const edgePt = (e, tx, ty) => { const dx = tx - e.x, dy = ty - e.y; if (Math.abs(dx) * EH > Math.abs(dy) * EW) return [e.x + Math.sign(dx) * EW / 2, e.y]; return [e.x, e.y + Math.sign(dy) * EH / 2]; };
+  const dPt = (r, tx, ty) => { const dx = tx - r.x, dy = ty - r.y; if (Math.abs(dx) * DH > Math.abs(dy) * DW) return [r.x + Math.sign(dx) * DW / 2, r.y]; return [r.x, r.y + Math.sign(dy) * DH / 2]; };
+  const mark = (p, q, m, blank, lab) => {  // p：實體邊上的點；q：菱形邊上的點
+    const L = Math.hypot(q[0] - p[0], q[1] - p[1]), ux = (q[0] - p[0]) / L, uy = (q[1] - p[1]) / L, nx = -uy, ny = ux;
+    let o = '<line class="erl" x1="' + p[0] + '" y1="' + p[1] + '" x2="' + q[0] + '" y2="' + q[1] + '"/>';
+    if (blank) return o + (lab ? '<text class="erq" x="' + (p[0] + ux * 20 + (ny ? 0 : 0) + nx * -12) + '" y="' + (p[1] + uy * 20 + ny * -12 + 4) + '">' + lab + "</text>" : "");
+    const mx = p[0] + ux * 11, my = p[1] + uy * 11;
+    if (m[1] === "|") o += '<line class="erm" x1="' + (mx + nx * 7) + '" y1="' + (my + ny * 7) + '" x2="' + (mx - nx * 7) + '" y2="' + (my - ny * 7) + '"/>';
+    else if (m[1] === "o") o += '<circle class="erc" cx="' + (p[0] + ux * 13) + '" cy="' + (p[1] + uy * 13) + '" r="5"/>';
+    const off = Math.abs(ux) > 0.5 ? [0, -10] : [13, 4];
+    o += '<text class="ert" x="' + (p[0] + ux * 24 + off[0]) + '" y="' + (p[1] + uy * 24 + off[1]) + '" text-anchor="middle">' + esc(m[0]) + "</text>";
+    return o;
+  };
+  rels.forEach((r) => { const A = box[r.a], B = box[r.b]; s += mark(edgePt(A, r.x, r.y), dPt(r, A.x, A.y), r.ma, r.blankA, r.labA) + mark(edgePt(B, r.x, r.y), dPt(r, B.x, B.y), r.mb, r.blankB, r.labB);
+    s += '<polygon class="erd" points="' + [[r.x, r.y - DH / 2], [r.x + DW / 2, r.y], [r.x, r.y + DH / 2], [r.x - DW / 2, r.y]].map((x) => x.join(",")).join(" ") + '"/><text class="ern" x="' + r.x + '" y="' + (r.y + 5) + '" text-anchor="middle">' + esc(r.n) + "</text>"; });
+  ents.forEach((e) => { s += '<rect class="ere" x="' + (e.x - EW / 2) + '" y="' + (e.y - EH / 2) + '" width="' + EW + '" height="' + EH + '" rx="2"/><text class="ern" x="' + e.x + '" y="' + (e.y + 5) + '" text-anchor="middle">' + esc(e.n) + "</text>"; });
+  return '<div class="erbox">' + s + "</svg></div>";
+}
+
+// =================== 作答部分及評分 ===================
+const P = {
+  num: (label, ans, o = {}) => Object.assign({ type: "num", label, ans }, o),
+  grid: (cols, ans, o = {}) => Object.assign({ type: "grid", label: "", cols, ans }, o),
+  multi: (label, opts, ans, o = {}) => Object.assign({ type: "multi", label, opts, ans }, o),
+  sel: (label, opts, ans, o = {}) => Object.assign({ type: "sel", label, opts, ans }, o),
+  tbl: (cols, cells, o = {}) => Object.assign({ type: "tbl", label: "", cols, cells }, o),
+};
+const parts = (...ps) => ({ kind: "parts", parts: ps });
+const choiceIn = (opts, answer, o = {}) => Object.assign({ kind: "choice", opts, answer }, o);   // answer：選項的位置
+const GR = (() => {
+  const clean = (s) => { let t = String(s === null || s === undefined ? "" : s).replace(/　/g, " ").replace(/ /g, " ").trim(); const m = /^'([\s\S]*)'$/.exec(t) || /^"([\s\S]*)"$/.exec(t); if (m) t = m[1]; return t; };
+  const numIn = (s) => { const t = clean(s).replace(/[,，]/g, ""); return /^[+-]?(\d+(\.\d*)?|\.\d+)$/.test(t) ? Number(t) : null; };
+  const close = (a, b) => Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a), Math.abs(b));
+  function sameVal(e, s) {
+    if (typeof e === "number") { const x = numIn(s); return x !== null && close(x, e); }
+    if (e === null) return clean(s) === "" || /^null$/i.test(clean(s));
+    return clean(s).toLowerCase() === String(e).trim().toLowerCase();
+  }
+  function grid(p, raw) {
+    const idx = raw.map((r, i) => i).filter((i) => raw[i].some((x) => clean(x) !== ""));
+    const eq = (er, sr) => er.every((v, j) => sameVal(v, sr[j] === undefined ? "" : sr[j]));
+    const marks = raw.map(() => null); let ok = idx.length === p.ans.length;
+    if (p.ordered) { idx.forEach((i, k) => { marks[i] = k < p.ans.length && eq(p.ans[k], raw[i]); }); ok = ok && idx.every((i) => marks[i]); }
+    else { const used = new Set(); idx.forEach((i) => { const k = p.ans.findIndex((er, kk) => !used.has(kk) && eq(er, raw[i])); marks[i] = k >= 0; if (k >= 0) used.add(k); }); ok = ok && idx.every((i) => marks[i]); }
+    let msg = "";
+    if (!ok && p.ordered && idx.length === p.ans.length) { const g2 = grid(Object.assign({}, p, { ordered: false }), raw); if (g2.ok) msg = "記錄正確，但次序不對：有 ORDER BY，要按排序寫。"; }
+    if (!ok && !msg && idx.length !== p.ans.length) msg = "記錄數目不對：輸出應有 " + p.ans.length + " 行，你寫了 " + idx.length + " 行。";
+    return { ok, marks, msg };
+  }
+  function grade(p, raw) {
+    switch (p.type) {
+      case "num": { const x = numIn(raw); return { ok: x !== null && close(x, p.ans) }; }
+      case "grid": return grid(p, raw);
+      case "multi": return { ok: sameSet(raw, p.ans) };
+      case "sel": return { ok: raw === p.ans };
+      case "tbl": { const marks = []; let ok = true; p.cells.forEach((r, i) => r.forEach((c, j) => { if (c && "in" in c) { const g = sameVal(c.in, raw[i][j]); marks.push([i, j, g]); ok = ok && g; } })); return { ok, marks }; }
+    }
+    return { ok: false };
+  }
+  const isBlank = (p, raw) => (p.type === "grid" ? raw.every((r) => r.every((x) => !clean(x))) : p.type === "multi" ? false : p.type === "sel" ? raw === null : p.type === "tbl" ? raw.some((r, i) => r.some((x, j) => p.cells[i][j] && "in" in p.cells[i][j] && !clean(x))) : !String(raw).trim());
+  const show = (v) => (v === null ? "NULL" : typeof v === "number" ? fmtNum(v) : String(v));
+  // 測試用：正確／錯誤的作答
+  function fill(p, ok) {
+    switch (p.type) {
+      case "num": return ok ? String(p.ans) : String(p.ans + 1);
+      case "grid": { const g = p.ans.map((r) => r.map(show)); if (ok) return g; if (!g.length) return [p.cols.map(() => "X")]; g[0][0] = g[0][0] + "9"; return g; }
+      case "multi": return ok ? p.ans.slice() : p.ans.length > 1 ? p.ans.slice(1) : p.ans.length ? [] : [0];
+      case "sel": return ok ? p.ans : (p.ans + 1) % p.opts.length;
+      case "tbl": return p.cells.map((r) => r.map((c) => (c && "in" in c ? (ok ? show(c.in) : show(c.in) + "9") : "")));
+    }
+  }
+  return { clean, sameVal, grade, isBlank, fill, show, numIn };
+})();
+// =================== 題目產生器：SQL 進階 ===================
+const EN = ["Ada", "Ben", "Clem", "Dio", "Eva", "Finn", "Gabe", "Hana", "Ivan", "Jade", "Kit", "Leo", "Mona", "Nate", "Olive", "Pat", "Quinn", "Rex", "Sky", "Tina"];
+const CLUBN = ["Chess", "Art", "Drama", "Science", "Music", "Robotics"];
+const TITLES = ["Moon Gate", "Code Quest", "Old Harbour", "Star Map", "Tea Garden", "Iron Bird", "Blue River", "Night Train"];
+const CATS3 = ["Novel", "Science", "History"];
+const runQ = (T, sql) => SQL.run(T, flat(sql));
+const bare = (T) => Object.fromEntries(Object.entries(T).map(([k, v]) => [k, [v[0], v[1]]]));
+const sqlChk = (T, sql, res, ordered) => ({ t: "sql", tables: bare(T), sql: flat(sql), exp: { cols: res.cols, rows: res.rows }, ordered: !!ordered });
+const dmlChk = (T, sqls, name, after) => ({ t: "dml", tables: bare(T), sqls: sqls.map(flat), name, exp: after });
+const gridPart = (res, o = {}) => P.grid(res.cols, res.rows, o);
+const gridPrompt = (ordered) => '<p class="small">在下表寫出輸出（每行一筆記錄；NULL 寫 NULL；按「＋ 加一行」增加行數）。' + (ordered ? "有 ORDER BY：記錄的次序要正確。" : "沒有 ORDER BY：次序不拘。") + "</p>";
+const sameRows = (a, b) => { const k = (rs) => rs.map((r) => JSON.stringify(r.map((v) => (typeof v === "string" ? v.toLowerCase() : v)))).sort().join("|"); return k(a) === k(b); };
+// 常見錯誤：以另一條語句的輸出作為陷阱
+function trapsOf(T, alts, res, kind) {
+  return alts.map(([sql, msg]) => { try { const r = runQ(T, sql); return kind === "n" ? { v: r.rows.length, msg } : { rows: r.rows, msg }; } catch (e) { return null; } })
+    .filter((t) => t && (kind === "n" ? t.v !== res.rows.length : !sameRows(t.rows, res.rows)));
+}
+// ---------- 數據 ----------
+function mkClub(o = {}) {
+  const nc = o.nc || R(3, 4), cn = sample(CLUBN, nc), rooms = sample([101, 105, 203, 208, 301, 305, 402, 406, 501, 502], nc);
+  const CL = cn.map((n, i) => [i + 1, n, rooms[i]]);
+  const n = o.n || R(5, 7), names = sample(EN, n), used = o.empty === false ? range(1, nc + 1) : sample(range(1, nc + 1), nc - 1);
+  const nNull = o.nulls === undefined ? R(1, 2) : o.nulls, cls = sample(["5A", "5B", "5C", "5D"], o.ncls || 3);
+  let sid = R(3480, 3520); const ST = [];
+  for (let i = 0; i < n; i++) { sid += R(1, 4); ST.push({ SID: "0" + sid, SNAME: names[i], CLASS: pick(cls), SCORE: o.step5 ? R(6, 19) * 5 : R(30, 95), CID: i < nNull ? null : i < nNull + used.length ? used[i - nNull] : pick(used) }); }
+  if (o.nullScore) ST[R(0, n - 1)].SCORE = null;
+  const rows = shuffle(ST), cols = o.cols || ["SID", "SNAME", "CLASS", "SCORE", "CID"], ccols = o.ccols || ["CID", "CNAME", "ROOM"];
+  const clubRows = CL.map((r) => ccols.map((c) => (c === "NUM" ? 0 : r[["CID", "CNAME", "ROOM"].indexOf(c)])));
+  return { T: { STUDENT: [cols, rows.map((r) => cols.map((c) => r[c])), ["SID"]], CLUB: [ccols, clubRows, ["CID"]] }, recs: rows, clubs: CL, cls };
+}
+function mkLib() {
+  const nm = R(4, 5), nb = R(4, 5), names = sample(EN, nm), cls = sample(["5A", "5B", "5C"], 2);
+  const M = names.map((n, i) => ["M0" + (i + 1), n, pick(cls)]), ts = sample(TITLES, nb);
+  const B = ts.map((t, i) => ["B" + (101 + i * R(1, 3) + i), t, pick(CATS3), R(4, 15) * 10]);
+  const pairs = []; const mUse = sample(M, nm - 1), bUse = sample(B, nb - 1);
+  mUse.forEach((m) => pairs.push([m[0], pick(bUse)[0]])); bUse.forEach((b) => { if (!pairs.some((p) => p[1] === b[0])) pairs.push([pick(mUse)[0], b[0]]); });
+  while (pairs.length < R(5, 7)) { const p = [pick(mUse)[0], pick(bUse)[0]]; if (!pairs.some((x) => x[0] === p[0] && x[1] === p[1])) pairs.push(p); }
+  const L = shuffle(pairs).map((p) => [p[0], p[1], "2025-" + String(R(1, 6)).padStart(2, "0") + "-" + String(R(1, 28)).padStart(2, "0")]);
+  return { T: { MEMBER: [["MID", "MNAME", "CLASS"], M, ["MID"]], BOOK: [["BID", "TITLE", "CAT", "PRICE"], B, ["BID"]], LOAN: [["MID", "BID", "LDATE"], L, ["MID", "BID", "LDATE"]] }, M, B, L, cls };
+}
+function mkReg() {
+  const n = R(4, 5), names = sample(EN, n); let sid = R(3480, 3520); const S = names.map((x) => { sid += R(1, 5); return ["0" + sid, x]; });
+  const all = []; S.forEach((s) => sample([1, 2, 3, 4], 2).forEach((c) => all.push([s[0], s[1], c])));
+  const sh = shuffle(all), nCom = R(1, 3), n24 = R(2, 3), n25 = R(2, 3);
+  const com = sh.slice(0, nCom), o24 = sh.slice(nCom, nCom + n24), o25 = sh.slice(nCom + n24, nCom + n24 + n25);
+  const ord = (rs) => rs.slice().sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : a[2] - b[2]));
+  const cols = ["SID", "SNAME", "CID"];
+  return { T: { REG24: [cols, ord(com.concat(o24)), ["SID", "CID"]], REG25: [cols, ord(com.concat(o25)), ["SID", "CID"]] } };
+}
+function mkT12() {
+  const C = ["C01", "C02", "C03"], A = ["F01", "S01", "S02"], amt = () => pick([0, 0, 500, 1000, 2000, 6000]);
+  const mk = () => { const ks = sample([].concat(...C.map((c) => A.map((a) => [c, a]))), R(4, 5)).sort((x, y) => (x[0] + x[1] < y[0] + y[1] ? -1 : 1)); return ks.map((k) => [k[0], k[1], amt()]); };
+  return { T: { T1: [["CID", "AID", "AMT"], mk(), ["CID", "AID"]], T2: [["CID", "AID", "AMT"], mk(), ["CID", "AID"]] } };
+}
+// ---------- 解說用的表 ----------
+function pairHTML(T, lt, lk, lshow, rt, rk, rshow, type) {   // 連接配對表
+  const [lc, lr] = T[lt], [rc, rr] = T[rt], li = lc.indexOf(lk), ri = rc.indexOf(rk), ls = lc.indexOf(lshow), rs = rc.indexOf(rshow);
+  const keepL = type === "LEFT" || type === "FULL", keepR = type === "RIGHT" || type === "FULL", used = new Set(), rows = [];
+  lr.forEach((a) => { const m = rr.filter((b, j) => a[li] !== null && b[ri] !== null && SQL.cmpv(a[li], b[ri]) === 0 && used.add(j)); rows.push([esc(lt + "：" + a[ls]), cellV(a[li]), m.length ? m.map((b) => esc(b[rs])).join("、") : '<span class="no">沒有配對</span>', m.length ? m.length + " 行" : keepL ? "1 行（" + rt + " 欄 NULL）" : "0 行"]); });
+  rr.forEach((b, j) => { if (!used.has(j)) rows.push([esc(rt + "：" + b[rs]), cellV(b[ri]), '<span class="no">沒有被配對</span>', keepR ? "1 行（" + lt + " 欄 NULL）" : "0 行"]); });
+  return '<p class="iolab">連接配對表（' + esc(type) + " JOIN）</p>" + mini(["記錄", esc(lk), "配對到", "輸出"], rows);
+}
+function traceRows(T, tn, alias, keyCols, conds) {   // 子查詢逐行判斷表
+  const [cols, rows] = T[tn], ki = keyCols.map((k) => cols.indexOf(k));
+  const num = conds.map((c) => c[0] === "#"), cs = conds.map((c) => c.replace(/^#/, ""));
+  const data = rows.map((r) => cs.map((c) => SQL.evalRow(T, tn, alias, r, c)));
+  return '<p class="iolab">逐行判斷（✓ 成立、✗ 不成立、NULL 未知）</p>' + mini([...keyCols.map(esc), ...cs.map((c, k) => (num[k] ? "子查詢找到的記錄數" : sqlI(c)))], rows.map((r, i) => [...ki.map((j) => cellV(r[j])), ...data[i].map((v, k) => (num[k] ? cellV(v) : TF(v)))]), { hl: data.map((d, i) => (d[d.length - 1] === true ? i : -1)).filter((i) => i >= 0) });
+}
+const subRes = (T, sql) => { const r = runQ(T, sql); return r.rows.map((x) => x.map(SQL.fmtV).join(", ")); };
+const subHTML = (T, sql) => '<p class="iolab">先執行子查詢：<code>' + esc(flat(sql)) + "</code></p><p>子查詢結果：" + (subRes(T, sql).map((x) => "<code>" + esc(x) + "</code>").join(" ") || "（沒有記錄）") + "</p>";
+const J = { INNER: "INNER JOIN", LEFT: "LEFT JOIN", RIGHT: "RIGHT JOIN", FULL: "FULL JOIN" };
+const fullNote = (t) => (t === "FULL" ? "（FULL JOIN 是 DSE 附頁的寫法；MySQL 不支援，上機要用 LEFT JOIN … UNION … RIGHT JOIN。）" : "");
+const subq = (s) => s.replace(/\n/g, "\n    ");
+
+const GEN_SQL = [
+  // ---------------- J1 連接結果 ----------------
+  { id: "J1", name: "連接結果", types: [
+    { name: "連接行數", fn() {
+      for (;;) {
+        const st = mkClub(), T = st.T, type = pick(["INNERW", "INNER", "LEFT", "RIGHT", "FULL"]), swap = coin(0.3);
+        const [A, a, B, b] = swap ? ["CLUB", "C", "STUDENT", "S"] : ["STUDENT", "S", "CLUB", "C"];
+        const sql = type === "INNERW" ? "SELECT *\nFROM " + A + " " + a + ", " + B + " " + b + "\nWHERE S.CID = C.CID" : "SELECT *\nFROM " + A + " " + a + "\n" + J[type] + " " + B + " " + b + " ON " + a + ".CID = " + b + ".CID";
+        const res = runQ(T, sql), t2 = type === "INNERW" ? "INNER" : type, n = res.rows.length;
+        const inner = runQ(T, "SELECT * FROM STUDENT S, CLUB C WHERE S.CID = C.CID").rows.length;
+        const alts = [[inner, "INNER JOIN 只輸出有配對的記錄；" + t2 + " JOIN 還保留沒有配對的記錄。"], [runQ(T, "SELECT * FROM " + A + " " + a + " " + (t2 === "LEFT" ? "RIGHT" : "LEFT") + " JOIN " + B + " " + b + " ON " + a + ".CID = " + b + ".CID").rows.length, "LEFT 與 RIGHT 調換了：LEFT JOIN 保留 JOIN 左邊（先寫）數據表的所有記錄。"], [T[A][1].length * T[B][1].length, "這是沒有連接條件時的行數（每筆記錄都與另一表的每筆記錄配對）。"], [T[A][1].length + T[B][1].length, "連接不是把兩表的記錄數相加；要逐筆配對。"]];
+        const traps = alts.filter((x, i) => x[0] !== n && !(t2 === "INNER" && i < 2)).map(([v, msg]) => ({ v, msg }));
+        if (t2 !== "INNER" && n === inner) continue;
+        return { prompt: "<p>以下 SQL 語句會輸出多少行（不計欄名）？" + fullNote(t2) + "（題型參考：2020 卷二A 4(b)(iii)）</p>" + tables(T) + sqlHTML(sql),
+          input: parts(P.num("行數", n, { traps })), show: String(n),
+          explain: [t2 === "INNER" ? "INNER JOIN（及 WHERE 等連接）只輸出兩表 CID 相同的配對；CID 為 NULL 的記錄不會與任何記錄配對。" : t2 === "LEFT" ? "LEFT JOIN：左表（" + A + "）每筆記錄都會輸出；沒有配對的，右表的欄位填上 NULL。" : t2 === "RIGHT" ? "RIGHT JOIN：右表（" + B + "）每筆記錄都會輸出；沒有配對的，左表的欄位填上 NULL。" : "FULL JOIN：有配對的記錄＋兩表各自沒有配對的記錄。", "NULL 不等於任何值（包括另一個 NULL），所以 CID 為 NULL 的學生不會配對到學會。", "行數＝" + n + "。"],
+          after: pairHTML(T, A, "CID", A === "STUDENT" ? "SNAME" : "CNAME", B, "CID", B === "STUDENT" ? "SNAME" : "CNAME", t2), chk: [sqlChk(T, sql, res)], sandbox: { tables: T } };
+      } } },
+    { name: "連接結果表", fn() {
+      for (;;) {
+        const st = mkClub({ n: R(4, 6) }), T = st.T, type = pick(["INNER", "LEFT", "RIGHT", "FULL", "LEFT"]), extra = coin(0.4) ? ", C.ROOM" : "";
+        let sql = "SELECT S.SNAME, C.CNAME" + extra + "\nFROM STUDENT S\n" + J[type] + " CLUB C ON S.CID = C.CID";
+        if (coin(0.3)) sql += "\nWHERE S.CLASS <> '" + pick(st.cls) + "'";
+        const res = runQ(T, sql); if (res.rows.length < 2 || res.rows.length > 6) continue;
+        const sw = { LEFT: "RIGHT", RIGHT: "LEFT", INNER: "LEFT", FULL: "LEFT" }[type];
+        const traps = trapsOf(T, [[sql.replace(J[type], J[sw]), type === "INNER" ? "INNER JOIN 不會保留沒有配對的記錄。" : "LEFT 與 RIGHT 調換了：LEFT 保留左表（STUDENT）所有記錄，RIGHT 保留右表（CLUB）所有記錄。"], [sql.replace(J[type], "INNER JOIN"), "漏了沒有配對的記錄：" + type + " JOIN 會保留它們，另一表的欄位寫 NULL。"]], res);
+        return { prompt: "<p>寫出以下 SQL 語句的輸出。" + fullNote(type) + "</p>" + tables(T) + sqlHTML(sql) + gridPrompt(false),
+          input: parts(gridPart(res, { traps })), show: rowsTxt(res.rows),
+          explain: ["先按 ON 條件逐筆配對（見配對表），再按 WHERE 篩選，最後選出 SELECT 的欄位。", type === "INNER" ? "INNER JOIN 只保留有配對的記錄。" : type + " JOIN 保留沒有配對的記錄，另一表的欄位是 NULL。", "SELECT 寫了表名（S.SNAME），輸出的欄名只寫欄名。"],
+          after: pairHTML(T, "STUDENT", "CID", "SNAME", "CLUB", "CID", "CNAME", type), chk: [sqlChk(T, sql, res)], sandbox: { tables: T } };
+      } } },
+    { name: "辨認連接種類", fn() {
+      for (;;) {
+        const st = mkClub({ n: R(4, 5) }), T = st.T, types = ["INNER", "LEFT", "RIGHT", "FULL"], base = "SELECT S.SNAME, C.CNAME\nFROM STUDENT S\n? CLUB C ON S.CID = C.CID";
+        const rs = types.map((t) => runQ(T, base.replace("?", J[t])).rows); if (rs.some((a, i) => rs.some((b, j) => i < j && sameRows(a, b))) || rs[3].length > 7) continue;
+        const k = R(0, 3), res = { cols: ["SNAME", "CNAME"], rows: rs[k] };
+        return { prompt: "<p>以下語句的「?」是哪一種連接時，會得出右面的輸出（次序不拘）？</p>" + tables(T) + sqlHTML(base) + '<p class="iolab">輸出</p>' + dbHTML("", res.cols, res.rows),
+          input: choiceIn(types.map((t) => J[t]), k, { mono: true, why: types.map((t, i) => (i === k ? "" : J[t] + " 的輸出有 " + rs[i].length + " 行：" + rowsTxt(rs[i]) + "。")) }), show: J[types[k]],
+          explain: ["看輸出有沒有 NULL：SNAME 有值而 CNAME 是 NULL → 保留了 STUDENT 沒有配對的記錄（LEFT）；SNAME 是 NULL → 保留了 CLUB 沒有配對的記錄（RIGHT）。", "兩種 NULL 都有 → FULL JOIN；都沒有 → INNER JOIN。", fullNote("FULL")],
+          after: pairHTML(T, "STUDENT", "CID", "SNAME", "CLUB", "CID", "CNAME", types[k]), chk: [{ t: "sqlopt", tables: bare(T), sqls: types.map((t) => flat(base.replace("?", J[t]))), want: rs[k], ans: k }], sandbox: { tables: T } };
+      } } },
+  ] },
+  // ---------------- J2 三表及自連接 ----------------
+  { id: "J2", name: "三表及自連接", types: [
+    { name: "三表連接", fn() {
+      for (;;) {
+        const lb = mkLib(), T = lb.T, form = R(1, 3), cat = pick(lb.B)[2], cl = pick(lb.cls), pr = pick(lb.B)[3];
+        const sql = form === 1 ? "SELECT M.MNAME, B.TITLE\nFROM MEMBER M, LOAN L, BOOK B\nWHERE M.MID = L.MID AND L.BID = B.BID\n      AND B.CAT = '" + cat + "'"
+          : form === 2 ? "SELECT M.MNAME, B.TITLE, L.LDATE\nFROM MEMBER M\nINNER JOIN LOAN L ON M.MID = L.MID\nINNER JOIN BOOK B ON L.BID = B.BID\nWHERE M.CLASS = '" + cl + "'"
+          : "SELECT DISTINCT M.MNAME\nFROM MEMBER M, LOAN L, BOOK B\nWHERE M.MID = L.MID AND L.BID = B.BID\n      AND B.PRICE >= " + pr;
+        const res = runQ(T, sql); if (res.rows.length < 1 || res.rows.length > 6) continue;
+        const traps = form === 3 ? trapsOf(T, [[sql.replace("DISTINCT ", ""), "SELECT DISTINCT 會去除重複的姓名。"]], res) : [];
+        return { prompt: "<p>寫出以下 SQL 語句的輸出。（題型參考：2021 卷二A 1(e)、2017 卷二A 3(c)）</p>" + tables(T) + sqlHTML(sql) + gridPrompt(false),
+          input: parts(gridPart(res, { traps })), show: rowsTxt(res.rows),
+          explain: ["三個數據表要兩個連接條件：MEMBER—LOAN（MID）、LOAN—BOOK（BID）。LOAN 是中間的數據表。", "做法：逐筆看 LOAN，找出該筆借閱的會員及書本，再按條件篩選。", form === 3 ? "DISTINCT 去除重複的輸出行。" : "每筆符合條件的借閱記錄輸出一行。"],
+          after: mini(["LOAN 記錄", "會員", "書本", "符合條件？"], T.LOAN[1].map((l) => { const m = lb.M.find((x) => x[0] === l[0]), b = lb.B.find((x) => x[0] === l[1]); const ok = form === 1 ? b[2] === cat : form === 2 ? m[2] === cl : b[3] >= pr; return [esc(l.join(", ")), esc(m[1] + "（" + m[2] + "）"), esc(b[1] + "（" + b[2] + "，" + b[3] + "）"), TF(ok)]; })),
+          chk: [sqlChk(T, sql, res)], sandbox: { tables: T } };
+      } } },
+    { name: "漏寫連接條件", fn() {
+      const lb = mkLib(), T = lb.T, miss = R(1, 2);
+      const keep = miss === 1 ? "M.MID = L.MID" : "L.BID = B.BID", lost = miss === 1 ? "L.BID = B.BID" : "M.MID = L.MID";
+      const sql = "SELECT *\nFROM MEMBER M, LOAN L, BOOK B\nWHERE " + keep, res = runQ(T, sql), good = runQ(T, sql + " AND " + lost);
+      const nl = T.LOAN[1].length, other = miss === 1 ? T.BOOK[1].length : T.MEMBER[1].length;
+      return { prompt: "<p>以下語句連接三個數據表，但漏寫了連接條件 <code>" + lost + "</code>。它會輸出多少行？</p>" + tables(T) + sqlHTML(sql),
+        input: parts(P.num("行數", res.rows.length, { traps: [{ v: good.rows.length, msg: "這是寫齊兩個連接條件時的行數；漏寫一個條件，便會與另一表的每筆記錄配對。" }, { v: nl * T.BOOK[1].length * T.MEMBER[1].length, msg: "還有一個連接條件 " + keep + "，它限制了 MEMBER 與 LOAN 的配對。" }].filter((t) => t.v !== res.rows.length) })), show: String(res.rows.length),
+        explain: ["N 個數據表要 N − 1 個連接條件；漏寫一個，結果會出現大量不合理的配對（評卷常見扣分）。", "每筆 LOAN 記錄只會配對一個" + (miss === 1 ? "會員" : "書本") + "（" + keep + "），但會與 " + (miss === 1 ? "BOOK" : "MEMBER") + " 的所有 " + other + " 筆記錄配對：" + nl + " × " + other + " = " + res.rows.length + "。", "寫齊連接條件時只有 " + good.rows.length + " 行。"],
+        chk: [sqlChk(T, sql, res), sqlChk(T, sql + " AND " + lost, good)], sandbox: { tables: T } };
+    } },
+    { name: "自連接", fn() {
+      for (;;) {
+        const st = mkClub({ n: R(5, 6), cols: ["SID", "SNAME", "CLASS", "SCORE"], ncls: 2 }), T = { STUDENT: st.T.STUDENT }, d = pick([10, 15, 20]), form = R(1, 2);
+        const cond = form === 1 ? "s1.CLASS = s2.CLASS" : "ABS(s1.SCORE - s2.SCORE) < " + d;
+        const sql = "SELECT s1.SNAME, s2.SNAME AS PARTNER\nFROM STUDENT s1, STUDENT s2\nWHERE " + cond + " AND s1.SID < s2.SID";
+        const res = runQ(T, sql); if (res.rows.length < 1 || res.rows.length > 5) continue;
+        const traps = trapsOf(T, [[sql.replace("s1.SID < s2.SID", "s1.SID <> s2.SID"), "s1.SID < s2.SID 令每對只出現一次（<> 才會出現 A／B 與 B／A 兩次）。"], [sql.replace(" AND s1.SID < s2.SID", ""), "沒有 s1.SID < s2.SID 時，學生會與自己配對，而且每對出現兩次。"], [sql.replace("s1.SID < s2.SID", "s1.SID > s2.SID"), "左右調換了：s1.SID < s2.SID，所以 SID 較小的學生在左邊（SNAME 欄）。"]], res);
+        return { prompt: "<p>老師想為學生配對學習夥伴。寫出以下自連接語句的輸出。（教科書 3.1E p.125–126；題型參考：2023 卷二A 1(e)(i)）</p>" + tables(T) + sqlHTML(sql) + gridPrompt(false),
+          input: parts(gridPart(res, { traps })), show: rowsTxt(res.rows),
+          explain: ["自連接：同一個數據表用兩個別名（s1、s2），當作兩個數據表逐對比較。", "s1.SID < s2.SID：排除自己與自己配對，並令每對只出現一次（SID 較小的在左）。", form === 1 ? "條件 s1.CLASS = s2.CLASS：同班的學生才配對。" : "條件 ABS(s1.SCORE − s2.SCORE) < " + d + "：分數相差少於 " + d + "。"],
+          after: mini(["s1", "s2", esc(cond), "s1.SID < s2.SID"], [].concat(...T.STUDENT[1].map((a) => T.STUDENT[1].filter((b) => a[0] < b[0]).map((b) => [esc(a[1] + "（" + a[0] + "）"), esc(b[1] + "（" + b[0] + "）"), TF(form === 1 ? a[2] === b[2] : Math.abs(a[3] - b[3]) < d), TF(true)])))),
+          chk: [sqlChk(T, sql, res)], sandbox: { tables: T } };
+      } } },
+  ] },
+  // ---------------- S1 IN／NOT IN 及最高最低 ----------------
+  { id: "S1", name: "IN／NOT IN 及最高最低子查詢", types: [
+    { name: "IN 與 NOT IN", fn() {
+      for (;;) {
+        if (coin()) {
+          const st = mkClub(), T = st.T, rm = pick(st.clubs)[2], op = pick([">=", "<"]), neg = coin(0.3);
+          const sub = "SELECT CID\nFROM CLUB\nWHERE ROOM " + op + " " + rm, sql = "SELECT SNAME\nFROM STUDENT\nWHERE CID " + (neg ? "NOT IN" : "IN") + " (" + subq(sub) + ")";
+          const res = runQ(T, sql); if (res.rows.length < 1 || res.rows.length > 5) continue;
+          const traps = trapsOf(T, [[sql.replace(neg ? "NOT IN" : "IN", neg ? "IN" : "NOT IN"), "IN 與 NOT IN 調換了。"], ["SELECT SNAME FROM STUDENT WHERE CID NOT IN (" + sub + ") OR CID IS NULL", "CID 為 NULL 的學生：NULL NOT IN (…) 的結果是 NULL（未知），不會輸出。"]], res);
+          return { prompt: "<p>寫出以下 SQL 語句的輸出。（題型參考：2014 卷二A 1(a)(iii)）</p>" + tables(T) + sqlHTML(sql) + gridPrompt(false), input: parts(gridPart(res, { traps })), show: rowsTxt(res.rows),
+            explain: ["先執行括號內的子查詢，得出一列 CID；再逐行判斷外層的 STUDENT。", "IN：CID 等於子查詢結果其中一個值；NOT IN：不等於其中任何一個值。", "CID 為 NULL 時，IN 及 NOT IN 的結果都是 NULL（未知），記錄不會輸出。"],
+            after: subHTML(T, sub) + traceRows(T, "STUDENT", null, ["SID", "SNAME", "CID"], ["CID " + (neg ? "NOT IN" : "IN") + " (" + flat(sub) + ")"]), chk: [sqlChk(T, sql, res)], sandbox: { tables: T } };
+        }
+        const lb = mkLib(), T = lb.T, form = R(1, 2), cat = pick(lb.B)[2];
+        const sub = form === 1 ? "SELECT MID\nFROM LOAN" : "SELECT L.MID\nFROM LOAN L, BOOK B\nWHERE L.BID = B.BID AND B.CAT = '" + cat + "'", sql = "SELECT MID, MNAME\nFROM MEMBER\nWHERE MID NOT IN (" + subq(sub) + ")";
+        const res = runQ(T, sql); if (res.rows.length < 1 || res.rows.length > 4) continue;
+        const traps = trapsOf(T, [[sql.replace("NOT IN", "IN"), "題目是 NOT IN：找出「沒有」出現在子查詢結果的會員。"]], res);
+        return { prompt: "<p>寫出以下 SQL 語句的輸出（找出「沒有……」的記錄）。（題型參考：2023 卷二A 1(c)、2020 卷二A 1(d)）</p>" + tables(T) + sqlHTML(sql) + gridPrompt(false), input: parts(gridPart(res, { traps })), show: rowsTxt(res.rows),
+          explain: ["子查詢列出" + (form === 1 ? "曾借書" : "曾借 " + cat + " 類書") + "的會員編號（可以重複）。", "NOT IN：會員編號不在該列表中，即" + (form === 1 ? "沒有借過書" : "沒有借過 " + cat + " 類書") + "的會員。", "「找出沒有……」亦可用 LEFT JOIN … IS NULL、NOT EXISTS 或 MINUS（見「等效寫法」）。"],
+          after: subHTML(T, sub) + traceRows(T, "MEMBER", null, ["MID", "MNAME"], ["MID NOT IN (" + flat(sub) + ")"]), chk: [sqlChk(T, sql, res)], sandbox: { tables: T } };
+      } } },
+    { name: "最高／最低子查詢", fn() {
+      for (;;) {
+        const st = mkClub({ nulls: R(0, 1) }), T = st.T, fn = pick(["MAX", "MIN", "AVG"]), cl = coin(0.5) ? pick(st.cls) : null, form = coin(0.25) && fn !== "AVG" ? 3 : 1;
+        const sub = "SELECT " + fn + "(SCORE)\nFROM STUDENT" + (cl ? "\nWHERE CLASS = '" + cl + "'" : ""), op = fn === "AVG" ? pick([">", "<"]) : "=";
+        const inner = "SELECT CID\nFROM STUDENT\nWHERE SCORE " + op + " (" + subq(sub) + ")";
+        const sql = form === 3 ? "SELECT CNAME\nFROM CLUB\nWHERE CID IN (" + subq(inner) + ")" : "SELECT SNAME, SCORE\nFROM STUDENT\nWHERE SCORE " + op + " (" + subq(sub) + ")" + (fn === "AVG" ? "" : "");
+        const res = runQ(T, sql); if (res.rows.length < 1 || res.rows.length > 5) continue;
+        const alts = cl ? [[sql.replace("\n    WHERE CLASS = '" + cl + "'", "").replace("\n        WHERE CLASS = '" + cl + "'", ""), "子查詢的 WHERE 只計算 " + cl + " 班的" + fn + "；外層則比較所有學生。"]] : [];
+        const v = runQ(T, sub).rows[0][0];
+        return { prompt: "<p>寫出以下 SQL 語句的輸出。（題型參考：2025 卷二甲部 5(b)(iii)、2021 卷二A 1(f)）</p>" + tables(T) + sqlHTML(sql) + gridPrompt(false), input: parts(gridPart(res, { traps: trapsOf(T, alts, res) })), show: rowsTxt(res.rows),
+          explain: ["由最內層開始：子查詢 " + fn + "(SCORE) 得 " + fmtNum(v) + (fn === "AVG" ? "（AVG 不計 NULL）" : "") + "。", fn === "AVG" ? "外層逐行比較 SCORE " + op + " " + fmtNum(v) + "。" : "外層找出 SCORE = " + v + " 的學生（同分的都會輸出）。", "不可寫 WHERE SCORE = " + fn + "(SCORE)：聚合函數不可用在 WHERE（2025 5(b)(iii) 超過一半考生在子查詢和 MAX 上遇到困難）；本課程亦不用 LIMIT。", form === 3 ? "最外層再用 IN 找出這些學生所屬的學會。" : ""],
+          after: subHTML(T, sub), chk: [sqlChk(T, sql, res)], sandbox: { tables: T } };
+      } } },
+  ] },
+  // ---------------- S2 EXISTS 相關子查詢 ----------------
+  { id: "S2", name: "EXISTS 相關子查詢", types: [
+    { name: "EXISTS 結果", fn() {
+      for (;;) {
+        const st = mkClub(), T = st.T, x = pick(st.recs).SCORE ?? 60, neg = coin(0.35), op = pick([">=", "<"]);
+        const sub = "SELECT *\nFROM STUDENT S\nWHERE S.CID = C.CID AND S.SCORE " + op + " " + x, sql = "SELECT C.CNAME\nFROM CLUB C\nWHERE " + (neg ? "NOT " : "") + "EXISTS (" + subq(sub) + ")";
+        const res = runQ(T, sql); if (res.rows.length < 1 || res.rows.length === T.CLUB[1].length) continue;
+        const traps = trapsOf(T, [[sql.replace(neg ? "NOT EXISTS" : "EXISTS", neg ? "EXISTS" : "NOT EXISTS"), "EXISTS 與 NOT EXISTS 調換了。"], [sql.replace("S.CID = C.CID AND ", ""), "這是相關子查詢：S.CID = C.CID 令子查詢只看「這個學會」的學生，要逐個學會判斷。"]], res);
+        const cnt = "#(SELECT COUNT(*) FROM STUDENT S WHERE S.CID = C.CID AND S.SCORE " + op + " " + x + ")";
+        return { prompt: "<p>寫出以下 SQL 語句的輸出。（題型參考：2016 卷二A 1(d)、2017 卷二A 3(e)）</p>" + tables(T) + sqlHTML(sql) + gridPrompt(false), input: parts(gridPart(res, { traps })), show: rowsTxt(res.rows),
+          explain: ["相關子查詢用到外層的 C.CID，所以要逐個學會執行一次。", "EXISTS：子查詢有至少一行結果便成立；NOT EXISTS：子查詢沒有結果才成立。", "下表列出每個學會在子查詢中找到的學生數目。"],
+          after: traceRows(T, "CLUB", "C", ["CID", "CNAME"], [cnt, (neg ? "NOT " : "") + "EXISTS (" + flat(sub) + ")"]), chk: [sqlChk(T, sql, res)], sandbox: { tables: T } };
+      } } },
+    { name: "UPDATE … WHERE EXISTS", fn() {
+      for (;;) {
+        const d = mkT12(), T = d.T, pre = coin() ? "T1." : "", same = coin(0.6) ? "T1.CID = T2.CID" : "T1.AID = T2.AID", v2 = pick([0, 0, 500]);
+        const sql = "UPDATE T1\nSET " + pre + "AMT = 0\nWHERE " + pre + "AMT > 0 AND EXISTS (SELECT *\n    FROM T2\n    WHERE " + same + " AND T2.AMT = " + v2 + ")";
+        const r = SQL.exec(T, flat(sql)); if (!r.hit.length || r.hit.length === T.T1[1].length) continue;
+        const r2 = SQL.exec(T, flat(sql).replace(same + " AND ", "")), opts = T.T1[1].map((x) => x.join(", "));
+        const traps = sameSet(r2.hit, r.hit) ? [] : [{ v: r2.hit, msg: "子查詢有 " + same + "：要找 T2 中與「這筆」T1 記錄" + (same.includes("CID") ? "同一 CID" : "同一 AID") + "的記錄，不是整個 T2。" }];
+        return { prompt: "<p>執行以下語句後，T1 中哪些記錄會被更新？選出所有答案。（題型參考：2025 卷二甲部 2(b)）</p>" + tables(T) + sqlHTML(sql),
+          input: parts(P.multi("被更新的 T1 記錄", opts, r.hit, { traps })), show: r.hit.map((i) => "（" + opts[i] + "）").join("、"),
+          explain: ["UPDATE 逐筆檢查 T1：先看 AMT > 0，再執行相關子查詢。", "EXISTS 成立：T2 中有記錄符合 " + same + " 而且 T2.AMT = " + v2 + "。", "兩個條件都成立的記錄，AMT 改為 0；其他記錄不變。"],
+          after: traceRows(T, "T1", null, ["CID", "AID", "AMT"], ["AMT > 0", "EXISTS (SELECT * FROM T2 WHERE " + same + " AND T2.AMT = " + v2 + ")", "AMT > 0 AND EXISTS (SELECT * FROM T2 WHERE " + same + " AND T2.AMT = " + v2 + ")"]) + '<p class="iolab">更新後的 T1</p>' + dbHTML("T1", r.T.T1[0], r.T.T1[1], { hl: r.hit }),
+          chk: [dmlChk(T, [sql], "T1", r.T.T1)], sandbox: { tables: T } };
+      } } },
+  ] },
+  // ---------------- S3 ANY／ALL ----------------
+  { id: "S3", name: "ANY 與 ALL", types: [
+    { name: "ANY／ALL 結果", fn() {
+      for (;;) {
+        const st = mkClub({ nulls: 0, cols: ["SID", "SNAME", "CLASS", "SCORE"], n: R(6, 7) }), T = { STUDENT: st.T.STUDENT }, cl = coin(0.8) ? pick(st.cls) : null;
+        const [op, q] = pick([[">", "ALL"], [">=", "ALL"], ["<", "ALL"], [">", "ANY"], ["<", "ANY"], ["=", "ANY"], ["<>", "ANY"], ["<>", "ALL"], ["<=", "ALL"]]);
+        const sub = "SELECT SCORE\nFROM STUDENT" + (cl ? "\nWHERE CLASS = '" + cl + "'" : ""), sql = "SELECT SNAME\nFROM STUDENT\nWHERE SCORE " + op + " " + q + " (" + subq(sub) + ")";
+        const res = runQ(T, sql), vals = runQ(T, sub).rows.map((r) => r[0]); if (!vals.length || res.rows.length < 1 || res.rows.length > 5) continue;
+        const q2 = q === "ALL" ? "ANY" : "ALL", traps = trapsOf(T, [[sql.replace(" " + q + " ", " " + q2 + " "), q + " 與 " + q2 + " 混淆：ALL 要與子查詢的「所有」值比較都成立；ANY 只要與「其中一個」值比較成立。"]], res);
+        const mx = Math.max(...vals), mn = Math.min(...vals), nd = uniq(vals).length;
+        const meaning = { ">ALL": "大於最大值 " + mx, ">=ALL": "大於或等於最大值 " + mx + "（即最高分）", "<ALL": "小於最小值 " + mn, "<=ALL": "小於或等於最小值 " + mn, ">ANY": "大於最小值 " + mn, "<ANY": "小於最大值 " + mx, "=ANY": "等於其中一個值（與 IN 相同）", "<>ANY": nd >= 2 ? "子查詢有 " + nd + " 個不同的值，任何分數都至少與其中一個不同，所以全部成立（教科書 p.144；選A-37）" : "子查詢只有一個值 " + vals[0] + "，所以等同 <> " + vals[0], "<>ALL": "與所有值都不同（與 NOT IN 相同）" }[op + q];
+        return { prompt: "<p>寫出以下 SQL 語句的輸出。（題型參考：2022 卷二A 1(e)(i)）</p>" + tables(T) + sqlHTML(sql) + gridPrompt(false), input: parts(gridPart(res, { traps })), show: rowsTxt(res.rows),
+          explain: ["子查詢的值：" + vals.join("、") + "。", "SCORE " + op + " " + q + "（…）即" + meaning + "。", "2022 1(e)(i) 只有三分之一考生理解 >= ALL：它等同「= (SELECT MAX(…))」。"],
+          after: traceRows(T, "STUDENT", null, ["SNAME", "SCORE"], ["SCORE " + op + " " + q + " (" + flat(sub) + ")"]), chk: [sqlChk(T, sql, res)], sandbox: { tables: T } };
+      } } },
+  ] },
+  // ---------------- G1 分組 ----------------
+  { id: "G1", name: "分組與 HAVING", types: [
+    { name: "分組輸出", fn() {
+      for (;;) {
+        const st = mkClub({ step5: true, n: R(6, 8) }), T = st.T, x = pick(st.recs).SCORE, k = R(2, 3), form = R(1, 6);
+        const sql = [, "SELECT CLASS, COUNT(*)\nFROM STUDENT\nWHERE SCORE >= " + x + "\nGROUP BY CLASS", "SELECT CLASS, AVG(SCORE)\nFROM STUDENT\nGROUP BY CLASS\nHAVING COUNT(*) >= " + k,
+          "SELECT C.CNAME, COUNT(*)\nFROM STUDENT S, CLUB C\nWHERE S.CID = C.CID\nGROUP BY C.CNAME\nHAVING COUNT(*) >= " + k, "SELECT CID, COUNT(*), MAX(SCORE)\nFROM STUDENT\nGROUP BY CID",
+          "SELECT CLASS, SUM(SCORE)\nFROM STUDENT\nWHERE CID IS NOT NULL\nGROUP BY CLASS\nHAVING SUM(SCORE) > " + R(10, 24) * 5, "SELECT CLASS, COUNT(*), COUNT(CID)\nFROM STUDENT\nGROUP BY CLASS"][form];
+        const res = runQ(T, sql); if (res.rows.length < 1 || res.rows.length > 5 || !res.rows.every((r) => r.every(dp2))) continue;
+        const noH = sql.replace(/\nHAVING.*$/, ""), noW = sql.replace(/\nWHERE [^\n]*/, "");
+        const alts = [[noH, "漏了 HAVING：HAVING 在分組後刪去不符合條件的組。"]]; if (form === 1 || form === 5) alts.push([noW, "WHERE 先篩選記錄，才分組。"]);
+        if (form === 6) alts.push(["SELECT CLASS, COUNT(*), COUNT(*) FROM STUDENT GROUP BY CLASS", "COUNT(CID) 不計 CID 為 NULL 的記錄。"]);
+        const g = form === 3 ? "C.CNAME" : form === 4 ? "CID" : "CLASS", show = form === 3 ? "S.SNAME" : "SNAME";
+        const mem = runQ(T, "SELECT " + g + ", " + show + " FROM " + (form === 3 ? "STUDENT S, CLUB C" : "STUDENT") + (/\nWHERE/.test(sql) ? " WHERE " + /\nWHERE ([^\n]*)/.exec(sql)[1] : "")).rows;
+        const gr = runQ(T, noH.replace(/^SELECT [^\n]*/, "SELECT " + g + (form === 4 ? ", COUNT(*), MAX(SCORE)" : form === 6 ? ", COUNT(*), COUNT(CID)" : form === 2 ? ", COUNT(*), AVG(SCORE)" : form === 5 ? ", SUM(SCORE)" : ", COUNT(*)"))).rows;
+        const hv = /HAVING (.*)$/.exec(sql);
+        const tbl = mini(["組（" + g + "）", "組內記錄", "聚合結果", hv ? sqlI(hv[1]) : "輸出"], gr.map((r) => { const ms = mem.filter((m) => (m[0] === null ? r[0] === null : r[0] !== null && SQL.cmpv(m[0], r[0]) === 0)).map((m) => m[1]); const ok = !hv || res.rows.some((o) => o[0] === r[0]); return [cellV(r[0]), esc(ms.join("、")), esc(r.slice(1).map(SQL.fmtV).join("，")), TF(ok)]; }));
+        return { prompt: "<p>寫出以下 SQL 語句的輸出。（題型參考：2023 卷二A 1(d)、2017 卷二A 3(d)）</p>" + tables(T) + sqlHTML(sql) + gridPrompt(false), input: parts(gridPart(res, { traps: trapsOf(T, alts, res) })), show: rowsTxt(res.rows),
+          explain: ["執行次序：FROM → WHERE（篩選記錄）→ GROUP BY（分組）→ HAVING（篩選組）→ SELECT。", form === 4 ? "CID 為 NULL 的記錄自成一組（GROUP BY 把所有 NULL 放在同一組）。" : form === 6 ? "COUNT(*) 計算組內的記錄；COUNT(CID) 不計 CID 為 NULL 的記錄。" : "每組只輸出一行。", "AVG 若有小數，MySQL 顯示 4 位小數（例如 62.5000），寫 62.5 即可。"],
+          after: '<p class="iolab">分組表</p>' + tbl, chk: [sqlChk(T, sql, res)], sandbox: { tables: T } };
+      } } },
+    { name: "COUNT 與 NULL", fn() {
+      for (;;) {
+        const nullScore = coin(0.4), st = mkClub({ nullScore, step5: true }), T = st.T, cl = coin(0.4) ? pick(st.cls) : null;
+        const sql = (nullScore ? "SELECT COUNT(*), COUNT(SCORE), AVG(SCORE)" : "SELECT COUNT(*), COUNT(CID), COUNT(DISTINCT CID)") + "\nFROM STUDENT" + (cl ? "\nWHERE CLASS <> '" + cl + "'" : "");
+        const res = runQ(T, sql), v = res.rows[0]; if (!dp2(v[2]) || v[2] === null || v[0] === v[1]) continue;
+        const kept = runQ(T, "SELECT * FROM STUDENT" + (cl ? " WHERE CLASS <> '" + cl + "'" : "")).rows;
+        const tr = nullScore ? [[{ v: v[0], msg: "COUNT(SCORE) 不計 SCORE 為 NULL 的記錄。" }], [], [{ v: kept.reduce((s, r) => s + (r[3] || 0), 0) / kept.length, msg: "AVG 不計 NULL：分母是 COUNT(SCORE)，不是 COUNT(*)。" }]]
+          : [[], [{ v: v[0], msg: "COUNT(CID) 不計 CID 為 NULL 的記錄。" }], [{ v: v[2] + 1, msg: "COUNT(DISTINCT CID) 不把 NULL 當作一個值。" }, { v: v[1], msg: "DISTINCT 先去除重複的 CID 才計算。" }]];
+        return { prompt: "<p>寫出以下 SQL 語句輸出的三個數值。（題型參考：2022 卷二A 1(b)、2020 卷二A 1(c)）</p>" + tables(T) + sqlHTML(sql),
+          input: parts(...res.cols.map((c, i) => P.num(c, v[i], { traps: tr[i].filter((t) => Math.abs(t.v - v[i]) > 1e-9) }))), show: v.map(SQL.fmtV).join("，"),
+          explain: ["COUNT(*) 計算記錄數目（" + (cl ? "WHERE 篩選後" : "全部") + " " + v[0] + " 筆）。", nullScore ? "COUNT(SCORE) 及 AVG(SCORE) 都不計 NULL：AVG = SUM ÷ COUNT(SCORE)。" : "COUNT(CID) 不計 NULL；COUNT(DISTINCT CID) 先去除重複，再不計 NULL。", "AVG 若有小數，MySQL 顯示 4 位小數，寫 " + fmtNum(v[2]) + " 即可。"],
+          chk: [sqlChk(T, sql, res)], sandbox: { tables: T } };
+      } } },
+    { name: "WHERE 與 HAVING", fn() {
+      for (;;) {
+        const st = mkClub({ step5: true, n: R(7, 8), ncls: 3 }), T = st.T, x = pick(st.recs).SCORE, k = R(2, 3);
+        const sql = "SELECT CLASS, COUNT(*)\nFROM STUDENT\nWHERE SCORE >= " + x + "\nGROUP BY CLASS\nHAVING COUNT(*) >= " + k, res = runQ(T, sql), n = res.rows.length;
+        const a = runQ(T, sql.replace(/\nWHERE [^\n]*/, "")).rows.length, b = runQ(T, sql.replace(/\nHAVING.*$/, "")).rows.length; if (a === n && b === n) continue;
+        return { prompt: "<p>以下 SQL 語句會輸出多少行？（題型參考：2019 卷二A 3(b)、2012 卷二A 1(b)(iii)）</p>" + tables(T) + sqlHTML(sql),
+          input: parts(P.num("行數", n, { traps: [{ v: a, msg: "WHERE SCORE >= " + x + " 先刪去記錄，然後才分組計算 COUNT(*)。" }, { v: b, msg: "HAVING COUNT(*) >= " + k + " 在分組後刪去記錄太少的組。" }].filter((t) => t.v !== n) })), show: String(n),
+          explain: ["WHERE 篩選記錄（分組前）；HAVING 篩選組（分組後，可用聚合函數）。", "WHERE 後各班人數：" + rowsTxt(runQ(T, sql.replace(/\nHAVING.*$/, "")).rows) + "。", "符合 HAVING 的組：" + rowsTxt(res.rows) + "。"], chk: [sqlChk(T, sql, res)], sandbox: { tables: T } };
+      } } },
+  ] },
+  // ---------------- U1 集合運算 ----------------
+  { id: "U1", name: "集合運算", types: [
+    { name: "UNION 筆數", fn() {
+      const d = mkReg(), T = d.T, proj = pick(["*", "SID, CID", "SID", "CID"]);
+      const sel = (t) => "SELECT " + proj + "\nFROM " + t, sql = sel("REG24") + "\nUNION\n" + sel("REG25"), all = sel("REG24") + "\nUNION ALL\n" + sel("REG25");
+      const res = runQ(T, sql), ra = runQ(T, all), both = proj === "SID" || proj === "CID";
+      const ps = both ? [P.num("UNION 的筆數", res.rows.length, { traps: [{ v: ra.rows.length, msg: "UNION 會去除重複的記錄（包括同一數據表內的重複）；UNION ALL 才保留。" }] }), P.num("UNION ALL 的筆數", ra.rows.length)] : [P.num("UNION 的筆數", res.rows.length, { traps: [{ v: ra.rows.length, msg: "UNION 會去除完全相同的記錄（2025 2(a) 幾乎所有考生答錯）。" }].filter((t) => t.v !== res.rows.length) })];
+      const keyv = (r) => r.map(SQL.fmtV).join(", ");
+      return { prompt: "<p>" + (both ? "以下語句（及把 UNION 改為 UNION ALL 後）各輸出多少筆記錄？" : "以下語句輸出多少筆記錄？") + "（題型參考：2025 卷二甲部 2(a)、2024 卷二A 4(b)）</p>" + tables(T) + sqlHTML(sql),
+        input: parts(...ps), show: both ? res.rows.length + "，" + ra.rows.length : String(res.rows.length),
+        explain: ["UNION：合併兩個結果，並去除重複的記錄；UNION ALL：保留所有記錄。", "比較的是 SELECT 選出的欄位：" + (proj === "*" ? "整筆記錄要完全相同才算重複。" : proj + " 相同便算重複。"), "UNION ALL 共 " + ra.rows.length + " 筆，去除重複後 " + res.rows.length + " 筆：" + res.rows.map(keyv).map((x) => "（" + x + "）").join(" ") + "。"],
+        chk: [sqlChk(T, sql, res), sqlChk(T, all, ra)], sandbox: { tables: T } };
+    } },
+    { name: "INTERSECT／MINUS 結果", fn() {
+      for (;;) {
+        const d = mkReg(), T = d.T, op = pick(["INTERSECT", "MINUS", "MINUS", "EXCEPT"]), proj = pick(["SID, SNAME", "SID, CID", "CID"]), [A, B] = coin() ? ["REG24", "REG25"] : ["REG25", "REG24"];
+        const sql = "SELECT " + proj + "\nFROM " + A + "\n" + op + "\nSELECT " + proj + "\nFROM " + B, res = runQ(T, sql); if (res.rows.length < 1 || res.rows.length > 5) continue;
+        const alts = op === "INTERSECT" ? [[sql.replace("INTERSECT", "UNION"), "INTERSECT 只保留兩個結果都有的記錄。"]] : [[sql.replace(A, "@").replace(B, A).replace("@", B), "方向調換了：A MINUS B 保留在 A 而不在 B 的記錄。"], [sql.replace(op, "INTERSECT"), op + " 是差集，不是交集。"]];
+        return { prompt: "<p>寫出以下 SQL 語句的輸出。" + (op === "MINUS" ? "（MINUS 即 EXCEPT；MySQL 8.0.31 起用 EXCEPT，不接受 MINUS。）" : op === "EXCEPT" ? "（EXCEPT 即 DSE 附頁的 MINUS。）" : "") + "（題型參考：2016 卷二A 2(a)、2025 卷二甲部 5(c)）</p>" + tables(T) + sqlHTML(sql) + gridPrompt(false),
+          input: parts(gridPart(res, { traps: trapsOf(T, alts, res) })), show: rowsTxt(res.rows),
+          explain: [op === "INTERSECT" ? "INTERSECT：兩個結果都有的記錄（交集）。" : op + "：在 " + A + " 的結果中，但不在 " + B + " 的結果中（差集）；次序不同結果便不同。", "集合運算的結果會去除重複的記錄。", "MINUS 不是 MIN（2025 5(c) 有考生混淆）。"],
+          after: '<p class="iolab">兩邊的結果</p>' + mini([A, B], [[esc(rowsTxt(runQ(T, "SELECT DISTINCT " + proj + " FROM " + A).rows)), esc(rowsTxt(runQ(T, "SELECT DISTINCT " + proj + " FROM " + B).rows))]]), chk: [sqlChk(T, sql, res)], sandbox: { tables: T } };
+      } } },
+  ] },
+  // ---------------- M1 DML 追蹤 ----------------
+  { id: "M1", name: "UPDATE／DELETE 追蹤", types: [
+    { name: "UPDATE 後的數值", fn() {
+      for (;;) {
+        const form = R(1, 3), st = mkClub({ ccols: ["CID", "CNAME", "ROOM", "NUM"], n: R(5, 6) }), T = st.T, rm = pick(st.clubs)[2];
+        const sql = form === 1 ? "UPDATE STUDENT\nSET SCORE = SCORE + 5\nWHERE CID IN (SELECT CID\n    FROM CLUB\n    WHERE ROOM >= " + rm + ")"
+          : form === 2 ? "UPDATE CLUB\nSET NUM = (SELECT COUNT(*)\n    FROM STUDENT\n    WHERE STUDENT.CID = CLUB.CID)" : "UPDATE STUDENT\nSET CID = NULL\nWHERE CID IN (SELECT CID\n    FROM CLUB\n    WHERE ROOM < " + rm + ")";
+        const r = SQL.exec(T, flat(sql)); if (!r.hit.length || (form !== 2 && r.hit.length === T[r.name][1].length)) continue;
+        const tn = r.name, [cols] = T[tn], col = form === 1 ? "SCORE" : form === 2 ? "NUM" : "CID", ci = cols.indexOf(col), show = form === 2 ? ["CID", "CNAME"] : ["SID", "SNAME"];
+        const cells = r.T[tn][1].map((row) => show.map((c) => ({ v: row[cols.indexOf(c)] })).concat([{ in: row[ci] }]));
+        return { prompt: "<p>執行以下語句後，寫出 " + tn + " 每筆記錄的 " + col + "（NULL 寫 NULL）。（題型參考：2017 卷二A 2(a)、2025 卷二甲部 2(b)）</p>" + tables(T) + sqlHTML(sql),
+          input: parts(P.tbl(show.concat([col + "（更新後）"]), cells)), show: r.T[tn][1].map((x) => x[ci] === null ? "NULL" : fmtNum(x[ci])).join("、"),
+          explain: [form === 2 ? "SET 中的子查詢是相關子查詢：逐個學會計算學生人數，沒有學生的學會得 0。" : "先執行子查詢，得出 ROOM " + (form === 1 ? ">=" : "<") + " " + rm + " 的學會的 CID：" + subRes(T, "SELECT CID FROM CLUB WHERE ROOM " + (form === 1 ? ">=" : "<") + " " + rm).join("、") + "。", form === 2 ? "沒有 WHERE：所有記錄都會更新。" : "CID 在該列表中的學生才更新；CID 為 NULL 的學生不會更新。", "MySQL 不容許子查詢使用正在更新的數據表（ERROR 1093），所以子查詢用另一個數據表。"],
+          after: '<p class="iolab">更新後的 ' + tn + "</p>" + dbHTML(tn, r.T[tn][0], r.T[tn][1], { hl: r.hit }), chk: [dmlChk(T, [sql], tn, r.T[tn])], sandbox: { tables: T } };
+      } } },
+    { name: "DELETE 刪除哪些記錄", fn() {
+      for (;;) {
+        const lb = mkLib(), T = lb.T, form = R(1, 3), cat = pick(lb.B)[2], cl = pick(lb.cls), d = pick([10, 20, 30]), lim = pick(lb.B)[3];
+        let sqls, tn;
+        if (form === 1) { sqls = ["DELETE FROM LOAN\nWHERE BID IN (SELECT BID\n    FROM BOOK\n    WHERE CAT = '" + cat + "')"]; tn = "LOAN"; }
+        else if (form === 2) { sqls = ["DELETE FROM LOAN\nWHERE MID IN (SELECT MID\n    FROM MEMBER\n    WHERE CLASS = '" + cl + "')"]; tn = "LOAN"; }
+        else { sqls = ["UPDATE BOOK\nSET PRICE = PRICE - " + d + "\nWHERE CAT = '" + cat + "'", "DELETE FROM BOOK\nWHERE PRICE < " + lim]; tn = "BOOK"; }
+        let T2 = T, last; for (const s of sqls) { last = SQL.exec(T2, flat(s)); T2 = last.T; }
+        const orig = T[tn][1], left = T2[tn][1], ids = orig.map((r, i) => i).filter((i) => !left.some((x) => x[0] === orig[i][0] && x[1] === orig[i][1] && (tn === "BOOK" || x[2] === orig[i][2])));
+        if (!ids.length || ids.length === orig.length) continue;
+        let traps = [];
+        if (form === 3) { const o = SQL.exec(T, flat(sqls[1])).hit; if (!sameSet(o, ids)) traps = [{ v: o, msg: "兩句語句依次執行：DELETE 時，" + cat + " 類書的 PRICE 已經減了 " + d + "。" }]; }
+        const opts = orig.map((r) => r.map(SQL.fmtV).join(", "));
+        return { prompt: "<p>依次執行以下語句後，" + tn + " 中哪些記錄被刪除？選出所有答案。（題型參考：2017 卷二A 2(c)(i)、2018 卷二A 2(d)）</p>" + tables(T) + sqls.map(sqlHTML).join(""),
+          input: parts(P.multi("被刪除的 " + tn + " 記錄", opts, ids, { traps })), show: ids.map((i) => "（" + opts[i] + "）").join("、"),
+          explain: [form === 3 ? "先執行 UPDATE：" + cat + " 類書的 PRICE 減 " + d + "；再以新的 PRICE 判斷 DELETE 的條件 PRICE < " + lim + "。" : "先執行子查詢：" + subRes(T, form === 1 ? "SELECT BID FROM BOOK WHERE CAT = '" + cat + "'" : "SELECT MID FROM MEMBER WHERE CLASS = '" + cl + "'").join("、") + "。", "DELETE 刪除整筆記錄；DROP TABLE 才刪除整個數據表（結構及數據）。", "上機時可先用 SELECT * … WHERE 相同條件，核對會被刪除的記錄。"],
+          after: '<p class="iolab">執行後的 ' + tn + "</p>" + dbHTML(tn, T2[tn][0], T2[tn][1]), chk: [dmlChk(T, sqls, tn, T2[tn])], sandbox: { tables: T } };
+      } } },
+  ] },
+  // ---------------- E1 等效寫法 ----------------
+  { id: "E1", name: "等效寫法", types: [
+    { name: "哪條語句結果相同", fn() {
+      for (let tries = 0; ; tries++) {
+        const fam = R(1, 5), mkData = fam === 1 ? () => mkLib().T : fam === 5 ? () => mkReg().T : () => mkClub({ nulls: fam === 4 ? R(0, 1) : 0, ...(fam === 3 ? { nulls: 0 } : {}), n: R(6, 7), step5: true, ncls: 3 }).T;
+        const T = mkData(), x = fam === 4 ? pick(T.STUDENT[1])[3] : 0, k = R(2, 3);
+        const F = {
+          1: { goal: "找出沒有借書的會員編號", good: ["SELECT MID\nFROM MEMBER\nWHERE MID NOT IN (SELECT MID\n    FROM LOAN)", "SELECT M.MID\nFROM MEMBER M\nLEFT JOIN LOAN L ON M.MID = L.MID\nWHERE L.MID IS NULL", "SELECT MID\nFROM MEMBER M\nWHERE NOT EXISTS (SELECT *\n    FROM LOAN L\n    WHERE L.MID = M.MID)", "SELECT MID\nFROM MEMBER\nMINUS\nSELECT MID\nFROM LOAN"],
+            bad: [["SELECT M.MID\nFROM MEMBER M\nLEFT JOIN LOAN L ON M.MID = L.MID\nWHERE L.MID = NULL", "與 NULL 比較要寫 IS NULL；= NULL 的結果永遠是 NULL（未知），沒有輸出。"], ["SELECT MID\nFROM MEMBER\nWHERE MID <> ANY (SELECT MID\n    FROM LOAN)", "<> ANY 不等於 NOT IN：只要與其中一個值不同便成立（教科書 p.144）。"], ["SELECT DISTINCT M.MID\nFROM MEMBER M, LOAN L\nWHERE M.MID <> L.MID", "M.MID <> L.MID 只表示與「某一筆」借閱記錄不同，借過書的會員亦會輸出。"], ["SELECT M.MID\nFROM MEMBER M\nLEFT JOIN LOAN L ON M.MID = L.MID\nWHERE L.MID IS NOT NULL", "IS NOT NULL 找出有配對的會員（借過書），而且會重複。"], ["SELECT MID\nFROM LOAN\nMINUS\nSELECT MID\nFROM MEMBER", "方向調換了：要由 MEMBER 減去 LOAN。"]] },
+          2: { goal: "找出至少有 " + k + " 名學生的班別", good: ["SELECT CLASS\nFROM STUDENT\nGROUP BY CLASS\nHAVING COUNT(*) >= " + k, "SELECT DISTINCT CLASS\nFROM STUDENT S1\nWHERE (SELECT COUNT(*)\n    FROM STUDENT S2\n    WHERE S2.CLASS = S1.CLASS) >= " + k],
+            bad: [["SELECT CLASS\nFROM STUDENT\nWHERE COUNT(*) >= " + k + "\nGROUP BY CLASS", "聚合函數不可用在 WHERE（會出現錯誤）；分組後的篩選要用 HAVING。"], ["SELECT CLASS\nFROM STUDENT S1\nWHERE (SELECT COUNT(*)\n    FROM STUDENT S2\n    WHERE S2.CLASS = S1.CLASS) >= " + k, "沒有 DISTINCT：同班每名學生都輸出一次，班別會重複。"], ["SELECT CLASS\nFROM STUDENT\nGROUP BY CLASS\nHAVING COUNT(*) > " + k, "> 與 >= 不同：剛好 " + k + " 人的班別不會輸出。"], ["SELECT DISTINCT CLASS\nFROM STUDENT S1\nWHERE (SELECT COUNT(*)\n    FROM STUDENT S2) >= " + k, "子查詢沒有 S2.CLASS = S1.CLASS，計算的是全校人數。"]] },
+          3: { goal: "找出最高分的學生", good: ["SELECT SNAME\nFROM STUDENT\nWHERE SCORE = (SELECT MAX(SCORE)\n    FROM STUDENT)", "SELECT SNAME\nFROM STUDENT\nWHERE SCORE >= ALL (SELECT SCORE\n    FROM STUDENT)", "SELECT SNAME\nFROM STUDENT S1\nWHERE NOT EXISTS (SELECT *\n    FROM STUDENT S2\n    WHERE S2.SCORE > S1.SCORE)"],
+            bad: [["SELECT SNAME\nFROM STUDENT\nWHERE SCORE > ALL (SELECT SCORE\n    FROM STUDENT)", "> ALL 要大於所有分數（包括自己的分數），沒有學生符合。"], ["SELECT SNAME\nFROM STUDENT\nWHERE SCORE = MAX(SCORE)", "聚合函數不可用在 WHERE（會出現錯誤），要用子查詢。"], ["SELECT SNAME\nFROM STUDENT\nWHERE SCORE >= ANY (SELECT SCORE\n    FROM STUDENT)", ">= ANY 只要不少於最低分便成立，所有學生都會輸出。"], ["SELECT SNAME, MAX(SCORE)\nFROM STUDENT", "SNAME 不是聚合函數也不在 GROUP BY 中（MySQL 報錯）；而且輸出欄位不同。"]] },
+          4: { goal: "找出有學生分數達 " + x + " 分或以上的學會", good: ["SELECT CNAME\nFROM CLUB\nWHERE CID IN (SELECT CID\n    FROM STUDENT\n    WHERE SCORE >= " + x + ")", "SELECT CNAME\nFROM CLUB C\nWHERE EXISTS (SELECT *\n    FROM STUDENT S\n    WHERE S.CID = C.CID AND S.SCORE >= " + x + ")", "SELECT CNAME\nFROM CLUB\nWHERE CID = ANY (SELECT CID\n    FROM STUDENT\n    WHERE SCORE >= " + x + ")"],
+            bad: [["SELECT C.CNAME\nFROM CLUB C, STUDENT S\nWHERE C.CID = S.CID AND S.SCORE >= " + x, "連接後，同一學會有多名學生符合時會重複輸出（要加 DISTINCT）。"], ["SELECT CNAME\nFROM CLUB C\nWHERE EXISTS (SELECT *\n    FROM STUDENT S\n    WHERE S.SCORE >= " + x + ")", "子查詢沒有 S.CID = C.CID，不是相關子查詢：只要全校有一名學生符合，所有學會都輸出。"], ["SELECT CNAME\nFROM CLUB\nWHERE CID NOT IN (SELECT CID\n    FROM STUDENT\n    WHERE SCORE < " + x + ")", "「沒有學生低於 " + x + " 分」與「有學生達 " + x + " 分」不同（例如沒有學生的學會）。"], ["SELECT CNAME\nFROM CLUB\nWHERE CID <> ANY (SELECT CID\n    FROM STUDENT\n    WHERE SCORE >= " + x + ")", "= ANY 才等同 IN；<> ANY 的意思完全不同。"]] },
+          5: { goal: "找出兩年都有登記學會的學生編號", good: ["SELECT SID\nFROM REG24\nINTERSECT\nSELECT SID\nFROM REG25", "SELECT DISTINCT SID\nFROM REG24\nWHERE SID IN (SELECT SID\n    FROM REG25)"],
+            bad: [["SELECT SID\nFROM REG24\nWHERE SID IN (SELECT SID\n    FROM REG25)", "沒有 DISTINCT：學生在 REG24 有兩筆記錄便輸出兩次；INTERSECT 會去除重複。"], ["SELECT SID\nFROM REG24\nUNION\nSELECT SID\nFROM REG25", "UNION 是「任何一年」，不是「兩年都有」。"], ["SELECT SID\nFROM REG24\nMINUS\nSELECT SID\nFROM REG25", "MINUS 找出只在 2024 年登記的學生。"], ["SELECT DISTINCT SID\nFROM REG24\nWHERE SID NOT IN (SELECT SID\n    FROM REG25)", "NOT IN 與 MINUS 相同，是差集。"]] },
+        }[fam];
+        const [bi, gi] = sample(range(0, F.good.length), 2), base = F.good[bi], good = F.good[gi], baseR = runQ(T, base);
+        if (!baseR.rows.length) continue;
+        const bads = shuffle(F.bad).filter(([s]) => { try { return !sameRows(runQ(T, s).rows, baseR.rows) || runQ(T, s).cols.length !== baseR.cols.length; } catch (e) { return true; } }).slice(0, 3);
+        if (bads.length < 3) continue;
+        const alt = range(0, 5).map(() => mkData()); if (alt.some((D) => { try { return !sameRows(runQ(D, good).rows, runQ(D, base).rows); } catch (e) { return true; } })) continue;
+        const opts = shuffle([[good, ""]].concat(bads)), ans = opts.findIndex((o) => o[0] === good);
+        const outOf = (s) => { try { const r = runQ(T, s); return "輸出 " + r.rows.length + " 行：" + rowsTxt(r.rows); } catch (e) { return "會出現錯誤：" + e.message; } };
+        return { prompt: "<p>以下語句" + F.goal + "。哪一條語句對任何數據都會得出相同的結果？（題型參考：2013 卷二A 1(e)、2018 卷二A 4(d)(ii)）</p>" + tables(T) + sqlHTML(base),
+          input: choiceIn(opts.map((o) => o[0]), ans, { sql: true, why: opts.map((o) => (o[1] ? o[1] + "（用上面的數據：" + outOf(o[0]) + "）" : "")) }), show: "選項 " + "ABCD"[ans],
+          explain: ["已知語句的輸出：" + rowsTxt(baseR.rows) + "。", "正確的改寫：" + flat(good), fam === 1 ? "「找出沒有……」四種寫法：NOT IN、LEFT JOIN … IS NULL、NOT EXISTS、MINUS（子查詢的欄位不可有 NULL）。" : fam === 2 ? "HAVING 可改寫為相關子查詢（2018 4(d)(ii)）：每名學生計算同班人數，再用 DISTINCT 去除重複。" : fam === 3 ? "「找出最高」：= (SELECT MAX(…))、>= ALL (…)、NOT EXISTS 比自己高的（假設 SCORE 沒有 NULL）。" : fam === 4 ? "IN、= ANY、EXISTS 相關子查詢三者等效。" : "INTERSECT 會去除重複；改用 IN 時要加 DISTINCT。"],
+          chk: [{ t: "equiv", datasets: [T].concat(alt).map(bare), base: flat(base), opts: opts.map((o) => flat(o[0])), ans }], sandbox: { tables: T } };
+      } } },
+  ] },
+  // ---------------- X1 延伸 ----------------
+  { id: "X1", name: "NATURAL／CROSS JOIN 與 NOT IN 遇 NULL", ext: true, types: [
+    { name: "CROSS JOIN 行數", fn() {
+      const st = mkClub(), T = st.T, w = coin() ? "\nWHERE C.ROOM >= " + pick(st.clubs)[2] : "", sql = "SELECT *\nFROM STUDENT S\nCROSS JOIN CLUB C" + w, res = runQ(T, sql);
+      const ns = T.STUDENT[1].length, nc = T.CLUB[1].length;
+      return { prompt: "<p>以下語句會輸出多少行？（CROSS JOIN 屬延伸內容，教科書 p.129）</p>" + tables(T) + sqlHTML(sql),
+        input: parts(P.num("行數", res.rows.length, { traps: [{ v: runQ(T, "SELECT * FROM STUDENT S, CLUB C WHERE S.CID = C.CID").rows.length, msg: "CROSS JOIN 沒有連接條件：每名學生與每個學會都配對一次。" }, { v: ns * nc, msg: "還要按 WHERE 篩選。" }].filter((t) => t.v !== res.rows.length) })), show: String(res.rows.length),
+        explain: ["CROSS JOIN（笛卡兒積）：" + ns + " × " + nc + " = " + ns * nc + " 行；與 FROM STUDENT S, CLUB C 不寫連接條件相同。", w ? "WHERE 保留 ROOM 符合條件的學會：每個這樣的學會配對全部 " + ns + " 名學生。" : ""], chk: [sqlChk(T, sql, res)], sandbox: { tables: T } };
+    } },
+    { name: "NATURAL JOIN 行數", fn() {
+      for (;;) {
+        const n = R(5, 6), names = sample(EN, n), cls = ["5A", "5B"], TE = [["T01", "Mr Chan", "5A"], ["T02", "Ms Lee", "5B"], ["T03", "Mr Ho", "5A"]];
+        const ST = names.map((x, i) => ["0" + (3500 + i * 3), x, pick(cls), pick(TE)[0]]);
+        const T = { STUDENT: [["SID", "SNAME", "CLASS", "TID"], ST, ["SID"]], TEACHER: [["TID", "TNAME", "CLASS"], TE, ["TID"]] };
+        const sql = "SELECT *\nFROM STUDENT\nNATURAL JOIN TEACHER", res = runQ(T, "SELECT COUNT(*) FROM STUDENT NATURAL JOIN TEACHER"), only = runQ(T, "SELECT COUNT(*) FROM STUDENT S, TEACHER T WHERE S.TID = T.TID").rows[0][0];
+        const nr = res.rows[0][0]; if (nr === only || nr === 0) continue;
+        return { prompt: "<p>STUDENT 的 TID 是學生的導師，TEACHER 的 CLASS 是老師任教的班別。以下語句會輸出多少行？（NATURAL JOIN 屬延伸內容，教科書 p.122）</p>" + tables(T) + sqlHTML(sql),
+          input: parts(P.num("行數", nr, { traps: [{ v: only, msg: "NATURAL JOIN 以所有同名欄位連接：這裏是 TID 和 CLASS 兩個欄位，不只 TID。" }] })), show: String(nr),
+          explain: ["NATURAL JOIN 自動以兩表所有同名的欄位作連接條件：STUDENT.TID = TEACHER.TID AND STUDENT.CLASS = TEACHER.CLASS。", "只以 TID 連接有 " + only + " 行；加上 CLASS 相同的要求後有 " + nr + " 行。", "所以 NATURAL JOIN 容易出錯，寫 INNER JOIN … ON 較清楚。"], chk: [sqlChk(T, "SELECT COUNT(*) FROM STUDENT NATURAL JOIN TEACHER", res)], sandbox: { tables: T } };
+      } } },
+    { name: "NOT IN 遇 NULL", fn() {
+      for (;;) {
+        const st = mkClub({ nulls: R(1, 2) }), T = st.T, sql = "SELECT CNAME\nFROM CLUB\nWHERE CID NOT IN (SELECT CID\n    FROM STUDENT)", res = runQ(T, sql);
+        const fix = runQ(T, "SELECT CNAME FROM CLUB WHERE CID NOT IN (SELECT CID FROM STUDENT WHERE CID IS NOT NULL)"); if (!fix.rows.length) continue;
+        return { prompt: "<p>老師想找出沒有學生的學會。以下語句會輸出多少行？</p>" + tables(T) + sqlHTML(sql),
+          input: parts(P.num("行數", res.rows.length, { traps: [{ v: fix.rows.length, msg: "子查詢結果含 NULL：CID NOT IN (…, NULL) 的結果是 NULL（未知），所以沒有任何輸出。" }] })), show: String(res.rows.length),
+          explain: ["子查詢結果有 NULL（有學生沒有參加學會）。", "x NOT IN (1, 2, NULL) 即 x <> 1 AND x <> 2 AND x <> NULL；x <> NULL 是 NULL，整個條件不可能是 TRUE。", "改正：子查詢加 WHERE CID IS NOT NULL，或改用 NOT EXISTS、LEFT JOIN … IS NULL（得 " + fix.rows.length + " 行）。"],
+          chk: [sqlChk(T, sql, res), sqlChk(T, "SELECT CNAME FROM CLUB WHERE CID NOT IN (SELECT CID FROM STUDENT WHERE CID IS NOT NULL)", fix)], sandbox: { tables: T } };
+      } } },
+  ] },
+];
+// =================== 題目產生器：數據庫設計 ===================
+const setTxt = (a) => "{" + a.join(", ") + "}";
+const fdList = (F) => '<ul class="fds">' + F.map((f) => "<li><code>" + esc(FDX.fdStr(f)) + "</code></li>").join("") + "</ul>";
+const fdChkSpec = (F) => F.map(([l, r]) => l.join(",") + "->" + r.join(",")).join("; ");
+// 抽象關係 R(A, B, C, …)
+function absRel() {
+  for (;;) {
+    const n = R(5, 6), A = "ABCDEF".slice(0, n).split(""), F = [];
+    for (let i = 0, m = R(3, 4); i < m; i++) { const l = FDX.sorted(sample(A, R(1, 2))), r = FDX.sorted(sample(A.filter((x) => !l.includes(x)), R(1, 2))); if (!F.some((f) => FDX.eqs(f[0], l))) F.push([l, r]); }
+    const ks = FDX.keys(A, F); if (!ks.length || ks.some((k) => k.length === n || k.length > 3)) continue;
+    return { A, F, ks };
+  }
+}
+// 符合功能相關性的樣本數據
+function sampleRows(A, F, n) {
+  for (let t = 0; t < 30; t++) {
+    let rows = range(0, n + 3).map(() => A.map((a) => a.toLowerCase() + R(1, 3)));
+    for (let ch = true; ch;) { ch = false; for (const [l, r] of F) { const li = l.map((a) => A.indexOf(a)), ri = r.map((a) => A.indexOf(a)), mn = {}; rows.forEach((row) => { const k = li.map((i) => row[i]).join("|"); mn[k] = mn[k] || ri.map((i) => row[i]); ri.forEach((i, j) => { if (row[i] < mn[k][j]) mn[k][j] = row[i]; }); }); rows.forEach((row) => { const k = li.map((i) => row[i]).join("|"); ri.forEach((i, j) => { if (row[i] !== mn[k][j]) { row[i] = mn[k][j]; ch = true; } }); }); } }
+    rows = rows.filter((r, i) => rows.findIndex((x) => x.join() === r.join()) === i);
+    if (rows.length >= 4) return rows.slice(0, n);
+  }
+  return null;
+}
+const K_BANK = [
+  { n: "STUDENT", A: ["SID", "HKID", "SNAME", "CLASS", "CNO"], F: "SID->HKID,SNAME,CLASS,CNO; HKID->SID; CLASS,CNO->SID", d: "每名學生有學生編號 SID 及香港身份證號碼 HKID；CLASS、CNO 是今年的班別及班號（同班的班號不會相同）。", pk: ["SID"], why: "HKID 涉及個人私隱；CLASS、CNO 每年都會改變；SID 簡短而且不會改變。" },
+  { n: "EMPLOYEE", A: ["EID", "EMAIL", "ENAME", "DNO", "DNAME"], F: "EID->EMAIL,ENAME,DNO; EMAIL->EID; DNO->DNAME", d: "每名員工有員工編號 EID 及獨有的公司電郵地址 EMAIL；DNO、DNAME 是所屬部門。", pk: ["EID"], why: "電郵地址較長，而且員工可能更改電郵地址；EID 簡短而且不會改變。" },
+  { n: "LOAN", A: ["BID", "LDATE", "MID", "MNAME", "TITLE", "RDATE"], F: "BID->TITLE; MID->MNAME; BID,LDATE->MID,RDATE", d: "每本書（BID）每天最多借出一次；LDATE 是借出日期，RDATE 是歸還日期。", pk: ["BID", "LDATE"], why: "只有一個候選鍵碼，便選它作主關鍵碼（複合鍵）。" },
+  { n: "MATCHES", A: ["MDATE", "SLOT", "VENUE", "REFEREE", "TEAMA", "TEAMB"], F: "MDATE,SLOT,VENUE->REFEREE,TEAMA,TEAMB; MDATE,SLOT,REFEREE->VENUE", d: "每個場地（VENUE）在同一日（MDATE）同一時段（SLOT）只有一場比賽；每名球證（REFEREE）同一時段只執法一場比賽。", pk: null },
+  { n: "ROOMBOOK", A: ["RNO", "BDATE", "PERIOD", "TID", "TNAME", "PURPOSE"], F: "RNO,BDATE,PERIOD->TID,PURPOSE; TID,BDATE,PERIOD->RNO; TID->TNAME", d: "老師（TID）預訂特別室（RNO）：每間特別室每日每節只可由一位老師預訂；每位老師每日每節只可預訂一間。", pk: null },
+  { n: "COURSE", A: ["CCODE", "CTITLE", "TID", "TNAME", "ROOM"], F: "CCODE->CTITLE,TID,ROOM; CTITLE->CCODE; TID->TNAME", d: "每個課程有課程編號 CCODE 及獨有的課程名稱 CTITLE，由一位導師（TID）任教。", pk: ["CCODE"], why: "課程名稱較長，而且可能修改；CCODE 簡短而且不會改變。" },
+  { n: "RESULT", A: ["SID", "ECODE", "SNAME", "ENAME", "MARK"], F: "SID->SNAME; ECODE->ENAME; SID,ECODE->MARK", d: "記錄每名學生（SID）每個考試科目（ECODE）的分數 MARK。", pk: ["ECODE", "SID"], why: "只有一個候選鍵碼（複合鍵）。" },
+  { n: "CAR", A: ["PLATE", "CHASSIS", "MODEL", "OWNERID", "ONAME"], F: "PLATE->CHASSIS,MODEL,OWNERID; CHASSIS->PLATE; OWNERID->ONAME", d: "每部車有獨有的車牌號碼 PLATE 及底盤號碼 CHASSIS。", pk: ["CHASSIS"], why: "車牌號碼可以轉讓或更改；底盤號碼永遠不會改變。" },
+];
+const FK_BANK = [
+  [["STUDENT", ["SID", "SNAME", "CLASS"], ["SID"]], ["TEACHER", ["TID", "TNAME"], ["TID"]], ["COURSE", ["CCODE", "CTITLE", "TID"], ["CCODE"]], ["ENROL", ["SID", "CCODE", "MARK"], ["SID", "CCODE"]]],
+  [["MEMBER", ["MID", "MNAME", "TEL"], ["MID"]], ["PUBLISHER", ["PID", "PNAME"], ["PID"]], ["BOOK", ["BID", "TITLE", "PID"], ["BID"]], ["LOAN", ["MID", "BID", "LDATE"], ["MID", "BID", "LDATE"]]],
+  [["GUEST", ["GID", "GNAME", "TEL"], ["GID"]], ["ROOM", ["RNO", "RTYPE", "RATE"], ["RNO"]], ["BOOKING", ["BNO", "GID", "RNO", "CIN", "COUT"], ["BNO"]]],
+  [["CUSTOMER", ["CNO", "CNAME", "DIST"], ["CNO"]], ["PRODUCT", ["PCODE", "PNAME", "PRICE"], ["PCODE"]], ["PURCHASE", ["PNO", "CNO", "PDATE"], ["PNO"]], ["ITEM", ["PNO", "PCODE", "QTY"], ["PNO", "PCODE"]]],
+];
+// 規範化情境：e1、e2 實體（k 決定 a），t1、t2 遞移（t1.k ∈ e1.a），rel 關係屬性（由 e1.k + e2.k 決定）
+const N_BANK = [
+  { e1: ["STUDENT", "SID", ["SNAME", "CLASS"]], t1: ["CLASSINFO", "CLASS", ["CTEACHER"]], e2: ["COURSE", "CCODE", ["CTITLE", "TID"]], t2: ["TEACHER", "TID", ["TNAME"]], rel: ["RESULT", ["MARK"]] },
+  { e1: ["ORDERS", "ONO", ["ODATE", "CNO"]], t1: ["CUSTOMER", "CNO", ["CNAME"]], e2: ["PRODUCT", "PCODE", ["PNAME", "PRICE"]], t2: null, rel: ["ITEM", ["QTY"]] },
+  { e1: ["ATHLETE", "AID", ["ANAME", "SCH"]], t1: ["SCHOOL", "SCH", ["SCHNAME"]], e2: ["EVENT", "EID", ["ENAME", "VENUE"]], t2: null, rel: ["ENTRY", ["RESULT"]] },
+  { e1: ["MEMBER", "MID", ["MNAME", "DIST"]], t1: ["DISTRICT", "DIST", ["CENTRE"]], e2: ["EQUIP", "EQNO", ["EQNAME", "TYPE"]], t2: ["EQTYPE", "TYPE", ["DEPOSIT"]], rel: ["RENTAL", ["DAYS"]] },
+  { e1: ["PATIENT", "PID", ["PNAME", "WARD"]], t1: ["WARDINFO", "WARD", ["FLOOR"]], e2: ["DRUG", "DCODE", ["DNAME"]], t2: null, rel: ["PRESCRIBE", ["DOSE"]] },
+];
+function mkNorm(o = {}) {
+  const b = pick(N_BANK), comp = o.comp !== undefined ? o.comp : coin(0.7), useT1 = o.t1 !== undefined ? o.t1 : coin(0.7), useT2 = !!b.t2 && coin(0.5);
+  const e2a = useT2 ? b.e2[2] : b.e2[2].filter((x) => !b.t2 || x !== b.t2[1]);
+  const T = [], F = [];
+  T.push([b.e1[0], [b.e1[1]].concat(b.e1[2])]); F.push([[b.e1[1]], b.e1[2].slice()]);
+  if (useT1) { T.push([b.t1[0], [b.t1[1]].concat(b.t1[2])]); F.push([[b.t1[1]], b.t1[2].slice()]); }
+  if (comp) { T.push([b.e2[0], [b.e2[1]].concat(e2a)]); F.push([[b.e2[1]], e2a.slice()]); if (useT2) { T.push([b.t2[0], [b.t2[1]].concat(b.t2[2])]); F.push([[b.t2[1]], b.t2[2].slice()]); } T.push([b.rel[0], [b.e1[1], b.e2[1]].concat(b.rel[1])]); F.push([[b.e1[1], b.e2[1]], b.rel[1].slice()]); }
+  const Rr = uniq([].concat(...T.map((t) => t[1])));
+  return { b, comp, useT1, useT2, R: Rr, F, good: T, name: comp ? b.rel[0] + "_RAW" : b.e1[0] + "_RAW" };
+}
+function splitHTML(parts, F) { return parts.map(([n, cols]) => { const k = FDX.keys(cols, FDX.project(F, cols))[0] || []; return schema(n, cols, k); }).join("<br>"); }
+// 實體關係（固定的情境；ma＝靠近 a 一端的記號：每個 b 對應多少個 a）
+const ER_BANK = [
+  { a: "會員", ua: "個", b: "相片", ub: "張", v: "提交", va: "提交{n}相片", vb: "由{n}會員提交", ma: ["1", "|"], mb: ["M", "o"] },
+  { a: "班別", ua: "個", b: "學生", ub: "名", v: "擁有", va: "有{n}學生", vb: "屬於{n}班別", ma: ["1", "|"], mb: ["M", "|"] },
+  { a: "學校", ua: "間", b: "校長", ub: "位", v: "擁有", va: "有{n}校長", vb: "管理{n}學校", ma: ["1", "|"], mb: ["1", "|"] },
+  { a: "學生", ua: "名", b: "電腦", ub: "部", v: "獲分派", va: "獲分派{n}電腦", vb: "分派給{n}學生", ma: ["1", "o"], mb: ["1", "|"] },
+  { a: "市民", ua: "名", b: "犯罪記錄", ub: "項", v: "擁有", va: "有{n}犯罪記錄", vb: "屬於{n}市民", ma: ["1", "|"], mb: ["M", "o"] },
+  { a: "學生", ua: "名", b: "選修科目", ub: "個", v: "修讀", va: "修讀{n}選修科目", vb: "由{n}學生修讀", ma: ["M", "|"], mb: ["N", "|"], pk: ["SID", "SUBJ", "STUDY"] },
+  { a: "市民", ua: "名", b: "房地產", ub: "項", v: "擁有", va: "擁有{n}房地產", vb: "由{n}市民擁有", ma: ["M", "o"], mb: ["N", "o"], pk: ["HKID", "PROPID", "OWNS"] },
+  { a: "公司", ua: "間", b: "辦公室", ub: "個", v: "擁有", va: "擁有{n}辦公室", vb: "由{n}公司擁有", ma: ["1", "|"], mb: ["M", "o"] },
+  { a: "辦公室", ua: "個", b: "員工", ub: "名", v: "有", va: "有{n}員工", vb: "在{n}辦公室工作", ma: ["1", "|"], mb: ["M", "|"] },
+  { a: "顧客", ua: "位", b: "菜式", ub: "道", v: "點菜", va: "點{n}菜式", vb: "被{n}顧客點", ma: ["M", "o"], mb: ["N", "|"], pk: ["CUSID", "DISHID", "ORDERED"] },
+  { a: "讀者", ua: "位", b: "書本", ub: "本", v: "借閱", va: "借閱{n}書本", vb: "被{n}讀者借閱", ma: ["M", "o"], mb: ["N", "o"], pk: ["RID", "BID", "BORROW"] },
+  { a: "老師", ua: "位", b: "班別", ub: "個", v: "擔任班主任", va: "擔任{n}班別的班主任", vb: "由{n}老師擔任班主任", ma: ["1", "|"], mb: ["1", "o"] },
+  { a: "酒店", ua: "間", b: "房間", ub: "個", v: "擁有", va: "擁有{n}房間", vb: "屬於{n}酒店", ma: ["1", "|"], mb: ["M", "|"] },
+  { a: "醫生", ua: "位", b: "病人", ub: "名", v: "診症", va: "為{n}病人診症", vb: "由{n}醫生診症", ma: ["M", "|"], mb: ["N", "o"], pk: ["DRID", "PATID", "CONSULT"] },
+  { a: "會員", ua: "名", b: "會員證", ub: "張", v: "持有", va: "持有{n}會員證", vb: "屬於{n}會員", ma: ["1", "|"], mb: ["1", "|"] },
+  { a: "作者", ua: "位", b: "書本", ub: "本", v: "撰寫", va: "撰寫{n}書本", vb: "由{n}作者撰寫", ma: ["M", "|"], mb: ["N", "o"], pk: ["AUID", "BID", "WRITES"] },
+  { a: "學會", ua: "個", b: "活動", ub: "項", v: "舉辦", va: "舉辦{n}活動", vb: "由{n}學會舉辦", ma: ["1", "|"], mb: ["M", "o"] },
+];
+// 讀法：關於「每個 X」的敘述用靠近另一實體的記號（看對面）
+const KIND = ["min1", "min0", "max1", "maxM"];
+function erStmt(e, side, kind) {   // side "a"：每個 a…b（用 mb）；side "b"：每個 b…a（用 ma）
+  const [u, x, vp, uo] = side === "a" ? [e.ua, e.a, e.va, e.ub] : [e.ub, e.b, e.vb, e.ua];
+  const m = { min1: ["必須", "至少一" + uo], min0: ["可以不", "任何"], max1: ["最多只", "一" + uo], maxM: ["可以", "多於一" + uo] }[kind];
+  return "每" + u + x + m[0] + vp.replace("{n}", m[1]) + "。";
+}
+const erTruth = (mk, kind) => ({ min1: mk[1] === "|", min0: mk[1] === "o", max1: mk[0] === "1", maxM: mk[0] !== "1" }[kind]);
+function erDesc(e, side) { const [u, x, vp, uo] = side === "a" ? [e.ua, e.a, e.va, e.ub] : [e.ub, e.b, e.vb, e.ua], mk = side === "a" ? e.mb : e.ma;
+  const k = mk[0] + mk[1]; return "每" + u + x + (k === "1|" ? "必須" + vp.replace("{n}", "一" + uo) : k === "1o" ? "最多" + vp.replace("{n}", "一" + uo) + "（可以沒有）" : k.endsWith("|") ? "必須" + vp.replace("{n}", "一" + uo + "或多" + uo) : "可以" + vp.replace("{n}", "零" + uo + "或多" + uo)) + "。"; }
+const er1 = (e, o = {}) => erSVG([{ n: e.a, x: 52, y: 45 }, { n: e.b, x: 308, y: 45 }], [Object.assign({ n: e.v, x: 180, y: 45, a: e.a, b: e.b, ma: e.ma, mb: e.mb }, o)], 360, 90);
+const CARD = ["1", "M／N（多）"], PART = ["┼ 短直線（強制）", "○ 空心圓（非強制）"];
+// 完整性
+const I_CREATE = "CREATE TABLE CLUB (\n    CID INT PRIMARY KEY,\n    CNAME VARCHAR(20),\n    ROOM INT\n)\nCREATE TABLE STUDENT (\n    SID CHAR(5) PRIMARY KEY,\n    SNAME VARCHAR(20),\n    CLASS CHAR(2),\n    CNO INT,\n    CID INT,\n    CHECK (CHAR_LENGTH(SID) = 5),\n    CHECK (CLASS IN ('5A', '5B', '5C', '5D')),\n    CHECK (CNO BETWEEN 1 AND 30),\n    FOREIGN KEY (CID) REFERENCES CLUB(CID)\n)";
+const I_SPEC = { pk: { STUDENT: ["SID"], CLUB: ["CID"] }, fk: [["STUDENT", "CID", "CLUB", "CID"]], dom: { STUDENT: { SID: ["len", 5], CLASS: ["in", ["5A", "5B", "5C", "5D"]], CNO: ["int", 1, 30] }, CLUB: { CID: ["int", -1e9, 1e9], ROOM: ["int", -1e9, 1e9] } } };
+const I_OPTS = ["違反實體完整性", "違反參照完整性", "違反域完整性", "沒有違反完整性"];
+const qv = (v) => (v === null ? "NULL" : typeof v === "number" ? String(v) : "'" + v + "'");
+
+const GEN_DESIGN = [
+  // ---------------- K1 鍵碼 ----------------
+  { id: "K1", name: "候選鍵碼與外鍵碼", types: [
+    { name: "找出候選鍵碼", fn() {
+      for (;;) {
+        const scen = coin(0.5), b = scen ? pick(K_BANK) : null, A = scen ? b.A : null, F0 = scen ? FDX.FD(b.F) : null, ab = scen ? null : absRel();
+        const Ar = scen ? A : ab.A, F = scen ? F0 : ab.F, ks = FDX.keys(Ar, F), opts = ks.map((k) => k.slice());
+        ks.forEach((k) => { if (coin(0.7) && k.length < Ar.length - 1) { const s = FDX.sorted(k.concat(pick(Ar.filter((x) => !k.includes(x))))); if (!opts.some((o) => FDX.eqs(o, s))) opts.push(s); } });
+        for (let t = 0; opts.length < Math.min(6, ks.length + 4) && t < 60; t++) { const s = FDX.sorted(sample(Ar, R(1, 2))); if (!opts.some((o) => FDX.eqs(o, s))) opts.push(s); }
+        if (opts.length < 5) continue;
+        const sh = shuffle(opts), ans = sh.map((o, i) => (ks.some((k) => FDX.eqs(k, o)) ? i : -1)).filter((i) => i >= 0);
+        const note = sh.map((o) => { const c = FDX.closure(o, F); if (ks.some((k) => FDX.eqs(k, o))) return setTxt(o) + "⁺ 包含所有屬性，而且不能再減少 → 候選鍵碼。"; if (FDX.has(c, Ar)) return setTxt(o) + " 能決定所有屬性，但不是最少（其中的 " + setTxt(ks.find((k) => FDX.has(o, k))) + " 已足夠）→ 只是超鍵，不是候選鍵碼。"; return setTxt(o) + "⁺ = " + setTxt(FDX.sorted(c)) + "，缺少 " + Ar.filter((x) => !c.includes(x)).join("、") + " → 不是候選鍵碼。"; });
+        let data = "", chkRows = null;
+        if (!scen) { const rows = sampleRows(Ar, F, 5); if (!rows) continue; data = dbHTML("R", Ar, rows) + '<p class="small">樣本數據符合上列功能相關性。樣本中某欄沒有重複，不足以證明它是候選鍵碼；有重複便一定不是。</p>'; chkRows = rows; }
+        return { prompt: "<p>" + (scen ? esc(b.d) + "</p><p>數據表 " + schema(b.n, Ar) + " 有以下功能相關性：" : "關係 " + schema("R", Ar) + " 有以下功能相關性：") + "</p>" + fdList(F) + data + "<p>選出<b>所有</b>候選鍵碼。（題型參考：2021 卷二A 2(a)、2013 卷二A 2(b)(i)）</p>",
+          input: parts(P.multi("候選鍵碼", sh.map(setTxt), ans, { notes: note })), show: ans.map((i) => setTxt(sh[i])).join("、"),
+          explain: ["候選鍵碼：(1) 唯一——它的屬性閉包包含所有屬性；(2) 最少——減去任何一個屬性便不再唯一。", "由功能相關性計算閉包：例如 " + setTxt(ks[0]) + "⁺：" + FDX.closureSteps(ks[0], F).steps.map((s) => "用 " + FDX.fdStr(s) + " 加入 " + s[2].join("、")).join("；") + "。", "候選鍵碼共 " + ks.length + " 個：" + ks.map(setTxt).join("、") + "。" + (scen && b.pk ? "主關鍵碼宜選 " + setTxt(b.pk) + "：" + b.why : "")],
+          after: '<p class="iolab">各選項的判斷</p><ul class="steps">' + note.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>",
+          chk: [{ t: "keys", R: Ar, F: fdChkSpec(F), exp: ks, opts: sh, ans }].concat(chkRows ? [{ t: "rows", cols: Ar, rows: chkRows, F: fdChkSpec(F) }] : []), sandbox: { R: Ar, F } };
+      } } },
+    { name: "屬性閉包", fn() {
+      for (;;) {
+        const ab = absRel(), X = FDX.sorted(sample(ab.A, R(1, 2))), c = FDX.closure(X, ab.F); if (c.length === X.length || c.length === ab.A.length && coin(0.6)) continue;
+        const ans = ab.A.map((a, i) => (c.includes(a) ? i : -1)).filter((i) => i >= 0), st = FDX.closureSteps(X, ab.F);
+        return { prompt: "<p>關係 " + schema("R", ab.A) + " 有以下功能相關性：</p>" + fdList(ab.F) + "<p>計算屬性閉包 " + esc(setTxt(X)) + "⁺，選出它包含的<b>所有</b>屬性。</p>",
+          input: parts(P.multi(setTxt(X) + "⁺", ab.A, ans)), show: setTxt(FDX.sorted(c)),
+          explain: ["由 " + setTxt(X) + " 開始；若某條功能相關性的左邊全部已在集合內，便加入右邊的屬性；重複至不能再加入。"].concat(st.steps.map((s) => "用 " + FDX.fdStr(s) + "：加入 " + s[2].join("、") + "。"), [setTxt(X) + "⁺ = " + setTxt(FDX.sorted(c)) + (c.length === ab.A.length ? "，包含所有屬性，所以 " + setTxt(X) + " 是超鍵。" : "，沒有包含所有屬性，所以 " + setTxt(X) + " 不是候選鍵碼。")]),
+          chk: [{ t: "closure", R: ab.A, F: fdChkSpec(ab.F), X, exp: FDX.sorted(c) }], sandbox: { R: ab.A, F: ab.F } };
+      } } },
+    { name: "外鍵碼", fn() {
+      for (;;) {
+        const bank = pick(FK_BANK), child = pick(bank), cands = bank.filter((t) => t !== child && t[2].length === 1 && child[1].includes(t[2][0]));
+        if (!cands.length) continue;
+        const par = pick(cands), fk = par[2][0], others = child[1].filter((c) => c !== fk), wrong = shuffle(others.map((c) => c).concat(child[2].length > 1 ? [child[2].join(", ")] : [], par[1].filter((c) => c !== fk && !child[1].includes(c)))).filter((x) => x !== fk);
+        if (wrong.length < 3) continue;
+        const opts = shuffle([fk].concat(uniq(wrong).slice(0, 3))), ans = opts.indexOf(fk);
+        return { prompt: "<p>以下是一個數據庫的模式（底線＝主關鍵碼）：</p><p>" + bank.map((t) => schema(t[0], t[1], t[2])).join("<br>") + "</p><p>數據表 " + child[0] + " 中，哪個欄位是參照 " + par[0] + " 的外鍵碼？（題型參考：2017 卷二A 1(a)、2012 卷二A 1(a)）</p>",
+          input: choiceIn(opts, ans, { mono: true, why: opts.map((o) => (o === fk ? "" : o.includes(",") ? o + " 是 " + child[0] + " 的主關鍵碼（複合鍵），不是外鍵碼。" : !child[1].includes(o) ? o + " 不在 " + child[0] + " 中。" : o + " 不是 " + par[0] + " 的主關鍵碼。")) }), show: fk,
+          explain: ["外鍵碼：子數據表中參照另一個數據表（父數據表）主關鍵碼的欄位。", child[0] + "." + fk + " 參照 " + par[0] + "." + fk + "；它可以重複，" + (child[2].includes(fk) ? "這裏它亦是主關鍵碼的一部分。" : "亦可以是 NULL（如果容許）。"), "寫法：外鍵碼：" + child[0] + "." + fk + " → " + par[0] + "." + fk + "；SQL：FOREIGN KEY (" + fk + ") REFERENCES " + par[0] + "(" + fk + ")。"],
+          chk: [{ t: "fk", child: child[1], parentPk: par[2], opts, ans }] };
+      } } },
+  ] },
+  // ---------------- N1 範式 ----------------
+  { id: "N1", name: "範式與規範化", types: [
+    { name: "最高範式", fn() {
+      const s = mkNorm({ comp: coin(0.6) }), r = FDX.nf(s.R, s.F), opts = ["第一範式（1NF）", "第二範式（2NF）", "第三範式（3NF）"];
+      return { prompt: "<p>數據表 " + schema(s.name, s.R) + " 已符合第一範式，並有以下功能相關性：</p>" + fdList(s.F) + "<p>它最高符合哪個範式？（題型參考：2016 卷二A 3(b)、2022 卷二A 4(a)）</p>",
+        input: choiceIn(opts, r.nf - 1, { why: opts.map((o, i) => (i === r.nf - 1 ? "" : i + 1 > r.nf ? (r.nf === 1 ? "有部分功能相關性，未符合 2NF。" : "有遞移功能相關性，未符合 3NF。") : "要先檢查更高的範式：沒有部分功能相關性" + (r.nf === 3 ? "及遞移功能相關性" : "") + "。")) }), show: opts[r.nf - 1],
+        explain: ["候選鍵碼：" + r.keys.map(setTxt).join("、") + "。", r.partial.length ? "部分功能相關性（非主屬性只由候選鍵碼的一部分決定）：" + r.partial.map((p) => p[0].join(",") + " → " + p[1].join(",")).join("；") + " → 未符合 2NF。" : "沒有部分功能相關性 → 符合 2NF。", r.trans.length ? "遞移功能相關性（非主屬性由非鍵碼屬性決定）：" + r.trans.map((p) => p[0].join(",") + " → " + p[1].join(",")).join("；") + (r.nf === 2 ? " → 未符合 3NF。" : "。") : "沒有遞移功能相關性。"],
+        chk: [{ t: "nf", R: s.R, F: fdChkSpec(s.F), exp: r.nf }], sandbox: { R: s.R, F: s.F } };
+    } },
+    { name: "部分／遞移功能相關性", fn() {
+      for (;;) {
+        const s = mkNorm({ comp: true, t1: true }), ks = FDX.keys(s.R, s.F), opts = ["完全功能相關（由整個候選鍵碼決定）", "部分功能相關", "遞移功能相關"];
+        const cls = s.F.map(([l]) => (FDX.has(FDX.closure(l, s.F), s.R) ? 0 : ks.some((k) => FDX.has(k, l) && k.length > l.length) ? 1 : 2));
+        if (!cls.includes(2)) continue;
+        return { prompt: "<p>數據表 " + schema(s.name, s.R) + " 的候選鍵碼是 " + ks.map(setTxt).join("、") + "。判斷每條功能相關性屬哪一類。（題型參考：2023 卷二A 4(a)、2012 卷二A 4(c)）</p>",
+          input: parts(...s.F.map((f, i) => P.sel(FDX.fdStr(f), opts, cls[i]))), show: s.F.map((f, i) => FDX.fdStr(f) + "：" + opts[cls[i]].replace(/（.*）/, "")).join("；"),
+          explain: ["完全功能相關：左邊是整個候選鍵碼。", "部分功能相關：左邊只是候選鍵碼的一部分（例如 " + s.b.e1[1] + " 只是 " + setTxt(ks[0]) + " 的一部分）→ 違反 2NF。", "遞移功能相關：左邊不是候選鍵碼（例如 " + s.b.t1[1] + " → " + s.b.t1[2].join(",") + "，由 " + s.b.e1[1] + " → " + s.b.t1[1] + " → " + s.b.t1[2].join(",") + " 遞移而來）→ 違反 3NF。"],
+          chk: [{ t: "fdclass", R: s.R, F: fdChkSpec(s.F), exp: cls }], sandbox: { R: s.R, F: s.F } };
+      } } },
+    { name: "選擇 3NF 分拆", fn() {
+      for (;;) {
+        const s = mkNorm(), r0 = FDX.nf(s.R, s.F); if (r0.nf === 3) continue;
+        const good = s.good, b = s.b, D = [];
+        const t1 = s.useT1 ? b.t1 : null;
+        if (t1) D.push([good.filter((t) => t[0] !== t1[0]).map((t) => (t[0] === b.e1[0] ? [t[0], t[1].concat(t1[2])] : t)), "保留了遞移功能相關性 " + t1[1] + " → " + t1[2].join(",") + "，" + b.e1[0] + " 只達 2NF。"]);
+        if (t1) D.push([good.map((t) => (t[0] === b.e1[0] ? [t[0], t[1].filter((c) => c !== t1[1])] : t)), b.e1[0] + " 刪去了 " + t1[1] + "，便不能連接回 " + t1[0] + "（不是無損分拆）。"]);
+        if (s.comp) {
+          D.push([good.filter((t) => t[0] !== b.e1[0]).map((t) => (t[0] === b.rel[0] ? [t[0], t[1].concat(b.e1[2])] : t)), b.rel[0] + " 保留了部分功能相關性 " + b.e1[1] + " → " + b.e1[2].join(",") + "，只達 1NF。"]);
+          D.push([good.map((t) => (t[0] === b.rel[0] ? [t[0], t[1].filter((c) => c !== b.e2[1])] : t)), b.rel[0] + " 缺少 " + b.e2[1] + "：不能表示每個 " + b.e2[1] + " 的 " + b.rel[1].join(",") + "（不是無損分拆）。"]);
+        } else if (t1) D.push([[[b.e1[0], [b.e1[1]].concat(b.e1[2])], [t1[0], [b.e1[1]].concat(t1[2])]], "把 " + t1[2].join(",") + " 放在以 " + b.e1[1] + " 為鍵碼的表：功能相關性 " + t1[1] + " → " + t1[2].join(",") + " 未能保留。"]);
+        const drop = pick(s.R.filter((c) => !FDX.keys(s.R, s.F).some((k) => k.includes(c)) && !good.some((t) => t[1][0] === c)));
+        D.push([good.map((t) => [t[0], t[1].filter((c) => c !== drop)]), "遺漏了欄位 " + drop + "。"]);
+        const bad = shuffle(D).filter(([p]) => FDX.checkSplit(s.R, s.F, p.map((t) => t[1])).problems.length).slice(0, 3);
+        if (bad.length < 3 || FDX.checkSplit(s.R, s.F, good.map((t) => t[1])).problems.length) continue;
+        const opts = shuffle([[good, ""]].concat(bad)), ans = opts.findIndex((o) => o[0] === good);
+        return { prompt: "<p>數據表 " + schema(s.name, s.R) + " 有以下功能相關性：</p>" + fdList(s.F) + "<p>哪一個分拆把它規範化至第三範式，而且可以連接回原有的數據？（底線＝主關鍵碼）（題型參考：2025 卷二甲部 4、2024 卷二A 2(b)）</p>",
+          input: choiceIn(opts.map((o) => o[0].map((t) => t[0] + "(" + t[1].join(", ") + ")").join("；")), ans, { html: opts.map((o) => splitHTML(o[0], s.F)), why: opts.map((o) => o[1]) }), show: "選項 " + "ABCD"[ans],
+          explain: ["步驟：(1) 找候選鍵碼 " + r0.keys.map(setTxt).join("、") + "；(2) 把部分功能相關的屬性與其決定欄另成一表（→ 2NF）；(3) 把遞移功能相關的屬性與其決定欄另成一表（→ 3NF）。", "每條功能相關性的左邊成為新表的主關鍵碼；原表保留這個欄位作外鍵碼，才可以連接回去。", "檢查：欄位齊全、每表符合 3NF、功能相關性都保留、可以無損連接。"],
+          chk: [{ t: "split", R: s.R, F: fdChkSpec(s.F), opts: opts.map((o) => o[0].map((t) => t[1])), ans }], sandbox: { R: s.R, F: s.F } };
+      } } },
+  ] },
+  // ---------------- R1 實體關係圖 ----------------
+  { id: "R1", name: "實體關係圖", types: [
+    { name: "由情境寫出記號", fn() {
+      const e = pick(ER_BANK), ci = (m) => (m[0] === "1" ? 0 : 1), pi = (m) => (m[1] === "|" ? 0 : 1);
+      return { prompt: "<p>根據以下描述，完成實體關係圖中 ① 及 ② 兩端的基數及參與限制。（題型參考：2025 卷二甲部 1(a)、2023 卷二A 3(b)）</p><ul class=\"fds\"><li>" + esc(erDesc(e, "a")) + "</li><li>" + esc(erDesc(e, "b")) + "</li></ul>" + er1(e, { blankA: true, blankB: true, labA: "①", labB: "②" }),
+        input: parts(P.sel("① 近「" + e.a + "」一端：基數", CARD, ci(e.ma)), P.sel("① 近「" + e.a + "」一端：參與", PART, pi(e.ma)), P.sel("② 近「" + e.b + "」一端：基數", CARD, ci(e.mb)), P.sel("② 近「" + e.b + "」一端：參與", PART, pi(e.mb))),
+        show: "① " + e.ma[0] + (e.ma[1] === "|" ? " 強制" : " 非強制") + "；② " + e.mb[0] + (e.mb[1] === "|" ? " 強制" : " 非強制"),
+        explain: ["「看對面」：描述「每" + e.ua + e.a + "」的句子，決定靠近「" + e.b + "」一端（②）的記號；描述「每" + e.ub + e.b + "」的句子，決定靠近「" + e.a + "」一端（①）的記號。", "「必須」→ 短直線（強制，最少 1）；「可以沒有」→ 空心圓（非強制，最少 0）。", "「最多一" + "」→ 1；「多" + "」→ M（多對多時另一端寫 N）。最小基數（參與限制）是 2020、2023、2024、2025 能力較弱考生常錯的地方。"],
+        after: '<p class="iolab">答案</p>' + er1(e), chk: [{ t: "er", e: { ma: e.ma, mb: e.mb }, mode: "desc", desc: [erDesc(e, "a"), erDesc(e, "b")], exp: [ci(e.ma), pi(e.ma), ci(e.mb), pi(e.mb)] }] };
+    } },
+    { name: "讀圖判斷敘述", fn() {
+      for (;;) {
+        const e = pick(ER_BANK), st = shuffle([["a", pick(KIND)], ["a", pick(KIND)], ["b", pick(KIND)], ["b", pick(KIND)]]).filter((x, i, a) => a.findIndex((y) => y[0] === x[0] && y[1] === x[1]) === i);
+        if (st.length < 3) continue;
+        const tv = st.map(([s, k]) => erTruth(s === "a" ? e.mb : e.ma, k)); if (tv.every(Boolean) || !tv.some(Boolean)) continue;
+        return { prompt: "<p>細閱以下實體關係圖（DSE 附頁記法：短直線＝強制、空心圓＝非強制）。判斷每句敘述是否正確。（題型參考：2020 卷二A 2(b)、2024 卷二A 3(a)）</p>" + er1(e),
+          input: parts(...st.map(([s, k], i) => P.sel(erStmt(e, s, k), ["對", "錯"], tv[i] ? 0 : 1))), show: st.map((x, i) => (tv[i] ? "對" : "錯")).join("、"),
+          explain: ["「每" + e.ua + e.a + "……」看靠近「" + e.b + "」一端：" + e.mb[0] + "、" + (e.mb[1] === "|" ? "短直線（必須至少一" + e.ub + "）" : "空心圓（可以沒有）") + "。", "「每" + e.ub + e.b + "……」看靠近「" + e.a + "」一端：" + e.ma[0] + "、" + (e.ma[1] === "|" ? "短直線（必須至少一" + e.ua + "）" : "空心圓（可以沒有）") + "。", "1 表示最多一個；M／N 表示可以多於一個。"],
+          chk: [{ t: "er", e: { ma: e.ma, mb: e.mb }, mode: "stmt", st, exp: tv }] };
+      } } },
+    { name: "分解多對多關係", fn() {
+      const e = pick(ER_BANK.filter((x) => x.pk)), [ka, kb, jn] = e.pk, good = ka + ", " + kb;
+      const opts = shuffle([good, ka, kb, good + ", " + pick(["QTY", "REMARK", "STATUS"])]), ans = opts.indexOf(good);
+      return { prompt: "<p>以下實體關係圖中，「" + e.a + "」的主要屬性是 " + ka + "，「" + e.b + "」的主要屬性是 " + kb + "。把多對多關係「" + e.v + "」分解為兩個一對多關係，新增連接實體（數據表）" + jn + "。" + jn + " 的主關鍵碼應是甚麼？（題型參考：2014 卷二A 1(c)、2012 卷二A 3(a)(ii)）</p>" + er1(e),
+        input: choiceIn(opts, ans, { mono: true, why: opts.map((o) => (o === good ? "" : o.split(",").length > 2 ? "多了不需要的欄位：主關鍵碼要最少。" : "只有一邊的主關鍵碼：同一個 " + o + " 會與多個另一實體配對，會重複。")) }), show: good,
+        explain: ["多對多關係不能直接以外鍵碼表示，要加入連接實體 " + jn + "（複合鍵 " + good + "）。", jn + "." + ka + " 是參照「" + e.a + "」的外鍵碼，" + jn + "." + kb + " 是參照「" + e.b + "」的外鍵碼。", "分解後：" + e.a + " 1 — M " + jn + " M — 1 " + e.b + "；若同一對可在不同日子重複出現（例如借閱），主關鍵碼還要加入日期。"],
+        chk: [{ t: "mn", ka, kb, opts, ans }] };
+    } },
+  ] },
+  // ---------------- I1 完整性 ----------------
+  { id: "I1", name: "數據完整性", types: [
+    { name: "違反哪種完整性", fn() {
+      for (;;) {
+        const nc = 3, cn = sample(CLUBN, nc), CL = cn.map((n, i) => [i + 1, n, pick([101, 203, 305, 402, 501])]);
+        const n = 5, names = sample(EN, n); let sid = R(3480, 3520); const used = sample([1, 2, 3], 2), cnos = sample(range(1, 30), n);
+        const ST = names.map((x, i) => { sid += R(1, 4); return ["0" + sid, x, pick(["5A", "5B", "5C"]), cnos[i], i === 0 ? null : i <= 2 ? used[i - 1] : pick(used)]; });
+        const T = { CLUB: [["CID", "CNAME", "ROOM"], CL, ["CID"]], STUDENT: [["SID", "SNAME", "CLASS", "CNO", "CID"], shuffle(ST), ["SID"]] };
+        const free = [1, 2, 3].find((c) => !used.includes(c)), s = pick(ST), s2 = pick(ST.filter((x) => x !== s)), nn = pick(EN.filter((x) => !names.includes(x))), nsid = "0" + (sid + R(1, 5)), uc = pick(used);
+        const ins = (v) => "INSERT INTO STUDENT\nVALUES (" + v.map(qv).join(", ") + ")";
+        const okNew = () => [nsid, nn, pick(["5A", "5D"]), R(1, 30), pick(used)];
+        const ops = [
+          [0, ins([s[0], nn, "5B", R(1, 30), uc]), "SID " + s[0] + " 已被 " + s[1] + " 使用：主關鍵碼不可重複。"], [0, ins([null, nn, "5B", R(1, 30), uc]), "主關鍵碼不可以是 NULL。"],
+          [0, "UPDATE STUDENT\nSET SID = '" + s2[0] + "'\nWHERE SID = '" + s[0] + "'", "更新後兩名學生的 SID 相同。"], [0, "INSERT INTO CLUB\nVALUES (" + uc + ", '" + pick(["Drama", "Music"]) + "', 208)", "CLUB 的 CID " + uc + " 已存在。"],
+          [1, ins([nsid, nn, "5B", R(1, 30), 7]), "CLUB 沒有 CID 7：外鍵碼的值必須來自父數據表。"], [1, "UPDATE STUDENT\nSET CID = " + R(4, 9) + "\nWHERE SID = '" + s[0] + "'", "更新後的 CID 在 CLUB 中不存在。"],
+          [1, "DELETE FROM CLUB\nWHERE CID = " + uc, "STUDENT 仍有記錄參照 CID " + uc + "：刪除後這些外鍵碼便失去參照。"], [1, "UPDATE CLUB\nSET CID = " + R(4, 9) + "\nWHERE CID = " + uc, "STUDENT 參照原有的 CID " + uc + "，更改後便失去參照。"],
+          [2, ins([nsid, nn, "5B", pick([0, 31, 35]), uc]), "CNO 必須介乎 1 至 30（CHECK）。"], [2, "UPDATE STUDENT\nSET CLASS = '" + pick(["6A", "5E", "4A"]) + "'\nWHERE SID = '" + s[0] + "'", "CLASS 只可以是 5A、5B、5C 或 5D（CHECK）。"],
+          [2, ins([nsid, nn, "5B", "One", uc]), "CNO 的數據類型是 INT，'One' 不是整數。"], [2, "UPDATE STUDENT\nSET CNO = " + pick([-3, -1, 0]) + "\nWHERE SID = '" + s[0] + "'", "CNO 必須介乎 1 至 30。"], [2, ins([nsid.slice(0, 4), nn, "5A", R(1, 30), uc]), "SID 必須是 5 個字符（CHECK (CHAR_LENGTH(SID) = 5)）。"],
+          [3, ins([nsid, nn, "5C", R(1, 30), null]), "外鍵碼可以是 NULL（未參加學會）；其他欄位都在域內。"], [3, "DELETE FROM CLUB\nWHERE CID = " + free, "沒有學生參照 CID " + free + "，可以刪除。"],
+          [3, "DELETE FROM STUDENT\nWHERE SID = '" + s[0] + "'", "刪除子數據表的記錄不會令其他記錄失去參照。"], [3, "UPDATE STUDENT\nSET CID = " + free + "\nWHERE SID = '" + s[0] + "'", "CID " + free + " 存在於 CLUB。"], [3, ins(okNew()), "新記錄的主關鍵碼唯一、外鍵碼存在、各欄位都在域內。"],
+        ];
+        const [k, sql, why] = pick(ops);
+        return { prompt: "<p>數據表按以下語句建立（STUDENT.CID 是參照 CLUB.CID 的外鍵碼）：</p>" + sqlHTML(I_CREATE) + tables(T) + "<p>執行以下語句會怎樣？（題型參考：2024 卷二A 4(c)、2022 卷二A 2(d)、2014 卷二A 1(b)）</p>" + sqlHTML(sql),
+          input: choiceIn(I_OPTS, k, { why: I_OPTS.map((o, i) => (i === k ? "" : i === 3 ? "DBMS 會拒絕這個操作：" + why : "")) }), show: I_OPTS[k],
+          explain: [why, "實體完整性：主關鍵碼唯一、不是 NULL；參照完整性：外鍵碼的值必須存在於父數據表的主關鍵碼（可以是 NULL）；域完整性：值要符合數據類型及 CHECK 等限制（教科書 4.3 p.225–229）。", "DBMS 執行限制時會拒絕違反完整性的操作，並顯示錯誤訊息。"],
+          chk: [{ t: "integ", tables: bare(T), spec: I_SPEC, sql: flat(sql), exp: k }], sandbox: { tables: T } };
+      } } },
+  ] },
+];
+const GEN = { sql: GEN_SQL, design: GEN_DESIGN };
+// 提示：方法
+const HINTS = {
+  J1: [["逐筆配對：左表每筆記錄找右表 ON 條件成立的記錄（可以多於一筆）。", "INNER：只輸出有配對的；LEFT：再加上左表沒有配對的（右表欄位 NULL）；RIGHT：再加上右表沒有配對的；FULL：兩者都加。", "NULL 不會與任何值配對。"], "LEFT 行數＝INNER 行數＋左表沒有配對的記錄數"],
+  J2: [["N 個數據表要 N − 1 個連接條件；中間的數據表（例如 LOAN）同時連接兩邊。", "逐筆看中間的數據表最方便。", "自連接：同一表兩個別名；s1.SID < s2.SID 排除自己配自己及重複的配對。"], ""],
+  S1: [["先執行子查詢，寫下它的結果，再逐行判斷外層。", "IN：等於其中一個值；NOT IN：不等於任何一個值（子查詢有 NULL 時沒有結果）。", "找最高／最低：WHERE 欄 = (SELECT MAX(欄) FROM …)；不可寫 WHERE 欄 = MAX(欄)。"], "WHERE SCORE = (SELECT MAX(SCORE) FROM STUDENT)"],
+  S2: [["相關子查詢用到外層的欄位：外層每一行都要執行一次子查詢。", "EXISTS：子查詢有結果便成立；NOT EXISTS：沒有結果才成立。", "UPDATE … WHERE EXISTS：逐筆判斷，條件成立的記錄才更新。"], ""],
+  S3: [["寫下子查詢的所有值，找出最大值及最小值。", "> ALL：大於最大值；< ALL：小於最小值；> ANY：大於最小值；< ANY：小於最大值。", ">= ALL＝最大值；= ANY＝IN；<> ALL＝NOT IN；<> ANY 通常全部成立。"], "值 60、75：SCORE > ANY → 大於 60"],
+  G1: [["次序：FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY。", "先用 WHERE 刪去記錄，再分組；每組一行。", "HAVING 篩選組（可用聚合函數）；WHERE 不可用聚合函數。", "COUNT(*) 計記錄；COUNT(欄)、SUM、AVG 不計 NULL；NULL 在 GROUP BY 中自成一組。"], ""],
+  U1: [["UNION：合併並去除重複；UNION ALL：保留全部。", "INTERSECT：兩邊都有；MINUS（EXCEPT）：在左邊而不在右邊，次序重要。", "比較的是 SELECT 選出的欄位；兩邊欄數要相同。"], "3 筆 UNION 4 筆，其中 2 筆相同 → 5 筆"],
+  M1: [["先執行子查詢，找出要修改或刪除的記錄。", "UPDATE：只改符合 WHERE 的記錄；沒有 WHERE 便全部更新。", "多句語句要依次執行：後一句看到的是前一句修改後的數據。"], ""],
+  E1: [["先用題目的數據執行已知語句，寫下結果。", "逐個選項找常見錯誤：= NULL、漏了 DISTINCT、<> ANY、WHERE 用聚合函數、子查詢漏了相關條件、MINUS 方向。", "結果要對任何數據都相同，不只是這組數據。"], ""],
+  X1: [["CROSS JOIN：兩表行數相乘。", "NATURAL JOIN：以所有同名欄位連接。", "NOT IN 子查詢有 NULL：整個條件不可能成立，沒有輸出。"], ""],
+  K1: [["計算屬性閉包 X⁺：用左邊已在集合內的功能相關性，加入右邊的屬性，重複至不能再加。", "X⁺ 包含所有屬性 → X 是超鍵；再檢查每個真子集都不是超鍵 → 候選鍵碼。", "沒有出現在任何右邊的屬性，一定在每個候選鍵碼內。", "外鍵碼：參照另一表主關鍵碼的欄位。"], "A → B, B → C：{A}⁺ = {A, B, C}"],
+  N1: [["先找候選鍵碼；主屬性＝在任何候選鍵碼內的屬性。", "部分功能相關：候選鍵碼的一部分 → 非主屬性（違反 2NF）。", "遞移功能相關：非鍵碼 → 非主屬性（違反 3NF）。", "分拆：每條功能相關性的左邊作新表的主關鍵碼，原表保留它作外鍵碼。"], ""],
+  R1: [["「看對面」：關於「每個 A」的句子，決定靠近 B 一端的記號。", "必須 → 短直線（強制）；可以沒有 → 空心圓（非強制）。", "最多一個 → 1；可以多個 → M（多對多時另一端寫 N）。", "多對多 → 加入連接實體，主關鍵碼由兩邊的主關鍵碼組成。"], "會員 —1┼— 提交 —M○— 相片"],
+  I1: [["主關鍵碼重複或 NULL → 實體完整性。", "外鍵碼的值在父數據表不存在、刪除或更改被參照的父記錄 → 參照完整性（外鍵碼可以是 NULL）。", "不合數據類型、CHECK、合理範圍 → 域完整性。"], ""],
+};
+/*GEN:END*/
+// =================== 介面 ===================
+const $ = (id) => document.getElementById(id);
+const h = (tag, attrs = {}, html) => { const e = document.createElement(tag); Object.entries(attrs).forEach(([k, v]) => { if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else e.setAttribute(k, v); }); if (html !== undefined) e.innerHTML = html; return e; };
+const LS = { get(k, d) { try { const v = localStorage.getItem("ealab-" + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem("ealab-" + k, JSON.stringify(v)); } catch (e) {} } };
+const MODES = [
+  { id: "sql", name: "SQL 進階", note: "第 3 章：內連接及外連接、三表及自連接、IN／EXISTS／ANY／ALL 子查詢、GROUP BY 與 HAVING、集合運算、UPDATE／DELETE 追蹤、等效寫法。",
+    tips: "<b>寫法提醒：</b>寫輸出時第一行是欄名（按 SELECT 的次序，表名不寫），每筆記錄一行，NULL 寫 NULL；有 ORDER BY 便要按次序。卷二寫 SQL：字串用單引號、萬用字符 % _、每個子句一行；連接要寫齊連接條件；找最高／最低用 MAX／MIN 子查詢；WHERE 不可用聚合函數。" },
+  { id: "design", name: "數據庫設計", note: "第 4–5 章：候選鍵碼及外鍵碼、屬性閉包、部分及遞移功能相關性、規範化至第三範式、實體關係圖的基數及參與限制、分解多對多關係、三類數據完整性。",
+    tips: "<b>寫法提醒：</b>寫模式時主關鍵碼要加底線，外鍵碼另行寫明（例：外鍵碼：ENROL.SID → STUDENT.SID）。實體關係圖用 DSE 附頁記法：基數 1／M／N，短直線＝強制、空心圓＝非強制，「看對面」讀法。" },
+];
+const S = { mode: "sql", q: null, cat: null, type: null, n: 0, answered: false, right: 0, total: 0, streak: LS.get("streak", 0), best: LS.get("best", 0), sel: null, on: {} };
+if (typeof S.streak !== "number") S.streak = 0; if (typeof S.best !== "number") S.best = 0;
+const CATS = (m) => GEN[m];
+const hsh = (() => { try { return location.hash.replace("#", ""); } catch (e) { return ""; } })(); if (MODES.some((x) => x.id === hsh)) S.mode = hsh;
+MODES.forEach((m) => { S.on[m.id] = new Set(CATS(m.id).filter((c) => !c.ext).map((c) => c.id)); });
+(() => { const saved = LS.get("filter", null); if (!saved || typeof saved !== "object") return; MODES.forEach((m) => { if (!Array.isArray(saved[m.id])) return; const ids = new Set(CATS(m.id).map((c) => c.id)); S.on[m.id] = new Set(saved[m.id].filter((x) => ids.has(x))); }); })();
+const saveFilter = () => { const o = {}; MODES.forEach((m) => { o[m.id] = [...S.on[m.id]]; }); LS.set("filter", o); };
+const md = (s) => esc(s).replace(/`([^`]+)`/g, (m, a) => "<code>" + a + "</code>");
+const hintHTML = (c) => { const x = HINTS[c.id]; if (!x) return ""; return "<h4>方法：" + esc(c.name) + "</h4><ol>" + x[0].map((t) => "<li>" + esc(t) + "</li>").join("") + "</ol>" + (x[1] ? '<div class="ex">例：' + esc(x[1]) + "</div>" : ""); };
+const nav = $("modes");
+MODES.forEach((m) => { const b = h("button", { type: "button", "data-id": m.id, text: m.name }); b.addEventListener("click", () => { if (S.mode === m.id) return; S.mode = m.id; try { history.replaceState(null, "", "#" + m.id); } catch (e) {} renderNav(); renderFilter(); next(); buildSandbox(); }); nav.appendChild(b); });
+function renderNav() { [...nav.children].forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === S.mode))); const m = MODES.find((x) => x.id === S.mode); $("mode-note").textContent = m.note; $("tips").innerHTML = m.tips; $("ex-title").textContent = S.mode === "sql" ? "試算區：自己輸入 SQL 試試看" : "試算區：計算屬性閉包、候選鍵碼及範式"; }
+function renderCount() { const all = CATS(S.mode).length, on = S.on[S.mode].size, el = $("fcount"); el.textContent = on === all ? "全部 " + all + " 個分類" : "已選 " + on + "／" + all + " 個分類"; el.classList.toggle("partial", on !== all); }
+function renderFilter() {
+  const box = $("fchips"); box.innerHTML = "";
+  CATS(S.mode).forEach((c) => { const b = h("button", { type: "button", class: "chip", "aria-pressed": String(S.on[S.mode].has(c.id)), "data-id": c.id }, '<span class="cid">' + esc(c.id) + "</span>" + esc(c.name) + (c.ext ? '<span class="tag">延伸</span>' : ""));
+    b.addEventListener("click", () => { const set = S.on[S.mode]; set.has(c.id) ? set.delete(c.id) : set.add(c.id); b.setAttribute("aria-pressed", String(set.has(c.id))); saveFilter(); renderCount(); afterFilter(); }); box.appendChild(b); });
+  renderCount();
+}
+function afterFilter() { if (!S.on[S.mode].size) { showEmpty(); return; } if (!S.q || !S.cat || !S.on[S.mode].has(S.cat.id)) next(); }
+$("f-all").addEventListener("click", () => { S.on[S.mode] = new Set(CATS(S.mode).map((c) => c.id)); saveFilter(); renderFilter(); afterFilter(); });
+$("f-none").addEventListener("click", () => { S.on[S.mode] = new Set(); saveFilter(); renderFilter(); afterFilter(); });
+function renderScore() { $("sc-right").textContent = S.right; $("sc-total").textContent = S.total; $("sc-streak").textContent = S.streak; $("sc-best").textContent = S.best; }
+function showEmpty() { S.q = null; S.cat = null; $("qtype").textContent = ""; $("qno").textContent = "";
+  $("prompt").innerHTML = '<p class="empty">請在上方「分類篩選」選擇至少一個分類。</p>'; $("input-area").innerHTML = ""; $("feedback").hidden = true;
+  $("btn-check").disabled = true; $("btn-show").disabled = true; $("btn-next").disabled = true; $("filter").open = true; $("btn-hint").hidden = true; $("hintbox").hidden = true; }
+
+// ---------- 作答區 ----------
+const LET = "ABCDEF";
+const gridRow = (p, k, i) => '<tr data-r="' + i + '">' + p.cols.map((c, j) => '<td><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="第 ' + (i + 1) + " 行 " + esc(c) + '" data-p="' + k + '" data-r="' + i + '" data-c="' + j + '"></td>').join("") + "</tr>";
+function addGridRow(k) { const p = S.q.input.parts[k], tb = $("input-area").querySelector('table[data-p="' + k + '"] tbody'), n = tb.querySelectorAll("tr[data-r]").length; if (n >= 10) return; tb.insertAdjacentHTML("beforeend", gridRow(p, k, n)); bindEnter(tb.lastElementChild); }
+function bindEnter(root) { root.querySelectorAll("input").forEach((inp) => inp.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); S.answered ? next() : check(); } })); }
+function choiceBtns(opts, o, k) {
+  const box = h("div", { class: "choices" + (o.sql || o.html ? " wide" : "") });
+  opts.forEach((t, i) => { const b = h("button", { type: "button", class: "choice" + (o.mono ? " m" : ""), "aria-pressed": "false", "data-i": String(i) }, (o.letters ? '<span class="lt">' + LET[i] + "</span>" : "") + '<span class="cb">' + (o.sql ? sqlHTML(t) : o.html ? o.html[i] : esc(t)) + "</span>");
+    if (k !== undefined) b.setAttribute("data-p", String(k));
+    b.addEventListener("click", () => { if (S.answered) return; if (o.multi) b.setAttribute("aria-pressed", String(b.getAttribute("aria-pressed") !== "true")); else { box.querySelectorAll(".choice").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); if (k === undefined) S.sel = i; } });
+    box.appendChild(b); });
+  return box;
+}
+function renderInput(q) {
+  const area = $("input-area"); area.innerHTML = ""; S.sel = null;
+  if (q.input.kind === "choice") { area.appendChild(choiceBtns(q.input.opts, { sql: q.input.sql, html: q.input.html, mono: q.input.mono, letters: !!(q.input.sql || q.input.html) })); return; }
+  const wrap = h("div", { class: "parts" });
+  q.input.parts.forEach((p, k) => {
+    const row = h("div", { class: "part" });
+    if (p.type === "grid") {
+      row.innerHTML = '<div class="xs" style="width:100%"><table class="gridin" data-p="' + k + '"><tbody><tr>' + p.cols.map((c) => "<th>" + esc(c) + "</th>").join("") + "</tr>" + range(0, 4).map((i) => gridRow(p, k, i)).join("") + "</tbody></table></div>";
+      const add = h("button", { type: "button", class: "mini-b addrow", text: "＋ 加一行" }); add.addEventListener("click", () => addGridRow(k)); row.appendChild(add);
+    } else if (p.type === "tbl") {
+      row.innerHTML = '<div class="xs" style="width:100%"><table class="gridin"><tr>' + p.cols.map((c) => "<th>" + esc(c) + "</th>").join("") + "</tr>" + p.cells.map((r, i) => "<tr>" + r.map((c, j) => (c && "in" in c ? '<td><input type="text" autocomplete="off" spellcheck="false" aria-label="' + esc(p.cols[j]) + " 第 " + (i + 1) + ' 行" data-p="' + k + '" data-r="' + i + '" data-c="' + j + '"></td>' : '<td class="fx">' + cellV(c.v) + "</td>")).join("") + "</tr>").join("") + "</table></div>";
+    } else if (p.type === "multi") {
+      row.innerHTML = '<span class="plab">' + esc(p.label) + '（可選多於一個）</span>'; row.appendChild(choiceBtns(p.opts, { multi: true, mono: true }, k));
+    } else if (p.type === "sel") {
+      const id = "ans-" + k; row.innerHTML = '<label for="' + id + '">' + esc(p.label) + '</label><select id="' + id + '" data-p="' + k + '"><option value="-1">請選擇</option>' + p.opts.map((o, i) => '<option value="' + i + '">' + esc(o) + "</option>").join("") + "</select>";
+    } else {
+      const id = "ans-" + k; row.innerHTML = '<label for="' + id + '">' + esc(p.label) + '</label><input id="' + id + '" type="text" class="n" data-p="' + k + '" autocomplete="off" inputmode="decimal">';
+    }
+    wrap.appendChild(row);
+  });
+  area.appendChild(wrap); bindEnter(area);
+}
+function readParts(q) {
+  const area = $("input-area");
+  return q.input.parts.map((p, k) => {
+    if (p.type === "grid") { const n = area.querySelectorAll('table[data-p="' + k + '"] tr[data-r]').length; return range(0, n).map((i) => p.cols.map((_, j) => area.querySelector('input[data-p="' + k + '"][data-r="' + i + '"][data-c="' + j + '"]').value)); }
+    if (p.type === "tbl") return p.cells.map((r, i) => r.map((c, j) => { const x = area.querySelector('input[data-p="' + k + '"][data-r="' + i + '"][data-c="' + j + '"]'); return x ? x.value : ""; }));
+    if (p.type === "multi") return [...area.querySelectorAll('.choice[data-p="' + k + '"][aria-pressed="true"]')].map((b) => +b.dataset.i);
+    if (p.type === "sel") { const v = +area.querySelector('select[data-p="' + k + '"]').value; return v < 0 ? null : v; }
+    return area.querySelector('input[data-p="' + k + '"]').value;
+  });
+}
+function trapMsg(p, raw) {
+  for (const t of p.traps || []) {
+    let hit = false;
+    try { if (p.type === "grid") hit = GR.grade(Object.assign({}, p, { ans: t.rows, ordered: false }), raw).ok; else if (p.type === "multi") hit = sameSet(raw, t.v); else if (p.type === "num") hit = GR.grade({ type: "num", ans: t.v }, raw).ok; } catch (e) { hit = false; }
+    if (hit) return t.msg;
+  }
+  return "";
+}
+
+// ---------- 出題、核對 ----------
+function next() {
+  const pool = CATS(S.mode).filter((c) => S.on[S.mode].has(c.id)); if (!pool.length) { showEmpty(); return; }
+  let c = pick(pool); if (pool.length > 1 && S.cat && c.id === S.cat.id && coin(0.7)) c = pick(pool.filter((x) => x.id !== S.cat.id));
+  const t = pick(c.types); let q = null;
+  for (let i = 0; i < 5 && !q; i++) { try { q = t.fn(); } catch (e) { q = null; } }
+  if (!q) { $("prompt").innerHTML = '<p class="empty">未能產生題目，請按「跳過此題」。</p>'; return; }
+  S.cat = c; S.type = t; S.q = q; S.n++; S.answered = false; $("btn-next").disabled = false;
+  $("qtype").textContent = c.id + " · " + c.name + " · " + t.name; $("qno").textContent = "第 " + S.n + " 題";
+  $("hintbox").innerHTML = hintHTML(c); $("btn-hint").hidden = !$("hintbox").innerHTML; setHint(false); updNext();
+  $("prompt").innerHTML = q.prompt; renderInput(q); $("feedback").hidden = true; $("btn-check").disabled = false; $("btn-show").disabled = false;
+  if (q.sandbox) loadSandbox(q.sandbox);
+}
+function finish(correct, revealed, results, raws) {
+  S.answered = true; $("btn-check").disabled = true; $("btn-show").disabled = true;
+  if (!revealed) { S.total++; if (correct) { S.right++; S.streak++; if (S.streak > S.best) S.best = S.streak; } else S.streak = 0; } else S.streak = 0;
+  LS.set("streak", S.streak); LS.set("best", S.best); renderScore();
+  const q = S.q, area = $("input-area"); let extra = "";
+  area.querySelectorAll(".addrow").forEach((b) => { b.disabled = true; });
+  if (q.input.kind === "choice") {
+    area.querySelectorAll(".choice").forEach((b) => { const i = +b.dataset.i; if (i === q.input.answer) b.classList.add("ok"); else if (i === S.sel) b.classList.add("no"); });
+    if (!revealed && !correct && q.input.why && q.input.why[S.sel]) extra += '<p class="trap">' + (q.input.sql || q.input.html ? "選項 " + LET[S.sel] + "：" : "") + md(q.input.why[S.sel]) + "</p>";
+    if (revealed && q.input.why) extra += '<ul class="steps">' + q.input.why.map((w, i) => (w ? "<li>" + (q.input.sql || q.input.html ? "選項 " + LET[i] + "：" : esc(q.input.opts[i]) + "：") + md(w) + "</li>" : "")).join("") + "</ul>";
+  } else {
+    q.input.parts.forEach((p, k) => {
+      const r = results ? results[k] : null;
+      if (p.type === "grid") { area.querySelectorAll('input[data-p="' + k + '"]').forEach((x) => { x.readOnly = true; if (r && r.marks && r.marks[+x.dataset.r] !== null) x.classList.add(r.marks[+x.dataset.r] ? "ok" : "no"); }); }
+      else if (p.type === "tbl") { area.querySelectorAll('input[data-p="' + k + '"]').forEach((x) => { x.readOnly = true; const c = p.cells[+x.dataset.r][+x.dataset.c]; if (r) x.classList.add(GR.sameVal(c.in, x.value) ? "ok" : "no"); else x.value = GR.show(c.in); }); }
+      else if (p.type === "multi") area.querySelectorAll('.choice[data-p="' + k + '"]').forEach((b) => { const i = +b.dataset.i, good = p.ans.includes(i), on = b.getAttribute("aria-pressed") === "true"; if (good) b.classList.add("ok"); else if (on) b.classList.add("no"); });
+      else if (p.type === "sel") { const x = area.querySelector('select[data-p="' + k + '"]'); x.disabled = true; if (revealed) x.value = String(p.ans); else x.classList.add(r && r.ok ? "ok" : "no"); }
+      else { const x = area.querySelector('input[data-p="' + k + '"]'); x.readOnly = true; if (r) x.classList.add(r.ok ? "ok" : "no"); }
+      if (r && !r.ok && !revealed) {
+        const tm = trapMsg(p, raws[k]); if (tm) extra += '<p class="trap">' + md(tm) + "</p>";
+        if (r.msg) extra += '<p class="trap">' + md(r.msg) + "</p>";
+        if (p.type === "sel") extra += '<p class="trap">' + esc(p.label) + "：正確答案是「" + esc(p.opts[p.ans]) + "」。</p>";
+        if (p.type === "multi" && p.notes) { const wrong = p.opts.map((o, i) => i).filter((i) => p.ans.includes(i) !== raws[k].includes(i)); if (wrong.length) extra += '<ul class="steps">' + wrong.map((i) => "<li>" + md(p.notes[i]) + "</li>").join("") + "</ul>"; }
+      }
+      if (p.type === "grid" && (revealed || (r && !r.ok))) extra += '<p class="iolab">正確輸出' + (p.ordered ? "（次序要對）" : "（次序不拘）") + "</p>" + dbHTML("", p.cols, p.ans);
+    });
+  }
+  const fb = $("feedback"); fb.className = "feedback " + (correct ? "good" : "bad"); fb.hidden = false;
+  const head = revealed ? "答案" : correct ? "答對了" : "未答對";
+  fb.innerHTML = '<div class="verdict">' + head + (q.show ? "：" + esc(q.show) : "") + "</div>" + extra + '<ol class="steps">' + q.explain.filter(Boolean).map((x) => "<li>" + md(x) + "</li>").join("") + "</ol>" + (q.after || "") + (q.sandbox ? '<div class="actions"><button type="button" class="btn ghost sm" id="btn-sbx">在試算區用這題的數據試試 ↓</button></div>' : "");
+  const bs = $("btn-sbx"); if (bs) bs.addEventListener("click", () => { loadSandbox(q.sandbox); $("explorer").open = true; buildSandbox(); try { $("explorer").scrollIntoView({ block: "start" }); } catch (e) {} });
+  updNext(); try { $("btn-next").focus({ preventScroll: true }); } catch (e) {}
+}
+function warn(msg) { const fb = $("feedback"); fb.className = "feedback bad"; fb.hidden = false; fb.innerHTML = '<div class="verdict">' + msg + "</div>"; }
+function check() {
+  if (S.answered || !S.q) return; const q = S.q;
+  if (q.input.kind === "choice") { if (S.sel === null) return warn("請先選擇一個答案，或按「顯示答案」。"); return finish(S.sel === q.input.answer, false); }
+  const raws = readParts(q); if (q.input.parts.some((p, k) => GR.isBlank(p, raws[k]))) return warn("請先完成所有空格，或按「顯示答案」。");
+  const results = q.input.parts.map((p, k) => GR.grade(p, raws[k]));
+  finish(results.every((r) => r.ok), false, results, raws);
+}
+function setHint(open) { $("hintbox").hidden = !open; $("btn-hint").setAttribute("aria-expanded", String(open)); }
+$("btn-hint").addEventListener("click", () => setHint($("hintbox").hidden));
+$("btn-check").addEventListener("click", check);
+$("btn-show").addEventListener("click", () => { if (!S.answered && S.q) finish(false, true, null, null); });
+let skipTimer = null;
+function updNext(confirming) { const b = $("btn-next"); clearTimeout(skipTimer); b.classList.remove("primary", "ghost", "skip", "confirm");
+  if (S.answered) { b.classList.add("primary"); b.textContent = "下一題 →"; }
+  else if (confirming) { b.classList.add("ghost", "confirm"); b.textContent = "再按一次確認跳過"; skipTimer = setTimeout(() => updNext(false), 3000); }
+  else { b.classList.add("ghost", "skip"); b.textContent = "跳過此題"; } }
+$("btn-next").addEventListener("click", () => { if (S.answered || $("btn-next").classList.contains("confirm")) return next(); updNext(true); });
+
+// =================== 試算區 ===================
+const SBX_DB = { STUDENT: [["SID", "SNAME", "CLASS", "SCORE", "CID"], [["03493", "Ada", "5A", 62, 2], ["03496", "Clem", "5B", 89, 1], ["03505", "Eva", "5B", 83, 4], ["03506", "Gabe", "5C", 47, 4], ["03510", "Finn", "5B", 35, 1], ["03517", "Ben", "5A", 86, null]], ["SID"]], CLUB: [["CID", "CNAME", "ROOM"], [[1, "Chess", 501], [2, "Art", 402], [3, "Drama", 203], [4, "Science", 502]], ["CID"]] };
+const SBX_FD = { R: ["SID", "SNAME", "CLASS", "CTEACHER", "CCODE", "CTITLE", "MARK"], F: FDX.FD("SID->SNAME,CLASS; CLASS->CTEACHER; CCODE->CTITLE; SID,CCODE->MARK") };
+const SB = { sql: null, sql0: null, fd: null };
+function loadSandbox(sb) { if (sb.tables) { SB.sql0 = sb.tables; SB.sql = clone(sb.tables); } else if (sb.R) SB.fd = sb; if ($("explorer").open) buildSandbox(); }
+$("explorer").addEventListener("toggle", () => { if ($("explorer").open) buildSandbox(); });
+function buildSandbox() {
+  const body = $("explorer-body"); body.innerHTML = "";
+  if (S.mode === "sql") {
+    const T = SB.sql || (SB.sql = clone(SBX_DB)), base = SB.sql0 || SBX_DB, tn = Object.keys(T);
+    body.innerHTML = '<div class="sbx"><p class="small">' + (SB.sql0 ? "以下是上一題的數據表。" : "以下是示範數據表。") + "輸入一句 SELECT、UPDATE、DELETE 或 INSERT 語句，按「執行」。修改只作用於這裏的副本，按「重設數據」還原。</p><div id=\"sbx-t\">" + tables(T) + "</div>" +
+      '<textarea id="sbx-q" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="SQL 語句">SELECT S.SNAME, C.CNAME\nFROM ' + esc(tn[0]) + " S\nLEFT JOIN " + esc(tn[1] || tn[0]) + " C ON S.CID = C.CID</textarea>" + '<div class="row"><button type="button" class="btn primary sm" id="sbx-go">執行</button><button type="button" class="btn ghost sm" id="sbx-reset">重設數據</button>' + (SB.sql0 ? '<button type="button" class="btn ghost sm" id="sbx-demo">改用示範數據表</button>' : "") + '</div><div id="sbx-out" class="msg">輸出會在這裏顯示。</div></div>';
+    if (!/CID/.test(T[tn[0]][0].join()) || tn.length < 2) $("sbx-q").value = "SELECT *\nFROM " + tn[0];
+    $("sbx-go").addEventListener("click", () => { const out = $("sbx-out"); try { const r = SQL.exec(SB.sql, $("sbx-q").value);
+        if (r.kind === "select") { out.className = "msg ok"; out.innerHTML = (r.rows.length ? "" : "<span>（沒有記錄）</span>") + dbHTML("", r.cols, r.rows) + '<span class="small">共 ' + r.rows.length + " 行。</span>"; }
+        else { SB.sql = r.T; $("sbx-t").innerHTML = tables(SB.sql, null, { [r.name]: r.kind === "delete" ? {} : { hl: r.hit } }); out.className = "msg ok"; out.innerHTML = "<span>" + { update: "更新", delete: "刪除", insert: "插入" }[r.kind] + "了 " + r.hit.length + " 筆記錄（" + esc(r.name) + "）。</span>"; } }
+      catch (e) { out.className = "msg err"; out.textContent = "錯誤：" + e.message; } });
+    $("sbx-reset").addEventListener("click", () => { SB.sql = clone(base); buildSandbox(); });
+    if ($("sbx-demo")) $("sbx-demo").addEventListener("click", () => { SB.sql0 = null; SB.sql = clone(SBX_DB); buildSandbox(); });
+  } else {
+    const d = SB.fd || SBX_FD;
+    body.innerHTML = '<div class="sbx"><p class="small">輸入屬性（以逗號分隔）及功能相關性（每行一條，寫成「A, B -> C」），按「分析」得出候選鍵碼、最高範式，以及部分／遞移功能相關性；可另填一組屬性計算閉包。</p>' +
+      '<label class="small" for="sbx-r">屬性</label><input type="text" id="sbx-r" spellcheck="false" autocomplete="off" value="' + esc(d.R.join(", ")) + '">' +
+      '<label class="small" for="sbx-f">功能相關性</label><textarea id="sbx-f" spellcheck="false" autocomplete="off">' + esc(d.F.map(([l, r]) => l.join(", ") + " -> " + r.join(", ")).join("\n")) + "</textarea>" +
+      '<label class="small" for="sbx-x">計算閉包（可留空）</label><input type="text" id="sbx-x" spellcheck="false" autocomplete="off" placeholder="例：SID, CCODE">' +
+      '<div class="row"><button type="button" class="btn primary sm" id="sbx-go">分析</button></div><div id="sbx-out" class="msg">結果會在這裏顯示。</div></div>';
+    $("sbx-go").addEventListener("click", () => { const out = $("sbx-out");
+      try { const Rr = uniq(FDX.S($("sbx-r").value.toUpperCase())), F = FDX.FD($("sbx-f").value.toUpperCase().replace(/→/g, "->"));
+        if (!Rr.length || !F.length) throw new Error("請輸入屬性及最少一條功能相關性。"); if (Rr.length > 10) throw new Error("屬性太多（最多 10 個）。");
+        const bad = uniq([].concat(...F.map(([l, r]) => l.concat(r)))).filter((a) => !Rr.includes(a)); if (bad.length) throw new Error("功能相關性用了不在屬性中的 " + bad.join("、") + "。");
+        const r = FDX.nf(Rr, F), X = FDX.S($("sbx-x").value.toUpperCase());
+        let o = "<span>候選鍵碼：" + r.keys.map((k) => "<code>" + esc(setTxt(k)) + "</code>").join(" ") + "</span><span>最高範式：第 " + r.nf + " 範式（假設已符合 1NF）</span>";
+        if (r.partial.length) o += "<span>部分功能相關性：" + r.partial.map((p) => "<code>" + esc(p[0].join(",") + " → " + p[1].join(",")) + "</code>").join(" ") + "</span>";
+        if (r.trans.length) o += "<span>遞移功能相關性：" + r.trans.map((p) => "<code>" + esc(p[0].join(",") + " → " + p[1].join(",")) + "</code>").join(" ") + "</span>";
+        if (X.length) { const st = FDX.closureSteps(X, F); o += "<span>" + esc(setTxt(X)) + "⁺ = <code>" + esc(setTxt(FDX.sorted(st.all.filter((a) => Rr.includes(a))))) + "</code></span>" + (st.steps.length ? '<ol class="steps">' + st.steps.map((s) => "<li>用 " + esc(FDX.fdStr(s)) + " 加入 " + esc(s[2].join("、")) + "</li>").join("") + "</ol>" : ""); }
+        out.className = "msg ok"; out.innerHTML = o; }
+      catch (e) { out.className = "msg err"; out.textContent = "錯誤：" + e.message; } });
+  }
+}
+
+// 測試用：以正確或錯誤答案填寫目前的題目（不會自動核對）
+window.__ealab = {
+  fill(ok) { const q = S.q; if (!q || S.answered) return false; const area = $("input-area");
+    if (q.input.kind === "choice") { const t = ok ? q.input.answer : (q.input.answer + 1) % q.input.opts.length; area.querySelector('.choice[data-i="' + t + '"]').click(); return true; }
+    q.input.parts.forEach((p, k) => { const v = GR.fill(p, ok || k > 0);
+      if (p.type === "grid") { while (area.querySelectorAll('table[data-p="' + k + '"] tr[data-r]').length < v.length) addGridRow(k); v.forEach((r, i) => r.forEach((x, j) => { area.querySelector('input[data-p="' + k + '"][data-r="' + i + '"][data-c="' + j + '"]').value = x; })); }
+      else if (p.type === "tbl") v.forEach((r, i) => r.forEach((x, j) => { const e = area.querySelector('input[data-p="' + k + '"][data-r="' + i + '"][data-c="' + j + '"]'); if (e) e.value = x; }));
+      else if (p.type === "multi") area.querySelectorAll('.choice[data-p="' + k + '"]').forEach((b) => { if ((b.getAttribute("aria-pressed") === "true") !== v.includes(+b.dataset.i)) b.click(); });
+      else if (p.type === "sel") area.querySelector('select[data-p="' + k + '"]').value = String(v);
+      else area.querySelector('input[data-p="' + k + '"]').value = v; });
+    return true; },
+  only(id) { S.on[S.mode] = new Set([id]); renderFilter(); next(); }, cats: () => CATS(S.mode).map((c) => c.id), mode: (m) => [...nav.children].find((b) => b.dataset.id === m).click(),
+  state: () => ({ mode: S.mode, cat: S.cat && S.cat.id, type: S.type && S.type.name, answered: S.answered, right: S.right, total: S.total, streak: S.streak, best: S.best, on: [...S.on[S.mode]] }),
+};
+renderNav(); renderFilter(); renderScore(); next();
+})();
+</script>
+
+</body></html>

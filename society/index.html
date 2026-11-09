@@ -1,0 +1,1251 @@
+<!doctype html><html lang="zh-Hant-HK"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style></head><body>
+<title>社會影響練習室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --bg:#F2F1EC; --surface:#FFFFFF; --sunk:#E7E5DD; --ink:#1D2321; --muted:#59625E; --line:#CDCAC0;
+  --accent:#0F6B5C; --accent-ink:#FFFFFF; --led:#C2671B; --led-ink:#1E1205;
+  --good:#1F7A3A; --good-bg:#E2F2E6; --bad:#B3261E; --bad-bg:#FBE6E4;
+  --sel:#D7ECE7; --ext:#8A3B7A; --ext-bg:#F4DDEF; --lab:#0F6B5C;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111614; --surface:#19201D; --sunk:#232C28; --ink:#E6ECE9; --muted:#A3AFA9; --line:#34403B;
+    --accent:#6FD0BC; --accent-ink:#0B1A16; --led:#F0A65A; --led-ink:#1E1205;
+    --good:#62D387; --good-bg:#16301F; --bad:#FF8E84; --bad-bg:#3B1B19;
+    --sel:#1E3A33; --ext:#E7A6D8; --ext-bg:#43263D; --lab:#6FD0BC; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111614; --surface:#19201D; --sunk:#232C28; --ink:#E6ECE9; --muted:#A3AFA9; --line:#34403B;
+  --accent:#6FD0BC; --accent-ink:#0B1A16; --led:#F0A65A; --led-ink:#1E1205;
+  --good:#62D387; --good-bg:#16301F; --bad:#FF8E84; --bad-bg:#3B1B19;
+  --sel:#1E3A33; --ext:#E7A6D8; --ext-bg:#43263D; --lab:#6FD0BC; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;margin:0;overflow-x:hidden}
+.wrap{max-width:880px;margin:0 auto;padding-inline:16px;padding-block:24px 48px;display:flex;flex-direction:column;gap:20px}
+.wrap>*,.card>*{min-width:0}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand{display:flex;flex-direction:column;gap:2px;min-width:0}
+.brand .eyebrow{font-size:12px;letter-spacing:.08em;color:var(--muted)}
+h1{font-size:30px;font-weight:900;margin:0;letter-spacing:.02em;text-wrap:balance}
+h1 .mark{display:inline-block;white-space:nowrap;font-weight:700;color:var(--accent);font-size:.5em;margin-left:.5em;border:2px solid var(--accent);border-radius:999px;padding:0 .6em;vertical-align:middle}
+.lead{margin:0;font-size:15px;color:var(--muted);max-width:60em}
+.score{display:flex;gap:16px;font-variant-numeric:tabular-nums}
+.score div{display:flex;flex-direction:column;align-items:flex-end}
+.score b{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1.1}
+.score span{font-size:12px;color:var(--muted)}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.qhead{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.qtype{font-size:13px;letter-spacing:.04em;color:var(--accent);font-weight:700;overflow-wrap:anywhere}
+.qno{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.qright{display:flex;align-items:center;gap:12px;margin-left:auto}
+.hintbtn{font:inherit;font-size:14px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--led);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.hintbtn::before{content:"?";display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--led);color:var(--led-ink);font-family:var(--mono);font-size:12px}
+.hintbtn[aria-expanded="true"]{background:var(--led);color:var(--led-ink)}
+.hintbtn[aria-expanded="true"]::before{background:var(--led-ink);color:var(--led)}
+.hintbox{border:1px solid var(--led);border-left-width:4px;border-radius:10px;padding:12px 14px;background:var(--sunk);font-size:15px;line-height:1.7;display:flex;flex-direction:column;gap:6px}
+.hintbox h4{margin:0;font-size:13px;letter-spacing:.04em;color:var(--muted)}
+.hintbox ol{margin:0;padding-left:1.3em}
+.hintbox .ex{font-size:14px;background:var(--surface);border-radius:8px;padding:6px 10px;overflow-wrap:anywhere}
+.prompt{font-size:17px;line-height:1.75;display:flex;flex-direction:column;gap:10px;min-width:0}
+.prompt p{margin:0;overflow-wrap:anywhere}
+.scene{background:var(--sunk);border-radius:10px;padding:10px 14px;font-size:16px}
+.stmts{display:flex;flex-direction:column;gap:4px;padding-left:4px}
+.stmts p{display:flex;gap:10px}
+.stmts .lab{font-family:var(--mono);color:var(--lab);font-weight:600;flex:none;min-width:2.2em}
+.small{font-size:14px;color:var(--muted)}
+/* 作答 */
+.parts{display:flex;flex-direction:column;gap:12px}
+.part{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;border-left:3px solid var(--line);padding-left:10px}
+.part>label{font-size:15px;color:var(--ink);overflow-wrap:anywhere;min-width:0;flex:1 1 16em}
+select{font:inherit;font-size:15px;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);max-width:100%;min-width:8em}
+select.ok{border-color:var(--good)!important;background:var(--good-bg)!important}
+select.no{border-color:var(--bad)!important;background:var(--bad-bg)!important}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:8px;width:100%}
+.choices.wide{grid-template-columns:1fr}
+.choice{font:inherit;text-align:left;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;min-width:0;overflow-wrap:anywhere;line-height:1.55}
+.choice[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.choice.ok{border-color:var(--good);background:var(--good-bg)}
+.choice.no{border-color:var(--bad);background:var(--bad-bg)}
+.btn{font:inherit;font-weight:700;padding:10px 18px;border-radius:10px;border:1px solid var(--accent);cursor:pointer}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#btn-next{margin-left:auto}
+#btn-next.skip{border-color:var(--line);color:var(--muted);font-weight:500}
+#btn-next.confirm{border-color:var(--bad);color:var(--bad);font-weight:700}
+.feedback{border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.feedback.good{background:var(--good-bg)}
+.feedback.bad{background:var(--bad-bg)}
+.feedback .verdict{font-weight:700;overflow-wrap:anywhere}
+.feedback.good .verdict{color:var(--good)}
+.feedback.bad .verdict{color:var(--bad)}
+.feedback .trap{margin:0;padding:8px 12px;border-left:4px solid var(--led);background:var(--surface);border-radius:6px;font-size:15px;overflow-wrap:anywhere}
+.feedback .src{margin:0;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.feedback .src b{color:var(--ink);font-weight:700}
+.steps{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.steps li{line-height:1.65;overflow-wrap:anywhere}
+.tips{font-size:14px;color:var(--muted);border-top:1px dashed var(--line);padding-top:14px}
+.tips b{color:var(--ink)}
+/* 篩選 */
+.filter{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.filter summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:10px 14px;font-weight:700;font-size:15px}
+.filter summary::-webkit-details-marker{display:none}
+.filter summary::after{content:"▾";color:var(--muted);transition:transform .15s}
+.filter[open] summary::after{transform:rotate(180deg)}
+.fcount{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--muted);margin-left:auto}
+.fcount.partial{color:var(--accent);font-weight:600}
+.fbody{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.fact{display:flex;flex-wrap:wrap;gap:8px}
+.fgroup{display:flex;flex-direction:column;gap:6px}
+.fgroup h3{margin:0;font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.04em}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:14px;line-height:1.4;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sunk);border-color:var(--accent);color:var(--ink);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip[aria-pressed="true"]::before{content:"✓ ";color:var(--accent);font-weight:700}
+.chip .cid{font-family:var(--mono);font-size:12px;margin-right:4px;color:var(--accent)}
+.chip .tag{font-size:11px;font-weight:700;color:var(--ext);background:var(--ext-bg);border-radius:999px;padding:0 6px;margin-left:6px}
+.mini-b{font:inherit;font-size:13px;padding:4px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer}
+.fhint{margin:0;font-size:12px;color:var(--muted)}
+.empty{color:var(--muted);font-size:16px}
+.foot{font-size:13px;color:var(--muted);margin:0}
+@media (max-width:480px){h1{font-size:24px}.prompt{font-size:16px}.card{padding:18px 14px 16px}.score{gap:12px}.score b{font-size:19px}.fbody{padding:0 10px 12px}.btn{padding:10px 14px}}
+@media (prefers-reduced-motion:reduce){.filter summary::after{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">HKDSE ICT · 必修單元 E 資訊及通訊科技對社會的影響</span>
+      <h1>社會影響練習室<span class="mark">E</span></h1>
+    </div>
+    <div class="score" aria-live="polite">
+      <div><b id="sc-right">0</b><span>答對</span></div>
+      <div><b id="sc-total">0</b><span>已答</span></div>
+      <div><b id="sc-streak">0</b><span>連續答對</span></div>
+      <div><b id="sc-best">0</b><span>最高紀錄</span></div>
+    </div>
+  </header>
+  <p class="lead">科技創新、健康及道德、知識產權的隨機練習：辨認科技、判斷人體工學設計、數碼隔閡措施、法律後果及軟件授權。每題由頁內的知識表隨機組合，答案由知識表推出；回饋附解說及出處（教科書書頁或 DSE 題號）。</p>
+
+  <details class="filter" id="filter">
+    <summary><span>分類篩選</span><span class="fcount" id="fcount"></span></summary>
+    <div class="fbody">
+      <div class="fact"><button type="button" class="mini-b" id="f-all">全選</button><button type="button" class="mini-b" id="f-none">全部取消</button></div>
+      <div id="fchips"></div>
+      <p class="fhint">點按分類可加入或移除；標「延伸」的分類屬延伸內容（課程指引沒有列出），預設不選。選擇會記在這部裝置上。</p>
+    </div>
+  </details>
+
+  <section class="card" id="card">
+    <div class="qhead"><span class="qtype" id="qtype"></span><div class="qright"><span class="qno" id="qno"></span><button class="hintbtn" id="btn-hint" type="button" aria-expanded="false" aria-controls="hintbox">提示：方法</button></div></div>
+    <div class="hintbox" id="hintbox" hidden></div>
+    <div class="prompt" id="prompt"></div>
+    <div id="input-area"></div>
+    <div class="actions">
+      <button class="btn primary" id="btn-check" type="button">核對答案</button>
+      <button class="btn ghost" id="btn-show" type="button">顯示答案</button>
+      <button class="btn ghost skip" id="btn-next" type="button">跳過此題</button>
+    </div>
+    <div id="feedback" aria-live="polite" hidden></div>
+    <div class="tips" id="tips"><b>作答提示：</b>選擇題點選一個答案；配對及分類題每一行選一項。按 Enter 核對，答題後再按 Enter 出下一題。組合題的寫法跟 DSE 卷一甲部相同（「只有 (1) 和 (2)」等）。</div>
+  </section>
+
+  <p class="foot">內容只取自教科書 E 第 1–3 章及 HKDSE 2012–2025 卷一評卷參考、考試報告；統計數字、產品及法例條文不在練習範圍。涉及條例的題目以教科書為準；如要引用最新條文，請老師核實。情境中的人物、公司和軟件均屬虛構。</p>
+</div>
+<script>
+(() => {
+/*GEN:BEGIN*/
+// =================== 共用工具（出題用亂數；dump.js 以固定種子覆寫 Math.random） ===================
+const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = (a) => a[Math.floor(Math.random() * a.length)];
+const coin = (p = 0.5) => Math.random() < p;
+const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
+const sample = (a, n) => shuffle(a).slice(0, n);
+const uniq = (a) => [...new Set(a)];
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const md = (s) => esc(s).replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+const GEN = [];
+function cat(id, name, o = {}) { const c = Object.assign({ id, name, types: [], ext: false }, o); GEN.push(c); return c; }
+const CAT = (id) => GEN.find((c) => c.id === id);
+function addType(id, name, fn) { CAT(id).types.push({ name, fn }); }
+
+// ---------- 出處：「p.44」→「教科書 p.44」；「2020 甲40」→「DSE 2020 甲40」 ----------
+const srcList = (...ss) => uniq(ss.flat().filter(Boolean).flatMap((s) => String(s).split("；")).map((x) => x.trim()).filter(Boolean)
+  .map((x) => (/^p\.\d/.test(x) ? "教科書 " + x : /^(19|20)\d\d |^樣本/.test(x) ? "DSE " + x : x)));
+const srcHTML = (...ss) => '<p class="src"><b>出處：</b>' + esc(srcList(...ss).join("；")) + "</p>";
+
+// ---------- 作答部分 ----------
+const P = { sel: (label, opts, ans, o = {}) => Object.assign({ type: "sel", label, opts, ans }, o) };
+const parts = (...ps) => ({ kind: "parts", parts: ps });
+const choiceIn = (opts, answer, o = {}) => Object.assign({ kind: "choice", opts, answer }, o);
+const GR = (() => {
+  function grade(p, raw) { return { ok: raw === p.ans }; }
+  const isBlank = (p, raw) => raw === null || raw === undefined || raw === "";
+  function fill(p, ok) { return ok ? p.ans : p.opts.find((o) => o !== p.ans && o !== "—"); }
+  return { grade, isBlank, fill };
+})();
+
+// ---------- 四選一：ans 及 wrongs 為 {t 文字, n 解說, s 出處} ----------
+// o.rel／o.q：核對用的關係名稱及題目鍵（verify/kb_e.py 以文字判斷每個選項）
+function pickQ(o) {
+  const opts = shuffle([o.ans, ...o.wrongs]);
+  if (new Set(opts.map((x) => x.t)).size !== opts.length) throw new Error("重複選項");
+  const why = {}; o.wrongs.forEach((w) => { if (w.n) why[w.t] = w.n; });
+  return {
+    prompt: o.stem, input: choiceIn(opts.map((x) => x.t), o.ans.t, { why, wide: o.wide || opts.some((x) => x.t.length > 16) }), show: o.ans.t,
+    explain: o.explain || [o.ans.n].filter(Boolean), after: srcHTML(o.s, o.ans.s, ...o.wrongs.map((w) => w.s)),
+    chk: [{ k: "pick", rel: o.rel, q: o.q === undefined ? null : o.q, opts: opts.map((x) => x.t), ans: o.ans.t }],
+  };
+}
+
+// ---------- 組合題（DSE 卷一甲部寫法）：items 為 {t, ok, n, s}；labels 預設 (1) (2) (3) (4) ----------
+const NUMLAB = ["(1)", "(2)", "(3)", "(4)"];
+function comboText(set, labels) {
+  const L = set.map((i) => labels[i]), sp = /^\(|^[A-Z]$/.test(labels[0]) ? " " : "";
+  const body = L.length > 1 ? L.slice(0, -1).join("、") + sp + "和" + sp + L[L.length - 1] : L[0];
+  return (set.length === labels.length ? "" : "只有" + sp) + body;
+}
+const subsetsOf = (n) => { const r = []; for (let m = 1; m < 1 << n; m++) { const s = []; for (let i = 0; i < n; i++) if (m & (1 << i)) s.push(i); r.push(s); } return r; };
+const skey = (s) => s.join(",");
+const sdiff = (a, b) => a.filter((x) => !b.includes(x)).length + b.filter((x) => !a.includes(x)).length;
+function comboQ(o) {
+  const items = o.items, n = items.length, labels = o.labels || NUMLAB.slice(0, n);
+  const S = items.map((it, i) => (it.ok ? i : -1)).filter((i) => i >= 0);
+  if (!S.length) throw new Error("沒有正確陳述");
+  // 選項按 DSE 習慣排列（先少後多）；先隨機決定正確答案的位置，再選干擾集合（優先只差一項的集合），令答案字母分佈較平均
+  const cmpS = (a, b) => a.length - b.length || skey(a).localeCompare(skey(b));
+  const rest = subsetsOf(n).filter((s) => skey(s) !== skey(S));
+  const before = rest.filter((s) => cmpS(s, S) < 0), after = rest.filter((s) => cmpS(s, S) > 0);
+  const pos = pick([0, 1, 2, 3].filter((p) => p <= before.length && 3 - p <= after.length));
+  const take = (arr, k) => { const nr = shuffle(arr.filter((s) => sdiff(s, S) === 1)), fr = shuffle(arr.filter((s) => sdiff(s, S) !== 1)); return nr.slice(0, Math.min(k, 1 + (k > 1 ? 1 : 0))).concat(fr).concat(nr.slice(Math.min(k, 2))).slice(0, k); };
+  const sets = [S, ...take(before, pos), ...take(after, 3 - pos)].sort(cmpS);
+  const texts = sets.map((s, i) => "ABCD"[i] + ". " + comboText(s, labels)), ans = texts[sets.indexOf(S)];
+  const why = {};
+  sets.forEach((s, i) => {
+    if (s === S) return;
+    const msg = [];
+    items.forEach((it, k) => {
+      const inS = S.includes(k), inO = s.includes(k);
+      if (inO && !inS) msg.push(labels[k] + " 不對：" + it.n);
+      if (!inO && inS) msg.push(labels[k] + " 也對：" + it.n);
+    });
+    why[texts[i]] = msg.join(" ");
+  });
+  const list = o.list === false ? "" : '<div class="stmts">' + items.map((it, i) => '<p><span class="lab">' + labels[i] + "</span><span>" + esc(it.t) + "</span></p>").join("") + "</div>";
+  return {
+    prompt: o.stem + list, input: choiceIn(texts, ans, { why, wide: true }), show: ans,
+    explain: (o.pre || []).concat(items.map((it, i) => labels[i] + " " + (it.ok ? "✓ " : "✗ ") + it.n)), after: srcHTML(o.s, ...items.map((it) => it.s)),
+    chk: [{ k: "combo", rel: o.rel, q: o.q === undefined ? null : o.q, items: items.map((it) => it.t), labels, opts: texts, ans }],
+  };
+}
+
+// ---------- 配對／分類（每行一個下拉選單）：rows 為 {x 題目文字, a 答案, n 解說, s 出處, opts?} ----------
+function rowsQ(o) {
+  const ps = o.rows.map((r) => P.sel(r.x, ["—", ...(r.opts || o.opts)], r.a));
+  return {
+    prompt: o.stem, input: parts(...ps), show: "",
+    explain: (o.pre || []).concat(o.rows.map((r) => r.x + " → **" + r.a + "**" + (r.n ? "：" + r.n : ""))), after: srcHTML(o.s, ...o.rows.map((r) => r.s)),
+    chk: [{ k: "rows", rel: o.rel, q: o.q === undefined ? null : o.q, rows: o.rows.map((r) => ({ x: r.x, opts: r.opts || o.opts, ans: r.a })) }],
+  };
+}
+// 由陣列抽 n 個，其中至少 lo 個符合 f
+function mixPick(arr, n, f, lo = 1, hi = n) {
+  for (let k = 0; k < 50; k++) { const s = sample(arr, n), c = s.filter(f).length; if (c >= lo && c <= hi) return s; }
+  throw new Error("mixPick");
+}
+// =================== 科技創新（教科書 E 第 1 章 p.2–40；DSE 2014 甲13、2020 乙4(d)、2022 甲40、2022 乙4(b)、2025 乙4(b)） ===================
+cat("T1", "創新科技辨認", { grp: "科技創新", hint: [["先找情境的關鍵動作：「疊加在鏡頭畫面／現實上」是 AR；「取代現實、身處虛擬環境」是 VR；「切片、逐層製作實物」是 3D 打印。", "機器從數據學習並自動辨認、預測（人臉、語音、垃圾郵件、路標）是人工智能；大量、多樣、高速產生的數據集是大數據（4V）。", "組合題逐句判斷，再找出包含全部正確陳述、而不含錯誤陳述的選項。"], "手機鏡頭對準化石，屏幕上出現會動的恐龍 → 數碼影像疊加在現實之上 → AR"] });
+cat("T2", "AI 訓練數據", { grp: "科技創新", hint: [["挑選訓練樣本的三個要點（2025 乙4(b) 評卷）：數量足夠；包含目標的不同變化；同時有正例（有目標）及反例（沒有目標）。", "版權、私隱等與「訓練得準不準」無關的因素不是答案（2025 乙4(b) 報告）。", "監督式學習用已標籤的數據訓練；非監督式學習由電腦自行在未標籤的數據中找出模式（表 1.1）。"], "只用晴天拍攝、而且每張都有火的相片 → 缺少變化及反例"] });
+cat("T3", "科技的影響", { grp: "科技創新", hint: [["工作性質的改變要同時想「減少了甚麼工作」和「增加了甚麼工作」（2020 乙4(d)(i) 評卷）。", "好處多與效率、成本、訂製、全日服務有關；壞處多與私隱、歧視、責任、安全、數碼隔閡有關（p.19、表 1.3、表 1.4、p.35）。", "留意「所有」「不再需要任何」等絕對字眼：機械人不能代替所有僱員（2022 甲40）。"], "快餐店改用自助點餐機 → 收銀人手減少；維修點餐機的技術人員增加"] });
+
+// ---------- T1 情境 → 科技 ----------
+const T_AI = "人工智能（AI）", T_BD = "大數據", T_3D = "3D 打印", T_VR = "虛擬實境（VR）", T_AR = "擴增實境（AR）";
+const TECH_DESC = {
+  [T_AI]: "人工智能（AI）：機器從樣本數據學習、找出模式，再自動辨認或預測（p.6、p.8）",
+  [T_BD]: "大數據：由不同來源收集、數量龐大的數據集，以數據量、多樣性、速度、準確性（4V）描述（p.4）",
+  [T_3D]: "3D 打印：把 3D 模型「切片」成層，再逐層建立實物（p.22）",
+  [T_VR]: "虛擬實境（VR）：電腦模擬環境取代現實世界，令人感覺身處虛擬環境（p.28、p.31）",
+  [T_AR]: "擴增實境（AR）：把數碼影像和資訊疊加在現實世界之上（p.31）",
+};
+const T1_SCEN = [
+  ["在博物館用手機鏡頭對準恐龍化石，屏幕上的化石旁出現一隻會動的恐龍，並解釋化石的資訊", T_AR, "p.38 課題練習 3；樣本試卷 甲39"],
+  ["用平板電腦鏡頭拍攝客廳，屏幕把梳化和茶几的模型疊加在地板上，讓顧客預覽擺放效果", T_AR, "p.31 圖 1.36"],
+  ["汽車維修員戴上智慧眼鏡，眼前的引擎零件旁顯示零件編號及拆卸指引", T_AR, "p.33 圖 1.49"],
+  ["手機地圖程式在鏡頭拍到的街景上加上步行方向箭咀，以及附近餐廳和商店的資訊", T_AR, "p.33 圖 1.50"],
+  ["手機鏡頭掃描課本上的特定圖像後，屏幕出現人體心臟的 3D 模型，移動鏡頭可從不同角度觀察", T_AR, "p.40 長題目 3"],
+  ["學生戴上頭戴式裝置後彷彿置身面試室，由虛擬面試官隨機提問", T_VR, "p.40 長題目 4"],
+  ["遊客戴上頭戴式裝置乘坐過山車，眼前的現實景物被一個虛構世界取代", T_VR, "p.28；p.30"],
+  ["醫科學生戴上頭戴式裝置，在電腦模擬的手術室中練習做手術", T_VR, "p.30 圖 1.31"],
+  ["把手機放入 VR 眼鏡，觀看以 360 度攝影機拍攝的雪山全景，感覺身處當地", T_VR, "p.28 表 1.6"],
+  ["士兵戴上頭戴式裝置及手持控制器，在電腦模擬的環境中接受訓練", T_VR, "p.30 圖 1.30"],
+  ["牙醫以掃描器掃描病人口腔，再把牙齒模型切片，逐層製作透明牙套", T_3D, "p.23；p.24"],
+  ["學生用設計軟件繪製禮物模型，模型被「切片」成層後，機器按程式代碼逐層堆疊塑膠製成擺設", T_3D, "p.22 圖 1.21"],
+  ["為吞嚥困難人士以噴嘴逐層擠出食材，重新製作營養食品", T_3D, "p.24"],
+  ["太空人按設計檔案，在太空站內逐層製作所需的備用零件", T_3D, "p.24"],
+  ["按病人身形設計義肢模型，再由機器逐層製作，無須造模", T_3D, "p.24；p.25 表 1.3"],
+  ["相片分享網站自動辨認相片中的人臉，並建議為相片中的朋友加上標籤", T_AI, "p.11 圖 1.8；p.12"],
+  ["電郵系統按用戶過往舉報的郵件學習，自動把可疑郵件移入垃圾郵件資料夾", T_AI, "p.15"],
+  ["手機把用戶說出的話轉換成文字，再按指示設定提醒", T_AI, "p.13；p.14 實驗站 1.3"],
+  ["自動駕駛汽車分析鏡頭拍到的連續影格，辨認路標及量度與前車的距離", T_AI, "p.12"],
+  ["繪圖程式在用戶動筆後猜測用戶在畫甚麼，並建議相似的圖形", T_AI, "p.10 實驗站 1.2"],
+  ["程式聆聽一段歌曲旋律後，與數據庫配對，找出歌曲的名稱", T_AI, "p.14 實驗站 1.3"],
+  ["某社交平台每秒收集大量用戶的點擊、瀏覽記錄及位置，數據量龐大、類型多樣，而且不斷高速產生", T_BD, "p.4"],
+  ["科學家收集大量人類 DNA 數據，數量龐大至一般數據庫系統難以處理", T_BD, "2014 甲13"],
+  ["物聯網的探測器不斷收集各種數據，數據累積至一定數量後集成大型數據集，供進一步分析", T_BD, "p.4"],
+];
+addType("T1", "情境 → 科技", () => {
+  const [t, a, s] = pick(T1_SCEN);
+  // 人工智能與大數據常一起運作（p.19），故兩者不同時作選項
+  const pool = [T_3D, T_VR, T_AR].filter((x) => x !== a);
+  const wrongs = a === T_AI || a === T_BD ? pool : pool.concat([pick([T_AI, T_BD])]);
+  return pickQ({ stem: '<p class="scene">' + esc(t) + "。</p><p>這個情境主要應用了哪一項科技？</p>", rel: "tech", q: t, s,
+    ans: { t: a, n: TECH_DESC[a] + "。" }, wrongs: wrongs.map((w) => ({ t: w, n: "這是" + TECH_DESC[w] + "；與情境不符。" })), wide: false });
+});
+// ---------- T1 大數據的例子（組合） ----------
+const T1_BD = {
+  gen: { stem: "<p>「大數據」是指收集得到的數據龐大，一般數據庫系統難以處理。下列哪些是「大數據」的例子？</p>", s: "2014 甲13；p.4", items: [
+    { t: "人類 DNA", ok: true, n: "數據量極大（2014 甲13 答案 A）。", s: "2014 甲13" },
+    { t: "某社交網站內用戶的使用習慣", ok: true, n: "大量用戶不斷產生的點擊及瀏覽記錄（2014 甲13；p.4）。", s: "2014 甲13" },
+    { t: "網上購物平台大量顧客的點擊及瀏覽記錄", ok: true, n: "互聯網每分每秒收集的點擊、瀏覽記錄都是大數據的來源（p.4）。", s: "p.4" },
+    { t: "某國政府人員的總人數", ok: false, n: "只是一個統計數字，不是龐大的數據集（2014 甲13）。", s: "2014 甲13" },
+  ] },
+  map: { stem: "<p>地圖程式要預計到達時間，需要使用大數據分析和機器學習。下列哪些是地圖程式收集大數據的例子？</p>", s: "p.21 測試站 1.1(2)", items: [
+    { t: "過往的交通狀況", ok: true, n: "教科書測試站 1.1(2) 答案包括此項。", s: "p.21 測試站 1.1(2)" },
+    { t: "駕駛者提供的實時交通情況", ok: true, n: "教科書測試站 1.1(2) 答案包括此項。", s: "p.21 測試站 1.1(2)" },
+    { t: "程式所收集的用戶位置", ok: true, n: "教科書測試站 1.1(2) 答案包括此項。", s: "p.21 測試站 1.1(2)" },
+    { t: "用戶的身份", ok: false, n: "預計到達時間不需要知道用戶是誰；教科書測試站 1.1(2) 答案不包括此項。", s: "p.21 測試站 1.1(2)" },
+  ] },
+};
+addType("T1", "大數據的例子", () => {
+  const key = pick(["gen", "map"]), B = T1_BD[key], items = mixPick(B.items, 3, (x) => x.ok, 1, 3);
+  return comboQ({ stem: B.stem, items, rel: "bigdata", q: key, s: B.s });
+});
+// ---------- T1 人工智能的應用（組合） ----------
+const T1_AI = [
+  { t: "照片共享網站的面部識別功能", ok: true, n: "人臉識別屬人工智能的模式識別（p.12；課題練習 6）。", s: "p.38 課題練習 6" },
+  { t: "數碼助理的語音識別功能", ok: true, n: "語音識別把語音轉換為文字（p.13；課題練習 6）。", s: "p.38 課題練習 6" },
+  { t: "社交媒體網站的好友推薦功能", ok: true, n: "推薦系統以 AI 算法預測用戶行為（p.4；課題練習 6）。", s: "p.38 課題練習 6" },
+  { t: "購物網站根據用戶喜好推薦產品", ok: true, n: "推薦系統（p.4；課題練習 8）。", s: "p.38 課題練習 8" },
+  { t: "識別正在播放的音樂", ok: true, n: "音樂識別把旋律與數據庫配對（p.14；課題練習 9）。", s: "p.39 課題練習 9" },
+  { t: "檢測垃圾郵件", ok: true, n: "AI 學習用戶的舉報，自動阻擋垃圾郵件（p.15；課題練習 9）。", s: "p.39 課題練習 9" },
+  { t: "識別筆跡", ok: true, n: "圖像識別（p.9；課題練習 9）。", s: "p.39 課題練習 9" },
+  { t: "自動糾正錯字", ok: true, n: "教科書課題練習 10 答案包括此項（p.16 自動校正）。", s: "p.39 課題練習 10" },
+  { t: "自動駕駛汽車", ok: true, n: "電腦視覺分析連續影格（p.12；課題練習 10）。", s: "p.39 課題練習 10" },
+  { t: "自動新聞寫作", ok: true, n: "教科書測試站 1.1(1) 答案包括此項。", s: "p.20 測試站 1.1(1)" },
+  { t: "地圖程式預測地點的擁擠程度", ok: true, n: "以大數據及 AI 預測（測試站 1.1(1)）。", s: "p.20 測試站 1.1(1)" },
+  { t: "計算一班學生考試的平均分數", ok: false, n: "只是按公式計算，沒有從數據學習（課題練習 6 答案不包括此項）。", s: "p.38 課題練習 6" },
+  { t: "醫生根據病歷對病人作出專業判斷", ok: false, n: "作判斷的是醫生本人，不是機器（課題練習 8 答案不包括此項）。", s: "p.38 課題練習 8" },
+];
+addType("T1", "人工智能的應用", () => {
+  const n = coin(0.6) ? 3 : 4, items = mixPick(T1_AI, n, (x) => x.ok, 1, n - (coin(0.7) ? 1 : 0));
+  return comboQ({ stem: "<p>人工智能（AI）透過分析數據自動執行任務。下列哪些屬於人工智能的應用？</p>", items, rel: "ai_app", s: "p.6；p.8" });
+});
+
+// ---------- T2 訓練相片樣本 ----------
+const T2_TGT = [
+  { who: "某果農", place: "果園", t: "已成熟的芒果" },
+  { who: "水務人員", place: "水塘", t: "水面上的漂浮垃圾" },
+  { who: "某工廠", place: "生產線", t: "有裂痕的杯子" },
+  { who: "某農夫", place: "農田", t: "患病的葉片" },
+  { who: "路政人員", place: "道路", t: "路面上的坑洞" },
+];
+const T2_FAC = [
+  { t: "相片樣本的數量要足夠多", ok: true, n: "大量樣本（2025 乙4(b) 評卷第一點）；實驗站 1.1：樣本越多，輸出越準確（p.6）。", s: "2025 乙4(b)；p.6" },
+  { t: "相片要包含{t}的不同變化，例如不同光線、角度和大小", ok: true, n: "包含目標不同變化的樣本（2025 乙4(b) 評卷）。", s: "2025 乙4(b)" },
+  { t: "要同時有包含{t}及沒有{t}的相片", ok: true, n: "同時包含有目標和沒有目標的樣本（2025 乙4(b) 評卷）。", s: "2025 乙4(b)" },
+  { t: "相片樣本是否受版權保護", ok: false, n: "與訓練是否準確無關；2025 乙4(b) 報告指考生「過度聚焦版權或數據私隱等無關因素」。", s: "2025 乙4(b)" },
+  { t: "相片中人物的私隱", ok: false, n: "情境沒有涉及辨認人物；2025 乙4(b) 報告指私隱屬無關因素。", s: "2025 乙4(b)" },
+  { t: "相片的檔案格式", ok: false, n: "不是 2025 乙4(b) 評卷的考慮因素（評卷三點：數量、變化、正例及反例）。", s: "2025 乙4(b)" },
+];
+const fill_t = (s, t) => s.replace(/\{t\}/g, t);
+addType("T2", "挑選訓練相片的因素", () => {
+  const g = pick(T2_TGT), items = mixPick(T2_FAC, 3, (x) => x.ok, 1, 3).map((x) => Object.assign({}, x, { t: fill_t(x.t, g.t) }));
+  return comboQ({ stem: "<p>" + g.who + "想在" + g.place + "安裝附有攝像鏡頭的人工智能（AI）系統，辨認" + g.t + "，並需要挑選相片樣本來訓練此系統。下列哪些是挑選相片樣本時應考慮的因素？</p>", items, rel: "train_factor", q: g.t, s: "2025 乙4(b)" });
+});
+const T2_QTY = [["收集數百張相片", 1], ["只收集 10 張相片", 0]];
+const T2_VAR = [["包括不同光線、角度和大小的{t}", 1], ["全部在同一時間、同一角度拍攝", 0]];
+const T2_PN = [["亦包括沒有{t}的相片", 1], ["每張相片都有{t}", 0]];
+addType("T2", "最恰當的訓練做法", () => {
+  const g = pick(T2_TGT), mk = (a, b, c) => ({ t: fill_t(T2_QTY[1 - a][0] + "，" + T2_VAR[1 - b][0] + "，" + T2_PN[1 - c][0], g.t), f: [a, b, c] });
+  const all = []; for (const a of [1, 0]) for (const b of [1, 0]) for (const c of [1, 0]) all.push(mk(a, b, c));
+  const good = all[0], bad = sample(all.slice(1), 3);
+  const lack = (f) => ["數量不足", "缺少不同變化", "缺少沒有目標的相片（反例）"].filter((x, i) => !f[i]).join("、");
+  return pickQ({ stem: "<p>" + g.who + "要訓練人工智能（AI）系統辨認" + g.t + "。下列哪一個挑選訓練相片的做法最恰當？</p>", rel: "train_best", q: g.t, s: "2025 乙4(b)",
+    ans: { t: good.t, n: "同時符合三個要點：數量足夠、包含不同變化、有正例及反例（2025 乙4(b) 評卷）。" }, wrongs: bad.map((b) => ({ t: b.t, n: "這個做法" + lack(b.f) + "。" })), wide: true });
+});
+const T2_SUP = [
+  ["把數千張已標明「貓」或「狗」的相片交給電腦學習，之後由電腦判斷新相片是貓還是狗", "監督式學習", "p.7；p.9 圖 1.6"],
+  ["在 Teachable Machine 建立「圓形」和「三角形」兩個類別並分別上載相片，再按「訓練模型」", "監督式學習", "p.6 實驗站 1.1"],
+  ["用戶把郵件標記為「垃圾郵件」或「非垃圾郵件」，系統以這些已標記的郵件學習篩選", "監督式學習", "p.15 圖 1.14"],
+  ["以標明「有裂痕」或「沒有裂痕」的杯子相片訓練系統，再用它檢查新生產的杯子", "監督式學習", "p.7"],
+  ["把大量未經標籤的顧客購物記錄交給電腦，由電腦自行找出購物習慣相似的顧客群組", "非監督式學習", "p.7"],
+  ["電腦在沒有人類指導下，自行從大量未分類的新聞文章中找出內容相似的文章並分組", "非監督式學習", "p.7"],
+  ["把大量沒有標籤的動物相片交給電腦，由電腦自行按相片的特徵把相似的相片歸類", "非監督式學習", "p.7"],
+];
+addType("T2", "監督式還是非監督式", () => {
+  const [t, a, s] = pick(T2_SUP), b = a === "監督式學習" ? "非監督式學習" : "監督式學習";
+  return pickQ({ stem: '<p class="scene">' + esc(t) + "。</p><p>這屬於哪一種機器學習？</p>", rel: "sup", q: t, s,
+    ans: { t: a, n: a === "監督式學習" ? "人類以標籤好的數據集訓練電腦（p.7 表 1.1）。" : "電腦自行在未經標籤的數據中識別模式，以作分類（p.7 表 1.1）。" },
+    wrongs: [{ t: b, n: b === "監督式學習" ? "監督式學習要用已標籤的數據；情境中的數據沒有標籤。" : "非監督式學習用未標籤的數據；情境中的數據已有標籤。" }], wide: false });
+});
+const T2_TAB = [
+  { t: "監督式學習以標籤好的數據集訓練電腦", ok: true, n: "表 1.1；p.7。" },
+  { t: "非監督式學習通常使用未標記的數據", ok: true, n: "表 1.1「訓練數據」。" },
+  { t: "監督式學習所需的訓練數據通常較非監督式學習少", ok: true, n: "表 1.1「訓練數據」：監督式較少，非監督式較多。" },
+  { t: "監督式學習通常使用未標記的數據", ok: false, n: "監督式學習通常用已標記的數據（表 1.1）。" },
+  { t: "非監督式學習必須由人類為每項數據加上標籤", ok: false, n: "非監督式學習不需人類指導，數據未經標籤（p.7）。" },
+  { t: "非監督式學習所需的訓練數據通常較監督式學習少", ok: false, n: "非監督式學習的訓練數據通常較多（表 1.1）。" },
+];
+addType("T2", "監督式與非監督式的比較", () => {
+  const wantTrue = coin(), A = pick(T2_TAB.filter((x) => x.ok === wantTrue)), W = sample(T2_TAB.filter((x) => x.ok !== wantTrue), 3);
+  return pickQ({ stem: "<p>下列哪一項關於監督式學習和非監督式學習的描述<b>" + (wantTrue ? "正確" : "不正確") + "</b>？</p>", rel: wantTrue ? "suptab_true" : "suptab_false", s: "p.7 表 1.1",
+    ans: { t: A.t, n: A.n }, wrongs: W.map((w) => ({ t: w.t, n: (wantTrue ? "這句不正確：" : "這句是正確的：") + w.n })), wide: true });
+});
+
+// ---------- T3 工作性質的改變 ----------
+const T3_JOB = [
+  { sc: "快餐店安裝自助點餐機，取代部分收銀處的專用終端機", s: "2020 乙4(d)(i)", rows: [
+    ["在收銀處為顧客點餐的人手", "減少", "減少了專用終端機的人手（2020 乙4(d)(i) 評卷）。"],
+    ["維修和保養自助點餐機的技術人員", "增加", "增多了自助點餐機的技術人員（2020 乙4(d)(i) 評卷）。"],
+    ["協助顧客使用點餐機的客戶服務員", "增加", "增多了客戶服務員（2020 乙4(d)(i) 評卷）。"]] },
+  { sc: "某公司推出人工智能聊天機械人，在網上回答顧客的查詢", s: "2022 乙4(b)；p.3", rows: [
+    ["以人手回覆顧客查詢的職位", "減少", "降低回覆問題的人手；提供較少的工作機會（2022 乙4(b) 評卷）。"],
+    ["人工智能專家等新興工種", "增加", "AI 亦創造了許多新興職業，例如人工智能專家、機械人工程師（p.3）。"]] },
+  { sc: "超市引入自助收銀機", s: "p.3；2020 乙4(d)(i)", rows: [
+    ["收銀員的人手", "減少", "簡單重複的工種（例如收銀員）可能被自動化淘汰（p.3）。"],
+    ["維修自助收銀機的技術人員", "增加", "仿 2020 乙4(d)(i) 評卷：引入自助機器會增多技術人員。"]] },
+];
+addType("T3", "工作性質：減少還是增加", () => {
+  const J = pick(T3_JOB), rows = shuffle(J.rows).map(([x, a, n]) => ({ x, a, n }));
+  return rowsQ({ stem: '<p class="scene">' + esc(J.sc) + "。</p><p>這種變化令下列工作減少還是增加？每行選一項。</p>", rows, opts: ["減少", "增加"], rel: "job", q: J.sc, s: J.s,
+    pre: ["工作性質的改變要同時寫減少及增加的工作（2020 乙4(d)(i) 評卷；報告指不少考生忽略維護點餐機所增添的工作）。"] });
+});
+const T3_PC = [
+  ["與減材製造相比，3D 打印製作樣板的速度更快", "好處", "表 1.3 節省時間。", "p.25 表 1.3"],
+  ["3D 打印無須造模，更容易訂製產品", "好處", "表 1.3 度身訂造。", "p.25 表 1.3"],
+  ["對小型生產而言，3D 打印更便宜", "好處", "測試站 1.2(1) 答案包括此項。", "p.26 測試站 1.2"],
+  ["3D 打印可本地生產，減少運輸的碳足印", "好處", "表 1.3 可持續。", "p.25 表 1.3"],
+  ["透過 3D 掃描及非法下載檔案，製造假貨變得更容易", "壞處", "表 1.4 知識產權的挑戰（表 1.4 原書標題誤印為「好處」，見 E-4）。", "p.26 表 1.4"],
+  ["網上有公開下載的 3D 打印槍械檔案，而且難以被檢測", "壞處", "表 1.4 社區安全。", "p.26 表 1.4"],
+  ["以 VR／AR 動手訓練，減低真實生活中失敗的風險", "好處", "3D 視覺化的好處（p.35）。", "p.35"],
+  ["VR／AR 裝置隨時隨地都可以使用，靈活性高", "好處", "3D 視覺化的好處（p.35）。", "p.35"],
+  ["部分人無力負擔 VR／AR 裝置，可能導致數碼隔閡", "壞處", "3D 視覺化的局限（p.35；測試站 1.3(3)）。", "p.35"],
+  ["使用 VR／AR 時，使用者或會忽略周圍環境", "壞處", "3D 視覺化的局限（p.35）。", "p.35"],
+  ["AR 應用程式收集數據時可能造成私隱和安全隱患", "壞處", "3D 視覺化的局限（p.35）。", "p.35"],
+  ["推薦系統令客戶體驗更佳", "好處", "數據科學的優點（活動 1.2）。", "p.20 活動 1.2"],
+  ["數據科學令廣告定位更有效", "好處", "數據科學的優點（活動 1.2）。", "p.20 活動 1.2"],
+  ["聊天機械人可提供 24 小時服務", "好處", "提供 7×24 服務（2022 乙4(b) 評卷）。", "2022 乙4(b)"],
+  ["人工智能的算法結果可能隱含歧視", "壞處", "AI 的道德問題（p.19）。", "p.19"],
+  ["人工智能意外危害公共安全時，責任誰屬難以界定", "壞處", "AI 的道德問題（p.19；圖 1.18 自動駕駛車禍）。", "p.19"],
+  ["收集大量個人數據帶來私隱風險", "壞處", "AI 和數據科學的道德問題（p.19；活動 1.2）。", "p.19"],
+];
+addType("T3", "好處還是壞處", () => {
+  const rows = mixPick(T3_PC, 3, (r) => r[1] === "好處", 1, 2).map(([x, a, n, s]) => ({ x, a, n, s }));
+  return rowsQ({ stem: "<p>下列各項是科技創新帶來的好處，還是壞處（挑戰、局限或道德問題）？每行選一項。</p>", rows, opts: ["好處", "壞處"], rel: "procon", s: "p.19；p.25–26；p.35" });
+});
+const T3_ROB = [
+  { t: "機械人能夠準確地跟從工作程序", ok: true, n: "2022 甲40 答案 B 包括此項。", s: "2022 甲40" },
+  { t: "機械人能夠接手厭惡和危險的工作", ok: true, n: "2022 甲40 答案 B 包括此項。", s: "2022 甲40" },
+  { t: "聊天機械人可以較快回應用戶的查詢", ok: true, n: "給予更快的回應（2022 乙4(b) 評卷）。", s: "2022 乙4(b)" },
+  { t: "聊天機械人可以提供 24 小時服務", ok: true, n: "提供 7×24 服務（2022 乙4(b) 評卷）。", s: "2022 乙4(b)" },
+  { t: "人工智能亦會創造新的工種，例如人工智能專家", ok: true, n: "應用與職涯：AI 創造了許多新興職業（p.3）。", s: "p.3" },
+  { t: "機械人能夠代替所有僱員去工作", ok: false, n: "機械人不能代替所有僱員（2022 甲40 答案不包括此項）。", s: "2022 甲40" },
+  { t: "引入自助點餐機後，快餐店不再需要任何員工", ok: false, n: "仍需要技術人員及客戶服務員（2020 乙4(d)(i) 評卷）。", s: "2020 乙4(d)(i)" },
+  { t: "人工智能只會減少工作機會，不會創造新工種", ok: false, n: "AI 亦創造新興職業（p.3）。", s: "p.3" },
+];
+addType("T3", "自動化的正確描述", () => {
+  const items = mixPick(T3_ROB, 3, (x) => x.ok, 1, 2);
+  return comboQ({ stem: "<p>下列哪些關於使用機械人及人工智能的描述是正確的？</p>", items, rel: "robot", s: "2022 甲40" });
+});
+// =================== 健康（教科書 E 第 2 章 2.1 p.44–49、p.75；DSE 2012 甲40、2013 甲39、2015 甲36–37、2017 甲39、2018 甲35、2020 甲40 等） ===================
+cat("H1", "健康問題配對", { grp: "健康及道德", hint: [["先由症狀找部位：眼睛（疲倦、視線模糊）→ 眼睛疲勞；頸、背 → 背部和頸部不適；手指、手腕 → 重複性勞損（RSI）；大腿血栓 → 深部靜脈血栓；雙腳未能平放 → 腿部疲勞。", "再配產品：RSI → 附腕托的滑鼠墊、人體工學滑鼠／鍵盤；眼睛 → 窗簾、合適照明；頸背 → 人體工學椅（椅背、頸枕）、可調校的顯示器；腿 → 腳踏（腳托）（p.75 課文總結）。", "答題時健康問題要寫部位：只寫「RSI」不得分（2024 乙2(d) 報告）。"], "長時間點擊滑鼠，手腕疼痛 → 手腕的重複性勞損（RSI）→ 附腕托的滑鼠墊"] });
+cat("H2", "人體工學判斷", { grp: "健康及道德", hint: [["人體工學設計是令工具、環境配合使用者、減低受傷風險的設計（p.45）；密碼、防黑客等保安功能不是人體工學設計（2015 甲37）。", "調校甚麼：顯示器調校高度及角度；椅子、桌子調校高度；扶手（2020 甲40 稱「手托」）調校高度，不是角度；腕托保持手腕伸直（2020 甲40，只有 26% 答對）。", "軟件的人體工學：保持一致、確保效率、易於記憶（p.47）；固定字體大小不是好做法（2018 甲35）。問軟件設計就答界面，不答椅子桌子（2016 乙3(c) 報告）。"], "「扶手的角度應可調校」✗；「顯示器的角度應可調校」✓"] });
+
+// ---------- H1 健康問題 ----------
+const HP = {
+  eye: { n: "眼睛疲勞", s: "p.44 圖 2.3" },
+  back: { n: "背部和頸部不適", s: "p.44 圖 2.3" },
+  rsi: { n: "重複性勞損（RSI）", s: "p.44 圖 2.3" },
+  dvt: { n: "深部靜脈血栓", s: "p.44 圖 2.3" },
+  leg: { n: "腿部疲勞", s: "p.75；p.49 測試站 2.1(5)" },
+};
+const H1_SYM = [
+  ["長時間注視屏幕後，眼睛疲倦、視線模糊", "eye", "因長時間注視屏幕或燈光欠佳而令眼睛疲倦或視線模糊（圖 2.3）。", "p.44 圖 2.3"],
+  ["在燈光欠佳的房間使用電腦，眼睛感到疲倦", "eye", "燈光欠佳會引致眼睛疲勞（圖 2.3）。", "p.44 圖 2.3"],
+  ["長時間低頭看手機後，頸部感到疼痛", "back", "低頭族「頸椎病」（圖 2.2）；不良姿勢導致頸部不適。", "p.44 圖 2.2；p.45 圖 2.4"],
+  ["久坐而且坐姿不良，背部感到疼痛", "back", "由不良坐姿或久坐不動導致（圖 2.3）。", "p.44 圖 2.3"],
+  ["經常點擊滑鼠，手指和手腕感到疼痛或麻痺", "rsi", "重複進行點擊滑鼠等動作，令手指和手腕疼痛或麻痺（圖 2.3）。", "p.44 圖 2.3"],
+  ["每天長時間打字輸入數據，手腕感到疼痛", "rsi", "重複使用手腕、手指進行數據輸入（2021 乙1(b)(i) 評卷）。", "2021 乙1(b)(i)；2024 乙2(d)"],
+  ["長時間坐着不動，大腿出現血栓", "dvt", "因久坐不動而通常出現於大腿的血栓；進入肺部會致命（圖 2.3）。", "p.44 圖 2.3"],
+  ["使用電腦時雙腳未能平放地面，只以腳尖觸地", "leg", "雙腳未能平放會引致腿部疲勞，應使用腳踏（腳托）（測試站 2.1(5)）。", "p.49 測試站 2.1(5)"],
+];
+// 產品或習慣 → 可紓緩的健康問題（p.75 課文總結表；圖 2.3；p.46）
+const H1_FIX = [
+  ["附腕托的滑鼠墊", ["rsi"], "保持手腕伸直（圖 2.3；p.75）。", "p.44；p.75"],
+  ["人體工學滑鼠", ["rsi"], "表 2.1；p.75。", "p.45 表 2.1；p.75"],
+  ["人體工學鍵盤", ["rsi"], "可以保持手部自然位置（2024 乙2(d) 評卷）。", "p.45 表 2.1；2024 乙2(d)"],
+  ["扶手可調校高度的人體工學椅", ["rsi"], "使前臂保持水平及放鬆（圖 2.3；p.75 人體工學椅（扶手））。", "p.44；p.75"],
+  ["窗簾", ["eye"], "阻擋猛烈陽光，減少反光（圖 2.3；p.75）。", "p.44；p.75"],
+  ["合適的燈光照明", ["eye"], "p.75 課文總結表；2020 乙3(b) 評卷：照明設定至合適亮度，減少視覺不適。", "p.75；2020 乙3(b)"],
+  ["依從 20-20-20 規則讓眼睛休息", ["eye"], "每 20 分鐘望向 20 呎（6 米）外的景物 20 秒（活動 2.1）。", "p.46 活動 2.1"],
+  ["椅背和頸枕可調校的人體工學椅", ["back"], "p.75：人體工學椅（頸枕和椅背）。", "p.75"],
+  ["高度和角度可調校的顯示器", ["back", "eye"], "保持略低於眼睛的觀看角度而不須彎曲頸部（圖 2.3；p.75）；顯示器的角度、高度或距離不恰當亦會令眼睛疲累（2013 乙3(a) 評卷）。", "p.44；p.75；2013 乙3(a)"],
+  ["腳踏（腳托）", ["leg"], "保持雙腳平放（圖 2.3；p.75）。", "p.44；p.75"],
+  ["每小時休息 5 分鐘，伸展及活動身體", ["dvt", "back", "eye", "rsi", "leg"], "定時休息及運動是減低受傷風險的關鍵（p.46）；適時小歇亦有助減少各項健康問題（p.75）。", "p.46；p.75"],
+];
+const hpName = (k) => HP[k].n;
+addType("H1", "症狀 → 健康問題", () => {
+  const [x, k, n, s] = pick(H1_SYM), others = sample(Object.keys(HP).filter((z) => z !== k), 3);
+  return pickQ({ stem: '<p class="scene">' + esc(x) + "。</p><p>這最可能是哪一種健康問題？</p>", rel: "symptom", q: x, s,
+    ans: { t: hpName(k), n }, wrongs: others.map((z) => ({ t: hpName(z), n: hpName(z) + "：" + H1_SYM.find((r) => r[1] === z)[2] })), wide: false });
+});
+addType("H1", "健康問題 → 產品或習慣", () => {
+  const k = pick(["eye", "back", "rsi", "leg"]), good = pick(H1_FIX.filter((f) => f[1].includes(k))), bad = sample(H1_FIX.filter((f) => !f[1].includes(k)), 3);
+  return pickQ({ stem: "<p>志明長時間使用桌上電腦，出現<b>" + hpName(k) + "</b>。下列哪一項人體工學產品或習慣最能針對這個問題？</p>", rel: "fix", q: hpName(k), s: "p.75 課文總結",
+    ans: { t: good[0], n: good[2] }, wrongs: bad.map((b) => ({ t: b[0], n: "這主要針對" + b[1].map(hpName).join("、") + "：" + b[2] })), wide: false });
+});
+addType("H1", "症狀配對", () => {
+  const ks = sample(Object.keys(HP), 3), rows = ks.map((k) => { const r = pick(H1_SYM.filter((z) => z[1] === k)); return { x: r[0], a: hpName(k), n: r[2], s: r[3] }; });
+  return rowsQ({ stem: "<p>把每個症狀配對最可能的健康問題。</p>", rows, opts: shuffle(Object.keys(HP).map(hpName)), rel: "symptom", s: "p.44 圖 2.3" });
+});
+addType("H1", "答題寫法：健康問題", () => {
+  const V = pick([
+    { stem: "某文員每天長時間打字。題目要求「舉出一項可能的健康問題」。下列哪一個答案可以得分？", ok: ["手指和手腕的重複性勞損（RSI）", "手腕的重複性勞損（RSI）"],
+      bad: [["RSI", "只寫「RSI」一詞，沒有聯繫到身體任何部位，因而不得分（2024 乙2(d) 報告）。"], ["由輻射引致的視力問題", "評卷 ✗ 由輻射引致的視力問題（2015 乙3(e)）。"]], s: "2024 乙2(d)；2015 乙3(e)" },
+    { stem: "志偉每天長時間用平板電腦的虛擬鍵盤打字。題目要求「建議一項紓緩方法」。下列哪一個答案可以得分？", ok: ["每使用平板電腦 30 分鐘便小休 5 分鐘", "使用平板電腦支架"],
+      bad: [["不要使用平板電腦", "評卷 ✗「不要長時間使用平板電腦（與題目不乎）」（2015 乙3(e)）。"], ["使用語音識別取代虛擬鍵盤", "評卷 ✗ 使用語音識別來取代虛擬鍵盤或手寫識別（2015 乙3(e)）。"]], s: "2015 乙3(e)；2017 乙1(d)" },
+  ]);
+  const okT = pick(V.ok);
+  return pickQ({ stem: "<p>" + V.stem + "</p>", rel: "answer_ok", q: V.stem, s: V.s, ans: { t: okT, n: "評卷參考接受的寫法（" + V.s + "）。" }, wrongs: V.bad.map(([t, n]) => ({ t, n })), wide: true });
+});
+const H1_MOB = {
+  remind: { stem: "<p>某軟件公司想在文字處理軟件加入人體工學元素：使用者連續使用軟件一段時間後，提醒使用者休息。此軟件應該怎樣做？</p>", s: "2013 甲39；p.48 測試站 2.1(3)", items: [
+    { t: "在屏幕上展示提示信息", ok: true, n: "2013 甲39 答案 A：只有在屏幕上展示提示信息。", s: "2013 甲39" },
+    { t: "發送休息通知", ok: true, n: "休息提醒程式應發送休息通知（測試站 2.1(3)）。", s: "p.48 測試站 2.1(3)" },
+    { t: "給使用者發出一個提示電郵", ok: false, n: "2013 甲39 答案不包括此項：使用者未必即時看到電郵。", s: "2013 甲39" },
+    { t: "自動關閉電腦", ok: false, n: "提醒休息不應強行關機（2013 甲39；測試站 2.1(3)），以免未儲存的工作遺失。", s: "2013 甲39" },
+    { t: "關閉使用者正在使用的應用程式", ok: false, n: "測試站 2.1(3) 答案只有「發送休息通知」。", s: "p.48 測試站 2.1(3)" },
+  ] },
+  child: { stem: "<p>陳先生打算為 8 歲的女兒購買平板電腦。下列哪些做法是合適的？</p>", s: "2015 甲36；p.45 圖 2.4", items: [
+    { t: "購買一部電池續航力長的平板電腦", ok: true, n: "2015 甲36 答案 C 包括此項。", s: "2015 甲36" },
+    { t: "女兒使用平板電腦 30 分鐘後，應該休息 5 分鐘", ok: true, n: "2015 甲36 答案 C 包括此項；定時休息（p.46）。", s: "2015 甲36" },
+    { t: "用枕頭或支架托起平板電腦，避免低頭", ok: true, n: "平板電腦的正確姿勢（圖 2.4）。", s: "p.45 圖 2.4" },
+    { t: "女兒應該利用滑鼠使用平板電腦", ok: false, n: "平板電腦以觸控操作；2015 甲36 有 34% 考生誤選 D，以為小孩應用滑鼠。", s: "2015 甲36" },
+  ] },
+};
+addType("H1", "流動裝置與休息", () => {
+  const key = pick(["remind", "child"]), B = H1_MOB[key], items = mixPick(B.items, 3, (x) => x.ok, 1, 2);
+  return comboQ({ stem: B.stem, items, rel: "mobile", q: key, s: B.s });
+});
+
+// ---------- H2 是否人體工學設計 ----------
+const H2_ERG = [
+  { t: "顯示器的仰角／俯角是可以調整的", ok: true, n: "2015 甲37 答案 B。", s: "2015 甲37" },
+  { t: "資訊亭的顯示器觀看角度是可以調校的", ok: true, n: "2012 甲40 答案 A 包括此項。", s: "2012 甲40" },
+  { t: "資訊亭的鍵盤托盤高度是可以調校的", ok: true, n: "2012 甲40 答案 A 包括此項。", s: "2012 甲40" },
+  { t: "滑鼠的設計減低扭傷手腕的風險", ok: true, n: "教科書課題練習 11 答案 C。", s: "p.78 課題練習 11" },
+  { t: "椅子的扶手可調校高度，使前臂保持水平", ok: true, n: "圖 2.3 扶手。", s: "p.44 圖 2.3" },
+  { t: "滑鼠墊附有腕托，保持手腕伸直", ok: true, n: "圖 2.3 附腕托的滑鼠墊。", s: "p.44 圖 2.3" },
+  { t: "無線路由器容許設定密碼，以防止未經授權用戶存取", ok: false, n: "這是保安功能，不是人體工學設計（2015 甲37）。", s: "2015 甲37" },
+  { t: "可以在電腦上設置登入密碼，防止黑客入侵", ok: false, n: "這是保安措施，不是人體工學設計（課題練習 11）。", s: "p.78 課題練習 11" },
+  { t: "在資訊亭的鍵盤旁提供一個滑鼠", ok: false, n: "2012 甲40 答案 A 不包括此項：只是加一個裝置，不是配合使用者的設計。", s: "2012 甲40" },
+];
+addType("H2", "是否人體工學設計", () => {
+  const items = mixPick(H2_ERG, 3, (x) => x.ok, 1, 2);
+  return comboQ({ stem: "<p>下列哪些是人體工學設計？</p>", items, rel: "ergo", s: "p.45" });
+});
+const H2_ADJ = [
+  { t: "扶手的角度應可調校", ok: false, n: "扶手（2020 甲40 稱「手托」，圖中 P 是椅子扶手）調校高度，不是角度；腕托則是保持手腕伸直。2020 甲40 只有 26% 答對，58% 誤選 D（✗ 手托角度）。", s: "2020 甲40；p.44 圖 2.3" },
+  { t: "扶手的高度應可調校", ok: true, n: "扶手可調校高度，使前臂保持水平及放鬆（圖 2.3）；2020 甲40 報告：手托應調校高度而非角度。", s: "p.44 圖 2.3；2020 甲40" },
+  { t: "顯示器的角度應可調校", ok: true, n: "人體工學屏幕：高度和角度可調校（圖 2.3；2020 甲40）。", s: "2020 甲40；p.44 圖 2.3" },
+  { t: "顯示器的高度應可調校", ok: true, n: "人體工學屏幕：高度和角度可調校（圖 2.3）。", s: "p.44 圖 2.3" },
+  { t: "桌子的高度應可調校", ok: true, n: "2020 甲40 答案 C 包括此項。", s: "2020 甲40" },
+  { t: "椅子的高度應可調校", ok: true, n: "人體工學椅：椅背和高度可調校（圖 2.3）。", s: "p.44 圖 2.3" },
+];
+addType("H2", "應調校甚麼", () => {
+  const items = coin(0.75) ? [H2_ADJ[0], ...sample(H2_ADJ.slice(1), 2)] : sample(H2_ADJ.slice(1), 3);
+  return comboQ({ stem: "<p>為了實踐良好的人體工學，使用桌上電腦時，下列哪些設定是必需的？</p>", items: shuffle(items), rel: "adjust", s: "2020 甲40；p.44 圖 2.3" });
+});
+const H2_UI = [
+  { t: "一致的用戶界面", ok: true, n: "2018 甲35 答案 C 包括此項；保持一致（p.47）。", s: "2018 甲35；p.47" },
+  { t: "給用戶適當的系統信息", ok: true, n: "2018 甲35 答案 C 包括此項。", s: "2018 甲35" },
+  { t: "於整個程式使用統一的用語", ok: true, n: "保持一致：用語（p.47；測試站 2.1(4)）。", s: "p.47；p.48 測試站 2.1(4)" },
+  { t: "文字和背景使用對比色", ok: true, n: "測試站 2.1(4)；課文總結「顏色對比度」（p.75）。", s: "p.48 測試站 2.1(4)；p.75" },
+  { t: "按路線顯示車站選項，而不是顯示完整清單", ok: true, n: "測試站 2.1(4)：減少使用者的負擔。", s: "p.48 測試站 2.1(4)" },
+  { t: "把複雜的工作分拆成較簡單的步驟", ok: true, n: "確保效率（p.47）。", s: "p.47" },
+  { t: "提供清晰的導覽和輔助說明", ok: true, n: "易於記憶（p.47；p.75）。", s: "p.47" },
+  { t: "出生日期分為年、月、日三欄，並清楚提示錯誤所在", ok: true, n: "易於記憶：p.47 的 ✓ 例子。", s: "p.47" },
+  { t: "固定字體大小", ok: false, n: "2018 甲35 答案 C 不包括此項（只有 49% 答對）。", s: "2018 甲35" },
+  { t: "輸入錯誤時只顯示「錯誤」兩字", ok: false, n: "p.47 的 ✗ 例子：應清楚提示哪裏出錯。", s: "p.47" },
+  { t: "同一程式內的圖示使用不同的風格", ok: false, n: "p.47 的 ✗ 例子：圖形應保持一致。", s: "p.47" },
+  { t: "圖片和文字雜亂地排列", ok: false, n: "p.47 的 ✗ 例子：應簡而精，避免擾亂使用者。", s: "p.47" },
+];
+addType("H2", "軟件設計的好做法", () => {
+  const items = mixPick(H2_UI, 3, (x) => x.ok, 1, 2);
+  return comboQ({ stem: "<p>在軟件設計中，從人體工學方面有甚麼良好的做法？</p>", items, rel: "ui", s: "p.47；2018 甲35" });
+});
+const H2_HW = [["為員工提供人體工學椅", "這是家具，不是軟件設計（2016 乙3(c) 報告：問軟件就答界面，不答椅子桌子）。"], ["使用附腕托的滑鼠墊", "這是硬件產品，不是軟件設計（2016 乙3(c) 報告）。"],
+  ["在辦公室加裝窗簾，減少反光", "這是工作環境，不是軟件設計（2016 乙3(c) 報告）。"], ["使用高度可調校的桌子", "這是家具，不是軟件設計（2016 乙3(c) 報告）。"]];
+addType("H2", "軟件設計還是家具", () => {
+  const g = pick(H2_UI.filter((x) => x.ok)), sc = pick(["會計系統", "學校的網上點名系統", "公司的存貨管理系統"]);
+  return pickQ({ stem: "<p>某公司要為新的" + sc + "的<b>軟件設計</b>提出人體工學建議。下列哪一項切合題目要求？</p>", rel: "sw_vs_hw", q: null, s: "2016 乙3(c)；p.47",
+    ans: { t: g.t, n: "屬用戶界面的人體工學（" + g.n + "）" }, wrongs: sample(H2_HW, 3).map(([t, n]) => ({ t, n })), wide: true });
+});
+const H2_WHY = [
+  { t: "避免重複性勞損", ok: true, n: "2017 甲39 答案 B 包括此項。", s: "2017 甲39" },
+  { t: "提供定制及可調節的設置來滿足不同人士的需要", ok: true, n: "2017 甲39 答案 B 包括此項；人體工學須考慮體型、年齡等因素（p.47）。", s: "2017 甲39；p.47" },
+  { t: "節省電腦的設置成本", ok: false, n: "2017 甲39 答案不包括此項：人體工學設計是為使用者的健康，不是為節省成本。", s: "2017 甲39" },
+  { t: "減低使用者受傷的風險", ok: true, n: "人體工學旨在令人發揮能力並減低受傷的風險（p.45）。", s: "p.45" },
+];
+addType("H2", "採用人體工學的原因", () => {
+  const items = mixPick(H2_WHY, 3, (x) => x.ok, 1, 3);
+  return comboQ({ stem: "<p>在工作環境中的電腦採用人體工學設計原理有甚麼主要原因？</p>", items, rel: "ergo_why", s: "2017 甲39" });
+});
+// =================== 公平存取、法律與道德（教科書 E 第 2 章 2.3–2.6 p.52–69；DSE 2012 甲35、2014 甲34、2014 甲37、2017 甲40、2019 甲37、2021 甲38 等） ===================
+cat("D1", "數碼隔閡", { grp: "健康及道德", hint: [["數碼隔閡（數碼鴻溝）：個人或群體在硬件和軟件、網絡連接、ICT 技能和素養三方面的差異（p.59）。", "四類成因：人口結構（年齡、性別、種族）、社經地位（教育、家庭收入、就業狀況）、地理位置（城鄉、發展中國家）、身體殘障（p.76）。", "能收窄的措施要令有需要的人「有設備、可上網、懂得用」；自助點餐機、電子付款取代現金、多個電郵戶口、宣傳科技好處都不能收窄（2021 甲38、2019 甲37、2018 乙2(c)(ii)）。"], "在餐廳提供自助點餐機 → 不懂用的人更難點餐 → 不能收窄數碼隔閡"] });
+cat("D2", "無障礙", { grp: "健康及道德", hint: [["先想該類人士缺少哪種感官或能力，再找能代替的方式：看不見 → 聲音或觸覺（屏幕閱讀器、點字顯示器、替代文字）；聽不到 → 文字或影像（字幕、即時轉錄、手語視像通話）。", "視力較弱 → 放大；色盲 → 高對比度或單色版本；肢體殘障 → 鍵盤友善功能、聲控（p.66–67；測試站 2.4）。", "網頁過濾軟件不能幫助視障人士（2014 甲37）；為殘疾人士開發合適的工具最能大幅改善接達 ICT（2017 甲40）。"], "為失明人士 → 屏幕閱讀器（用語音描述屏幕內容）"] });
+cat("L1", "法律與道德", { grp: "健康及道德", hint: [["《個人資料（私隱）條例》：未經同意披露他人個人資料（起底）；《誹謗條例》：發布損害他人名譽的資訊；《盜竊罪條例》：勒索、欺詐；《版權條例》：未經許可使用他人的作品（表 2.3；測試站 2.3(3)）。", "一個行為可以同時違反多於一條條例（例：用他人照片及個人資料冒名開帳戶 → 版權＋私隱）。", "發布及轉寄煽動信息的人都屬誤用（2012 甲35）；不確定資訊是否真實時，先比較其他來源，切勿分享或評論（p.55）。"], "在討論區公開某人的電話號碼 → 起底 → 《個人資料（私隱）條例》"] });
+
+// ---------- D1 成因類別 ----------
+const D_CAUSE = ["人口結構", "社經地位", "地理位置", "身體殘障"];
+const D1_SC = [
+  ["長者對使用電腦的認識較少，亦較少擁有智能手機，因而極少使用網上購物及手機支付服務", "人口結構", "年齡（人口老化）屬人口結構（p.59）。", "p.59"],
+  ["社會的性別定型令女生較少興趣和信心學習 STEM 相關科目", "人口結構", "性別差距屬人口結構（p.60）。", "p.60"],
+  ["只有小學程度的人士，電腦技能較中學及專上程度的人士低", "社經地位", "教育屬社經地位（p.61）。", "p.61"],
+  ["低收入家庭難以負擔高速網絡，以及較高檔的行動裝置和個人電腦", "社經地位", "家庭收入屬社經地位（p.61）。", "p.61"],
+  ["從事經濟活動的人有較多機會學習和應用新科技，退休人士則較少", "社經地位", "就業狀況屬社經地位（p.61）。", "p.61"],
+  ["鄉郊的基建設施成本較高、價格競爭較少，居民要付出更高的價錢才可使用新科技", "地理位置", "城鄉差別屬地理位置（p.62）。", "p.62"],
+  ["由於經濟和教育條件有別，發展中國家的網絡基建設施較已發展國家落後", "地理位置", "發展中國家與已發展國家屬地理位置（p.62）。", "p.62"],
+  ["只有少數網站加入了無障礙設計，視障人士難以瀏覽網上資訊", "身體殘障", "無障礙網站和軟件不足屬身體殘障（p.63）。", "p.63"],
+  ["殘疾人士要持續負擔價格高昂的輔助設備或軟件", "身體殘障", "輔助科技的額外開支屬身體殘障（p.63）。", "p.63"],
+];
+addType("D1", "成因類別", () => {
+  const [x, a, n, s] = pick(D1_SC);
+  return pickQ({ stem: '<p class="scene">' + esc(x) + "。</p><p>這個數碼隔閡的成因屬於哪一類？</p>", rel: "cause", q: x, s,
+    ans: { t: a, n }, wrongs: D_CAUSE.filter((c) => c !== a).map((c) => ({ t: c, n: c + "：" + { 人口結構: "年齡、性別、種族、族裔", 社經地位: "教育、家庭收入、就業狀況", 地理位置: "城鄉差別、發展中國家與已發展國家", 身體殘障: "無障礙網站和軟件、輔助科技的額外開支" }[c] + "（p.76）。" })), wide: false });
+});
+const D_ASP = ["硬件和軟件", "網絡連接", "資訊及通訊科技的技能和素養"];
+const D1_ASP = [
+  ["家中只有一部舊電腦，未能安裝學校要求的學習軟件", "硬件和軟件", "使用科技的必要工具及其品質（p.59）。"],
+  ["學生沒有自己的電腦或平板電腦，只可用手機完成網上功課", "硬件和軟件", "使用科技的必要工具（p.59）。"],
+  ["住所的寬頻網絡速度很慢，而且經常斷線", "網絡連接", "寬頻和行動網絡、穩定性、數據傳輸速度（p.59）。"],
+  ["偏遠村落沒有流動網絡訊號覆蓋", "網絡連接", "寬頻和行動網絡（p.59）。"],
+  ["有了電腦和網絡，卻不懂得在網上搜尋及整理資訊", "資訊及通訊科技的技能和素養", "獲取資訊、整理資訊並創造新意（p.59）。"],
+  ["退休後沒有機會學習新的電腦技能，未能使用網上服務", "資訊及通訊科技的技能和素養", "終身學習（p.59）。"],
+];
+addType("D1", "差異的三個方面", () => {
+  const [x, a, n] = pick(D1_ASP);
+  return pickQ({ stem: '<p class="scene">' + esc(x) + "。</p><p>這顯示了數碼隔閡中哪一方面的差異？</p>", rel: "aspect", q: x, s: "p.59",
+    ans: { t: a, n }, wrongs: D_ASP.filter((c) => c !== a).map((c) => ({ t: c, n: "與情境不符。" })), wide: true });
+});
+const D1_ME = [
+  { t: "資助低收入家庭在家中上網", ok: true, n: "2014 甲34 答案 D 包括此項。", s: "2014 甲34" },
+  { t: "向有需要的學生提供電腦器材", ok: true, n: "2014 甲34、2021 甲38 答案都包括此項。", s: "2014 甲34；2021 甲38" },
+  { t: "給予缺乏基本 IT 技能的市民免費培訓課程", ok: true, n: "2014 甲34 答案 D 包括此項。", s: "2014 甲34" },
+  { t: "提供更多免費 Wi-Fi 熱點", ok: true, n: "2019 甲37 答案 B；政府措施（p.64）。", s: "2019 甲37；p.64" },
+  { t: "公共圖書館的電腦供市民免費使用", ok: true, n: "2023 甲37 答案 A 包括此項。", s: "2023 甲37" },
+  { t: "向有需要的學生提供互聯網連接", ok: true, n: "2023 甲37 答案 A 包括此項。", s: "2023 甲37" },
+  { t: "把光纖網絡的覆蓋範圍擴大至舊建築和偏遠地區", ok: true, n: "政府支持及推廣（p.64）。", s: "p.64" },
+  { t: "資助開發無障礙應用程式及網站", ok: true, n: "政府支持及推廣（p.64；測試站 2.5(4)）。", s: "p.64" },
+  { t: "開展數碼外展計劃，教授長者基本 IT 技能", ok: true, n: "測試站 2.5(3) 答案包括此項。", s: "p.69 測試站 2.5(3)" },
+  { t: "在餐廳內提供自助點餐機", ok: false, n: "不懂使用的人反而更難點餐；2021 甲38 答案 A 不包括此項。", s: "2021 甲38" },
+  { t: "在店舖內以電子付款取代現金付款", ok: false, n: "沒有電子付款工具的人更難消費；2021 甲38 答案 A 不包括此項。", s: "2021 甲38" },
+  { t: "為每名市民提供多於一個免費電郵戶口", ok: false, n: "沒有設備或不懂上網的人仍然無法使用；2019 甲37 答案 B 不包括此項。", s: "2019 甲37" },
+  { t: "向公眾宣傳科技的好處", ok: false, n: "評卷 ✗ 向公眾宣傳科技的好處（2018 乙2(c)(ii)）：沒有改善接達設備、互聯網或知識的機會。", s: "2018 乙2(c)(ii)" },
+  { t: "政府所有服務一律只接受電子支付", ok: false, n: "教科書課題練習 8 答案不包括此項。", s: "p.77 課題練習 8" },
+];
+addType("D1", "能否收窄數碼隔閡", () => {
+  const items = mixPick(D1_ME, 3, (x) => x.ok, 1, 2);
+  return comboQ({ stem: "<p>下列哪些措施可收窄香港社會內的數碼隔閡？</p>", items, rel: "narrow", s: "p.64–66" });
+});
+addType("D1", "收窄措施分類", () => {
+  const rows = mixPick(D1_ME, 3, (x) => x.ok, 1, 2).map((x) => ({ x: x.t, a: x.ok ? "能收窄" : "不能收窄", n: x.n, s: x.s }));
+  return rowsQ({ stem: "<p>下列措施能否收窄數碼隔閡？每行選一項。</p>", rows, opts: ["能收窄", "不能收窄"], rel: "narrow_row", s: "p.64–66" });
+});
+const D1_POL = [
+  ["政府幫助有需要的家庭添置電腦及上網服務，並提供個人支援及培訓", "2016 甲37"],
+  ["政府推行上網學習支援計劃，協助有需要的學生購置電腦和上網服務", "2012 甲39"],
+  ["社福機構開設網上影片頻道，提供無障礙媒體及有關智能手機和電腦的輔助科技資訊", "p.69 測試站 2.5(2)"],
+  ["政府資助學校提升 Wi-Fi 基建設施，並資助低收入家庭的學生購買硬件及互聯網服務", "p.64"],
+];
+addType("D1", "政策的目的", () => {
+  const [x, s] = pick(D1_POL);
+  const W = [["推廣互聯網的資訊自由", "資訊自由是指人人可以在互聯網自由獲取資訊及表達觀點（p.52），與幫助有需要的人接觸科技無關。"],
+    ["支援電子化政府服務", "政策的對象是缺乏設備及技能的人，不是政府服務本身（2016 甲37）。"],
+    ["推廣工作性質的改變", "與工作性質無關（2016 甲37）。"], ["推廣電子學習", "2012 甲39 報告：接近一半考生誤以為電子學習是重心；計劃的目的是讓有需要的學生擁有電腦和上網服務。"]];
+  return pickQ({ stem: '<p class="scene">' + esc(x) + "。</p><p>這項措施主要處理哪一個議題？</p>", rel: "policy", q: x, s,
+    ans: { t: "收窄數碼隔閡", n: "幫助缺乏設備、網絡或技能的人接觸科技，屬收窄數碼隔閡（2016 甲37 答案 D；2012 甲39 答案 B）。" }, wrongs: sample(W, 3).map(([t, n]) => ({ t, n })), wide: false });
+});
+
+// ---------- D2 無障礙 ----------
+const D2_G = { blind: "失明或嚴重視障人士", low: "視力較弱人士", cb: "色盲人士", deaf: "聽障人士", phys: "肢體殘障人士", lang: "不懂中文或英文的少數族裔" };
+const D2_AT = [
+  ["點字顯示器", ["blind"], "提高點粒形成點字，顯示電腦或流動裝置的文字（p.66）。", "p.66"],
+  ["屏幕閱讀器", ["blind", "low"], "用語音描述屏幕上顯示的內容（p.66；活動 2.7）。", "p.66；p.68"],
+  ["圖像的替代文字", ["blind"], "為無法看到圖像的視障人士以文字描述圖像，供屏幕閱讀器讀出（p.67）。", "p.67"],
+  ["網頁的文字模式", ["blind"], "供嚴重視力障礙人士使用（測試站 2.4(1)）。", "p.67 測試站 2.4"],
+  ["描述畫面中動作和場景的錄製音訊", ["blind", "low"], "為視力障礙人士描述屏幕上的關鍵視覺元素（測試站 2.4(2)）。", "p.67 測試站 2.4"],
+  ["屏幕放大軟件", ["low"], "放大屏幕內容（2014 甲37 答案 C 包括屏幕放大軟件）。", "2014 甲37"],
+  ["放大或縮小網頁文字的功能", ["low"], "供視力較弱人士使用（測試站 2.4(1)）。", "p.67 測試站 2.4"],
+  ["高對比度版本", ["cb", "low"], "如果顏色太相似，色盲人士難以區分不同部件（p.67）；顏色對比亦可幫助視障用戶（2022 乙4(a)(ii) 評卷）。", "p.67；2022 乙4(a)(ii)"],
+  ["網頁的單色版本", ["cb"], "供色盲人士使用（測試站 2.4(1)）。", "p.67 測試站 2.4"],
+  ["即時字幕", ["deaf"], "在影片、聲音節目、語音訊息中顯示字幕（p.66）。", "p.66"],
+  ["影片的隱藏字幕", ["deaf"], "包括對話和非語音音訊的資訊（p.68；測試站 2.4(2)）。", "p.68"],
+  ["把對話即時轉換成文字的即時轉錄", ["deaf"], "使聽障人士與他人溝通更加容易（p.68；測試站 2.5(1)）。", "p.68；p.69 測試站 2.5(1)"],
+  ["可用手語溝通的視像通話", ["deaf"], "鏡頭讓聽覺障礙人士能夠用手語溝通（p.66）。", "p.66"],
+  ["偵測火警警報聲並發出通知", ["deaf"], "警報偵測能識別火警警報並提醒聽障人士（p.14）。", "p.14"],
+  ["鍵盤友善功能（毋須使用滑鼠）", ["phys"], "供肢體殘疾人士使用（測試站 2.4(1)）。", "p.67 測試站 2.4"],
+  ["用聲音控制裝置", ["blind", "phys"], "視覺和肢體殘障人士可以用聲音控制裝置（p.66）。", "p.66"],
+  ["多國語言版本", ["lang"], "即使少數族裔不懂中文或英文，也可以使用網上服務（p.67）。", "p.67"],
+];
+const D2_NONE = [["網頁過濾軟件", "只用來過濾網頁內容，不能幫助殘障人士瀏覽（2014 甲37 答案不包括此項）。", "2014 甲37"], ["關閉影片中的字幕", "關閉字幕不能幫助任何殘障人士（課題練習 3）。", "p.77 課題練習 3"]];
+const gname = (g) => D2_G[g];
+addType("D2", "為誰選輔助科技", () => {
+  const g = pick(Object.keys(D2_G)), good = pick(D2_AT.filter((a) => a[1].includes(g)));
+  const bads = sample(D2_AT.filter((a) => !a[1].includes(g)).map((a) => [a[0], "這主要幫助" + a[1].map(gname).join("、") + "：" + a[2], a[3]]).concat(coin(0.5) ? [pick(D2_NONE)] : []), 3);
+  return pickQ({ stem: "<p>下列哪一項最能幫助<b>" + gname(g) + "</b>使用網上服務或數碼裝置？</p>", rel: "assist", q: gname(g), s: "p.66–68",
+    ans: { t: good[0], n: good[2], s: good[3] }, wrongs: bads.map(([t, n, s]) => ({ t, n, s })), wide: false });
+});
+addType("D2", "輔助科技配對", () => {
+  for (let k = 0; k < 40; k++) {
+    const gs = sample(Object.keys(D2_G), 3), chosen = [];
+    for (const g of gs) { const c = D2_AT.filter((a) => a[1].includes(g) && a[1].every((x) => x === g || !gs.includes(x)) && !chosen.includes(a)); if (!c.length) break; chosen.push(pick(c)); }
+    if (chosen.length < 3) continue;
+    const extra = pick(D2_NONE), opts = shuffle(chosen.map((a) => a[0]).concat([extra[0]]));
+    const rows = gs.map((g, i) => ({ x: gname(g), a: chosen[i][0], n: chosen[i][2], s: chosen[i][3] }));
+    return rowsQ({ stem: "<p>為下列人士各選一項最合適的輔助科技或無障礙設計（有一項用不着）。</p>", rows, opts, rel: "assist", s: "p.66–68", pre: ["用不着的一項：" + extra[0] + "——" + extra[1]] });
+  }
+  throw new Error("D2 配對");
+});
+addType("D2", "大幅改善接達 ICT", () => {
+  const good = { t: "為殘疾人士開發合適的工具來接達資訊及通訊科技", n: "2017 甲40 答案 C：合適的工具（輔助科技）才能減低身體障礙的影響（p.66）。" };
+  const W = [["送贈殘疾人士筆記型電腦", "有電腦但沒有合適的輔助工具，殘疾人士仍難以使用（2017 甲40）。"], ["設置免費電腦中心給殘疾人士上網", "沒有合適的輔助工具，殘疾人士仍難以使用（2017 甲40）。"], ["為殘疾人士提供免費的資訊及通訊科技培訓", "培訓有幫助，但不能解決身體障礙本身的困難（2017 甲40）。"]];
+  return pickQ({ stem: "<p>我們可以怎樣為殘疾人士<b>大幅</b>改善接達資訊及通訊科技？</p>", rel: "assist_big", s: "2017 甲40", ans: good, wrongs: W.map(([t, n]) => ({ t, n })), wide: true });
+});
+
+// ---------- L1 法律與道德 ----------
+const LAW = { cr: "《版權條例》", pd: "《個人資料（私隱）條例》", df: "《誹謗條例》", th: "《盜竊罪條例》" };
+const L1_ACT = [
+  ["未經同意在討論區公開某人的電話號碼和住址", ["pd"], "起底：未經同意披露他人個人資料（表 2.3）。", "p.56 表 2.3；p.54"],
+  ["在社交平台發布虛假消息，聲稱某人曾經偷竊", ["df"], "發布損害他人名譽的資訊（表 2.3；測試站 2.3(3)）。", "p.56 表 2.3；p.57 測試站 2.3(3)"],
+  ["受僱在論壇散佈謠言，損害某公司的聲譽", ["df"], "發布損害他人聲譽的假新聞（表 2.3）；該公司可以採取法律行動（課題練習 5）。", "p.56 表 2.3；p.77 課題練習 5"],
+  ["威脅某人若不交錢，便在網上公開其私隱", ["th"], "勒索罪（表 2.3）。", "p.56 表 2.3"],
+  ["使用虛假的個人資料，騙取他人的錢財", ["th"], "欺詐罪（表 2.3）。", "p.56 表 2.3"],
+  ["未經許可，把同學自己拍攝的照片轉載到自己的網站", ["cr"], "照片是攝影者的版權作品（表 3.1）；轉載他人拍攝的照片可能侵犯版權（測試站 2.3(3) 教師註）。", "p.57 測試站 2.3(3)；p.84 表 3.1"],
+  ["未經許可，用同學的照片和個人資料冒名開設社交媒體帳戶", ["cr", "pd"], "教科書課題練習 12 答案 A：《版權條例》及《個人資料（私隱）條例》。", "p.78 課題練習 12"],
+];
+addType("L1", "行為 → 條例", () => {
+  const one = L1_ACT.filter((a) => a[1].length === 1), [x, ls, n, s] = pick(one);
+  return pickQ({ stem: '<p class="scene">' + esc(x) + "。</p><p>這個行為最可能違反哪一條法例？</p>", rel: "law1", q: x, s,
+    ans: { t: LAW[ls[0]], n }, wrongs: Object.keys(LAW).filter((k) => k !== ls[0]).map((k) => ({ t: LAW[k], n: LAW[k] + "：" + { cr: "未經許可使用他人的版權作品（p.84 表 3.1）", pd: "未經同意披露他人個人資料（表 2.3）", df: "發布損害他人名譽的資訊（表 2.3）", th: "勒索及欺詐（表 2.3）" }[k] + "。" })), wide: false });
+});
+addType("L1", "可能違反哪些條例", () => {
+  const four = coin(0.4), keys = four ? ["cr", "pd", "df", "th"] : ["cr", "pd", "df"];
+  for (let k = 0; k < 40; k++) {
+    const acts = sample(L1_ACT.filter((a) => a[1].every((l) => keys.includes(l))), R(1, 2));
+    const hit = uniq(acts.flatMap((a) => a[1]));
+    if (acts.length === 1 && hit.length === 1) continue;
+    const who = pick(["小任", "家朗", "嘉豪", "子晴"]);
+    const items = keys.map((l) => ({ t: LAW[l], ok: hit.includes(l), n: hit.includes(l) ? acts.filter((a) => a[1].includes(l)).map((a) => a[2]).join("") : "情境沒有涉及此條例的行為。" }));
+    return comboQ({ stem: '<p class="scene">' + who + "：" + esc(acts.map((a) => a[0]).join("；又")) + "。</p><p>" + who + "的行為可能違反了下列哪些法例？</p>", items, rel: "laws", q: acts.map((a) => a[0]).join("|"), s: acts.map((a) => a[3]).join("；") });
+  }
+  throw new Error("L1");
+});
+const L1_MSG = ["ABC 商店把價格抬得很高，我非常忿怒！今晚凌晨一起燒毀它吧。請踴躍參加！", "一心偷了我的手機！放學後我們一起去揍他吧！", "我們今晚一起去破壞公園的設施吧！"];
+addType("L1", "誰誤用社交網絡", () => {
+  const names = sample(["小強", "小珍", "小麗", "志明", "家寶", "小萍"], 3), m = pick(L1_MSG), fwd = coin(0.75);
+  const roles = ["發布者", fwd ? "轉寄者" : "只閱讀者", "只閱讀者"];
+  const desc = names[0] + "透過社交網絡向群組發布信息：「" + m + "」" + names[1] + (fwd ? "接收並轉寄這個信息邀請其他好友，但沒有參加行動。" : "接收及讀取這個信息，沒有採取任何行動。") + names[2] + (fwd ? "從" + names[1] + "接收及讀取這個信息" : "也在群組中讀取了這個信息") + "，沒有採取任何行動。";
+  const items = names.map((nm, i) => ({ t: nm + "（" + roles[i] + "）", ok: roles[i] !== "只閱讀者", n: { 發布者: "發布煽動信息，屬誤用（2012 甲35）。", 轉寄者: "轉寄信息邀請他人，同樣是散播，屬誤用（2012 甲35 答案 B：發布者和轉寄者）。", 只閱讀者: "只接收及讀取而沒有轉發或行動，不屬誤用（2012 甲35）。" }[roles[i]] }));
+  const q = comboQ({ stem: '<p class="scene">' + esc(desc) + "</p><p>誰誤用了這個社交網絡，並給社會帶來破壞？</p>", items, labels: names, list: false, rel: "misuse", q: roles.join("|"), s: "2012 甲35；p.52" });
+  return q;
+});
+addType("L1", "看到未經證實的消息", () => {
+  const sc = pick(["某論壇貼文聲稱一名偶像出道前是學校惡霸", "社交媒體瘋傳某超市的廁紙即將停止供應", "一則帖文聲稱明天會懸掛八號颱風信號，並附上一張颱風路徑圖"]);
+  const good = { t: "查看其他來源，核查資訊是否可靠、準確及具權威", n: "比較不同資訊來源，核查資訊是否可靠、真實、準確、具權威、及時及是否偏頗（p.55；測試站 2.3(1) 答案 A）。" };
+  const W = [["立即轉發給朋友，提醒他們小心", "不確定資訊是否真實時，切勿分享（p.55）；轉發假消息可能導致社會混亂（p.55）。"], ["在帖文下留言評論", "不確定資訊是否真實時，切勿評論（p.55）。"],
+    ["邀請更多朋友轉載", "會令虛假資訊散播得更快（測試站 2.3(1)）。"], ["把帖文轉載到其他網絡平台", "會令虛假資訊散播得更快（測試站 2.3(1)）。"]];
+  return pickQ({ stem: '<p class="scene">' + esc(sc) + "。</p><p>看到這則未經證實的消息，最恰當的做法是甚麼？</p>", rel: "verify", s: "p.55；p.57 測試站 2.3(1)", ans: good, wrongs: sample(W, 3).map(([t, n]) => ({ t, n })), wide: true });
+});
+addType("L1", "員工瀏覽記錄", () => {
+  const good = { t: "那些記錄應只供獲授權人士查看", n: "2013 甲38 答案 B：記錄涉及員工資料，只應由獲授權人士查看。" };
+  const W = [["應只記錄那些於辦公時間內所瀏覽的網址", "2013 甲38 答案不包括此項。"], ["那些記錄是員工的數碼產權", "記錄由公司的代理伺服器產生，不是員工的產權（2013 甲38）。"], ["公司已觸犯了電腦罪行", "公司記錄辦公室電腦的瀏覽網址並不違法（2013 甲38）。"]];
+  return pickQ({ stem: "<p>公司內所有經辦公室電腦瀏覽的網址都記錄在代理伺服器內。下列哪一句是正確的？</p>", rel: "staff_log", s: "2013 甲38", ans: good, wrongs: W.map(([t, n]) => ({ t, n })), wide: true });
+});
+// =================== 知識產權（教科書 E 第 3 章 p.80–111；DSE 2012 甲33 至 2025 甲40） ===================
+cat("C1", "軟件授權類型", { grp: "知識產權", hint: [["三句判斷：有試用期或只可用部分功能 → 共享軟件；可查看及修改源碼 → 開放源碼軟件；免費、可複製分發但不給源碼 → 免費軟件；要付授權費、不可複製、有技術支援 → 商業軟件（表 3.6）。", "共享軟件不提供源碼；免費軟件也不提供源碼（表 3.6；2016 甲39 只有 45% 答對）。", "開放源碼軟件：大幅修改源碼也不會擁有整個軟件的版權（2021 甲36）；開發者沒有責任提供更新（2024 甲38）。"], "可試用一段時間、只可用部分功能 → 共享；可改寫源碼 → 開放源碼"] });
+cat("C2", "侵權判斷", { grp: "知識產權", hint: [["先問：作品是誰的？使用者有沒有取得許可或授權？", "沒有許可時，再看是否屬公平處理（教育、研究、評論，而且只用少量）；複製全本、上載整個節目、分發給他人通常不屬公平處理（圖 3.5）。", "P2P／BT 本身合法，分享有版權的作品才侵權；用盜版軟件修改相片，侵犯的是軟件的版權，不是攝影師的（2024 甲37，只有 40% 答對）。"], "用 BT 分享自己的家課 → 自己的作品 → 不侵權（2016 甲38）"] });
+cat("C3", "後果與機構", { grp: "知識產權", hint: [["香港版權自動產生，毋須註冊、毋須加 ©；意念要以表現形式展示才受保障（p.84–85；2014 甲38）。", "只有香港海關對侵犯版權作出刑事制裁；知識產權署負責政策意見、註冊商標專利及外觀設計、推廣及教育（表 3.4；例題 3.1）。", "商業用途分發盜版屬刑事罪行；版權擁有人亦可提出民事訴訟索償（p.87–88；2018 甲36）。"], "售賣破解版應用程式 → 可能觸犯刑事罪行；海關毋須等版權擁有人投訴"] });
+cat("C4", "保護科技", { grp: "知識產權", hint: [["授權碼：提供予已付費用戶，啟動軟件；裝置限定授權把授權碼鎖定於機器識別碼（p.100–101）。", "數碼水印：把擁有權資料嵌入相片、影片、文件，用作版權保護及來源追蹤（表 3.8）；保護網上照片用數碼水印（2018 甲39、2019 甲36）。", "數碼簽署：驗證發送人身份、偵測未經授權的修改，不能防止他人複製作品（p.103）。"], "攝影師想證明網上流傳的照片是他拍的 → 數碼水印"] });
+
+// ---------- C1 軟件類型 ----------
+const SW = { com: "商業軟件", sha: "共享軟件", fre: "免費軟件", ope: "開放源碼軟件" };
+const C1_FEAT = [
+  ["可以免費試用 30 日，之後要付費才可繼續使用", "sha", "提供免費試用版，但會限制時間（表 3.6；2016 甲39 程式 P）。"],
+  ["免費版本只可使用部分功能，付費後才可使用進階功能", "sha", "試用版會限制功能（表 3.6；2016 甲39 程式 R）。"],
+  ["可以免費下載，並可以查看及改寫源碼", "ope", "只有開放源碼軟件可存取源碼（表 3.6；2016 甲39 程式 Q）。"],
+  ["可以修改源碼，並把修改後的版本分發給他人", "ope", "可自由使用、更改、複製或分發源碼（表 3.6）。"],
+  ["免費使用，亦可複製給朋友，但不提供源碼", "fre", "免費、可複製及重新發布，但不可存取源碼（表 3.6）。"],
+  ["免費下載、使用和分發，但不能查看或修改源碼", "fre", "免費軟件不提供源碼（表 3.6；2014 乙3(c)(ii)）。"],
+  ["要購買授權才可使用，提供技術支援，不可複製給他人，亦不提供源碼", "com", "授權費用、技術支援、不可複製（表 3.6）。"],
+];
+addType("C1", "特徵 → 軟件類型", () => {
+  const [x, k, n] = pick(C1_FEAT);
+  return pickQ({ stem: '<p class="scene">軟件 X：' + esc(x) + "。</p><p>軟件 X 最可能屬於哪一類軟件？</p>", rel: "swtype", q: x, s: "p.96 表 3.6",
+    ans: { t: SW[k], n }, wrongs: Object.keys(SW).filter((z) => z !== k).map((z) => ({ t: SW[z], n: SW[z] + "：" + { com: "要付授權費用，不可複製或存取源碼", sha: "可免費試用，但限制時間或功能，不可存取源碼", fre: "免費、可複製分發，但不可存取源碼", ope: "免費，可存取、修改及分發源碼" }[z] + "（表 3.6）。" })), wide: false });
+});
+addType("C1", "哪些程式是某類軟件", () => {
+  const target = pick(["sha", "ope", "fre"]);
+  for (let k = 0; k < 40; k++) {
+    const fs = [0, 1, 2].map(() => pick(C1_FEAT));
+    if (new Set(fs.map((f) => f[0])).size < 3 || !fs.some((f) => f[1] === target)) continue;
+    const who = pick(["莉莉", "志明", "小麗"]), L = ["P", "Q", "R"];
+    const items = fs.map((f, i) => ({ t: "程式 " + L[i] + "：" + f[0], ok: f[1] === target, n: "程式 " + L[i] + " 是" + SW[f[1]] + "：" + f[2] }));
+    return comboQ({ stem: "<p>" + who + "從互聯網下載了三個程式 P、Q 和 R。哪個／些程式是<b>" + SW[target] + "</b>？</p>", items, labels: L, rel: "swtype_pqr", q: target, s: "2016 甲39；p.96 表 3.6" });
+  }
+  throw new Error("C1 PQR");
+});
+const C1_CAN = {
+  ope: [
+    { t: "修改源碼自用", ok: true, n: "2021 甲36 答案 B。", s: "2021 甲36" },
+    { t: "在程式中加入自己編寫的代碼", ok: true, n: "教科書課題練習 6 答案 D 包括此項。", s: "p.108 課題練習 6" },
+    { t: "把修改後的版本分發給朋友", ok: true, n: "可自由使用、更改、複製或分發（表 3.6；課題練習 6）。", s: "p.96 表 3.6；p.108 課題練習 6" },
+    { t: "用來為商業機構編輯海報", ok: true, n: "開放源碼軟件的商業用途免費（表 3.6；課題練習 6）。", s: "p.96 表 3.6；p.108 課題練習 6" },
+    { t: "更改軟件名稱並重新分發軟件", ok: true, n: "2024 甲38 答案 C 包括此項。", s: "2024 甲38" },
+    { t: "大幅修改源碼，並擁有整個軟件的版權", ok: false, n: "修改他人的開放源碼軟件不會令你擁有整個軟件的版權（2021 甲36，66% 答對）。", s: "2021 甲36" },
+    { t: "使用軟件前先向軟件開發商尋求批准", ok: false, n: "開放源碼軟件可自由使用，毋須事先申請批准（2021 甲36）。", s: "2021 甲36" },
+    { t: "要求軟件開發者必須提供軟件更新", ok: false, n: "開放源碼軟件的開發者沒有責任提供更新（2024 甲38）；技術支援有限或沒有（表 3.6）。", s: "2024 甲38；p.96 表 3.6" },
+  ],
+  fre: [
+    { t: "免費使用軟件", ok: true, n: "表 3.6：免費。", s: "p.96 表 3.6" },
+    { t: "複製軟件給朋友", ok: true, n: "表 3.6：可以複製軟件；課題練習 5 答案 C。", s: "p.96 表 3.6；p.108 課題練習 5" },
+    { t: "在網站上重新發布軟件", ok: true, n: "表 3.6：可以重新發布軟件。", s: "p.96 表 3.6" },
+    { t: "查看及修改軟件的源碼", ok: false, n: "免費軟件不提供源碼（表 3.6；2014 乙3(c)(ii) 欠佳：分別在於是否提供源碼）。", s: "p.96 表 3.6；2014 乙3(c)(ii)" },
+    { t: "改寫源碼後以新名稱發布", ok: false, n: "免費軟件不提供源碼，無法改寫（表 3.6；課題練習 5）。", s: "p.96 表 3.6；p.108 課題練習 5" },
+  ],
+  sha: [
+    { t: "在購買前免費試用軟件", ok: true, n: "共享軟件的好處：購買前免費使用（例題 3.2）。", s: "p.97 例題 3.2" },
+    { t: "付費後使用完整版本或進階功能", ok: true, n: "完整版本或進階功能須要付費（例題 3.2；表 3.6）。", s: "p.97 例題 3.2" },
+    { t: "查看及修改軟件的源碼", ok: false, n: "共享軟件不提供源碼（表 3.6；E-15）。", s: "p.96 表 3.6" },
+    { t: "試用期結束後繼續免費使用全部功能", ok: false, n: "試用期後不再免費，繼續使用或會犯法（2015 乙3(c) 評卷）。", s: "2015 乙3(c)" },
+    { t: "把付費的完整版複製給朋友", ok: false, n: "須按授權條款，一般不可複製分發完整版（表 3.6，按 E-15 改寫）。", s: "p.96 表 3.6" },
+  ],
+  com: [
+    { t: "向開發商取得技術支援", ok: true, n: "表 3.6：商業軟件提供技術支援；2016 乙1(e)(ii) 評卷：能夠獲取更好的技術支援。", s: "p.96 表 3.6；2016 乙1(e)(ii)" },
+    { t: "按所購買的授權條款安裝軟件", ok: true, n: "用戶必須閱讀授權協議並購買相應的授權（p.98）。", s: "p.98" },
+    { t: "查看及修改軟件的源碼", ok: false, n: "商業軟件不可存取源碼（表 3.6）。", s: "p.96 表 3.6" },
+    { t: "購買後製作副本送給朋友", ok: false, n: "商業軟件不可複製；2016 甲38 答案 C 把「購買有版權的軟件，並只製作副本給最好的朋友」列為不合法。", s: "p.96 表 3.6；2016 甲38" },
+  ],
+};
+addType("C1", "用戶可以做甚麼", () => {
+  const k = pick(["ope", "ope", "fre", "sha", "com"]), pool = C1_CAN[k], who = pick(["李女士", "麗珊", "志強"]);
+  const items = mixPick(pool, 3, (x) => x.ok, 1, 2);
+  return comboQ({ stem: "<p>" + who + (k === "com" ? "購買了" : "下載了") + "一個圖像編輯的<b>" + SW[k] + "</b>。按一般的授權條款，" + who + "可以做甚麼？</p>", items, rel: "can_" + k, s: "p.96 表 3.6" });
+});
+const C1_OPEN = [
+  { t: "可自由修改及分發", ok: true, n: "2012 甲33 答案 C。", s: "2012 甲33" },
+  { t: "用戶可修改源碼", ok: true, n: "2020 甲37 答案 B。", s: "2020 甲37" },
+  { t: "每個人都可以使用和修改源碼", ok: true, n: "2024 甲38 答案 C 包括此項。", s: "2024 甲38" },
+  { t: "透過共同協作，軟件可持續優化", ok: true, n: "2025 甲39 答案 D 包括此項；與用戶合作開發軟件（例題 3.2）。", s: "2025 甲39；p.97 例題 3.2" },
+  { t: "可以免費使用", ok: true, n: "2025 甲39 答案 D 包括此項；表 3.6。", s: "2025 甲39" },
+  { t: "它沒有程式錯誤", ok: false, n: "任何軟件都可能有錯誤（2012 甲33）；比較軟件時「較多／少錯誤」不獲接受（2015 乙3(c) 評卷）。", s: "2012 甲33；2015 乙3(c)" },
+  { t: "它必定是跨平台的", ok: false, n: "是否跨平台與授權類型無關（2012 甲33、2023 甲34 答案都不包括跨平台）。", s: "2012 甲33；2023 甲34" },
+  { t: "它只可在開放源碼操作系統內執行", ok: false, n: "2013 甲34 答案不包括此項。", s: "2013 甲34" },
+  { t: "私人公司不能利用開放源碼軟件來賺取利潤", ok: false, n: "2013 甲34 答案不包括此項；商業用途免費（表 3.6）。", s: "2013 甲34" },
+  { t: "開發商可自訂售價", ok: false, n: "開放源碼軟件免費（表 3.6；2020 甲37 答案不包括此項）。", s: "2020 甲37" },
+  { t: "試用期內可使用所有軟件功能", ok: false, n: "試用期是共享軟件的特徵（2020 甲37 答案不包括此項）。", s: "2020 甲37" },
+  { t: "軟件開發者有責任提供軟件更新", ok: false, n: "2024 甲38 答案 C 不包括此項（56% 答對）；技術支援有限或沒有（表 3.6）。", s: "2024 甲38" },
+];
+addType("C1", "開放源碼軟件的描述", () => {
+  const items = mixPick(C1_OPEN, 3, (x) => x.ok, 1, 2);
+  return comboQ({ stem: "<p>下列哪些關於開放源碼軟件的描述是正確的？</p>", items, rel: "open_desc", s: "p.96 表 3.6" });
+});
+const C1_DEV = {
+  ope: [
+    { t: "他們想更多人使用他們的軟件", ok: true, n: "2019 甲39 答案 B；更多人可以使用軟件（例題 3.2）。", s: "2019 甲39；p.97 例題 3.2" },
+    { t: "他們想讓用戶研究並修改源碼，與用戶合作開發軟件", ok: true, n: "例題 3.2 開發人員角度的優點。", s: "p.97 例題 3.2" },
+    { t: "他們想出售軟件賺取更多金錢", ok: false, n: "開放源碼軟件沒有來自授權費用的收入（例題 3.2；2019 甲39 答案不包括此項）。", s: "2019 甲39；p.97 例題 3.2" },
+    { t: "他們想從授權費用獲得收入", ok: false, n: "開放源碼軟件的缺點正是沒有授權費用收入（例題 3.2）。", s: "p.97 例題 3.2" },
+  ],
+  sha: [
+    { t: "他們想透過授權他人使用軟件獲得收入", ok: true, n: "完整版本須付費（表 3.6；課題練習 10 (1)）。", s: "p.109 課題練習 10；p.96 表 3.6" },
+    { t: "他們想吸引更多人試用軟件，再說服用戶購買", ok: true, n: "於試用期推廣及說服用戶購買軟件（例題 3.2；課題練習 10 (4)）。", s: "p.97 例題 3.2；p.109 課題練習 10" },
+    { t: "他們想從廣告賺取金錢", ok: true, n: "共享軟件或會透過顯示廣告賺取金錢（表 3.6；例題 3.2）。", s: "p.96 表 3.6；p.97 例題 3.2" },
+    { t: "他們想讓更多人協助完善軟件源碼", ok: false, n: "共享軟件不提供源碼；讓他人改善源碼是開放源碼軟件的原因（E-15：教科書課題練習 10 答案應為 D）。", s: "p.109 課題練習 10；p.96 表 3.6" },
+  ],
+};
+addType("C1", "開發者為何選這類授權", () => {
+  const k = pick(["ope", "sha"]), items = mixPick(C1_DEV[k], 3, (x) => x.ok, 1, 2);
+  return comboQ({ stem: "<p>為甚麼有開發者以<b>" + SW[k] + "</b>的形式發布軟件？</p>", items, rel: "dev_" + k, s: "p.97 例題 3.2" });
+});
+const C1_PREF = [
+  { t: "商業軟件開發者可提供更好的支援", ok: true, n: "2023 甲39 答案 B；2016 乙1(e)(ii)：能夠獲取更好的技術支援。", s: "2023 甲39；2016 乙1(e)(ii)" },
+  { t: "商業軟件經常更新及提供技術支援", ok: true, n: "例題 3.2 用戶角度：商業軟件的優點；開放源碼軟件技術支援較少。", s: "p.97 例題 3.2" },
+  { t: "開放源碼軟件含有較多軟件錯誤", ok: false, n: "2023 甲39 答案不包括此項；「較多／少錯誤」在比較題不獲接受（2015 乙3(c) 評卷）。", s: "2023 甲39；2015 乙3(c)" },
+  { t: "開放源碼軟件不可以由公司去修改", ok: false, n: "開放源碼軟件可以修改（表 3.6；2023 甲39 答案不包括此項）。", s: "2023 甲39" },
+  { t: "開放源碼軟件比商業軟件較易被黑客入侵", ok: false, n: "評卷 ✗ 更容易被黑客入侵；私隱／保安問題在任何答案都不獲接受（2015 乙3(c)）。", s: "2015 乙3(c)" },
+];
+addType("C1", "公司為何選商業軟件", () => {
+  const items = mixPick(C1_PREF, 3, (x) => x.ok, 1, 2);
+  return comboQ({ stem: "<p>為甚麼很多公司較喜歡商業軟件而不是開放源碼軟件？</p>", items, rel: "pref_com", s: "2023 甲39" });
+});
+
+// ---------- C2 侵權判斷 ----------
+const INF = "侵犯版權", FAIR = "屬公平處理", PERM = "自己的作品或已獲許可";
+const C2_ACT = [
+  ["從一張舊電影 DVD 擷取影片，並把它上載至互聯網", INF, "2021 甲39 答案 B 包括此項。", "2021 甲39"],
+  ["從互聯網下載新聞文章，用作出版書籍", INF, "2021 甲39 答案 B 包括此項：作商業出版，不屬公平處理。", "2021 甲39"],
+  ["上載電視節目至個人網站，並與朋友共享", INF, "2019 甲40 答案 C；2017 甲36、2025 甲40。", "2019 甲40；2017 甲36"],
+  ["使用 BT 程式下載有版權的歌曲自用", INF, "2016 甲38 答案 C 包括此項：自用亦未獲授權。", "2016 甲38"],
+  ["購買有版權的軟件，並製作副本給最好的朋友", INF, "2016 甲38 答案 C 包括此項：商業軟件不可複製（表 3.6）。", "2016 甲38"],
+  ["把掃描後的報紙上載至個人網站", INF, "2017 甲36 答案 D 包括此項。", "2017 甲36"],
+  ["下載全本電子教科書，並分發予全班學生", INF, "圖 3.5 公平處理 ✗ 的例子：即使為教育目的，亦未必獲豁免。", "p.91 圖 3.5"],
+  ["使用沒有正式授權的軟件做功課", INF, "圖 3.5 公平處理 ✗ 的例子。", "p.91 圖 3.5"],
+  ["複製受版權保護的程式碼，然後聲稱是自己的成品", INF, "圖 3.5 公平處理 ✗ 的例子。", "p.91 圖 3.5"],
+  ["去除受版權保護照片上的水印，並把照片上傳到個人網站", INF, "課題練習 3 答案包括此項。", "p.108 課題練習 3"],
+  ["把電影上載至雲端，並與朋友分享", INF, "課題練習 1 答案 C。", "p.108 課題練習 1"],
+  ["向同學借教科書並影印全書，以節省買書開支", INF, "活動 3.1 答案 ✗。", "p.82 活動 3.1"],
+  ["未得到許可，把受版權保護的 3D 打印檔案分享給朋友", INF, "測試站 1.2(2) 答案 B。", "p.27 測試站 1.2(2)"],
+  ["與朋友分享自己的單戶串流服務訂閱帳戶", INF, "測試站 3.3(3)：違反訂閱的授權條款。", "p.92 測試站 3.3(3)"],
+  ["為教學用途在課堂播放電影的部分片段", FAIR, "圖 3.5 公平處理 ✓ 的例子。", "p.91 圖 3.5"],
+  ["在功課附上受版權保護的相片，以闡述想法", FAIR, "圖 3.5 公平處理 ✓ 的例子。", "p.91 圖 3.5"],
+  ["打印一篇學術論文作個人學習用途", FAIR, "圖 3.5 公平處理 ✓ 的例子（非商業研究及私人研習）。", "p.91 圖 3.5；p.90 表 3.5"],
+  ["在課堂播放紀錄片中某幾分鐘的片段，以說明一歷史事件", FAIR, "測試站 3.3(2) 答案 C。", "p.92 測試站 3.3(2)"],
+  ["影印無法借出的參考書其中一頁，用於學校的專題報告", FAIR, "課題練習 12 答案 C。", "p.109 課題練習 12"],
+  ["老師在課堂上用一張網上照片說明舊式公共屋邨的特色", FAIR, "測試站 3.3(1) 答案 A 不包括此項：屬教育用途的公平處理。", "p.92 測試站 3.3(1)"],
+  ["使用 BT 程式分享自己的家課", PERM, "2016 甲38：分享自己的作品不違法。", "2016 甲38"],
+  ["繪畫一張圖畫，並以點對點（P2P）軟件與朋友分享", PERM, "2021 甲39 答案 B 不包括此項：P2P 本身合法，分享自己的作品不侵權。", "2021 甲39"],
+  ["把一段自己拍攝的旅遊日誌影片上載到影片分享網站", PERM, "測試站 3.3(3) 答案 C。", "p.92 測試站 3.3(3)"],
+  ["透過 BT 程式向同事發送免費軟件", PERM, "免費軟件可以複製及重新發布（表 3.6；課題練習 2 答案 D）。", "p.108 課題練習 2；p.96 表 3.6"],
+  ["在獲得許可的情況下直播學校活動", PERM, "已獲許可（課題練習 1）。", "p.108 課題練習 1"],
+  ["在攝影師同意下打印他的照片", PERM, "已獲版權擁有人同意（測試站 3.3(1)）。", "p.92 測試站 3.3(1)"],
+  ["設計並打印自己的 3D 模型作為禮物", PERM, "自己的作品（測試站 1.2(2)）。", "p.27 測試站 1.2(2)"],
+];
+const C2_OK = (a) => a[1] !== INF;
+addType("C2", "行為分類", () => {
+  const groups = [INF, FAIR, PERM], rows = groups.map((g) => pick(C2_ACT.filter((a) => a[1] === g)));
+  return rowsQ({ stem: "<p>判斷下列各行為在香港屬於哪一種情況。每行選一項。</p>", rows: shuffle(rows).map(([x, a, n, s]) => ({ x, a, n, s })), opts: groups, rel: "act_class", s: "p.90–92",
+    pre: ["公平處理：為教育、非商業研究及私人研習、批評評論及新聞報導等目的，有限度使用作品（表 3.5）。"] });
+});
+addType("C2", "最可能侵犯版權", () => {
+  const want = coin(0.6) ? INF : "not";
+  const A = pick(C2_ACT.filter((a) => (want === INF ? a[1] === INF : C2_OK(a)))), W = sample(C2_ACT.filter((a) => (want === INF ? C2_OK(a) : a[1] === INF)), 3);
+  return pickQ({ stem: want === INF ? "<p>下列哪項做法最有可能在香港侵犯版權？</p>" : "<p>下列哪項在香港<b>不會</b>被視為侵犯版權？</p>", rel: want === INF ? "inf_most" : "inf_not", s: "p.86；p.91 圖 3.5",
+    ans: { t: A[0], n: A[2], s: A[3] }, wrongs: W.map((w) => ({ t: w[0], n: (w[1] === INF ? "侵犯版權：" : w[1] + "：") + w[2], s: w[3] })), wide: true });
+});
+addType("C2", "哪些行為侵權（組合）", () => {
+  const items = mixPick(C2_ACT, 3, (a) => a[1] === INF, 1, 2).map((a) => ({ t: a[0], ok: a[1] === INF, n: (a[1] === INF ? "" : a[1] + "。") + a[2], s: a[3] }));
+  return comboQ({ stem: "<p>下列哪些互聯網或日常活動很可能侵犯了版權？</p>", items, rel: "inf_combo", s: "p.86；p.91 圖 3.5" });
+});
+const C2_WHO = [
+  { who: "攝影師", work: "相片", sell: "把相片賣給廣告公司", mod: "以非法複製的軟件修改這些相片" },
+  { who: "插畫師", work: "插畫", sell: "把插畫印在 T 恤上出售", mod: "以盜版的繪圖軟件為插畫加上文字" },
+  { who: "作曲人", work: "樂曲", sell: "把樂曲用在公司的商業廣告中", mod: "以盜版的音樂編輯軟件剪輯樂曲" },
+];
+addType("C2", "侵犯了誰的版權", () => {
+  const W = pick(C2_WHO), a = pick(["莉莉", "美琪", "小麗"]), [b, c] = sample(["志明", "志偉", "家強", "嘉欣"], 2);
+  const acts = [
+    { t: a + "透過點對點檔案分享（BT）把" + W.work + "分享給" + b + "和" + c, ok: false, n: a + "分享自己的作品，不會侵犯自己的知識產權（2024 甲37）。" },
+    { t: b + "未經" + a + "同意，" + W.sell, ok: true, n: "未經許可把他人作品作商業用途，侵犯" + a + "的版權（2024 甲37 答案 B）。" },
+    { t: b + W.mod, ok: false, n: "使用盜版軟件侵犯的是軟件的版權，不是" + a + "的；2024 甲37 只有 40% 答對，54% 誤選 D。" },
+  ];
+  return comboQ({ stem: "<p>" + a + "是一名" + W.who + "，她把自己創作的" + W.work + "與" + b + "和" + c + "分享。下列哪項／些行動很可能侵犯<b>" + a + "</b>的知識產權？</p>", items: shuffle(acts), rel: "whose", q: a + "|" + b + "|" + W.who, s: "2024 甲37" });
+});
+
+// ---------- C3 後果與機構 ----------
+const AG = { cus: "香港海關", ipd: "知識產權署", ogc: "政府資訊科技總監辦公室（OGCIO）", itc: "創新科技署" };
+const C3_ROLE = [
+  ["對侵犯版權的行為作出刑事制裁", "cus", "只有香港海關負責刑事制裁（表 3.4；例題 3.1）。"],
+  ["就保護知識產權的政策和立法提供意見", "ipd", "表 3.4 知識產權署。"],
+  ["註冊商標、專利和外觀設計", "ipd", "表 3.4 知識產權署。"],
+  ["推廣知識產權及教育公眾", "ipd", "表 3.4 知識產權署；p.92。"],
+];
+addType("C3", "哪個機構", () => {
+  const [x, k, n] = pick(C3_ROLE);
+  return pickQ({ stem: "<p>在香港，哪個機構負責<b>" + esc(x) + "</b>？</p>", rel: "agency", q: x, s: "p.88 表 3.4；p.89 例題 3.1",
+    ans: { t: AG[k], n }, wrongs: Object.keys(AG).filter((z) => z !== k).map((z) => ({ t: AG[z], n: { cus: "香港海關負責刑事制裁，不負責註冊或政策（表 3.4）。", ipd: "知識產權署負責政策、註冊、推廣及教育，刑事制裁是香港海關（例題 3.1；2014 甲38 報告：約四分之一考生誤選 OGCIO）。", ogc: "教科書沒有把此項列為 OGCIO 的職能；例題 3.1、2014 甲38 都以 OGCIO 作錯誤選項。", itc: "教科書課題練習 13 以「創新科技署將採取法律行動」作錯誤選項。" }[z] })), wide: true });
+});
+const C3_ST = [
+  { t: "意念須以表現形式或製成品展示，才可獲得版權保障", ok: true, n: "2014 甲38 答案 A；測試站 3.1：意念本身並不受版權保護。", s: "2014 甲38；p.85" },
+  { t: "在香港，版權毋須註冊", ok: true, n: "所有作品均自動受到保護（p.84；課題練習 4 答案 B）。", s: "p.84；p.108 課題練習 4" },
+  { t: "作品的版權在作品完成後自動授予創作者", ok: true, n: "p.84。", s: "p.84" },
+  { t: "版權的有效期一般於創作者死後 50 年完結", ok: true, n: "p.84。", s: "p.84" },
+  { t: "版權擁有人可以出售版權，或在遺囑中指定他人繼承", ok: true, n: "版權擁有人的權利（p.85；課題練習 9）。", s: "p.85" },
+  { t: "分發盜版軟件作商業用途屬刑事罪行", ok: true, n: "《版權條例》（p.87）。", s: "p.87" },
+  { t: "版權擁有人可藉民事訴訟向盜版買家或用家索償", ok: true, n: "p.88。", s: "p.88" },
+  { t: "香港海關只能在版權擁有人提交投訴後，才可採取法律行動", ok: false, n: "海關毋須等投訴（例題 3.1；2014 甲38 報告：另有約四分之一考生不知道）。", s: "2014 甲38；p.89 例題 3.1" },
+  { t: "只有在香港出版的書籍才可獲得版權保障", ok: false, n: "2014 甲38 答案不包括此項。", s: "2014 甲38" },
+  { t: "電腦程式的版權擁有人須向政府資訊科技總監辦公室報告，才可獲得保障", ok: false, n: "版權毋須註冊或報告（p.84；2014 甲38）。", s: "2014 甲38；p.84" },
+  { t: "作品要加上「©」符號才受版權保護", ok: false, n: "法律沒有要求加版權告示（p.95；課題練習 4）；忘記加「©」仍擁有版權（測試站 3.1）。", s: "p.95；p.85 測試站 3.1" },
+  { t: "版權擁有人不可以把版權轉交他人", ok: false, n: "版權擁有人可出售版權（p.85；課題練習 4）。", s: "p.85；p.108 課題練習 4" },
+  { t: "把照片上載到社交媒體後，社交媒體公司便擁有照片的版權", ok: false, n: "上載者仍擁有版權而毋須申報（測試站 3.1 答案 D）。", s: "p.85 測試站 3.1" },
+  { t: "《版權條例》不包括互聯網上的數碼檔案", ok: false, n: "以數碼形式未經授權使用和重新發布作品亦屬互聯網盜版（p.86；課題練習 13）。", s: "p.86；p.109 課題練習 13" },
+];
+addType("C3", "版權陳述", () => {
+  const wantTrue = coin(0.6), A = pick(C3_ST.filter((x) => x.ok === wantTrue)), W = sample(C3_ST.filter((x) => x.ok !== wantTrue), 3);
+  return pickQ({ stem: "<p>下列哪一句關於香港版權保障的描述<b>" + (wantTrue ? "正確" : "不正確") + "</b>？</p>", rel: wantTrue ? "cr_true" : "cr_false", s: "p.84–89",
+    ans: { t: A.t, n: A.n, s: A.s }, wrongs: W.map((w) => ({ t: w.t, n: (wantTrue ? "不正確：" : "這句是正確的：") + w.n, s: w.s })), wide: true });
+});
+const C3_CON = [
+  { sc: "張先生未經攝影師李小姐同意，從她的網站下載大量版權照片，並在自己的補習社使用", s: "2018 甲36" },
+  { sc: "某網店未經許可，把一位插畫師的作品印在商品上出售", s: "p.87–88" },
+  { sc: "某公司以盜版軟件設計業務用的圖像", s: "p.88 圖 3.4" },
+];
+addType("C3", "侵權的法律後果", () => {
+  const C = pick(C3_CON);
+  const items = shuffle([
+    { t: "需要向版權擁有人作出賠償", ok: true, n: "版權擁有人可提出民事訴訟並獲得金錢賠償（p.85、p.88；2018 甲36 答案 A）。", s: "2018 甲36；p.88" },
+    { t: "可能觸犯刑事罪行", ok: true, n: "使用或分發盜版作商業用途屬刑事罪行（p.87；2018 甲36 答案 A）。", s: "2018 甲36；p.87" },
+    { t: "需要結束其業務", ok: false, n: "法律後果是賠償及刑事責任，不一定要結業（2018 甲36 答案不包括此項）。", s: "2018 甲36" },
+  ]);
+  return comboQ({ stem: '<p class="scene">' + esc(C.sc) + "。</p><p>這樣可引致甚麼法律後果？</p>", items, rel: "consequence", q: C.sc, s: C.s });
+});
+addType("C3", "售賣破解版的後果", () => {
+  const good = { t: "這行為可能被視為觸犯刑事罪行", n: "售賣盜版複製品屬刑事罪行（p.87；例題 3.1 答案 C）。" };
+  const W = [["知識產權署會作出刑事制裁", "✗ 刑事制裁由香港海關負責（例題 3.1）。"], ["除非版權擁有人投訴，否則不會被捕", "海關毋須等版權擁有人投訴（例題 3.1；2014 甲38）。"],
+    ["政府資訊科技總監辦公室負責處理侵犯版權的投訴", "✗ 例題 3.1 以此作錯誤選項。"], ["版權條例不包括互聯網上的數碼檔案", "數碼形式的盜版亦屬違法（p.86；課題練習 13）。"]];
+  return pickQ({ stem: "<p>" + pick(["在網上購物平台售賣破解版應用程式", "在社交平台售賣預先安裝了盜版遊戲的遊戲機"]) + "，有甚麼法律後果？</p>", rel: "crack", s: "p.89 例題 3.1", ans: good, wrongs: sample(W, 3).map(([t, n]) => ({ t, n })), wide: true });
+});
+
+// ---------- C4 保護科技 ----------
+const PT = { key: "授權碼", wm: "數碼水印", sig: "數碼簽署", fw: "防火牆" };
+const C4_NEED = [
+  ["攝影師想保護在互聯網上發布的照片的知識產權", "wm", "數碼水印用作數碼版權保護（表 3.8；2018 甲39 答案 B、2019 甲36 答案 D）。", "2018 甲39；2019 甲36"],
+  ["影片製作人想在影片中嵌入擁有權資料，以證明他人侵犯版權", "wm", "數碼版權保護：嵌入擁有權以證明侵犯版權（表 3.8）。", "p.102 表 3.8"],
+  ["公司把機密文件發給不同員工，想在文件洩露時追查是誰洩露", "wm", "來源追蹤：不同人收到的資料附有不同數碼水印（表 3.8）。", "p.102 表 3.8"],
+  ["軟件公司想確保只有已付費的用戶才能啟動軟件", "key", "授權碼提供予已為軟件付費的授權用戶，安裝時輸入以啟動軟件（p.100）。", "p.100"],
+  ["軟件公司想把軟件鎖定在一部裝置上使用", "key", "裝置限定授權：授權碼鎖定於裝置獨有的機器識別碼（p.101）。", "p.101"],
+  ["用戶想確認下載的軟件由合法軟件公司發布，而且未經修改", "sig", "檢查軟件的數碼簽署（活動 3.5；p.103）。", "p.103 活動 3.5"],
+  ["收件人想驗證電子文件發送人的身份", "sig", "數碼簽署用於驗證發送人身份（p.103）。", "p.103"],
+];
+addType("C4", "需要 → 保護科技", () => {
+  const [x, k, n, s] = pick(C4_NEED), opts = ["key", "wm", "sig"].concat(k === "wm" ? ["fw"] : []);
+  const why = { key: "授權碼用於啟動已付費的軟件（p.100）。", wm: "數碼水印把擁有權資料嵌入作品，用作版權保護及來源追蹤（表 3.8）。", sig: "數碼簽署驗證發送人身份、偵測修改，但不能防止他人複製照片（p.103；2018 甲39）。", fw: "防火牆是網絡保安措施，不能保護照片的知識產權（2018 甲39 答案不包括此項）。" };
+  return pickQ({ stem: '<p class="scene">' + esc(x) + "。</p><p>最合適使用下列哪一項技術？</p>", rel: "protect", q: x, s,
+    ans: { t: PT[k], n }, wrongs: opts.filter((z) => z !== k).map((z) => ({ t: PT[z], n: why[z] })), wide: false });
+});
+const C4_VIS = [
+  ["使用者可以清楚見到的標記", "浮現式水印", "圖 3.14。"],
+  ["在相片上斜印「樣本」字樣", "浮現式水印", "圖 3.14：浮現式水印清楚可見。"],
+  ["肉眼無法看見，要用算法才可提取", "隱藏式水印", "圖 3.14。"],
+  ["相片被裁剪、調整大小或壓縮後，水印仍保持不變並可被提取", "隱藏式水印", "p.102：隱藏式數碼水印較難被去除，且不影響原數碼資訊。"],
+  ["不影響原本的影像，但較難被盜版者去除", "隱藏式水印", "p.102。"],
+];
+addType("C4", "浮現式還是隱藏式", () => {
+  const rows = mixPick(C4_VIS, 3, (r) => r[1] === "浮現式水印", 1, 2).map(([x, a, n]) => ({ x, a, n, s: "p.102 圖 3.14" }));
+  return rowsQ({ stem: "<p>下列各項描述的是浮現式水印還是隱藏式水印？每行選一項。</p>", rows, opts: ["浮現式水印", "隱藏式水印"], rel: "wm_vis", s: "p.102" });
+});
+const C4_PHOTO = [
+  { t: "數碼水印", ok: true, n: "保護照片的知識產權（2018 甲39、2019 甲36）。", s: "2018 甲39；2019 甲36" },
+  { t: "數碼簽署", ok: false, n: "數碼簽署驗證發送人、偵測修改，不能保護照片不被使用（2018 甲39；測試站 3.6）。", s: "2018 甲39；p.104 測試站 3.6" },
+  { t: "防火牆", ok: false, n: "網絡保安措施（2018 甲39 答案不包括此項）。", s: "2018 甲39" },
+  { t: "保密插口層（SSL）", ok: false, n: "保護傳輸中的數據（2019 甲36；課題練習 8 答案不包括此項）。", s: "2019 甲36；p.109 課題練習 8" },
+  { t: "數碼證書", ok: false, n: "2019 甲36 答案只有數碼水印。", s: "2019 甲36" },
+  { t: "避免打開任何來自不認識的用戶的連結", ok: false, n: "這是保護自己電腦的做法，不能保護作品（測試站 3.6）。", s: "p.104 測試站 3.6" },
+];
+addType("C4", "保護網上照片的措施", () => {
+  const items = shuffle([C4_PHOTO[0], ...sample(C4_PHOTO.slice(1), 2)]);
+  return comboQ({ stem: "<p>" + pick(["攝影師把照片上載至社交媒體網站", "某網站在互聯網上發布原創插圖", "某串流網站發布原創影片"]) + "，讓公眾人士瀏覽。下列哪項／些措施可以保護其知識產權，使作品不會在未獲授權的情況下被使用？</p>", items, rel: "photo_protect", s: "2018 甲39；2019 甲36" });
+});
+const C4_ST = [
+  { t: "數碼簽署用於驗證發送人的身份", ok: true, n: "p.103。", s: "p.103" },
+  { t: "數碼簽署可偵測未經授權的修改", ok: true, n: "p.103；活動 3.5。", s: "p.103" },
+  { t: "授權碼提供予已為軟件付費的授權用戶", ok: true, n: "p.100。", s: "p.100" },
+  { t: "裝置限定授權把授權碼鎖定於裝置的機器識別碼", ok: true, n: "p.101。", s: "p.101" },
+  { t: "隱藏式水印肉眼無法看見，須用算法才可提取", ok: true, n: "圖 3.14。", s: "p.102 圖 3.14" },
+  { t: "數碼水印可用作追蹤洩露資料的人", ok: true, n: "來源追蹤（表 3.8）。", s: "p.102 表 3.8" },
+  { t: "數碼簽署可以防止他人複製網上照片", ok: false, n: "✗ 數碼簽署不能防止複製；保護照片用數碼水印（2018 甲39、2019 甲36；2024 乙3(d)(ii) 報告：能力較弱考生誤以為數碼簽署是保護版權的措施）。", s: "2018 甲39；2024 乙3(d)(ii)" },
+  { t: "隱藏式水印在相片被裁剪或壓縮後便無法提取", ok: false, n: "隱藏式水印在裁剪、調整大小或壓縮後仍保持不變，可被提取（p.102）。", s: "p.102" },
+  { t: "用戶限定授權只容許在單一裝置安裝軟件", ok: false, n: "用戶限定授權鎖定在帳戶，可在任何裝置使用；只容許單一裝置的是裝置限定授權（p.101）。", s: "p.101" },
+];
+addType("C4", "保護科技的描述", () => {
+  const items = mixPick(C4_ST, 3, (x) => x.ok, 1, 2);
+  return comboQ({ stem: "<p>下列哪些關於保護知識產權的科技的描述是正確的？</p>", items, rel: "protect_st", s: "p.100–103" });
+});
+// =================== 延伸（預設不選）：全息影像 p.34、資訊科技與環境 p.70–74（課程指引沒有列出；不出數字） ===================
+cat("X1", "全息影像與環境", { grp: "延伸", ext: true, hint: [["全息影像：虛擬影像肉眼直接可見，毋須戴裝置；VR 取代現實；AR 疊加在現實之上（p.31、p.34）。", "科技對環境的正面影響四項：智能用電、污染監測、減少碳足印、促進無紙化（p.72–73）。", "能源標籤分五級，一級消耗最少能量（活動 2.8）；電子廢物含鉛、水銀等有害物質（p.70）。"], "在家工作及視像會議 → 減少交通工具的使用 → 減少碳足印"] });
+const X1_VIS = [
+  ["演唱會台上浮現一個歌手的立體影像，觀眾毋須戴任何裝置也看得見", "全息影像", "全息影像產生的虛擬影像是肉眼直接可見的（p.34）。", "p.34"],
+  ["把透明金字塔放在手機屏幕上，金字塔內浮現水母的立體影像", "全息影像", "活動 1.6 自製全息影像投影器（p.34）。", "p.34 活動 1.6"],
+  ["戴上頭戴式裝置後，現實世界消失，眼前是一個虛構的海底世界", "虛擬實境（VR）", "VR 會消除現實世界（p.31）。", "p.31"],
+  ["手機鏡頭對準書桌，屏幕上的桌面出現一隻恐龍", "擴增實境（AR）", "AR 把虛擬物件疊加在現實環境（p.31；表 1.5）。", "p.27 表 1.5；p.31"],
+];
+addType("X1", "全息影像、VR 還是 AR", () => {
+  const [x, a, n, s] = pick(X1_VIS), all = ["全息影像", "虛擬實境（VR）", "擴增實境（AR）"];
+  return pickQ({ stem: '<p class="scene">' + esc(x) + "。</p><p>這屬於哪一種 3D 視覺化技術？</p>", rel: "vis3d", q: x, s,
+    ans: { t: a, n }, wrongs: all.filter((z) => z !== a).map((z) => ({ t: z, n: { 全息影像: "全息影像毋須頭戴裝置，肉眼直接可見（p.34）。", "虛擬實境（VR）": "VR 以電腦模擬環境取代現實（p.31）。", "擴增實境（AR）": "AR 把數碼影像疊加在現實之上（p.31）。" }[z] })), wide: false });
+});
+const X1_ENV = [
+  ["實時交通燈號調節系統按人流和車流調節綠燈時間", "智能用電", "p.72：機械結合感應器和人工智能，調節運作模式，減少排廢。"],
+  ["以智能電錶檢測用電量", "智能用電", "p.72 圖 2.29。"],
+  ["使用遙測感應裝置監察空氣污染", "污染監測", "p.73。"],
+  ["利用無人船隻在水塘進行水質監測", "污染監測", "p.73。"],
+  ["推行在家工作和視像會議", "減少碳足印", "免除乘坐交通工具，減少能源消耗及二氧化碳排放（p.73）。"],
+  ["以電子月結單取代紙本月結單", "促進無紙化", "p.73。"],
+  ["學校改用電子書及網上學習", "促進無紙化", "p.73。"],
+];
+addType("X1", "科技對環境的正面影響", () => {
+  const rows = sample(X1_ENV, 3).map(([x, a, n]) => ({ x, a, n, s: "p.72–73" }));
+  return rowsQ({ stem: "<p>下列各項屬於科技對環境的哪一種正面影響？每行選一項。</p>", rows, opts: ["智能用電", "污染監測", "減少碳足印", "促進無紙化"], rel: "env", s: "p.72–73" });
+});
+const X1_SAVE = [
+  { t: "使用智能電話時，啟用電池效能最佳化功能", ok: true, n: "測試站 2.6(1) 答案 B。", s: "p.74 測試站 2.6(1)" },
+  { t: "開啟屏幕自動鎖定功能", ok: true, n: "避免無意義的亮屏（活動 2.10）。", s: "p.74 活動 2.10" },
+  { t: "開啟屏幕亮度自動調整", ok: true, n: "亮度隨環境調節（活動 2.10）。", s: "p.74 活動 2.10" },
+  { t: "選擇一級能源標籤的電器", ok: true, n: "一級產品消耗最少能量（活動 2.8）。", s: "p.71 活動 2.8" },
+  { t: "使用桌上電腦時，同時開啟數十個網站分頁", ok: false, n: "會消耗更多電力（測試站 2.6(1) 答案不包括此項）。", s: "p.74 測試站 2.6(1)" },
+  { t: "使用平板電腦時，關閉屏幕自動鎖定功能", ok: false, n: "屏幕會一直亮着，更耗電（測試站 2.6(1)；活動 2.10）。", s: "p.74 測試站 2.6(1)" },
+  { t: "選擇五級能源標籤的電器", ok: false, n: "五級的能源效益最低（活動 2.8）。", s: "p.71 活動 2.8" },
+];
+addType("X1", "節省用電", () => {
+  const items = mixPick(X1_SAVE, 3, (x) => x.ok, 1, 2);
+  return comboQ({ stem: "<p>下列哪些行為可節省用電，保護環境？</p>", items, rel: "save", s: "p.71；p.74" });
+});
+/*GEN:END*/
+// =================== 介面 ===================
+const $ = (id) => document.getElementById(id);
+const h = (tag, attrs = {}, html) => { const e = document.createElement(tag); Object.entries(attrs).forEach(([k, v]) => { if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else e.setAttribute(k, v); }); if (html !== undefined) e.innerHTML = html; return e; };
+// localStorage 只存「分類選擇」「連續答對」「最高紀錄」；讀寫失敗（被封鎖）時照常運作
+const LS = { get(k, d) { try { const v = localStorage.getItem("elab-" + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem("elab-" + k, JSON.stringify(v)); } catch (e) { /* 被封鎖 */ } } };
+const S = { q: null, cat: null, type: null, n: 0, answered: false, right: 0, total: 0, streak: LS.get("streak", 0), best: LS.get("best", 0), sel: null, on: new Set(GEN.filter((c) => !c.ext).map((c) => c.id)) };
+if (typeof S.streak !== "number" || !(S.streak >= 0)) S.streak = 0; if (typeof S.best !== "number" || !(S.best >= 0)) S.best = 0;
+(() => { const saved = LS.get("filter", null); if (!Array.isArray(saved)) return; const ids = new Set(GEN.map((c) => c.id)); S.on = new Set(saved.filter((x) => ids.has(x))); })();
+const saveFilter = () => LS.set("filter", [...S.on]);
+const hintHTML = (c) => (c.hint ? "<h4>方法：" + esc(c.name) + "</h4><ol>" + c.hint[0].map((t) => "<li>" + md(t) + "</li>").join("") + "</ol>" + (c.hint[1] ? '<div class="ex">例：' + esc(c.hint[1]) + "</div>" : "") : "");
+function renderCount() { const all = GEN.length, on = S.on.size, el = $("fcount"); el.textContent = on === all ? "全部 " + all + " 個分類" : "已選 " + on + "／" + all + " 個分類"; el.classList.toggle("partial", on !== all); }
+function renderFilter() {
+  const box = $("fchips"); box.innerHTML = "";
+  uniq(GEN.map((c) => c.grp)).forEach((g) => {
+    const sec = h("div", { class: "fgroup" }, "<h3>" + esc(g) + "</h3>"), chips = h("div", { class: "chips" });
+    GEN.filter((c) => c.grp === g).forEach((c) => {
+      const b = h("button", { type: "button", class: "chip", "aria-pressed": String(S.on.has(c.id)), "data-id": c.id }, '<span class="cid">' + c.id + "</span>" + esc(c.name) + (c.ext ? '<span class="tag">延伸</span>' : ""));
+      b.addEventListener("click", () => { S.on.has(c.id) ? S.on.delete(c.id) : S.on.add(c.id); b.setAttribute("aria-pressed", String(S.on.has(c.id))); saveFilter(); renderCount(); afterFilter(); });
+      chips.appendChild(b);
+    });
+    sec.appendChild(chips); box.appendChild(sec);
+  });
+  renderCount();
+}
+function afterFilter() { if (!S.on.size) { showEmpty(); return; } if (!S.q || !S.cat || !S.on.has(S.cat.id)) next(); }
+$("f-all").addEventListener("click", () => { S.on = new Set(GEN.map((c) => c.id)); saveFilter(); renderFilter(); afterFilter(); });
+$("f-none").addEventListener("click", () => { S.on = new Set(); saveFilter(); renderFilter(); afterFilter(); });
+function renderScore() { $("sc-right").textContent = S.right; $("sc-total").textContent = S.total; $("sc-streak").textContent = S.streak; $("sc-best").textContent = S.best; }
+function showEmpty() {
+  S.q = null; S.cat = null; $("qtype").textContent = ""; $("qno").textContent = "";
+  $("prompt").innerHTML = '<p class="empty">請在上方「分類篩選」選擇至少一個分類。</p>'; $("input-area").innerHTML = ""; $("feedback").hidden = true;
+  $("btn-check").disabled = true; $("btn-show").disabled = true; $("btn-next").disabled = true; $("filter").open = true; $("btn-hint").hidden = true; $("hintbox").hidden = true;
+}
+
+// ---------- 作答區 ----------
+function renderInput(q) {
+  const area = $("input-area"); area.innerHTML = ""; S.sel = null;
+  if (q.input.kind === "choice") {
+    const box = h("div", { class: "choices" + (q.input.wide ? " wide" : ""), role: "group", "aria-label": "選項" });
+    q.input.opts.forEach((o) => { const b = h("button", { type: "button", class: "choice", "aria-pressed": "false", text: o });
+      b.addEventListener("click", () => { if (S.answered) return; S.sel = o; box.querySelectorAll(".choice").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }); box.appendChild(b); });
+    area.appendChild(box); return;
+  }
+  const wrap = h("div", { class: "parts" });
+  q.input.parts.forEach((p, k) => {
+    const id = "ans-" + k, row = h("div", { class: "part" });
+    row.innerHTML = '<label for="' + id + '">' + esc(p.label) + '</label><select id="' + id + '" data-p="' + k + '">' + p.opts.map((o) => '<option value="' + (o === "—" ? "" : esc(o)) + '">' + esc(o) + "</option>").join("") + "</select>";
+    wrap.appendChild(row);
+  });
+  area.appendChild(wrap);
+  area.querySelectorAll("select").forEach((inp) => inp.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); S.answered ? next() : check(); } }));
+}
+const readParts = (q) => q.input.parts.map((p, k) => $("input-area").querySelector('[data-p="' + k + '"]').value);
+
+// ---------- 出題、核對 ----------
+function next() {
+  const pool = GEN.filter((c) => S.on.has(c.id)); if (!pool.length) { showEmpty(); return; }
+  let c = pick(pool); if (pool.length > 1 && S.cat && c.id === S.cat.id && coin(0.7)) c = pick(pool.filter((x) => x.id !== S.cat.id));
+  let t = pick(c.types); if (c.types.length > 1 && S.type && t === S.type && coin(0.6)) t = pick(c.types.filter((x) => x !== S.type));
+  let q = null;
+  for (let i = 0; i < 6 && !q; i++) { try { q = t.fn(); } catch (e) { q = null; } }
+  if (!q) { $("prompt").innerHTML = '<p class="empty">未能產生題目，請按「跳過此題」。</p>'; $("input-area").innerHTML = ""; S.q = null; updNext(); return; }
+  S.cat = c; S.type = t; S.q = q; S.n++; S.answered = false; $("btn-next").disabled = false;
+  $("qtype").textContent = c.id + " · " + c.name + " · " + t.name; $("qno").textContent = "第 " + S.n + " 題";
+  $("hintbox").innerHTML = hintHTML(c); $("btn-hint").hidden = !$("hintbox").innerHTML; setHint(false); updNext();
+  $("prompt").innerHTML = q.prompt;
+  renderInput(q); $("feedback").hidden = true; $("btn-check").disabled = false; $("btn-show").disabled = false;
+}
+function finish(correct, revealed, results) {
+  S.answered = true; $("btn-check").disabled = true; $("btn-show").disabled = true;
+  if (!revealed) { S.total++; if (correct) { S.right++; S.streak++; if (S.streak > S.best) S.best = S.streak; } else S.streak = 0; } else S.streak = 0;
+  LS.set("streak", S.streak); LS.set("best", S.best); renderScore();
+  const q = S.q, area = $("input-area"); let extra = "";
+  if (q.input.kind === "choice") {
+    area.querySelectorAll(".choice").forEach((b) => { b.disabled = false; if (b.textContent === q.input.answer) b.classList.add("ok"); else if (b.textContent === S.sel) b.classList.add("no"); });
+    if (!revealed && !correct && q.input.why && q.input.why[S.sel]) extra += '<p class="trap">' + md(q.input.why[S.sel]) + "</p>";
+  } else {
+    q.input.parts.forEach((p, k) => {
+      const r = results ? results[k] : null, x = area.querySelector('[data-p="' + k + '"]');
+      x.disabled = true; if (r) x.classList.add(r.ok ? "ok" : "no");
+      if (revealed || (r && !r.ok)) extra += '<p class="small">' + esc(p.label) + " → <b>" + esc(p.ans) + "</b></p>";
+    });
+  }
+  const fb = $("feedback"); fb.className = "feedback " + (correct ? "good" : "bad"); fb.hidden = false;
+  const head = revealed ? "答案" : correct ? "答對了" : "未答對";
+  const showTxt = q.input.kind === "choice" && q.show ? "：" + esc(q.show) : "";
+  fb.innerHTML = '<div class="verdict">' + head + showTxt + "</div>" + extra + '<ol class="steps">' + (q.explain || []).filter(Boolean).map((x) => "<li>" + md(x) + "</li>").join("") + "</ol>" + (q.after || "");
+  updNext(); try { $("btn-next").focus({ preventScroll: true }); } catch (e) { /* 無 */ }
+}
+function warn(msg) { const fb = $("feedback"); fb.className = "feedback bad"; fb.hidden = false; fb.innerHTML = '<div class="verdict">' + msg + "</div>"; }
+function check() {
+  if (S.answered || !S.q) return; const q = S.q;
+  if (q.input.kind === "choice") { if (S.sel === null) return warn("請先選擇一個答案，或按「顯示答案」。"); return finish(S.sel === q.input.answer, false); }
+  const raws = readParts(q); if (q.input.parts.some((p, k) => GR.isBlank(p, raws[k]))) return warn("請先完成每一行的選擇，或按「顯示答案」。");
+  const results = q.input.parts.map((p, k) => GR.grade(p, raws[k]));
+  finish(results.every((r) => r.ok), false, results);
+}
+function setHint(open) { $("hintbox").hidden = !open; $("btn-hint").setAttribute("aria-expanded", String(open)); }
+$("btn-hint").addEventListener("click", () => setHint($("hintbox").hidden));
+$("btn-check").addEventListener("click", check);
+$("btn-show").addEventListener("click", () => { if (!S.answered && S.q) finish(false, true, null); });
+let skipTimer = null;
+function updNext(confirming) {
+  const b = $("btn-next"); clearTimeout(skipTimer); b.classList.remove("primary", "ghost", "skip", "confirm");
+  if (S.answered) { b.classList.add("primary"); b.textContent = "下一題 →"; }
+  else if (confirming) { b.classList.add("ghost", "confirm"); b.textContent = "再按一次確認跳過"; skipTimer = setTimeout(() => updNext(false), 3000); }
+  else { b.classList.add("ghost", "skip"); b.textContent = "跳過此題"; }
+}
+$("btn-next").addEventListener("click", () => { if (S.answered || !S.q || $("btn-next").classList.contains("confirm")) return next(); updNext(true); });
+// Enter：選擇題選了答案後核對；答題後出下一題（下拉選單另有處理；其他按鈕保留原本行為）
+document.addEventListener("keydown", (ev) => {
+  if (ev.key !== "Enter" || ev.isComposing || ev.ctrlKey || ev.altKey || ev.metaKey) return;
+  const t = ev.target;
+  if (t && t.closest && (t.closest("select,summary,.filter") || (t.tagName === "BUTTON" && !t.classList.contains("choice")))) return;
+  if (!S.q) return;
+  ev.preventDefault();
+  if (t && t.classList && t.classList.contains("choice") && !S.answered) t.click();
+  S.answered ? next() : check();
+});
+
+// 測試用：以正確或錯誤答案填寫目前的題目（不會自動核對）
+window.__elab = {
+  fill(ok) {
+    const q = S.q; if (!q || S.answered) return false; const area = $("input-area");
+    if (q.input.kind === "choice") { const t = ok ? q.input.answer : q.input.opts.find((o) => o !== q.input.answer); [...area.querySelectorAll(".choice")].find((b) => b.textContent === t).click(); return true; }
+    q.input.parts.forEach((p, k) => { area.querySelector('[data-p="' + k + '"]').value = GR.fill(p, ok || k > 0); });
+    return true;
+  },
+  only(id) { S.on = new Set([id]); renderFilter(); next(); }, cats: () => GEN.map((c) => c.id), types: (id) => CAT(id).types.map((t) => t.name),
+  state: () => ({ cat: S.cat && S.cat.id, type: S.type && S.type.name, kind: S.q && S.q.input.kind, answered: S.answered, right: S.right, total: S.total, streak: S.streak, best: S.best, on: [...S.on] }),
+};
+renderFilter(); renderScore(); next();
+})();
+</script>
+
+</body></html>
