@@ -140,6 +140,33 @@ def full_run(browser, unit, width):
         # ---- 寫算法 ----
         for task in sec.get('tasks', []):
             box = f'.write-item[data-id="{task["id"]}"]'
+            if task.get('kind') == 'table':
+                ans = pg.evaluate('(t) => D1.tableAnswers(t)', task)
+                ctrls = pg.locator(f'{box} .anatab select, {box} .anatab input')
+                n = ctrls.count()
+                check(f'{task["id"]}（{task["tier"]}）表格空格數目正確', n == len(ans), f'{n} vs {len(ans)}')
+                def wrong_val(k):
+                    el = ctrls.nth(k)
+                    if el.evaluate('e => e.tagName') == 'SELECT':
+                        opts = [o for o in el.evaluate('e => [...e.options].map(o => o.value)') if o and o != ans[k]]
+                        el.select_option(opts[0])
+                    else: el.fill('zzz')
+                pg.click(f'{box} button:has-text("提交評核")')
+                check(f'{task["id"]} 未填完有提示', '請完成' in pg.inner_text(f'{box} .fb'))
+                for k in range(n): wrong_val(k)
+                pg.click(f'{box} button:has-text("提交評核")')
+                check(f'{task["id"]} 答錯有紅格及提示', pg.locator(f'{box} .anatab .no').count() == n and '不正確' in pg.inner_text(f'{box} .fb'), f"{pg.locator(f'{box} .anatab .no').count()} {n} {pg.inner_text(f'{box} .fb')}")
+                pg.click(f'{box} button:has-text("提交評核")')
+                check(f'{task["id"]} 錯兩次後可看答案', pg.is_visible(f'{box} button:has-text("看答案")'))
+                for k in range(n):
+                    el = ctrls.nth(k)
+                    if el.evaluate('e => e.tagName') == 'SELECT': el.select_option(ans[k])
+                    else: el.fill(ans[k])
+                before = score(pg)
+                pg.click(f'{box} button:has-text("提交評核")')
+                check(f'{task["id"]} 改正後全對得 {task["pts"]} 分', pg.locator(f'{box} .fb.good').count() == 1 and score(pg) == before + task['pts'], pg.inner_text(f'{box} .fb')[:120])
+                expect += task['pts']
+                continue
             ta = f'{box} textarea'
             pg.fill(ta, task.get('starter', '').replace('\n\n', '\nZ ← 1\n') if '\n\n' in task.get('starter', '') else task.get('starter', '') + '\n輸出 1')
             pg.click(f'{box} button:has-text("提交評核")')
@@ -172,11 +199,15 @@ def full_run(browser, unit, width):
             check(f'{unit} 小測標示出處', '出處' in pg.inner_text('main'))
         # ---- 無限練習 ----
         if sec.get('kind') == 'endless':
-            pg.fill('main input.txt', '0')
-            pg.click('main button:has-text("核對")')
-            check(f'{unit} 無限練習計次數', '已做 1 題' in pg.inner_text('main'))
-            pg.click('main button:has-text("再練一題")')
-            check(f'{unit} 再練一題出新題', pg.locator('main input.txt').input_value() == '')
+            for k in range(6):
+                if pg.locator('main .endopts').count():
+                    pg.click('main .endopts button >> nth=0')
+                else:
+                    pg.fill('main input.txt', '0')
+                pg.click('main button:has-text("核對")')
+                check(f'{unit} 無限練習計次數（第 {k+1} 題）', f'已做 {k+1} 題' in pg.inner_text('main'))
+                pg.click('main button:has-text("再練一題")')
+                check(f'{unit} 再練一題出新題', pg.locator('main .fb').count() == 0)
     check(f'{unit}@{width} 總分正確（{expect}）', score(pg) == expect, f'頁面 {score(pg)}')
     # 重新載入，進度仍在
     pg.reload()

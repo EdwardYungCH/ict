@@ -625,6 +625,66 @@
   }
   D1.renderWrite = renderWrite;
 
+  // ---------------- 分析題（表格；u1、u2、u4） ----------------
+  // task: {kind:'table', head:[...], rows:[[cell...]], opts:{key:[...]}}；cell 是字串（固定）、{sel:key, a}（下拉）或 {text:true, a, accept:[]}（填寫）
+  const isIn = (c) => c && typeof c === 'object' && ('sel' in c || 'text' in c);
+  function tableAnswers(task) { const out = []; task.rows.forEach((r) => r.forEach((c) => { if (isIn(c)) out.push(String(c.a)); })); return out; }
+  D1.tableAnswers = tableAnswers;
+  function checkTableVals(task, vals) {
+    const ins = []; task.rows.forEach((r) => r.forEach((c) => { if (isIn(c)) ins.push(c); }));
+    return ins.map((c, i) => { const v = (vals[i] || '').trim(); return c.sel ? v === String(c.a) : (E.same(v, c.a) || (c.accept || []).some((x) => E.same(v, x))); });
+  }
+  D1.checkTableVals = checkTableVals;
+  function renderTableTask(task, ctx) {
+    const st = ctx.state.items[task.id] || {};
+    const box = h('div.blk.write-item', { 'data-id': task.id });
+    box.append(h('div.row', h('span.tier', h('span.badge', task.tier), task.title), h('span.pts', `${task.pts} 分`), h('span.spacer'), task.src ? h('span.ref', task.src) : null));
+    box.append(mdEl('div.q', task.prompt));
+    if (task.code) box.append(codeView(task.code));
+    const ctrls = [];
+    const body = h('tbody', task.rows.map((r) => h('tr', r.map((c, ci) => {
+      if (!isIn(c)) return mdEl('td', String(c));
+      let el;
+      const lab = `${String(r[0]).replace(/[`*]/g, '')}：${task.head[ci]}`;
+      if (c.sel) el = h('select.cellsel', { 'aria-label': lab }, h('option', { value: '' }, '（請選擇）'), task.opts[c.sel].map((o) => h('option', { value: o }, o)));
+      else el = h('input.txt', { type: 'text', 'aria-label': lab, autocomplete: 'off', spellcheck: 'false' });
+      ctrls.push(el); return h('td', el);
+    }))));
+    box.append(h('div.scroll', h('table.tb.anatab', h('thead', h('tr', task.head.map((x) => mdEl('th', x)))), body)));
+    const bSubmit = h('button.btn.primary', { type: 'button' }, '提交評核');
+    const bRef = h('button.btn.ghost', { type: 'button', hidden: !((st.tries || 0) >= 2) || st.done }, '看答案（只得 1 分）');
+    const fb = h('div', { 'aria-live': 'polite' });
+    box.append(h('div.row', bSubmit, bRef), fb);
+    let tries = st.tries || 0;
+    const ans = tableAnswers(task);
+    const fillAns = () => ctrls.forEach((el, i) => { el.value = ans[i]; el.disabled = true; el.classList.remove('no'); el.classList.add('ok'); });
+    const lockDone = () => { bSubmit.disabled = true; bRef.hidden = true; ctrls.forEach((el) => { el.disabled = true; }); };
+    bSubmit.onclick = () => {
+      const vals = ctrls.map((el) => el.value.trim());
+      if (vals.some((v) => !v)) { fb.replaceChildren(feedback('info', '請完成表格內所有空格。')); return; }
+      const res = checkTableVals(task, vals);
+      ctrls.forEach((el, i) => { el.classList.toggle('ok', res[i]); el.classList.toggle('no', !res[i]); });
+      const nWrong = res.filter((x) => !x).length;
+      if (!nWrong) { ctx.award(task.id, task.pts, { done: true, tries: tries + 1, kind: 'write', val: vals }); fb.replaceChildren(feedback('good', `全部正確！+${task.pts} 分`, task.why || null)); lockDone(); return; }
+      tries++; ctx.award(task.id, 0, { tries, kind: 'write', val: vals });
+      fb.replaceChildren(feedback('bad', `未全對（第 ${tries} 次提交）：有 ${nWrong} 格不正確（紅色）。`, tries >= 2 && task.hint ? '提示：' + task.hint : null));
+      if (tries >= 2) bRef.hidden = false;
+    };
+    bRef.onclick = () => { ctx.award(task.id, Math.min(1, task.pts), { done: true, shown: true, tries, kind: 'write' }); fillAns(); fb.replaceChildren(feedback('info', '已顯示答案（這題得 1 分）。', task.why || null)); lockDone(); };
+    if (st.done) {
+      lockDone();
+      if (st.shown) { fillAns(); fb.replaceChildren(feedback('info', '已顯示答案（這題得 1 分）。', task.why || null)); }
+      else { ctrls.forEach((el, i) => { el.value = (st.val || ans)[i]; el.classList.add('ok'); }); fb.replaceChildren(feedback('good', '已全部答對。', task.why || null)); }
+    }
+    if (ctx.teacher) box.append(h('div.ans', h('b', '老師：'), ' ', tableAnswerText(task)));
+    return box;
+  }
+  function tableAnswerText(task) { return task.rows.map((r) => r.map((c) => (isIn(c) ? c.a : String(c).replace(/[`*]/g, ''))).join('｜')).join('；'); }
+  D1.tableAnswerText = tableAnswerText;
+  D1.renderTableTask = renderTableTask;
+  // 變量命名規則（教科書 p.36）：只可用英文字母、數字、下劃線；不能以數字開首
+  D1.validName = (s) => /^[A-Za-z_][A-Za-z0-9_]*$/.test(s);
+
   // ---------------- 小測 ----------------
   function quizTags(it) {
     const row = h('div.tagrow');
@@ -702,14 +762,71 @@
     const f = pick([['C ← A * B', 'A ← A + 1', '輸出 A, C'], ['C ← A + B', 'B ← C - B', '輸出 B, C'], ['A ← A + B', 'B ← A - B', 'A ← A - B', '輸出 A, B'], ['C ← (A + B) / 2', '輸出 C']]);
     return { code: ['輸入 A, B', ...f].join('\n'), inputs: `${x}, ${y}`, q: `輸入數據是 ${x}, ${y}。輸出是什麼？`, type: '輸入與運算' };
   };
+  // ---- 單元 4：數據類型、命名規則 ----
+  const DTYPE_LIT = [['288', '整數'], ['-101', '整數'], ['0', '整數'], ['56.5', '實數'], ['-30.0', '實數'], ['0.05', '實數'], ['-0.382', '實數'], ["'a'", '字符'], ["'B'", '字符'], ["'8'", '字符'], ["'%'", '字符'], ['True', '布爾'], ['False', '布爾'], ['"abc"', '字串'], ['"0011"', '字串'], ['"P%ssword123"', '字串'], ['"I go to school by bus."', '字串']];
+  const DTYPE_CTX = [['班上的學生人數', '整數', '人數只會是整數。'], ['捐獻人數', '整數', '人數只會是整數。（p.44 例題 2.3）'], ['善款數字（例如 65000.5）', '實數', '金額有小數。（p.44 例題 2.3）'], ['身高（以 m 為單位）', '實數', '身高有小數。'], ['體重（以 kg 為單位）', '實數', '體重有小數。（p.43 變量分析表）'], ['三次測驗的平均分', '實數', '平均分可能有小數。（p.46 例題 2.4）'], ['電話號碼', '字串', '電話號碼不用作運算，又可能有 (852)、+852。（p.43 提示）'], ['電郵地址', '字串', '文字資料。（p.44 測試站 2.2）'], ['會員姓名', '字串', '文字資料。'], ['會長的話（例如「新年快樂!」）', '字串', '文字資料。（p.44 例題 2.3）'], ['年齡組別（例如「20-39歲」）', '字串', '以範圍記錄，不是一個數字。（p.44 試想想）'], ['是否同意接收廣告', '布爾', '只有兩個可能性。（p.44 測試站 2.2）'], ['是否已交功課', '布爾', '只有「是」「否」兩個可能性。'], ['網站評分（1 至 5 顆星）', '整數', '評分是整數。（p.44 測試站 2.2）'], ['考試等級（A、B 或 F，一個字母）', '字符', '只有一個字母。'], ['性別（M 或 F）', '字符', '只有一個字母。']];
+  const DT_OPTS = ['整數', '實數', '字符', '字串', '布爾'];
+  GENS.dtype = () => {
+    if (Math.random() < 0.45) { const [v, a] = pick(DTYPE_LIT); return { options: DT_OPTS, ans: a, q: `數據 \`${v}\` 屬於哪一種數據類型？`, type: '數據類型', why: '參考教科書 p.42 表 2.5：整數（沒有小數）、實數（有小數點）、字符（單引號內一個字符）、布爾（True／False）、字串（雙引號內的文字）。' }; }
+    const [d, a, w] = pick(DTYPE_CTX);
+    return { options: DT_OPTS, ans: a, q: `要儲存「${d}」，最合適的數據類型是什麼？`, type: '選擇數據類型', why: w };
+  };
+  const NM_OK = ['number1', 'numberOne', 'new_number', 'newNumber', 'sum_of_scores', 'sumOfScores', '_total', 'avg_mark', 'test2', 'PI', 'bmi', 'Bmi', 'x1y2', 'MAX_SIZE'];
+  const NM_BAD = ['1number', '2total', 'new number', 'newnumber!', 'total$', '#count', 'avg-mark', 'my score', '3D', 'price%', 'e@mail', 'test 1'];
+  GENS.name = () => {
+    const ok = Math.random() < 0.5; const n = pick(ok ? NM_OK : NM_BAD);
+    if (D1.validName(n) !== ok) throw new Error('命名題資料錯誤：' + n);
+    const why = ok ? '只用了英文字母、數字或下劃線，而且不是以數字開首。' : /^[0-9]/.test(n) ? '不能以數字開首（規則 1）。' : '含有空白格或其他符號，只可用英文字母、數字和下劃線（規則 2）。';
+    return { options: ['符合規則', '不符合規則'], ans: ok ? '符合規則' : '不符合規則', q: `變量名稱 \`${n}\` 是否符合命名規則？（教科書 p.36）`, type: '變量命名', why };
+  };
+  GENS.circle = () => {
+    const r = R(1, 12); const f = pick([['area ← PI * r * r', '輸出 area'], ['c ← 2 * PI * r', '輸出 c']]);
+    return { code: ['PI ← 3.14', `r ← ${r}`, ...f].join('\n'), q: '常數 PI 取 3.14。輸出是什麼？', type: '常數與運算' };
+  };
+  // ---- 單元 5：選擇 ----
+  GENS.relop = () => {
+    const v = pick(['mark', 'age', 'A', 'X']), x = R(1, 9) * 10 + pick([0, 0, 5]), k = pick([x, x, x - 5, x + 5]);
+    const op = pick(['=', '<', '<=', '>', '>=', '<>', '!=']);
+    return { code: [`${v} ← ${x}`, `輸出 ${v} ${op} ${k}`].join('\n'), q: '輸出是 True 還是 False？', type: '關係運算符' };
+  };
+  GENS.ifelse = () => {
+    const a = R(1, 30), b = R(1, 30), op = pick(['>', '>=', '<', '<=', '=', '<>']);
+    const t = pick([[`A ← A - B`, '輸出 A'], ['輸出 "Yes"'], [`B ← A + B`, '輸出 B']]), e = pick([[`A ← A + B`, '輸出 A'], ['輸出 "No"'], [`B ← B * 2`, '輸出 B']]);
+    const L = [`A ← ${a}`, `B ← ${b}`, `如果 A ${op} B 則`, ...t.map((s) => '    ' + s), '否則', ...e.map((s) => '    ' + s)];
+    if (Math.random() < 0.4) L.push('輸出 A + B');
+    return { code: L.join('\n'), q: '空運行以下算法，輸出是什麼？（多個值用空格分隔）', type: '如果…則…否則' };
+  };
+  GENS.grade = () => {
+    const c = pick([[90, 80, 70, 60, 50], [85, 50], [80, 65, 50], [75, 60, 40]]), L = 'ABCDE';
+    const nest = Math.random() < 0.5, m = R(0, 100);
+    const lines = ['輸入 mark'];
+    if (nest) {
+      c.forEach((v, i) => { const ind = '    '.repeat(i); lines.push(`${ind}${i ? '' : ''}如果 mark >= ${v} 則`, `${ind}    grade ← "${L[i]}"`, `${ind}否則`); });
+      lines.push(`${'    '.repeat(c.length)}grade ← "F"`);
+    } else {
+      c.forEach((v, i) => { lines.push(`${i ? '否則如果' : '如果'} mark >= ${v} 則`, `    grade ← "${L[i]}"`); });
+      lines.push('否則', '    grade ← "F"');
+    }
+    lines.push('輸出 grade');
+    return { code: lines.join('\n'), inputs: String(m), q: `輸入 mark 為 ${m}，輸出是什麼？`, type: nest ? '嵌套條件語句' : '如果…否則如果' };
+  };
+  GENS.nested = () => {
+    const x = R(2, 20), y = R(2, 20), k = R(10, 35), m = pick([2, 3]);
+    const L = [`X ← ${x}`, `Y ← ${y}`, `如果 X + Y > ${k} 則`, `    如果 Y > X * ${m} 則`, '        Y ← X', '    否則', '        X ← Y', '否則', `    Y ← X - ${R(1, 5)}`, pick(['輸出 X', '輸出 Y', '輸出 X, Y'])];
+    return { code: L.join('\n'), q: '空運行以下算法，輸出是什麼？（參考教科書 p.58 例題 2.5）', type: '嵌套條件語句' };
+  };
   function renderEndless(sec, ctx) {
     const es = ctx.state.endless = ctx.state.endless || { n: 0, right: 0 };
     const box = h('div.blk');
     const stat = h('p.pts');
     const area = h('div.blk');
     const updStat = () => { stat.textContent = `已做 ${es.n} 題，答對 ${es.right} 題（不計分，會寫進報告）。`; };
+    let lastType = null;
     function next() {
-      const g = GENS[pick(sec.gens)]();
+      let g = GENS[pick(sec.gens)]();
+      for (let k = 0; k < 4 && sec.gens.length > 1 && g.type === lastType; k++) g = GENS[pick(sec.gens)]();
+      lastType = g.type;
+      if (g.options) return nextOpt(g);
       const res = E.run(g.code, { inputs: g.inputs || '' });
       if (res.error) return next();
       const ans = res.out.join(' ');
@@ -730,7 +847,24 @@
       bNext.onclick = next;
       area.replaceChildren(h('div.row', h('span.pill.prac', h('i', '∞'), g.type)), mdEl('div.q', g.q), codeView(g.code), h('div.row', inp, bChk, bNext), fb, simSlot);
     }
-    box.append(sec.intro ? null : mdEl('p', '按教科書題型隨機生成，答案由模擬器計算。想練多少就練多少。'), stat, area);
+    // 選項題（答案由生成器按教科書規則計算，例如命名規則）
+    function nextOpt(g) {
+      let sel = null, answered = false;
+      const fb = h('div', { 'aria-live': 'polite' });
+      const bChk = h('button.btn.primary', { type: 'button', disabled: true }, '核對');
+      const bNext = h('button.btn', { type: 'button', onclick: next }, '再練一題');
+      const btns = g.options.map((o) => h('button', { type: 'button', 'aria-pressed': 'false', onclick: () => { if (answered) return; sel = o; btns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn(o)))); bChk.disabled = false; } }, o));
+      const btn = (o) => btns[g.options.indexOf(o)];
+      bChk.onclick = () => {
+        if (answered || sel == null) return;
+        answered = true; const ok = sel === g.ans; es.n++; if (ok) es.right++; ctx.save(); updStat();
+        btn(sel).classList.add(ok ? 'ok' : 'no'); if (!ok) btn(g.ans).classList.add('ok'); bChk.disabled = true;
+        fb.replaceChildren(feedback(ok ? 'good' : 'bad', ok ? '答對了！' : `未對。答案是「${g.ans}」。`, g.why || null));
+      };
+      area.replaceChildren(h('div.row', h('span.pill.prac', h('i', '∞'), g.type)), ...[mdEl('div.q', g.q), g.code ? codeView(g.code) : null].filter(Boolean), h('div.endopts', { role: 'group', 'aria-label': '選項' }, btns), h('div.row', bChk, bNext), fb);
+    }
+    if (!sec.intro) box.append(mdEl('p', '按教科書題型隨機生成，答案由模擬器計算。想練多少就練多少。'));
+    box.append(stat, area);
     updStat(); next();
     return box;
   }
@@ -771,7 +905,7 @@
       (sec.tasks || []).forEach((it) => allItems.push({ id: it.id, cat: 'write', pts: it.pts, sec: sec.id }));
       (sec.items || []).forEach((it) => allItems.push({ id: it.id, cat: 'quiz', pts: it.pts, sec: sec.id }));
     }
-    const CATS = { try: '試', prac: '練', write: '寫算法', quiz: '小測' };
+    const CATS = { try: '試', prac: '練', write: U.writeLabel || '寫算法', quiz: '小測' };
     const MAX = allItems.reduce((s, x) => s + x.pts, 0);
     const got = (filter) => allItems.filter(filter || (() => true)).reduce((s, x) => s + ((S.items[x.id] || {}).pts || 0), 0);
     const maxOf = (filter) => allItems.filter(filter).reduce((s, x) => s + x.pts, 0);
@@ -853,7 +987,7 @@
       if (sec.learn) card.append(renderLearn(sec.learn));
       for (const it of sec.tries || []) card.append(renderTry(it, ctx));
       for (const it of sec.practice || []) card.append(D1.renderPractice(it, ctx));
-      if (sec.kind === 'write') for (const t of sec.tasks) card.append(renderWrite(t, ctx));
+      if (sec.kind === 'write') for (const t of sec.tasks) card.append(t.kind === 'table' ? renderTableTask(t, ctx) : renderWrite(t, ctx));
       if (sec.kind === 'quiz') card.append(renderQuiz(sec, ctx));
       if (sec.kind === 'endless') card.append(renderEndless(sec, ctx));
       if (sec.kind === 'report') card.append(renderReport());
@@ -988,7 +1122,7 @@
           else if (it.type === 'complete') a = it.ref.map((r, i) => `［${i + 1}］${r}`).join('；');
           rows.push(['練', it.id, it.pts, it.src || '', a]); total += it.pts;
         }
-        for (const t of sec.tasks || []) { rows.push([`寫算法（${t.tier}）`, t.id, t.pts, t.src || '', t.ref]); total += t.pts; }
+        for (const t of sec.tasks || []) { rows.push([`${t.kind === 'table' ? '分析題' : '寫算法'}（${t.tier}）`, t.id, t.pts, t.src || '', t.kind === 'table' ? tableAnswerText(t) : t.ref]); total += t.pts; }
         for (const it of sec.items || []) { const r = correctIndex(it); rows.push(['小測', it.id, it.pts, it.src || '', `${LET[r]}. ${it.options[r]}` + ((it.tags || []).length ? `（${it.tags.map((x) => (x.t === 'hot' ? '常考' : '易錯') + '：' + x.why).join('；')}）` : '')]); total += it.pts; }
         if (rows.length) blk.append(h('div.scroll', h('table.tb', h('thead', h('tr', ['類別', '編號', '分', '出處', '答案'].map((x) => h('th', x)))), h('tbody', rows.map((r) => h('tr', r.slice(0, 4).map((x) => h('td', String(x))), h('td', /\n/.test(r[4]) || r[0].startsWith('寫') ? h('pre.code', { style: { padding: '6px 10px' } }, r[4]) : r[4])))))));
         if (sec.kind === 'endless') blk.append(h('p.pts', `隨機題型：${sec.gens.join('、')}（答案由引擎計算，不計分）。`));

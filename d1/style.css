@@ -255,3 +255,14 @@ textarea.report{width:100%;min-height:10em;font:13px/1.5 var(--mono);border:1px 
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 #rep-table td,#rep-table th{white-space:nowrap}
+/* 分析題（表格）及無限練習選項 */
+select.cellsel{font-size:15px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);max-width:100%;min-width:7.5em}
+select.cellsel.ok{border-color:var(--good);background:var(--good-bg)}
+select.cellsel.no{border-color:var(--bad);background:var(--bad-bg)}
+.tb.anatab td{vertical-align:middle}
+.tb.anatab input.txt{font-size:15px;padding:5px 8px;width:9em}
+.endopts{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.endopts button{font-size:16px;padding:7px 14px;border-radius:9px;border:1px solid var(--line);background:var(--bg);cursor:pointer}
+.endopts button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.endopts button.ok{border-color:var(--good);background:var(--good-bg)}
+.endopts button.no{border-color:var(--bad);background:var(--bad-bg)}

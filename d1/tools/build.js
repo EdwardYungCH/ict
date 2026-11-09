@@ -35,6 +35,7 @@ for (const U of units) {
     for (const it of sec.practice || []) {
       seen(it.id); total += it.pts;
       try {
+        if (it.nameRule) { const hits = it.options.map((o) => D1.validName(o.replace(/`/g, '')) === (it.nameRule === 'valid')); chk(hits.filter(Boolean).length === 1 && hits[D1.correctIndex(it)], `${it.id}：命名規則答案與規則不符`); }
         if (it.type === 'mc') { D1.correctIndex(it); if (it.code && it.verify) { const r = D1.askAnswer(it); chk(E.same(it.options[D1.correctIndex(it)], r), `${it.id}：選項與引擎答案不符`); } }
         else if (it.type === 'fill') { const a = D1.fillAnswers(it); chk(a.every((x) => x !== ''), `${it.id}：有空白答案`); }
         else if (it.type === 'trace') { const tr = D1.traceOf(it); chk(tr.rows.length > 0, `${it.id}：追蹤表沒有內容`); }
@@ -44,6 +45,14 @@ for (const U of units) {
     }
     for (const t of sec.tasks || []) {
       seen(t.id); total += t.pts;
+      if (t.kind === 'table') {
+        const ans = D1.tableAnswers(t);
+        chk(ans.length > 0 && ans.every((a) => a !== ''), `${t.id}：表格沒有答案`);
+        t.rows.forEach((r) => r.forEach((c) => { if (c && c.sel) chk((t.opts[c.sel] || []).includes(String(c.a)), `${t.id}：答案「${c.a}」不在選項 ${c.sel} 內`); }));
+        chk(D1.checkTableVals(t, ans).every(Boolean), `${t.id}：答案未能通過自己的核對`);
+        if (t.nameCol != null) t.rows.forEach((r) => { const n = String(r[0]).replace(/`/g, ''); chk((r[t.nameCol].a === t.opts[r[t.nameCol].sel][0]) === D1.validName(n), `${t.id}：${n} 的命名判斷與規則不符`); });
+        continue;
+      }
       const r = D1.checkWrite(t, t.ref);
       chk(r.ok, `${t.id}：參考答案未能通過自己的測試 ${JSON.stringify(r)}`);
       const s = D1.checkWrite(t, t.starter || '');
