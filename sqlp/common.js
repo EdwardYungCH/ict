@@ -226,9 +226,7 @@
     if (m.ai) keyish.add(UPc(m.ai));
     return { keyish, m };
   }
-  function validAll(T) { try { for (const k of E.tableKeys(T)) E.normDb({ [k]: T[k] }) && 0; const V = E.clone(T); for (const k of E.tableKeys(V)) { const t = V[k]; void t; } return checkAll(T); } catch (e) { return false; } }
   function checkAll(T) { try { E.runScript(T, 'SELECT 1'); for (const k of E.tableKeys(T)) { const r = E.runScript(T, 'UPDATE `' + k + '` SET `' + T[k][0][0] + '` = `' + T[k][0][0] + '`'); if (r.error) return false; } return true; } catch (e) { return false; } }
-  void validAll;
   function tweakNums(T, tn, rnd, share) {
     const { keyish, m } = colRoles(T, tn), [cols, rows] = T[tn];
     cols.forEach((c, j) => {
@@ -251,7 +249,13 @@
     for (const ch of 'ZQXJKW') { const v = fits(base + ch) ? base + ch : base.slice(0, -1) + ch; if (!taken.has(v.toLowerCase()) && fits(v)) return v; }
     return null;
   }
+  const VARC = new WeakMap();
   function variants(T0, seed) {
+    let c = VARC.get(T0); if (!c) { c = new Map(); VARC.set(T0, c); }
+    if (!c.has(seed)) c.set(seed, variants0(T0, seed));
+    return c.get(seed);
+  }
+  function variants0(T0, seed) {
     const rnd = rng('v:' + seed), out = [];
     const names = E.tableKeys(T0).filter((k) => T0[k][1].length);
     if (!names.length) return out;

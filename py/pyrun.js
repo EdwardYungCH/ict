@@ -75,6 +75,31 @@
       const n = Sk.misceval.asIndexSized(nd);
       return new Sk.builtin.float_(pyRoundFloat(Sk.builtin.asnum$(this), n));
     };
+    // sum()：CPython 3.12+ 對 float 用補償加法（例如 sum([0.1]*10) == 1.0）
+    const origSum = Sk.builtins.sum;
+    const newSum = function (iterable, start) {
+      const args = start === undefined ? [iterable] : [iterable, start];
+      let arr = null;
+      try { if (iterable instanceof Sk.builtin.list || iterable instanceof Sk.builtin.tuple) arr = iterable.v.slice(); } catch (e) { arr = null; }
+      const isNum = (o) => o instanceof Sk.builtin.int_ || o instanceof Sk.builtin.float_;
+      if (!arr || !arr.some((o) => o instanceof Sk.builtin.float_) || !arr.every(isNum) || (start !== undefined && !isNum(start))) return Sk.misceval.callsimOrSuspendArray(origSum, args);
+      let i = 0, si = start === undefined ? 0 : Sk.builtin.asnum$(start);
+      if (start instanceof Sk.builtin.float_) si = NaN;
+      // 先把 float 之前的 int 準確相加
+      let intPart = null;
+      if (!Number.isNaN(si)) { intPart = Sk.misceval.callsimArray(origSum, [new Sk.builtin.list(arr.filter((_, k) => k < arr.findIndex((o) => o instanceof Sk.builtin.float_)))].concat(start === undefined ? [] : [start])); }
+      let sF = intPart ? Number(Sk.builtin.asnum$(intPart)) : Sk.builtin.asnum$(start), c = 0;
+      i = Number.isNaN(si) ? 0 : arr.findIndex((o) => o instanceof Sk.builtin.float_);
+      for (; i < arr.length; i++) {
+        const x = Number(Sk.builtin.asnum$(arr[i]));
+        const t = sF + x;
+        if (Math.abs(sF) >= Math.abs(x)) c += (sF - t) + x; else c += (x - t) + sF;
+        sF = t;
+      }
+      const r = Number.isFinite(c) && c ? sF + c : sF;
+      return new Sk.builtin.float_(r);
+    };
+    Sk.builtins.sum = new Sk.builtin.func(newSum);
     for (const n of ['OSError', 'FileNotFoundError', 'IndentationError', 'TimeoutError', 'EOFError', 'KeyboardInterrupt', 'UnboundLocalError', 'RecursionError']) {
       if (!Sk.builtins[n] && Sk.builtin[n]) Sk.builtins[n] = Sk.builtin[n];
     }

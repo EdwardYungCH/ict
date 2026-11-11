@@ -86,6 +86,21 @@ def run_ide(pg, ide):
     idle(pg)
     return shell_text(pg, ide)
 
+# 數字格式對照：float repr、round()、sum()、// 及 % 等（瀏覽器 Skulpt 要與 CPython 完全相同）
+NUM_SAMPLE = '\n'.join([
+    "print(0.1 + 0.2, 1.1 * 1.1, 2 / 3, 100 / 3, 7 / 2, 1e16, 1e-05, 0.0001, 3.0, 1e22, 123456789.0, 2 ** 0.5, -0.0)",
+    "print(round(2.675, 2), round(7.45, 1), round(2.5), round(0.5), round(1.5), round(-2.5), round(0.125, 2), round(1.005, 2), round(2.345, 2), round(3.14159, 3), round(1234.5678, -2))",
+    "print(sum([0.1] * 10), sum([0.1, 0.2, 0.3]), sum([1, 2, 0.5]), sum(range(5)), sum([1.5, 2.25]) / 2)",
+    "print(-7 // 2, -7 % 3, 7.5 // 2, -7.5 % 2, 2 ** 10, 2 ** -1, 10 / 4, 10 // 4, int(3.99), int(-3.99), float(7))",
+    "x = 7 / 3",
+    "print(f'{x}', str(x), [x, 0.1], f'{x:.2f}', '%.3f' % x, format(x, '.1f'), x * 3)",
+])
+def cpython_out(code):
+    import subprocess
+    r = subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pyrun.py')], input=json.dumps([{'code': code}]), capture_output=True, text=True)
+    return json.loads(r.stdout)[0]['out']
+NUM_EXP = cpython_out(NUM_SAMPLE)
+
 def uses_random(o):
     # 用了 random 而沒有 fixRandom：每次結果不同，不能比較輸出
     return bool(re.search(r'\brandom\b', o.get('code', ''))) and not o.get('fixRandom')
@@ -365,6 +380,12 @@ def extras(browser, unit):
         check(f'{unit} 漏冒號顯示 SyntaxError: expected \':\'', "SyntaxError: expected ':'" in sh and 'line 2' in sh, sh)
         check(f'{unit} 錯誤行在編輯器標紅', pg.locator(f'{box} .ed-gut .e').count() == 1)
     check(f'{unit} 編輯器測試沒有 console 錯誤', not errs, '; '.join(errs[:5]))
+    ctx.close()
+    # 數字格式：Skulpt 與 CPython 相同
+    ctx, pg, errs = new_page(browser, 1280)
+    pg.goto(URL(f'{unit}/index.html'))
+    got = pg.evaluate('(c) => PyRun.run(c, {}).then((r) => r.out + (r.err ? "ERR " + r.err.type : ""))', NUM_SAMPLE)
+    check(f'{unit} float／round()／sum() 的輸出與 CPython 完全相同', got == NUM_EXP, f'Skulpt {got!r}\nCPython {NUM_EXP!r}')
     ctx.close()
     # localStorage 封鎖
     ctx, pg, errs = new_page(browser, 1280, block_storage=True)
