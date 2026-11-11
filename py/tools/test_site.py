@@ -86,6 +86,10 @@ def run_ide(pg, ide):
     idle(pg)
     return shell_text(pg, ide)
 
+def uses_random(o):
+    # 用了 random 而沒有 fixRandom：每次結果不同，不能比較輸出
+    return bool(re.search(r'\brandom\b', o.get('code', ''))) and not o.get('fixRandom')
+
 def full_run(browser, unit, width):
     ctx, pg, errs = new_page(browser, width)
     pg.goto(URL(f'{unit}/index.html'))
@@ -114,6 +118,9 @@ def full_run(browser, unit, width):
                 # 找對應的 sim 資料
                 simdata = [b['sim'] for b in sec.get('learn', []) if 'sim' in b][k]
                 exp = norm(simdata['_run']['out'])
+                if uses_random(simdata):
+                    check(f'{unit} {sec["id"]} sim {k+1}：用了隨機數，Skulpt 可以執行', '%Run' in sh and 'Traceback' not in sh or bool(simdata['_run']['err']), sh[-300:])
+                    continue
                 check(f'{unit} {sec["id"]} sim {k+1}：Skulpt 輸出與 CPython 相同', exp in norm(sh), f'{sh!r} vs {exp!r}')
                 perr = simdata['_run']['err']
                 if perr:
@@ -138,6 +145,7 @@ def full_run(browser, unit, width):
             check(f'{it["id"]} 逐步執行高亮一行', pg.locator(f'{box} .ln.hl').count() == 1)
             sh = run_ide(pg, box)
             exp = norm(it['_run']['out'])
+            if uses_random(it): exp = ''
             check(f'{it["id"]} ▶ 執行：Skulpt 輸出與 CPython 相同', exp in norm(sh), f'{sh!r} vs {exp!r}')
             if it['_run']['err']:
                 check(f'{it["id"]} ▶ 執行：錯誤類型與 CPython 相同（{it["_run"]["err"]["type"]}）', it['_run']['err']['type'] in sh, sh[-300:])

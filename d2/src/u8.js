@@ -191,7 +191,6 @@ module.exports = {
       tasks: [
         { id: 'u8-w1', kind: 'table', tier: '必做', pts: 12, title: '錯誤類型及原因', src: '教科書 p.173–178',
           q: '每段程式都有一個錯誤。選出錯誤類型及原因。',
-          prompt: '每段程式都有一個錯誤。選出錯誤類型及原因。',
           head: ['程式（或情況）', '錯誤類型', '原因'], opts: { T: TYPES, R: REASONS },
           rows: [
             ['`print"I love ICT"`', { sel: 'T', a: TYPES[0] }, { sel: 'R', a: REASONS[0] }],
@@ -206,7 +205,6 @@ module.exports = {
           hint: '不能開始執行 → 語法錯誤；執行中途終止 → 運行時錯誤；完成執行但結果錯 → 邏輯錯誤（無限循環也是邏輯錯誤）。' },
         { id: 'u8-w2', kind: 'table', tier: '進階', pts: 11, title: '設計測試數據', src: '教科書 p.194 課文總結（op 算法）',
           q: '程式：`op > 5` 輸出 Should be smaller；`op < -5` 輸出 Should be larger；否則輸出 OK。正常範圍是 -5 至 5。\n**邊界數據值**＝分界值（-5、5）及其兩旁的值。為每個測試數據選出：是否邊界數據值、屬正常還是錯誤數據值、預期輸出。',
-          prompt: '程式：`op > 5` 輸出 Should be smaller；`op < -5` 輸出 Should be larger；否則輸出 OK。正常範圍是 -5 至 5。\n**邊界數據值**＝分界值（-5、5）及其兩旁的值。為每個測試數據選出：是否邊界數據值、屬正常還是錯誤數據值、預期輸出。',
           head: ['op', '邊界數據值？', '正常／錯誤', '預期輸出'], opts: { B: BOUND, N: NE, O: OPOUT },
           rows: [
             ['-10', { sel: 'B', a: '否' }, { sel: 'N', a: NE[1] }, { sel: 'O', a: OPOUT[1] }],
