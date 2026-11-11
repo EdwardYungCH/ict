@@ -1,0 +1,276 @@
+/* 單元 c5a：數據結構（一）堆疊——數據結構與指示標、後進先出、推入／彈出、復原與調用堆疊、
+ * Python 列表實現堆疊、下溢／上溢、以陣列及指示標實現堆疊（剪貼簿）、堆疊應用（膠箱、瀏覽器）
+ * 教科書 選修C 第 5 章 p.150–165、p.203–204（課題練習 1）
+ * 所有答案在 build 時由 CPython 計算／核對。
+ *
+ * 教科書疑似錯誤：p.155 調用堆疊範例 `area = area(n, n)`：在 Python 執行會出 UnboundLocalError（area 被當成局部變量），而且 square 沒有 return（同選C-17）；本單元以 fix 方塊示範並改正。
+ * 教科書疑似錯誤：p.161 例題 5.1(e) 旁註說把 (t-n) 個膠箱移至 S3；按「設 i 由 t 下至 n」循環實際移走 t-n+1 個（同選C-18）；本單元 s4-p2 以 Python 驗算為 22 個（t = 25、n = 4）。
+ */
+const C = (...ls) => ls.join('\n');
+const HOT_STACK = { t: 'hot', why: '堆疊操作空運行：DSE 2017 卷二D Q3（瀏覽器上一頁／下一頁）、2019 卷二D Q1（膠箱堆疊）' };
+
+// 剪貼簿（課題練習 1，p.203–204）：跟教科書一樣用索引 1–5，索引 0 不用
+const CLIP = [
+  'clipboard = [""] * 6        # 用索引 1 至 5，索引 0 不用',
+  'latest = 0                  # 頂端項目的索引；0 代表空',
+  '',
+  'def clear():',
+  '    global latest',
+  '    latest = 0',
+  '',
+  'def copy(item):',
+  '    global latest',
+  '    if latest == 5:',
+  '        print("剪貼簿已滿")',
+  '    else:',
+  '        latest = latest + 1',
+  '        clipboard[latest] = item',
+  '',
+  'def paste():',
+  '    global latest',
+  '    if latest == 0:',
+  '        result = -1',
+  '    else:',
+  '        result = clipboard[latest]',
+  '        latest = latest - 1',
+  '    return result',
+];
+
+module.exports = {
+  id: 'c5a',
+  title: '數據結構（一）：堆疊',
+  book: '教科書 選修C 第 5 章 p.150–165（另有 p.203–204 課題練習 1）',
+  key: 'C-c5a-hmac-ceb14ae4de',
+  sections: [
+    // ------------------------------------------------------------------
+    {
+      id: 's1', title: '數據結構、指示標與堆疊的概念', pages: '教科書 p.150–155',
+      learn: [
+        { pts: [
+          '**數據結構**：在電腦記憶體中儲存和組織數據的方式。例如全班成績用一個陣列（列表）儲存，而不是數十個變量。（p.150）',
+          '**陣列**把數據連續儲存，用索引便能直接計算位址，例如 `the_array[4]`。（p.150）',
+          '**指示標（pointer）**：儲存記憶體位址的變量，好像箭頭指向另一個變量。Python 沒有指示標運算符，本章用**整數索引**當作指示標。（p.151）',
+          '**堆疊（stack）**：**後進先出法（LIFO）**。好像一疊書：最後放上的書最先拿走。（p.153）',
+          '**推入（push）**：把數據加到堆疊**頂端**；**彈出（pop）**：取出頂端（最後加入）的數據。（p.153）',
+        ] },
+        { h: '堆疊在電腦系統的應用（p.154–155）' },
+        { pts: [
+          '**復原（undo）**：每個操作推入「復原堆疊」；按復原便彈出最後的操作，並推入「取消復原堆疊」。',
+          '**取消復原（redo）**：由取消復原堆疊彈出，放回復原堆疊。進行新操作時，取消復原堆疊會被**清空**。',
+          '**調用堆疊（call stack）**：調用子程式時，其堆疊框（包括返回位址）被推入；子程式完成後被彈出。',
+        ] },
+        { sim: { code: C(
+          'undo = []',
+          'redo = []',
+          'undo.append("畫 1")',
+          'undo.append("畫 2")',
+          'undo.append("畫 3")',
+          'redo.append(undo.pop())     # 按復原',
+          'redo.append(undo.pop())     # 再按復原',
+          'undo.append(redo.pop())     # 按取消復原',
+          'print("復原堆疊：", undo)',
+          'print("取消復原堆疊：", redo)'), step: true, open: ['vars'] },
+          cap: '復原／取消復原（p.154–155）。按「下一步」，看兩個列表（列表末端 = 堆疊頂端）怎樣變化。' },
+        { fix: {
+          bad: C('def multiply(a, b):', '    return a*b', '', 'def area(a, b):', '    return multiply(a, b)', '', 'def square(n):', '    area = area(n, n)', '', 'print(square(5))'),
+          good: C('def multiply(a, b):', '    return a*b', '', 'def area(a, b):', '    return multiply(a, b)', '', 'def square(n):', '    result = area(n, n)', '    return result', '', 'print(square(5))'),
+          why: '教科書 p.155 的調用堆疊例子在 Python 會出 **UnboundLocalError**：`square` 內把結果賦值給 `area`，Python 便把 `area` 當作局部變量，再調用 `area(n, n)` 時它還未有值。另外 `square` 沒有 `return`，會輸出 `None`。改用另一個變量名並加上 `return`。調用次序不變：square（第 11 行調用）→ area（第 8 行）→ multiply（第 5 行）。' } },
+      ],
+      tries: [
+        { id: 'c5a-s1-t1', pts: 4, src: '教科書 p.156–157 堆疊在 Python 的操作',
+          code: C('the_stack = []', 'the_stack.append("A")', 'the_stack.append("B")', 'the_stack.append("C")', 'temp = the_stack.pop()', 'temp = the_stack.pop()', 'the_stack.append("D")', 'print(the_stack, temp)'),
+          q: '先估：輸出是什麼？', options: ["['A', 'D'] B", "['C', 'D'] A", "['A', 'D'] C", "['A', 'B', 'D'] B"],
+          why: '`pop()` 取出列表**末端**（堆疊頂端）：先取出 C，再取出 B，所以 temp 最後是 B；之後 D 推入，堆疊剩 A、D。' },
+      ],
+      practice: [
+        { id: 'c5a-s1-p1', type: 'mc', pts: 2, src: '教科書 p.154、p.167',
+          q: '以下哪一項功能**最適合**使用堆疊？',
+          options: ['列印機按送出次序列印文件', '繪圖軟件的「復原」功能', '銀行櫃位按取票次序叫號', '把學生按學號排列'], answer: 1,
+          hint: '堆疊是後進先出：最後的操作最先被復原。另外三項都是先到先得（隊列）或排序。' },
+        { id: 'c5a-s1-p2', type: 'mc', pts: 2, src: '教科書 p.155 調用堆疊',
+          q: '主程式第 11 行調用 `square`，`square` 在第 8 行調用 `area`，`area` 在第 5 行調用 `multiply`。當 `multiply` **正在執行**時，調用堆疊（由底至頂）儲存的返回位置是？',
+          options: ['第 5 行、第 8 行、第 11 行', '第 11 行、第 8 行、第 5 行', '只有第 5 行', '第 11 行、第 5 行'], answer: 1,
+          hint: '最先調用的最先被推入，所以在最底；multiply 完成後，「第 5 行」最先被彈出。' },
+        { id: 'c5a-s1-p3', type: 'fill', pts: 2, src: '教科書 p.154–155 復原與取消復原',
+          q: '用戶畫了 1、2、3，按復原兩次，按取消復原一次，再畫 6。寫出最後兩個堆疊的內容（照 Python 的列表寫法）。',
+          code: C('undo = []', 'redo = []', 'undo.append(1)', 'undo.append(2)', 'undo.append(3)', 'redo.append(undo.pop())', 'redo.append(undo.pop())', 'undo.append(redo.pop())', 'undo.append(6)', 'redo = []      # 新操作會清空取消復原堆疊'),
+          blanks: [{ label: 'undo', ask: { var: 'undo' } }, { label: 'redo', ask: { var: 'redo' } }],
+          hint: '復原兩次後 undo = [1]、redo = [3, 2]；取消復原把 2 放回 undo；畫 6 時清空 redo。' },
+      ],
+    },
+    // ------------------------------------------------------------------
+    {
+      id: 's2', title: '用 Python 列表操作堆疊', pages: '教科書 p.156–162',
+      learn: [
+        { table: { head: ['堆疊的操作', 'Python 列表的操作', '描述'], rows: [
+          ['定義堆疊', '`the_stack = []`', '建立一個空列表'],
+          ['推入', '`the_stack.append(item)`', '把 item 加到列表末端（堆疊頂端）'],
+          ['彈出', '`the_stack.pop()`', '傳回並刪除列表末端的項目'],
+          ['查看頂端（不彈出）', '`the_stack[-1]`', '只讀取，不刪除'],
+          ['是否空的', '`len(the_stack) == 0`', '相當於教科書的 isEmpty(S)'],
+        ] }, cap: '表：堆疊在 Python 的操作（p.156）' },
+        { pts: [
+          '**下溢錯誤（underflow）**：從**空的堆疊**彈出。在 Python，`[].pop()` 會出 **IndexError**。（p.157）',
+          '**上溢錯誤（overflow）**：把項目推入**滿的堆疊**。Python 列表本身沒有大小上限，所以要自己設定上限並檢查。（p.157）',
+          '彈出前先檢查：`if len(s) > 0:`；推入前檢查：`if len(s) < SIZE:`。',
+          '`S.append(S.pop() + S.pop())`：先彈出兩個項目相加，再把結果推入（例題 5.1(a)(i)）。',
+        ] },
+        { sim: { code: C('S1 = []', 'S1.append(30)', 'S1.append(10)', 'S1.append(10)', 'S1.append(S1.pop() + S1.pop())', 'S1.append(25)', 'print(S1)'), step: true, open: ['vars'] },
+          cap: '例題 5.1(a)(i)（p.158，參考 DSE 2019 卷二D Q1）：push 寫成 `append`，pop 寫成 `pop()`。' },
+      ],
+      tries: [
+        { id: 'c5a-s2-t1', pts: 4, src: '教科書 p.158 例題 5.1(a)(i)',
+          code: C('S1 = []', 'S1.append(30)', 'S1.append(10)', 'S1.append(10)', 'S1.append(S1.pop() + S1.pop())', 'S1.append(25)', 'print(S1)'),
+          q: '先估：輸出是什麼？（列表左邊是堆疊底部）', options: ['[30, 20, 25]', '[30, 10, 10, 20, 25]', '[40, 25]', '[25, 20, 30]'],
+          why: '兩次 pop 取出 10 和 10，相加得 20 再推入：[30, 20]；最後推入 25。' },
+        { id: 'c5a-s2-t2', pts: 4, src: '教科書 p.157 下溢錯誤',
+          code: C('s = []', 's.append(5)', 'x = s.pop()', 'y = s.pop()', 'print(x, y)'), ask: { error: true },
+          q: '先估：執行時會出現哪種錯誤？', options: ['IndexError', 'ValueError', 'NameError', '沒有錯誤'],
+          why: '第 4 行從空的堆疊彈出（下溢）。Python 的訊息是 `IndexError: pop from empty list`，所以 print 不會執行。' },
+      ],
+      practice: [
+        { id: 'c5a-s2-p1', type: 'fill', pts: 2, src: '教科書 p.158 例題 5.1(a)(ii)',
+          q: '寫出執行後堆疊 S2 的內容（照 Python 的列表寫法）。',
+          code: C('S2 = []', 'S2.append(20)', 'S2.append(10)', 'S2.pop()', 'if len(S2) == 0:     # isEmpty(S2)', '    S2.append(15)', 'else:', '    S2.append(25)'),
+          blanks: [{ label: 'S2', ask: { var: 'S2' } }],
+          hint: '彈出 10 後 S2 仍有 20，不是空的，所以推入 25。' },
+        { id: 'c5a-s2-p2', type: 'fill', pts: 3, src: '教科書 p.159 例題 5.1(b)',
+          q: 'S1 起初由底至頂是 20、20、20，S2 是空的。寫出執行後 S1、S2 及 temp。',
+          code: C('S1 = [20, 20, 20]', 'S2 = []', 'temp = 0', 'while len(S1) > 0:', '    temp = temp + S1.pop()', '    if temp > 25:', '        S2.append(25)', '        temp = temp - 25', 'S2.append(temp)'),
+          blanks: [{ label: 'S1', ask: { var: 'S1' } }, { label: 'S2', ask: { var: 'S2' } }, { label: 'temp', ask: { var: 'temp' } }],
+          hint: 'temp：20 → 40（推入 25，剩 15）→ 35（推入 25，剩 10）；最後把 10 推入 S2。' },
+        { id: 'c5a-s2-p3', type: 'mc', pts: 2, src: '教科書 p.157',
+          q: '`stack` 可能是空的。以下哪一段程式可以**避免下溢錯誤**？',
+          options: ['`x = stack.pop()`', '`if len(stack) > 0:` 然後 `x = stack.pop()`', '`if len(stack) == 0:` 然後 `x = stack.pop()`', '`x = stack.pop(0)`'], answer: 1,
+          hint: '要先確定堆疊不是空的才彈出。`pop(0)` 一樣會在空列表出錯。' },
+      ],
+    },
+    // ------------------------------------------------------------------
+    {
+      id: 's3', title: '以陣列和指示標實現堆疊：剪貼簿', pages: '教科書 p.203–204 課題練習 1',
+      learn: [
+        { pts: [
+          'DSE 題目常用**固定大小的陣列**加一個**指示標**表示堆疊，例如剪貼簿 `clipboard`（大小 5），變量 `latest` 儲存**頂端項目的索引**。（p.203）',
+          '教科書索引由 1 開始：`latest = 0` 代表**空**，`latest = 5` 代表**滿**。下面的 Python 程式也用索引 1–5（索引 0 不用）。',
+          '**推入** `copy(item)`：先檢查是否已滿；否則 `latest` 加 1，再把 item 存入 `clipboard[latest]`。**次序不可調轉**。',
+          '**彈出** `paste()`：先檢查是否空；否則取出 `clipboard[latest]`，`latest` 減 1。',
+          '彈出時**只移動指示標，不清除內容**；之後推入新項目時便會覆寫舊內容。`clear()` 只須 `latest = 0`。（p.204 (d)(ii)）',
+        ] },
+        { sim: { code: C(...CLIP, '', 'clear()', 'copy("friends")', 'copy("banana")', 'paste()', 'copy("wood")', 'copy("forever")', 'print(latest)', 'print(clipboard)'), step: true, open: ['vars'] },
+          cap: '課題練習 1(a)（p.203）。留意 `paste()` 之後 "banana" 仍在陣列內，直到被 "wood" 覆寫。' },
+        { warn: '指示標的約定要看清楚題目：本例 `latest` 指向**頂端項目**（空時是 0）；有些題目用 `top = -1` 代表空（Python 索引由 0 開始），或者 `top` 指向**下一個空位**。滿／空的條件會跟着改變。' },
+      ],
+      tries: [
+        { id: 'c5a-s3-t1', pts: 4, src: '教科書 p.203 課題練習 1(a)',
+          code: C(...CLIP, '', 'clear()', 'copy("friends")', 'copy("banana")', 'paste()', 'copy("wood")', 'copy("forever")', 'print(latest, clipboard[1:4])'),
+          q: '先估：輸出是什麼？', options: ["3 ['friends', 'wood', 'forever']", "4 ['friends', 'banana', 'wood']", "3 ['friends', 'banana', 'wood']", "2 ['wood', 'forever', '']"],
+          why: 'paste 令 latest 由 2 變 1；copy("wood") 令 latest = 2，覆寫 banana；copy("forever") 令 latest = 3。' },
+      ],
+      practice: [
+        { id: 'c5a-s3-p1', type: 'complete', pts: 3, src: '教科書 p.203 課題練習 1(b)',
+          q: '完成 `copy(item)`。程式會輸入要複製多少個項目，然後輸出 latest 及陣列。會用多組數據測試（包括超過 5 個）。',
+          template: C('clipboard = [""] * 6', 'latest = 0', '', 'def copy(item):', '    global latest', '    if ［1］:', '        print("剪貼簿已滿")', '    else:', '        latest = ［2］', '        ［3］', '', 'k = int(input())', 'for i in range(k):', '    copy("w" + str(i))', 'print(latest, clipboard)'),
+          ref: ['latest == 5', 'latest + 1', 'clipboard[latest] = item'], tests: [{ inputs: '2' }, { inputs: '5' }, { inputs: '7' }],
+          hint: '已滿的條件是 latest == 5；先把 latest 加 1，再存入 clipboard[latest]。' },
+        { id: 'c5a-s3-p2', type: 'mc', pts: 2, src: '教科書 p.204 課題練習 1(d)(ii)', verify: true,
+          q: '以下程式的輸出是什麼？',
+          code: C(...CLIP, '', 'copy("a")', 'copy("b")', 'copy("c")', 'paste()', 'paste()', 'print(latest, clipboard)'),
+          options: ["1 ['', 'a', 'b', 'c', '', '']", "1 ['', 'a', '', '', '', '']", "3 ['', 'a', 'b', 'c', '', '']", "1 ['', 'c', 'b', 'a', '', '']"], answer: 0,
+          hint: '彈出只移動指示標 latest，陣列內容沒有被清除。' },
+        { id: 'c5a-s3-p3', type: 'mc', pts: 2, src: '教科書 p.204 課題練習 1(c)(ii)',
+          q: '`paste()` 傳回 −1 代表什麼？',
+          options: ['剪貼簿已滿', '剪貼簿是空的', '頂端項目是 −1', '程式出現運行時錯誤'], answer: 1,
+          hint: '看 `if latest == 0:` 那一個分支。' },
+      ],
+    },
+    // ------------------------------------------------------------------
+    {
+      id: 's4', title: '堆疊的應用：膠箱與瀏覽器', pages: '教科書 p.159–165',
+      learn: [
+        { pts: [
+          '`reverse(A, B)`：當 A 不是空的，便 `push(B, pop(A))`。結果 A 清空，B 的次序**相反**。（例題 5.1(c)，p.159）',
+          '捨棄 S1 底部 N 個膠箱：`reverse(S1, S2)` → 彈出 S2 頂端 N 個 → `reverse(S2, S1)`，餘下膠箱回復原有次序。（例題 5.1(d)，p.160）',
+          '取出第 n 層起的 k 箱：先把第 t 層至第 n 層移到 S3（共 **t − n + 1** 個），再把 S3 頂端 k 個移到 S2，最後 `reverse(S3, S1)`。（例題 5.1(e)，p.161）',
+          '瀏覽器：「上一頁」是 `push(goForward, pop(goBack))`；「下一頁」是 `push(goBack, pop(goForward))`。堆疊是空的便沒有操作。（測試站 5.1，p.164–165，參考 DSE 2017 卷二D Q3）',
+        ] },
+        { sim: { code: C('def reverse(A, B):', '    while len(A) > 0:', '        B.append(A.pop())', '', 'S1 = [1, 2, 3, 4, 5, 6]', 'S2 = []', 'N = 4', 'reverse(S1, S2)', 'for i in range(N):', '    S2.pop()', 'reverse(S2, S1)', 'print(S1, S2)'), step: true, open: ['vars'] },
+          cap: '例題 5.1(d)（p.160）：捨棄 S1 底部 4 個膠箱。' },
+      ],
+      tries: [
+        { id: 'c5a-s4-t1', pts: 4, src: '教科書 p.164–165 測試站 5.1(a)（參考 DSE 2017 卷二D Q3）',
+          code: C('goBack = ["google.com", "hk.yahoo.com", "hku.hk", "www.gov.hk"]', 'goForward = []', 'for i in range(3):          # 按「上一頁」三次', '    goForward.append(goBack.pop())', 'for i in range(2):          # 再按「下一頁」兩次', '    goBack.append(goForward.pop())', 'print(goForward)'),
+          q: '先估：最後 goForward 的內容是什麼？', options: ["['www.gov.hk']", "['hk.yahoo.com']", "['www.gov.hk', 'hku.hk']", '[]'],
+          why: '上一頁三次後 goForward 由底至頂是 www.gov.hk、hku.hk、hk.yahoo.com；下一頁兩次彈出 hk.yahoo.com 和 hku.hk，剩 www.gov.hk。' },
+      ],
+      practice: [
+        { id: 'c5a-s4-p1', type: 'complete', pts: 3, src: '教科書 p.159 例題 5.1(c)',
+          q: '完成子程式 `reverse(A, B)`，把堆疊 A 的所有項目按相反次序移至堆疊 B。程式會輸入膠箱數目 n，S1 是 [1, 2, …, n]。',
+          template: C('def reverse(A, B):', '    while ［1］:', '        ［2］', '', 'n = int(input())', 'S1 = list(range(1, n + 1))', 'S2 = []', 'reverse(S1, S2)', 'print(S1, S2)'),
+          ref: ['len(A) > 0', 'B.append(A.pop())'], tests: [{ inputs: '5' }, { inputs: '1' }, { inputs: '0' }],
+          hint: '「當 not isEmpty(A)」即 `len(A) > 0`；「push(B, pop(A))」即 `B.append(A.pop())`。' },
+        { id: 'c5a-s4-p2', type: 'fill', pts: 2, src: '教科書 p.161 例題 5.1(e)（旁註數目有誤，見本單元檔頭）',
+          q: 'S1 有 t = 25 個膠箱，要由第 n = 4 層開始取出。以下程式模擬「設 i 由 t 下至 n」把膠箱移到 S3。最後 S3 有多少個膠箱？',
+          code: C('S1 = list(range(1, 26))', 'S3 = []', 't = len(S1)', 'n = 4', 'for i in range(t, n - 1, -1):', '    S3.append(S1.pop())', 'moved = len(S3)'),
+          blanks: [{ label: 'moved', ask: { var: 'moved' } }],
+          hint: 'i 由 25 下至 4，共 25 − 4 + 1 個。教科書旁註寫 (t − n)，少算了第 n 層本身。' },
+      ],
+    },
+    // ------------------------------------------------------------------
+    {
+      id: 'write', kind: 'write', title: '寫程式', pages: '教科書 p.156–157、p.203–204',
+      intro: '在編輯器寫 Python 程式，先按 ▶ 自己測試，再按「提交評核」。每個 `input()` 讀一行輸入。',
+      tasks: [
+        { id: 'c5a-w1', pts: 15, title: '剪貼簿歷程（大小 5 的堆疊）', src: '教科書 p.203–204 課題練習 1',
+          q: '第一行輸入指令數目 n，之後每行一個指令：\n• `COPY 文字`：把文字推入剪貼簿；如果已有 5 項，輸出 `剪貼簿已滿`（不推入）。\n• `PASTE`：彈出頂端項目並輸出它；如果是空的，輸出 `剪貼簿是空的`。\n• `CLEAR`：清空剪貼簿。\n全部指令完成後，輸出剪貼簿餘下的項目數目。\n可以用 Python 列表（`append`、`pop`）作堆疊。',
+          starter: C('clipboard = []', 'n = int(input())', 'for i in range(n):', '    cmd = input()', '    # 在這裏完成', 'print(len(clipboard))'),
+          ref: C('clipboard = []', 'n = int(input())', 'for i in range(n):', '    cmd = input()', '    if cmd == "PASTE":', '        if len(clipboard) == 0:', '            print("剪貼簿是空的")', '        else:', '            print(clipboard.pop())', '    elif cmd == "CLEAR":', '        clipboard = []', '    else:', '        word = cmd[5:]', '        if len(clipboard) == 5:', '            print("剪貼簿已滿")', '        else:', '            clipboard.append(word)', 'print(len(clipboard))'),
+          tests: [
+            { inputs: C('6', 'COPY friends', 'COPY banana', 'PASTE', 'COPY wood', 'COPY forever', 'PASTE') },
+            { inputs: C('3', 'PASTE', 'COPY hi', 'PASTE') },
+            { inputs: C('7', 'COPY a', 'COPY b', 'COPY c', 'COPY d', 'COPY e', 'COPY f', 'PASTE') },
+            { inputs: C('4', 'COPY x', 'COPY y', 'CLEAR', 'PASTE') },
+            { inputs: C('2', 'COPY good morning', 'PASTE') },
+          ],
+          hint: '`cmd[5:]` 取得 "COPY " 之後的文字（文字可能有空格）。先判斷 `cmd == "PASTE"`、`cmd == "CLEAR"`，其餘便是 COPY。推入前檢查 `len(clipboard) == 5`，彈出前檢查是否空。' },
+        { id: 'c5a-w2', pts: 20, title: '括號配對檢查', src: '堆疊應用（自擬）',
+          q: '輸入一行算式，當中可能有 `( )`、`[ ]`、`{ }` 三種括號。用**堆疊**檢查括號是否正確配對：\n• 遇到左括號便推入；\n• 遇到右括號時，堆疊必須不是空的，而且彈出的左括號要和它同一種；\n• 讀完後堆疊必須是空的。\n正確輸出 `配對正確`，否則輸出 `配對錯誤`。',
+          starter: C('expr = input()', 's = []', 'ok = True', '# 在這裏完成', 'if ok:', '    print("配對正確")', 'else:', '    print("配對錯誤")'),
+          ref: C('expr = input()', 's = []', 'ok = True', 'pairs = {")": "(", "]": "[", "}": "{"}', 'for ch in expr:', '    if ch in "([{":', '        s.append(ch)', '    elif ch in ")]}":', '        if len(s) == 0:', '            ok = False', '        elif s.pop() != pairs[ch]:', '            ok = False', 'if len(s) > 0:', '    ok = False', 'if ok:', '    print("配對正確")', 'else:', '    print("配對錯誤")'),
+          rules: [{ must: 'append', msg: '要用列表作堆疊（append 推入、pop 彈出）。' }],
+          tests: [{ inputs: '(a+b)*[c-d]' }, { inputs: '{[(x)]}' }, { inputs: '([)]' }, { inputs: '((a+b)' }, { inputs: 'a+b)' }, { inputs: 'x+y' }],
+          hint: '可以用字典 `{")": "(", "]": "[", "}": "{"}` 找出右括號對應的左括號。記得三種錯誤：右括號時堆疊是空的、種類不同、最後堆疊不是空的。' },
+      ],
+    },
+    // ------------------------------------------------------------------
+    {
+      id: 'quiz', kind: 'quiz', title: '小測', pages: '教科書 p.155–165、p.203–204',
+      items: [
+        { id: 'c5a-q1', pts: 4, src: '教科書 p.160 例題 5.1(d)（參考 DSE 2019 卷二D Q1）', tags: [HOT_STACK], verify: true,
+          q: '以下程式的輸出是什麼？',
+          code: C('def reverse(A, B):', '    while len(A) > 0:', '        B.append(A.pop())', '', 'S1 = [7, 3, 9, 4, 6]', 'S2 = []', 'reverse(S1, S2)', 'S2.pop()', 'S2.pop()', 'reverse(S2, S1)', 'print(S1)'),
+          options: ['[7, 3, 9]', '[9, 4, 6]', '[6, 4, 9]', '[3, 9, 4]'], answer: 'B',
+          why: 'reverse 後 S2 由底至頂是 6、4、9、3、7；彈出 7 和 3（原本最底的兩個）；再 reverse 回 S1 得 [9, 4, 6]。' },
+        { id: 'c5a-q2', pts: 4, src: '教科書 p.165 測試站 5.1(d)（參考 DSE 2017 卷二D Q3）', tags: [HOT_STACK],
+          q: '瀏覽器用堆疊 goBack、goForward 實現「上一頁」「下一頁」。如果堆疊 goForward **已滿**，用戶再按「上一頁」，最合理的處理是？',
+          options: ['直接把網址推入 goForward，令上溢錯誤出現', '先移除 goForward **最底層**的項目，再執行 push(goForward, pop(goBack))', '先彈出 goForward 頂端的項目，再執行 push(goForward, pop(goBack))', '清空 goBack'], answer: 'B',
+          why: '最底層是最舊的網址，最少機會再用到；頂端是剛剛離開的網址，不應丟掉。' },
+        { id: 'c5a-q3', pts: 4, src: '自擬（DSE 題型）', tags: [{ t: 'trap', why: '要逐步模擬推入／彈出，不能只看數字次序' }],
+          q: '把 1、2、3、4 **依次**推入一個空的堆疊，期間可以隨時彈出。以下哪一個彈出次序是**不可能**的？',
+          options: ['4 3 2 1', '1 2 3 4', '2 4 3 1', '3 1 4 2'], answer: 'D',
+          why: '要先彈出 3，1、2 必定已推入且 2 在 1 之上，所以下一個彈出的只能是 2 或 4，不可能是 1。' },
+        { id: 'c5a-q4', pts: 4, src: '教科書 p.204 課題練習 1(d)(ii)',
+          q: '剪貼簿以陣列 `clipboard` 及變量 `latest`（頂端項目的索引）實現堆疊。以下哪一項是用變量儲存頂端索引的**好處**？',
+          options: ['陣列可以無限大', '彈出時只須移動指示標，無須清除陣列內容', '可以直接存取堆疊底部的項目並刪除', '不會發生上溢錯誤'], answer: 'B',
+          why: '彈出只是 `latest = latest - 1`；之後推入新項目時便覆寫舊內容。' },
+        { id: 'c5a-q5', pts: 4, src: '教科書 p.155 調用堆疊', verify: true,
+          q: '以下程式的輸出是什麼？',
+          code: C('def c():', '    print("C", end=" ")', '', 'def b():', '    print("B1", end=" ")', '    c()', '    print("B2", end=" ")', '', 'def a():', '    print("A1", end=" ")', '    b()', '    print("A2", end=" ")', '', 'a()'),
+          options: ['A1 B1 C B2 A2', 'A1 A2 B1 B2 C', 'A1 B1 B2 C A2', 'C B2 B1 A2 A1'], answer: 'A',
+          why: '子程式完成後，從調用堆疊彈出返回位置，回到調用它的下一句繼續：c 完成回到 b，b 完成回到 a。' },
+      ],
+    },
+    // ------------------------------------------------------------------
+    { id: 'more', kind: 'endless', title: '無限練習', gens: ['pyStack', 'pyList', 'pyFunc'], intro: '隨機生成堆疊（推入／彈出）、列表及子程式的題目，答案由程式計算。不計分，但次數會寫進報告。' },
+    { id: 'report', kind: 'report', title: '交功課' },
+  ],
+};
