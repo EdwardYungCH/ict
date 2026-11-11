@@ -861,6 +861,37 @@
     ]);
     return { code: f.join('\n'), q: '空運行以下後測循環，輸出是什麼？（循環體最少執行一次）', type: '後測循環' };
   };
+
+  // ---- 單元 9：陣列 ----
+  const arrLit = (n, a, b) => '[' + Array.from({ length: n }, () => R(a, b)).join(', ') + ']';
+  GENS.arrsum = () => {
+    const n = R(4, 7), a = R(1, 2), b = R(a + 1, n);
+    const f = pick([
+      [`A[] ← ${arrLit(n, 1, 30)}`, 's ← 0', `設 i 由 ${a} 至 ${b}`, '    s ← s + A[i]', '輸出 s'],
+      [`A[1] ← ${R(1, 9)}`, `設 i 由 1 至 ${n - 1}`, `    A[i+1] ← A[i] + ${pick(['i', '2', 'A[i]'])}`, `輸出 A[${R(2, n)}]`],
+      [`num[] ← ${arrLit(n, 1, 9)}`, `設 k 由 1 至 ${n}`, `    num[k] ← num[k] * ${R(2, 5)}`, '輸出 num'],
+    ]);
+    return { code: f.join('\n'), q: '空運行以下算法，輸出是什麼？（陣列索引由 1 開始；整個陣列寫成 [a, b, c]）', type: '陣列與循環' };
+  };
+  GENS.arrshift = () => {
+    const n = R(5, 7), a = arrLit(n, 1, 20), p = R(2, n - 1);
+    const f = pick([
+      [`num[] ← ${a}`, `設 i 由 ${p} 至 ${n - 1}`, '    num[i] ← num[i+1]', '輸出 num'],
+      [`num[] ← ${a}`, `設 i 由 ${n} 下至 ${p + 1}`, '    num[i] ← num[i-1]', '輸出 num'],
+      [`num[] ← ${a}`, `temp ← num[${p}]`, `設 i 由 ${p} 下至 2`, '    num[i] ← num[i-1]', 'num[1] ← temp', '輸出 num'],
+      [`num[] ← ${a}`, `設 i 由 2 至 ${n}`, '    num[i] ← num[i-1]', '輸出 num'],
+    ]);
+    return { code: f.join('\n'), q: '項目移位後，陣列 num 是什麼？（寫成 [a, b, c]）', type: '刪除、加入及調動' };
+  };
+  GENS.arrcount = () => {
+    const n = R(5, 8), a = arrLit(n, 1, 99), k = R(20, 80);
+    const f = pick([
+      [`A[] ← ${a}`, 'c ← 0', `設 i 由 1 至 ${n}`, `    如果 A[i] ${pick(['>', '<', '>='])} ${k} 則`, '        c ← c + 1', '輸出 c'],
+      [`A[] ← ${a}`, 'm ← A[1]', `設 i 由 2 至 ${n}`, `    如果 A[i] ${pick(['>', '<'])} m 則`, '        m ← A[i]', '輸出 m'],
+      [`A[] ← ${a}`, 'ok ← True', `設 i 由 1 至 ${n - 1}`, '    如果 A[i] > A[i+1] 則', '        ok ← False', '輸出 ok'],
+    ]);
+    return { code: f.join('\n'), q: '空運行以下算法，輸出是什麼？', type: '點算、最大最小、次序' };
+  };
   function renderEndless(sec, ctx) {
     const es = ctx.state.endless = ctx.state.endless || { n: 0, right: 0 };
     const box = h('div.blk');
