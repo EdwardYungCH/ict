@@ -48,7 +48,9 @@ for (const f of files) {
   catch (e) { loadErr[id] = [`未能載入 ${f}：${e.message}`]; }
 }
 const order = PLAN.map((p) => p[0]);
-loaded.sort((a, b) => { const ia = order.indexOf(a.id), ib = order.indexOf(b.id); if (ia >= 0 && ib >= 0) return ia - ib; if (ia >= 0) return -1; if (ib >= 0) return 1; return natural(String(a.id), String(b.id)); });
+// 不在 plan 的 id：如果以 plan 某個 id 開頭（例如 c3a、c3b → c3），排在那個位置；否則排最後（自然排序）
+const rank = (id) => { id = String(id); let i = order.indexOf(id); if (i >= 0) return [i, '']; i = order.findIndex((p) => id.startsWith(p) && /^[a-z]\w*$/i.test(id.slice(p.length))); return i >= 0 ? [i, id] : [order.length, id]; };
+loaded.sort((a, b) => { const [ia, sa] = rank(a.id), [ib, sb] = rank(b.id); return ia - ib || natural(sa, sb); });
 if (opt.only && !loaded.some((u) => u.id === opt.only) && !loadErr[opt.only]) { console.error(`找不到單元 ${opt.only}（${path.join(CDIR, 'src', opt.only + '.js')}）`); process.exit(1); }
 
 // ---------- 收集 CPython 工作 ----------
@@ -335,7 +337,14 @@ if (opt.out) writeAtomic(path.join(opt.out, 'teacher_單一檔案.html'), page(O
 const hasPage = (id) => fs.existsSync(path.join(CDIR, id, 'index.html'));
 const planIds = PLAN.map((p) => p[0]);
 const extra = loaded.filter((U) => !planIds.includes(U.id)).map((U) => [U.id, U.title, U.book || '']);
-const cards = PLAN.concat(extra).map(([id, t, pg]) => {
+const planRows = [];
+for (const row of PLAN) {
+  const subs = loaded.filter((U) => !planIds.includes(U.id) && rank(U.id)[0] === planIds.indexOf(row[0]));
+  if (subs.length && !loaded.some((U) => U.id === row[0])) subs.forEach((U) => planRows.push([U.id, U.title, row[2]]));
+  else { planRows.push(row); subs.forEach((U) => planRows.push([U.id, U.title, row[2]])); }
+}
+const extra2 = extra.filter(([id]) => !planRows.some((r) => r[0] === id));
+const cards = planRows.concat(extra2).map(([id, t, pg]) => {
   const U = good.find((u) => u.id === id); const title = U ? U.title : t;
   const inner = `<span class="code">${escA(id.toUpperCase())}</span><h2>${escA(title)}</h2><p>${escA(pg || '')}</p>`;
   return hasPage(id) ? `<a class="hcard" href="${id}/">${inner}</a>` : `<div class="hcard soon" aria-disabled="true">${inner}<p class="soonlab">製作中</p></div>`;

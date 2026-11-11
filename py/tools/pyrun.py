@@ -112,11 +112,13 @@ def run_job(job):
 
     buf = OutBuf()
     old_cwd = os.getcwd()
-    tmp = tempfile.mkdtemp(prefix='pyrun_')
+    use_fs = bool(files) or 'open' in code
+    tmp = tempfile.mkdtemp(prefix='pyrun_') if use_fs else None
     for name, text in files.items():
         with open(os.path.join(tmp, name), 'w', encoding='utf-8', newline='') as f:
             f.write(text)
-    os.chdir(tmp)
+    if tmp:
+        os.chdir(tmp)
 
     def fake_input(prompt=''):
         p = s_of(prompt)
@@ -309,7 +311,7 @@ def run_job(job):
     res['vrepr'] = {k: r_of(v) for k, v in uv.items()}
     res['counts'] = {str(k): v for k, v in counts.items()}
     try:
-        for name in sorted(os.listdir(tmp)):
+        for name in (sorted(os.listdir(tmp)) if tmp else []):
             p = os.path.join(tmp, name)
             if os.path.isfile(p):
                 with old_open(p, encoding='utf-8', newline='') as f:
@@ -319,8 +321,9 @@ def run_job(job):
     # ask 答案
     for a in asks:
         res['answers'].append(answer(a, res, ns, fix))
-    os.chdir(old_cwd)
-    shutil.rmtree(tmp, ignore_errors=True)
+    if tmp:
+        os.chdir(old_cwd)
+        shutil.rmtree(tmp, ignore_errors=True)
     if tr:
         labels = [{'key': c, 'label': c} for c in tr['cols']]
         if tr['out']:
