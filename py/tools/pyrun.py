@@ -363,9 +363,13 @@ def answer(a, res, ns, fix):
 def main():
     jobs = json.load(sys.stdin)
     out = []
+    import time
     for j in jobs:
         try:
-            out.append(run_job(j))
+            t = time.time()
+            r = run_job(j)
+            r['ms'] = int((time.time() - t) * 1000)
+            out.append(r)
         except BaseException as e:  # 不應發生；保留訊息方便除錯
             out.append({'out': '', 'err': {'type': 'InternalError', 'line': 0, 'msg': repr(e), 'tb': []}, 'vars': {}, 'vrepr': {}, 'files': {}, 'answers': [], 'counts': {}})
     sys.stdout.write(json.dumps(out, ensure_ascii=False))

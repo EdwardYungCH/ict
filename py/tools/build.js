@@ -259,6 +259,7 @@ const proc = spawnSync('python3', [path.join(__dirname, 'pyrun.py')], { input: J
 if (proc.status !== 0) { console.error('pyrun.py 執行失敗：\n' + proc.stderr); process.exit(1); }
 const results = JSON.parse(proc.stdout);
 results.forEach((r, i) => { try { after[i](r); } catch (e) { console.error('內部錯誤', e); } });
+if (process.env.PYRUN_SLOW) results.map((r, i) => [r.ms, i]).sort((a, b) => b[0] - a[0]).slice(0, 8).forEach(([ms, i]) => console.log(`慢：${ms} ms`, JSON.stringify(jobs[i]).slice(0, 300), r => r));
 const tPy = Date.now() - t0;
 
 // 起始程式不應通過；complete 空白答案不應通過
