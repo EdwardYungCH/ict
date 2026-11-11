@@ -72,8 +72,8 @@ module.exports = {
           '內置函數：`abs(x)` 絕對值；`round(x, y)` 四捨五入到 y 位小數。（p.109 表 4.1）',
           '**函數庫**要先匯入（`import math`、`import random`），每個程式匯入一次即可。`math.sqrt(16)` 得 `4.0`；`random.randint(a, b)` 得 a 至 b 的隨機整數（**包括 b**）；`random.random()` 得 0 至 1（不包括 1）的浮點數。（p.110 表 4.2–4.3）',
         ] },
-        { sim: { code: C('import math', 'import random', 'print(abs(-10), abs(20))', 'print(round(10/3, 2), round(10/3, 5))', 'print(math.sqrt(16))', 'print(round(math.exp(1), 3))', 'print(random.randint(1, 10))'), open: [] },
-          cap: '表 4.1–4.3 的例句。最後一行每次執行結果都可能不同。' },
+        { sim: { code: C('import math', 'import random', 'print(abs(-10), abs(20))', 'print(round(10/3, 2), round(10/3, 5))', 'print(math.sqrt(16))', 'print(round(math.exp(1), 3))', 'y = random.randint(1, 10)', 'print(1 <= y <= 10)'), open: [] },
+          cap: '表 4.1–4.3 的例句。y 每次執行都可能不同，但一定在 1 至 10 之內（試加一行 `print(y)` 再執行幾次）。' },
       ],
       tries: [
         { id: 'c4-s1-t1', pts: 4, src: '教科書 p.109 表 4.1', code: C('y = round(10/3, 2) + abs(-10)', 'print(y)'),

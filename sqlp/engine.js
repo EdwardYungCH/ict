@@ -146,7 +146,7 @@
       const p0 = p;
       if (isO('(')) { const q = subq(); if (isK('AS')) p++; const al = ident('以子查詢作數據表時要提供別名'); return { k: 'tbl', sub: q, alias: al, src: span(p0) }; }
       const name = ident('FROM／JOIN 之後要寫數據表名稱'); let alias = null;
-      if (isK('AS')) { p++; alias = ident('AS 之後要寫別名'); } else if (toks[p] && toks[p].t === 'id' && !isW('SEPARATOR')) alias = toks[p++].v;
+      if (isK('AS')) { p++; alias = ident('AS 之後要寫別名'); } else if (toks[p] && toks[p].t === 'id' && !isW('SEPARATOR') && !isW('USING')) alias = toks[p++].v;
       return { k: 'tbl', name, alias };
     }
     function fromItem() {
@@ -561,10 +561,25 @@
     srcs.forEach((x, i) => { if (srcs.findIndex((y) => y.alias === x.alias) !== i) throw new SErr('FROM 中有兩個數據表同名（' + x.alias + '），自連接要為數據表提供不同的別名。', 'other'); });
     return { srcs, fs };
   }
+  // MySQL 的功能相關判斷：GROUP BY 包含某表的整個主關鍵碼 → 該表所有欄都已確定；ON／WHERE 中「欄 = 欄」的等式可傳遞
+  function eqPairs(q, srcs) {
+    const out = [], env = { f: { srcs, vals: [] }, up: null };
+    const res = (e) => { if (!e || e.k !== 'col') return null; try { const L = lookup(env, e.q, e.name); return L && !L.sel && L.E === env ? L : null; } catch (x) { return null; } };
+    const walkAnd = (e) => { if (!e) return; if (e.k === 'and') { walkAnd(e.a); walkAnd(e.b); return; } if (e.k === 'paren') return walkAnd(e.a); if (e.k === 'cmp' && e.op === '=') { const a = res(e.a), b = res(e.b); if (a && b) out.push([a, b]); } };
+    const walkFrom = (it) => { if (it.k === 'join') { walkFrom(it.left); walkFrom(it.right); if (it.type === 'INNER' || it.type === 'CROSS') walkAnd(it.on); } };
+    q.from.forEach(walkFrom); walkAnd(q.where);
+    return out;
+  }
   function groupCheck(q, srcs) {
     const gl = q.group.map((g) => (g.k === 'col' ? lookup({ f: { srcs, vals: [] }, up: null }, g.q, g.name) : null)).filter(Boolean);
     const gtext = q.group.map((g) => g.src.replace(/\s/g, '').toUpperCase());
-    const pkOk = (si) => srcs[si].pk.length && srcs[si].pk.every((c) => gl.some((L) => L.si === si && srcs[si].cols[L.j] === c));
+    const det = new Set(gl.map((L) => L.si + ':' + L.j)), eqs = eqPairs(q, srcs), full = new Set();
+    for (let ch = true; ch;) {
+      ch = false;
+      srcs.forEach((x, si) => { if (!full.has(si) && x.pk.length && x.pk.every((c) => det.has(si + ':' + x.cols.indexOf(c)))) { full.add(si); x.cols.forEach((c, j) => det.add(si + ':' + j)); ch = true; } });
+      for (const [a, b] of eqs) { const ka = a.si + ':' + a.j, kb = b.si + ':' + b.j; if (det.has(ka) && !det.has(kb)) { det.add(kb); ch = true; } else if (det.has(kb) && !det.has(ka)) { det.add(ka); ch = true; } }
+    }
+    const pkOk = (si) => full.has(si);
     const walk = (e, where) => {
       if (!e || typeof e !== 'object') return;
       if (e.k === 'fn' && AGG.has(e.name)) return;
@@ -572,7 +587,7 @@
       if (e.k === 'col') {
         let L; try { L = lookup({ f: { srcs, vals: [] }, up: null, sel: where === 'SELECT' ? null : q._sel }, e.q, e.name); } catch (x) { return; }
         if (!L || L.sel) return;
-        if (gl.some((g) => g.si === L.si && g.j === L.j) || pkOk(L.si)) return;
+        if (det.has(L.si + ':' + L.j) || pkOk(L.si)) return;
         if (srcs.merged && srcs.merged.includes(e.name) && gl.some((g) => srcs[g.si].cols[g.j] === e.name)) return;
         throw new SErr(where + ' 中的 ' + (e.q ? e.q + '.' : '') + e.name + ' 既不是聚合函數，也不在 GROUP BY 中（MySQL 的 ONLY_FULL_GROUP_BY 會報錯）。', 'group');
       }
@@ -894,7 +909,11 @@
     for (const k of tableKeys(T)) {
       const t = T[k]; if (!Array.isArray(t) || !Array.isArray(t[0]) || !Array.isArray(t[1])) throw new Error('數據表 ' + k + ' 的格式不正確（要寫成 [[欄名…], [[值…], …]]）。');
       t[1].forEach((r, i) => { if (!Array.isArray(r) || r.length !== t[0].length) throw new Error('數據表 ' + k + ' 第 ' + (i + 1) + ' 項記錄的數值數目與欄位數目不同。'); r.forEach((v) => { if (!(v === null || typeof v === 'number' || typeof v === 'string')) throw new Error('數據表 ' + k + ' 有不支援的數值 ' + JSON.stringify(v) + '（只可用數字、字串、null）。'); }); });
+      const star = t[0].map((c) => String(c).startsWith('*'));
+      if (star.some(Boolean)) { t[0] = t[0].map((c) => String(c).replace(/^\*/, '')); if (!t[2] || !t[2].length) t[2] = t[0].filter((c, i) => star[i]); }
       if (t[2] == null) t[2] = [];
+      if (typeof t[2] === 'string') t[2] = [t[2]];
+      t[2].forEach((c) => { if (!t[0].map(up).includes(up(c))) throw new Error('數據表 ' + k + ' 的主關鍵碼 ' + c + ' 不是它的欄位。'); });
       if (t[3]) meta(t);
     }
     for (const k of tableKeys(T)) { try { checkTable(T, k); } catch (e) { throw new Error('數據表 ' + k + ' 的數據違反限制：' + e.message); } }

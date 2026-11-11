@@ -189,6 +189,7 @@
         if (j >= n || code[j] === '\n') return { type: 'SyntaxError', line, msg: `unterminated string literal (detected at line ${line})` };
         i = j + 1; continue;
       }
+      if (c.charCodeAt(0) > 127 && !/[\p{L}\p{N}_]/u.test(c)) return { type: 'SyntaxError', line, msg: `invalid character '${c}' (U+${c.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0')})` };
       if ('([{'.includes(c)) stack.push({ c, line });
       else if (')]}'.includes(c)) {
         const open = { ')': '(', ']': '[', '}': '{' }[c];
@@ -316,7 +317,9 @@
       .replace(/^'(\w+)' does not support item assignment$/, "'$1' object does not support item assignment")
       .replace(/missing (\d+) required argument/, 'missing $1 required positional argument')
       .replace(/^(max|min) expected 1 argument/, '$1 expected at least 1 argument')
-      .replace(/a bytes-like object or a number, not/, 'a bytes-like object or a real number, not');
+      .replace(/a bytes-like object or a number, not/, 'a bytes-like object or a real number, not')
+      .replace(/^local variable '(\w+)' referenced before assignment$/, "cannot access local variable '$1' where it is not associated with a value");
+    if (type === 'OverflowError' && msg === 'Numerical result out of range') msg = "(34, 'Numerical result out of range')";
     if (type === 'IndexError' && msg === 'pop index out of range' && /\.pop\(\s*\)/.test(code.split('\n')[line - 1] || '')) msg = 'pop from empty list';
     if (type === 'ZeroDivisionError' && /integer division or modulo/.test(msg)) {
       const src = (code.split('\n')[line - 1] || '');
@@ -415,12 +418,20 @@
     try { if (Sk.abstr.typeName(v) === '_PyrunFile') return true; } catch (e) { /* 略 */ }
     return false;
   }
-  function readGlobals(G) {
+  // Skulpt 會把列表推導式 [x for x in …] 的 x 留在全局；CPython 不會。只在推導式出現的名稱便隱藏。
+  function compOnly(k, code) {
+    const lines = String(code || '').split('\n');
+    const inComp = new RegExp(`\\S.*\\bfor\\s+(?:\\w+\\s*,\\s*)*${k}\\s*(?:,|\\bin\\b)`);
+    if (!lines.some((l) => inComp.test(l.replace(/^\s+/, '')))) return false;
+    const bound = new RegExp(`^\\s*(?:for\\s+(?:\\w+\\s*,\\s*)*${k}\\b|${k}\\s*(?:,[^=]*)?[-+*/%]?=(?!=)|(?:\\w+\\s*,\\s*)+${k}\\s*=(?!=)|global\\s.*\\b${k}\\b|def\\s+${k}\\b|(?:from\\s.*)?import\\s.*\\b${k}\\b|with\\s.*\\bas\\s+${k}\\b)`);
+    return !lines.some((l) => bound.test(l));
+  }
+  function readGlobals(G, code) {
     const vars = {}, vrepr = {}, vtype = {};
     for (const key of Object.keys(G || {})) {
       const v = G[key];
       const k = key.replace(/_\$rw\$$/, '');
-      if (k === 'open' || isHidden(k, v)) continue;
+      if (k === 'open' || isHidden(k, v) || compOnly(k, code)) continue;
       vars[k] = jsStr(v); vrepr[k] = jsRepr(v);
       try { vtype[k] = Sk.abstr.typeName(v); } catch (e) { vtype[k] = ''; }
     }
@@ -459,7 +470,7 @@
         res.out = out;
         res.err = e ? mapErr(e, code) : null;
         const G = Sk.globals || {};
-        Object.assign(res, readGlobals(G));
+        Object.assign(res, readGlobals(G, code));
         try { const fs = G._pyrun_vfs; if (fs) res.files = Sk.ffi.remapToJs(fs); } catch (x) { res.files = {}; }
         res.ms = Date.now() - t0;
         Sk.__pyrunFix = null;
