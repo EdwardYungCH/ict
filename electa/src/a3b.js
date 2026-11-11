@@ -162,6 +162,7 @@ module.exports = {
         ] },
         { er: { entities: [{ name: 'STUDENT', attrs: ['*SID', 'NAME', 'SEX', 'CLASS', 'SCORE'] }, { name: 'SC', attrs: ['*SID', '*CID'] }, { name: 'CLUB', attrs: ['*CID', 'NAME', 'ROOM', 'TEACH'] }], rels: [{ a: 'STUDENT', b: 'SC', name: '', card: '1:M' }, { a: 'CLUB', b: 'SC', name: '', card: '1:M' }] }, cap: '學生與學會是多對多關係，用中間的數據表 SC 連接。' },
         { sim: { db: 'sc', sql: C('SELECT s.SID, s.NAME, c.NAME AS CLUBNAME FROM STUDENT s', '    LEFT JOIN SC ON SC.SID = s.SID', '    LEFT JOIN CLUB c ON c.CID = SC.CID') }, cap: 'p.127–128：數一數 Clem 出現了多少次。' },
+        { sim: { db: 'sc', sql: C('SELECT s.NAME, GROUP_CONCAT(c.NAME) AS CNAME FROM STUDENT s', '    LEFT JOIN SC ON SC.SID = s.SID', '    LEFT JOIN CLUB c ON c.CID = SC.CID GROUP BY s.SID') }, cap: '擴闊視野（p.128）：GROUP_CONCAT 把每組的學會名稱以逗號合併（次序可能與書中不同）。' },
         { warn: '等連接漏寫其中一個連接條件，例如只寫 `WHERE SC.SID = s.SID`，SC 的每一行便會與 CLUB 的**每一行**配對（4 倍行數），結果錯得很嚴重。N 個數據表至少要 N − 1 個連接條件。' },
       ],
       tries: [

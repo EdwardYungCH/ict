@@ -2,7 +2,7 @@
  * 從結果中選取數據、CREATE VIEW／CREATE OR REPLACE VIEW／DROP VIEW、索引與 CREATE INDEX
  * 教科書 選修A 第 3 章 p.158–190（另課文總結 p.191–195）
  * 所有答案在 build 時由 SQL 引擎計算／核對。例題 3.4、3.5 及測試站 3.4、3.5 只有欄位結構，數據由本單元自訂。
- * 模擬器不執行 CREATE VIEW：檢視以「FROM (SELECT …) 檢視名」（從結果中選取數據，p.165）模擬，結果相同。
+ * 檢視的題目先執行 CREATE VIEW，再執行 SELECT（同一個 sql 內以分號分隔）。
  *
  * 教科書疑似錯誤：p.163 及 p.193「UNION 會傳回所有列，但會移除同時存在於兩個結果中的列」——UNION 只移除**重複**的列，重複的列仍保留一行（例如 p.158 的 03517 出現一次），並非全部移除。
  * 教科書疑似錯誤：p.165「被排除的列」表頭印作「STUDENTIDID」，應為「STUDENTID」。
@@ -10,6 +10,7 @@
  * 教科書疑似錯誤：p.173、p.180 SC 與 CLUB 的連接表中 03506 一行 CID 3 印作 Debate Club，按 CLUB 應為 English Club。
  * 教科書疑似錯誤：p.174 SQL 結果印作「HANS」「CLEM」（大寫），數據表中是 Hans、Clem；同頁 LIMIT 例子的結果欄名印作 MAX(TOTAL)，應為 TOTAL。
  * 教科書疑似錯誤：p.179 標題及正文寫「CREATE VIEW OR REPLACE VIEW」，正確語法是 `CREATE OR REPLACE VIEW`；同頁「記得要將 COUNT(*) 改為 COUNT(ID)」——語句用的是 COUNT(CID)，應為 COUNT(CID)。
+ * 教科書疑似錯誤：p.179 `CREATE OR REPLACE VIEW COUNTCLUB AS SELECT s.SID, COUNT(CID) AS CLUBNUM FROM SC RIGHT JOIN STUDENT s ON SC.sid = s.SID GROUP BY SID`——SC 和 STUDENT 都有 SID，`GROUP BY SID` 欄名不清楚（MySQL 的 GROUP BY 先在 FROM 的欄位中找名稱，會報 ERROR 1052），應寫 `GROUP BY s.SID`。本單元用 `GROUP BY s.SID`。
  * 教科書疑似錯誤：p.184 提示「1024 項記錄最多只須進行 10 次檢查」——對分檢索最多要 ⌊log₂1024⌋ + 1 = 11 次（同頁 11 項記錄最多 4 次 = ⌊log₂11⌋ + 1，才是正確算法）（同選C-24）。本單元 s5-p3 以 11 次為答案。
  * 教科書疑似錯誤：p.195 `DROP INDEX ENAMEIDX` 在 MySQL 須寫成 `DROP INDEX ENAMEIDX ON EMPLOYEE`（或 p.185 的 `ALTER TABLE … DROP INDEX …`）。
  * 教科書疑似錯誤：p.194 課文總結 CREATE OR REPLACE VIEW 的例子以 `CREATE VIEW` 開頭——修改現存的 TASKCOUNT 會出錯（檢視已存在）。
@@ -72,9 +73,12 @@ const FOOD_DB = {
     ['C2', 'M1', 1, '2025-01-27', 0], ['C3', 'M3', 1, '2025-01-22', 0], ['C3', 'M2', 2, '2025-01-25', 1]], ['CID', 'MID', 'ETA']],
 };
 
-const SCORESHEET = '(SELECT s.SID, NAME, SEX, s.CLASS, TEACH, LANG, SCORE1*0.4+SCORE2*0.6 AS FSCORE\n      FROM STUDENT s, CLASS cl WHERE s.CLASS = cl.CLASS) SCORESHEET';
-const COUNTCLUB_OLD = '(SELECT SID, COUNT(*) AS CLUBNUM FROM SC GROUP BY SID) COUNTCLUB';
-const RPNUM = '(SELECT r.ID, RNAME, CAPACITY, COUNT(p.ID) AS PNUM FROM ROOM r\n      LEFT JOIN PATIENT p ON r.ID = RID GROUP BY r.ID) RPNUM';
+const V_SCORESHEET = C('CREATE VIEW SCORESHEET AS', '  SELECT s.SID, NAME, SEX, s.CLASS, TEACH, LANG, SCORE1*0.4+SCORE2*0.6 AS FSCORE', '  FROM STUDENT s, CLASS cl WHERE s.CLASS = cl.CLASS;');
+const V_COUNTCLUB_OLD = C('CREATE VIEW COUNTCLUB AS', '  SELECT SID, COUNT(*) AS CLUBNUM FROM SC GROUP BY SID;');
+const V_COUNTCLUB_NEW = C('CREATE OR REPLACE VIEW COUNTCLUB AS', '  SELECT s.SID, COUNT(CID) AS CLUBNUM FROM SC', '  RIGHT JOIN STUDENT s ON SC.SID = s.SID GROUP BY s.SID;');
+const V_RPNUM = C('CREATE VIEW RPNUM AS', '  SELECT r.ID, RNAME, CAPACITY, COUNT(p.ID) AS PNUM FROM ROOM r', '  LEFT JOIN PATIENT p ON r.ID = RID GROUP BY r.ID;');
+const V_FORDER2 = C('CREATE VIEW FORDER2 AS', '  SELECT CID, OPRICE*(1-DISCOUNT)*NUM AS TPRICE, ETA FROM FORDER f, MEAL m', '  WHERE f.MID = m.MID AND PAID = FALSE;');
+const V_CPAYMENT = C('CREATE VIEW CPAYMENT AS', '  SELECT CNAME, SEX, DEPOSIT, SUM(TPRICE) AS DUE', '  FROM CUSTOMER c LEFT JOIN FORDER2 f ON c.CID = f.CID GROUP BY c.CID;');
 
 module.exports = {
   id: 'a3d',
@@ -208,14 +212,20 @@ module.exports = {
           '`DROP VIEW 檢視名`：刪除檢視。被參照的數據表或檢視刪除後，參照它的檢視便會**失效**。（p.181）',
           '陷阱（p.178–179）：`COUNTCLUB` 用 `SELECT SID, COUNT(*) … FROM SC GROUP BY SID`，沒有學會的 Dio 根本不在 SC，所以**不在檢視中**；找「加入不多於兩個學會」的學生時便漏了他。要改用 `SC RIGHT JOIN STUDENT`，並用 `COUNT(CID)`（不是 COUNT(*)）。',
         ] },
-        { code: C('CREATE VIEW SCORESHEET AS', '  SELECT s.SID, NAME, SEX, s.CLASS, TEACH, LANG,', '         SCORE1*0.4+SCORE2*0.6 AS FSCORE', '  FROM STUDENT s, CLASS cl WHERE s.CLASS = cl.CLASS;', '', "SELECT NAME FROM SCORESHEET WHERE TEACH = 'Mr Suen' AND FSCORE < 60"), cap: 'p.175–176：有了檢視，查詢變得很短。' },
-        { note: '本平台的模擬器不執行 CREATE VIEW。下面把檢視的 SELECT 寫在 `FROM ( … ) SCORESHEET` 中（「從結果中選取數據」，p.165），效果與使用檢視相同。' },
-        { sim: { db: 'view', sql: C('SELECT NAME FROM', '    ' + SCORESHEET, "    WHERE TEACH = 'Mr Suen' AND FSCORE < 60") }, cap: 'p.176：Mr Suen 所教、最終分數低於 60 的學生。試把 `NAME` 改成 `*` 看整個 SCORESHEET。' },
-        { sim: { db: 'hospital', sql: C('SELECT RNAME FROM', '    ' + RPNUM, '    WHERE PNUM < CAPACITY') }, cap: '例題 3.5(a)(b)（p.187）：RPNUM 要用 r.ID 和 COUNT(p.ID)，沒有病人的病房才會是 0。' },
+        { sim: { db: 'view', sql: C(V_SCORESHEET, "SELECT NAME FROM SCORESHEET WHERE TEACH = 'Mr Suen' AND FSCORE < 60") }, cap: 'p.175–176：先創建檢視，之後的查詢便很短。試把最後一句改成 `SELECT * FROM SCORESHEET`。' },
+        { sim: { db: 'view', sql: C(V_SCORESHEET, "UPDATE STUDENT SET SCORE2 = SCORE2 + 10 WHERE SID = '03369';", "SELECT * FROM SCORESHEET WHERE SID = '03369'") }, cap: 'p.176：只更新 STUDENT，Hans 在 SCORESHEET 的 FSCORE 便由 73 變成 79。' },
+        { sim: { db: 'view', sql: C(V_COUNTCLUB_OLD, V_COUNTCLUB_NEW, 'SELECT * FROM COUNTCLUB') }, cap: 'p.177–179：先用舊的 COUNTCLUB，再以 CREATE OR REPLACE VIEW 修改。刪去第二句，看看 Dio（03513）是否還在。' },
+        { sim: { db: 'hospital', sql: C(V_RPNUM, 'SELECT RNAME FROM RPNUM WHERE PNUM < CAPACITY') }, cap: '例題 3.5(a)(b)（p.187）：RPNUM 要用 r.ID 和 COUNT(p.ID)，沒有病人的病房才會是 0。' },
+        { h: '找出最大的聚合值（p.174）' },
+        { pts: [
+          '聚合函數不能嵌套：`SELECT MAX(COUNT(*)) FROM SC GROUP BY SID` 會出錯。',
+          '可把分組結果當作數據表：`SELECT MAX(TOTAL) FROM (SELECT COUNT(*) AS TOTAL FROM SC GROUP BY SID) t`；或排序後取第一行：`… ORDER BY TOTAL DESC LIMIT 1`。',
+          '有了檢視便簡單得多：`SELECT NAME FROM SCORESHEET WHERE CLUBNUM = (SELECT MAX(CLUBNUM) FROM SCORESHEET)`。（p.181）',
+        ] },
       ],
       tries: [
         { id: 'a3d-s4-t1', pts: 4, src: '教科書 p.178', db: 'view',
-          sql: C('SELECT NAME FROM', '    ' + SCORESHEET, '    WHERE FSCORE > 60 AND SID IN', '    (SELECT SID FROM ' + COUNTCLUB_OLD + ' WHERE CLUBNUM <= 2)'),
+          sql: C(V_SCORESHEET, V_COUNTCLUB_OLD, 'SELECT NAME FROM SCORESHEET WHERE FSCORE > 60 AND', '    SID IN (SELECT SID FROM COUNTCLUB WHERE CLUBNUM <= 2)'),
           q: '先估：COUNTCLUB 用 `SELECT SID, COUNT(*) AS CLUBNUM FROM SC GROUP BY SID`。最終分數 > 60 且加入不多於兩個學會的學生是誰？', ask: { col: 'NAME' },
           options: ['Jean, Eva, Ben', 'Jean, Eva, Dio, Ben', 'Hans, Jean, Clem, Eva, Gabe', 'Ivy, Jean, Ada, Eva, Finn, Ben'],
           why: 'FSCORE > 60 的有 Hans、Jean、Clem、Eva、Gabe、Ben；其中 CLUBNUM ≤ 2 的是 Jean、Eva、Ben。（Dio 只有 52.6 分，而且他根本不在 COUNTCLUB 中——如果條件是 FSCORE < 60，他也會被漏掉。）' },
@@ -231,12 +241,12 @@ module.exports = {
           hint: '檢視不儲存數據，只參照數據表。' },
         { id: 'a3d-s4-p2', type: 'complete', pts: 2, src: '教科書 p.181', db: 'view',
           q: '用 SCORESHEET 列出最終分數最高的學生之名字。',
-          template: C('SELECT NAME FROM ' + SCORESHEET, '    WHERE FSCORE = (SELECT ［1］ FROM ' + SCORESHEET.replace(') SCORESHEET', ') S2') + ')'),
+          template: C(V_SCORESHEET, 'SELECT NAME FROM SCORESHEET WHERE FSCORE = (SELECT ［1］ FROM SCORESHEET)'),
           ref: ['MAX(FSCORE)'],
           hint: '子查詢找出最高的 FSCORE。' },
         { id: 'a3d-s4-p3', type: 'fill', pts: 2, src: '教科書 p.188–190 測試站 3.5(d)(f)', db: 'food',
-          sql: C('SELECT CNAME, DEPOSIT, DUE FROM', '    (SELECT CNAME, DEPOSIT, SUM(TPRICE) AS DUE FROM CUSTOMER c LEFT JOIN', '        (SELECT CID, OPRICE*(1-DISCOUNT)*NUM AS TPRICE FROM FORDER f, MEAL m', '         WHERE f.MID = m.MID AND PAID = FALSE) FORDER2', '     ON c.CID = FORDER2.CID GROUP BY c.CID) CPAYMENT', '    WHERE DEPOSIT < DUE'),
-          q: '這是測試站 3.5 的 CPAYMENT 檢視（DUE = 未付款訂單總價之和）。列出存款不足以支付未付款訂單的顧客。寫出結果的行數。（想一想：沒有訂單的 Sam 為甚麼不在結果中？）',
+          sql: C(V_FORDER2, V_CPAYMENT, 'SELECT CNAME, DEPOSIT, DUE FROM CPAYMENT WHERE DEPOSIT < DUE'),
+          q: '測試站 3.5(c)(d)(f)：FORDER2 只顯示未付款的訂單；CPAYMENT 的 DUE 是每位顧客未付款訂單總價之和。最後一句列出存款不足以支付的顧客。寫出結果的行數。（想一想：沒有訂單的 Sam 為甚麼不在結果中？）',
           blanks: [{ label: '行數', ask: 'rows' }],
           hint: 'Ann 欠 90（存款 100）；Ken 欠 40 + 45 = 85（存款 50）；May 欠 90（存款 20）；Sam 的 DUE 是 NULL，DEPOSIT < NULL 不是 TRUE。' },
       ],
@@ -255,6 +265,7 @@ module.exports = {
           '`CREATE INDEX SNAME ON STUDENT (NAME)`：SNAME 是索引名稱，STUDENT 是數據表，(NAME) 是欄位。（p.185）',
           '刪除索引：`ALTER TABLE STUDENT DROP INDEX SNAME`（MySQL 也可寫 `DROP INDEX SNAME ON STUDENT`）。忘記索引名稱可用 `SHOW CREATE TABLE STUDENT` 查看。（p.185）',
         ] },
+        { sim: { db: 'view', sql: C('CREATE INDEX SNAME ON STUDENT (NAME);', 'SHOW CREATE TABLE STUDENT') }, cap: 'p.185：建立索引後，SHOW CREATE TABLE 會顯示 `KEY SNAME (NAME)`。試加上 `ALTER TABLE STUDENT DROP INDEX SNAME;` 再看一次。' },
         { table: { head: ['', '檢視（VIEW）', '索引（INDEX）'], rows: [['作用', '簡化經常重用的 SQL 語句', '加快搜尋（對分檢索）'], ['儲存數據？', '不儲存，只參照數據表', '儲存已排序的索引表'], ['數據改動時', '結果自動改變', 'DBMS 要更新索引表（需時）'], ['創建', 'CREATE VIEW … AS SELECT …', 'CREATE INDEX … ON 表 (欄)'], ['刪除', 'DROP VIEW …', 'ALTER TABLE … DROP INDEX …']] }, cap: '檢視與索引的比較（p.182、p.195）' },
       ],
       tries: [],
@@ -326,7 +337,7 @@ module.exports = {
           options: ['檢視就如虛擬的數據表，可以像數據表一樣用 SELECT 查詢', '檢視可以參照其他檢視', '數據表的數據更新後，要手動更新檢視', '所參照的數據表被刪除後，檢視便會失效'], answer: 'C',
           why: '檢視不儲存數據，每次使用時才從數據表取得結果，所以會自動反映最新的數據。' },
         { id: 'a3d-q5', pts: 4, src: '教科書 p.187 例題 3.5(c)', db: 'hospital', verify: true, ask: { cell: [0, 'AVG(PNUM)'] },
-          q: 'RPNUM 是例題 3.5(a) 的檢視（每間病房的病人人數 PNUM；B02 沒有病人）。以下語句的結果是什麼？', sql: C('SELECT AVG(PNUM) FROM', '    ' + RPNUM, "    WHERE RNAME <> 'B01'"),
+          q: 'RPNUM 是例題 3.5(a) 的檢視（每間病房的病人人數 PNUM；B02 沒有病人）。以下語句的結果是什麼？', sql: C(V_RPNUM, "SELECT AVG(PNUM) FROM RPNUM WHERE RNAME <> 'B01'"),
           options: ['1.33333333333', '2', '1.75', '2.33333333333'], answer: 'A',
           why: 'A01 有 2 人、A02 有 2 人、B02 有 0 人（排除 B01）：(2 + 2 + 0) ÷ 3 ≈ 1.33。若用 COUNT(*)，B02 會變成 1，平均便是 1.67。' },
       ],

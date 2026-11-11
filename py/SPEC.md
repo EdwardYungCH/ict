@@ -215,3 +215,22 @@ Tries are spread over sections (1–2 per section). 練 per section 5–10.
 `node py/tools/build.js <course> --only <id>` passes (all answers verified by
 CPython, total 100) and `python3 py/tools/test_site.py <course> <id>` passes.
 Do not git commit (the lead commits). Do not edit other agents' files.
+
+## Framework notes（框架實作補充，向後兼容）
+
+* **allowError**：試／練（mc verify、fill、trace）／寫程式參考答案的程式如果執行出錯，而 `ask` 不是 `{error:true}`，build 會報錯；故意示範錯誤時加 `allowError: true`。
+* **分數分配會被檢查**：一般單元 試 20、練 25、寫程式 35、小測 20；`theory:true` 單元 練 40、分析題 35、小測 25，不可有「試」。
+* `write`／`quiz`／`endless`／`report` 節可省略 `id`、`title`（預設 write／寫程式（理論單元：分析題）、quiz／小測、more／無限練習、report／交功課）。
+* 寫程式題用 `title` + `q`（亦接受 D1 的 `prompt`）；`tier`（必做／進階／挑戰）可有可無。表格題亦接受 `q` 或 `prompt`。
+* `rules` 除 `must`／`mustNot`（子字串，已去掉註解）外，亦可用 `re`／`reNot`（正規表達式）。
+* 學生頁的「例子」：`sample` 或第 1 組測試的輸出；`check.file` 的題目會顯示該檔案的期望內容。
+* 追蹤表（trace）：`stmt` 每行標籤是該句原文；`iter` 第一行是「循環前」（初始值），之後「第 k 次」。輸出欄只計 `print`，不包括 `input()` 的提示及回顯。
+* `{count:n}`：CPython 的行執行次數；`for`／`while` 標頭那一行會比循環體多 1 次（最後一次檢查）。
+* `fixRandom` 可用的鍵：`randint`、`random`、`randrange`、`uniform`、`choice`（傳回該值）、`shuffle`（不做任何事）。
+* 學（learn）的 `sim` 預設可以修改（`editable:false` 可鎖定）；可加 `fname:'xxx.py'`。試（tries）的程式不能修改，但可按 ▶ 執行（Skulpt）及 ⏭ 下一步（CPython 預先計算，最多 400 步）。
+* 變量面板／`vars` 不包括函數、模組及檔案物件。
+* fill 的答案如果有多行，會顯示多行輸入框；學生用空格分隔亦接受（`sameLoose`）。trace 格及無限練習亦一樣（`pyPrint` 例外：要分行）。
+* 單元排序：不在 plan 的 id 如果以某個 plan id 開頭（例如 `c3a`、`c3b` → `c3`），排在該位置，目錄頁亦顯示在該位置。
+* `order` 題型未有實作（build 會報「未知的練習題型」）。
+* 報告 JSON：`{"app":"Python自學平台","course":…,"unit":…}`；教師頁可核對同一課程所有能載入的單元的報告。
+* Skulpt 修補（`pyrun.js`）：float 的 `repr`／`str` 改為與 CPython 相同的最短表示（例如 `0.1+0.2` → `0.30000000000000004`）；`round(x, n)` 與 CPython 相同；`random` 可固定；加入 `OSError`、`FileNotFoundError` 等名稱；Skulpt 的「SyntaxError: bad input」會分析成 CPython 的訊息（`expected ':'`、`IndentationError: unexpected indent`、`expected an indented block after 'if' statement on line N`、`unterminated string literal`、`'(' was never closed` 等）。已知差異：個別錯誤訊息字眼、無限循環停止的行號、`print(..., file=)`、`%` 格式化的少見格式。
