@@ -549,6 +549,13 @@
 
   // ---------------- ER 圖（實體方框內列出屬性，主關鍵碼加底線；關係用菱形；兩端標 1／M） ----------------
   const tw = (s) => [...String(s)].reduce((w, c) => w + (/[⺀-￿]/.test(c) ? 14 : 8), 0);
+  // 參與標記（DSE）：'|' 必須參與（線上一短直線）；'o' 可選參與（線上一小圓）
+  function partMark(p, u, m) {
+    if (m !== '|' && m !== 'o' && m !== 'O') return '';
+    const d = 30, x = p[0] + u[0] * d, y = p[1] + u[1] * d, nx = -u[1], ny = u[0];
+    if (m === '|') return `<line class="er-part" x1="${x + nx * 8}" y1="${y + ny * 8}" x2="${x - nx * 8}" y2="${y - ny * 8}"/>`;
+    return `<circle class="er-part o" cx="${x}" cy="${y}" r="5"/>`;
+  }
   function erSvg(spec) {
     const ents = spec.entities || [], rels = spec.rels || [];
     const info = ents.map((e, i) => {
@@ -580,12 +587,13 @@
         d = `M${pa[0]},${pa[1]} L${pa[0]},${yTop} L${pb[0]},${yTop} L${pb[0]},${pb[1]}`;
         P.push(`<path class="er-line" d="${d}"/>`);
         P.push(`<text class="er-card" x="${pa[0] + 8}" y="${pa[1] - 10}">${esc(ca || '')}</text><text class="er-card" x="${pb[0] + 8}" y="${pb[1] - 10}">${esc(cb || '')}</text>`);
+        P.push(partMark(pa, [0, -1], (r.part || '')[0]), partMark(pb, [0, -1], (r.part || '')[1]));
       } else {
         pa = clip(a, b.cx, b.cy); pb = clip(b, a.cx, a.cy); mx = (pa[0] + pb[0]) / 2; my = (pa[1] + pb[1]) / 2;
         P.push(`<line class="er-line" x1="${pa[0]}" y1="${pa[1]}" x2="${pb[0]}" y2="${pb[1]}"/>`);
         const L = Math.hypot(pb[0] - pa[0], pb[1] - pa[1]) || 1, ux = (pb[0] - pa[0]) / L, uy = (pb[1] - pa[1]) / L, nx = -uy, ny = ux;
         const lab = (p, sgn, t) => `<text class="er-card" x="${p[0] + ux * 16 * sgn + nx * 11}" y="${p[1] + uy * 16 * sgn + ny * 11}">${esc(t || '')}</text>`;
-        P.push(lab(pa, 1, ca), lab(pb, -1, cb));
+        P.push(lab(pa, 1, ca), lab(pb, -1, cb), partMark(pa, [ux, uy], (r.part || '')[0]), partMark(pb, [-ux, -uy], (r.part || '')[1]));
       }
       P.push(`<g class="er-rel"><polygon points="${mx},${my - dh / 2} ${mx + dw / 2},${my} ${mx},${my + dh / 2} ${mx - dw / 2},${my}"/><text x="${mx}" y="${my}">${esc(r.name || '')}</text></g>`);
     }

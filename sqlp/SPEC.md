@@ -158,3 +158,5 @@ The page shows the expected result on the unit db unless `showExpected:false`. B
 
 Sections with `kind` may omit `title`/`id`: defaults 寫SQL（theory: 分析題；or `writeLabel`）／小測／無限練習／交功課, id = kind.
 `ask.cell` row numbers are **1-based only** (checked: all current units use 1-based correctly).
+
+ER relationships may add `part:'|o'` (DSE participation marks: first char at entity a's end, second at b's end; `|` = mandatory, drawn as a short bar across the line; `o` = optional, drawn as a small circle; any other char = no mark). Cardinality labels (1/M/N) are drawn nearer the entity, the participation mark a little further along the line.

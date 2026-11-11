@@ -352,3 +352,4 @@ details.ansheet>summary{cursor:pointer;font-weight:700;font-size:18px}
 @media (max-width:560px){.fixpair{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:480px){.grid th,.grid td{padding:3px 7px}table.grid{font-size:13px}.sqlc-ed{padding:8px 8px 0}.sqlc-out{padding:8px}}
 @media (max-width:560px){.tb td code,.anatab td code{white-space:normal;overflow-wrap:anywhere}}
+.er .er-part{stroke:var(--fc-stroke);stroke-width:2}.er .er-part.o{fill:var(--card);stroke-width:1.6}
