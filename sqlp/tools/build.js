@@ -37,7 +37,9 @@ for (const f of files) {
   catch (e) { loadErr[id0] = `載入失敗：${e.message}`; }
 }
 const planIds = PLAN.map((p) => p[0]);
-loaded.sort((a, b) => { const ia = planIds.indexOf(a.id), ib = planIds.indexOf(b.id); if (ia >= 0 && ib >= 0) return ia - ib; if (ia >= 0) return -1; if (ib >= 0) return 1; return natural(a.id, b.id); });
+// 單元 a1a、a1b … 屬於計劃中的 a1（分拆單元）
+const planOf = (id) => { let i = planIds.indexOf(id); if (i < 0) i = planIds.findIndex((p) => id.startsWith(p) && /^[a-z]$/i.test(id.slice(p.length))); return i; };
+loaded.sort((a, b) => { const ia = planOf(a.id), ib = planOf(b.id); if (ia >= 0 && ib >= 0 && ia !== ib) return ia - ib; if (ia >= 0 && ib < 0) return -1; if (ib >= 0 && ia < 0) return 1; return natural(a.id, b.id); });
 
 // ---------- 核對 ----------
 function checkUnit(U) {
@@ -157,7 +159,7 @@ if (failed && only && !units.some((U) => U.id === only)) { console.error(`單元
 // ---------- 產生頁面 ----------
 const read = (f) => fs.readFileSync(path.join(SQLP, f), 'utf8');
 const FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">';
-const js = (o) => JSON.stringify(o, (k, v) => (k === '_file' ? undefined : v)).replace(/</g, '\\u003c').replace(/ /g, '\\u2028').replace(/ /g, '\\u2029');
+const js = (o) => JSON.stringify(o, (k, v) => (k === '_file' ? undefined : v)).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
 const escA = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 const CRS = { code: COURSE.code, title: COURSE.title, kicker: COURSE.kicker, pin: COURSE.pin };
 function page({ title, desc, boot, inline, rel }) {
@@ -184,8 +186,10 @@ fs.writeFileSync(path.join(tdir, 'index.html'), page(topt));
 if (outDir) fs.writeFileSync(path.join(outDir, 'teacher_單一檔案.html'), page(Object.assign({}, topt, { inline: true })));
 // ---------- 目錄頁 ----------
 const have = new Set(units.map((u) => u.id).filter((id) => fs.existsSync(path.join(CDIR, id, 'index.html'))));
-const extra = units.filter((U) => !planIds.includes(U.id)).map((U) => [U.id, U.title, U.book || '']);
-const cards = PLAN.concat(extra).map(([id, t, pg]) => {
+const entries = [];
+PLAN.forEach(([pid, t, pg]) => { const subs = units.filter((U) => U.id !== pid && planOf(U.id) === planIds.indexOf(pid)); if (subs.length && !units.some((U) => U.id === pid)) subs.forEach((U) => entries.push([U.id, U.title, U.book || pg])); else entries.push([pid, t, pg]); });
+units.filter((U) => planOf(U.id) < 0).forEach((U) => entries.push([U.id, U.title, U.book || '']));
+const cards = entries.map(([id, t, pg]) => {
   const U = units.find((u) => u.id === id); const title = U ? U.title : t;
   const inner = `<span class="code">${escA(id.toUpperCase())}</span><h2>${escA(title)}</h2><p>${escA(U && U.book ? U.book : '教科書 ' + (pg || ''))}</p>`;
   return have.has(id) ? `<a class="hcard" href="${id}/">${inner}</a>` : `<div class="hcard soon" aria-disabled="true">${inner}<p class="soonlab">製作中</p></div>`;

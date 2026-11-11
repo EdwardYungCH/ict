@@ -231,7 +231,7 @@ module.exports = {
           why: 'FSCORE > 60 的有 Hans、Jean、Clem、Eva、Gabe、Ben；其中 CLUBNUM ≤ 2 的是 Jean、Eva、Ben。（Dio 只有 52.6 分，而且他根本不在 COUNTCLUB 中——如果條件是 FSCORE < 60，他也會被漏掉。）' },
         { id: 'a3d-s4-t2', pts: 4, src: '教科書 p.187 例題 3.5(a) 分析', db: 'hospital',
           sql: C('SELECT RNAME, COUNT(*) AS PNUM FROM ROOM r', '    LEFT JOIN PATIENT p ON r.ID = RID GROUP BY r.ID'),
-          q: '先估：病房 B02 沒有病人。用 COUNT(*) 時，B02 的 PNUM 是多少？', ask: { cell: [3, 'PNUM'] }, options: ['1', '0', 'NULL', '2'],
+          q: '先估：病房 B02 沒有病人。用 COUNT(*) 時，B02 的 PNUM 是多少？', ask: { cell: [4, 'PNUM'] }, options: ['1', '0', 'NULL', '2'],
           why: 'LEFT JOIN 保留 B02，產生一行病人欄位全是 NULL 的記錄；COUNT(*) 點算行數得 1。所以書中強調要用 COUNT(p.ID)。' },
       ],
       practice: [
@@ -336,7 +336,7 @@ module.exports = {
           q: '以下哪一項有關檢視（view）的描述是**錯誤**的？',
           options: ['檢視就如虛擬的數據表，可以像數據表一樣用 SELECT 查詢', '檢視可以參照其他檢視', '數據表的數據更新後，要手動更新檢視', '所參照的數據表被刪除後，檢視便會失效'], answer: 'C',
           why: '檢視不儲存數據，每次使用時才從數據表取得結果，所以會自動反映最新的數據。' },
-        { id: 'a3d-q5', pts: 4, src: '教科書 p.187 例題 3.5(c)', db: 'hospital', verify: true, ask: { cell: [0, 'AVG(PNUM)'] },
+        { id: 'a3d-q5', pts: 4, src: '教科書 p.187 例題 3.5(c)', db: 'hospital', verify: true, ask: { cell: [1, 'AVG(PNUM)'] },
           q: 'RPNUM 是例題 3.5(a) 的檢視（每間病房的病人人數 PNUM；B02 沒有病人）。以下語句的結果是什麼？', sql: C(V_RPNUM, "SELECT AVG(PNUM) FROM RPNUM WHERE RNAME <> 'B01'"),
           options: ['1.33333333333', '2', '1.75', '2.33333333333'], answer: 'A',
           why: 'A01 有 2 人、A02 有 2 人、B02 有 0 人（排除 B01）：(2 + 2 + 0) ÷ 3 ≈ 1.33。若用 COUNT(*)，B02 會變成 1，平均便是 1.67。' },

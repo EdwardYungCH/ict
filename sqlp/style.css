@@ -313,8 +313,9 @@ ul.steps li{background:var(--good-bg);border-radius:6px;padding:3px 8px}
 .schema{font:600 14px var(--mono);word-break:break-word}
 .schema u{text-decoration-thickness:2px}
 .schema i.fk{font-style:italic;text-decoration:underline dashed;text-underline-offset:3px}
-.gridwrap{overflow:auto;max-width:100%;max-height:340px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
-table.grid{border-collapse:collapse;font:14px/1.45 var(--mono);min-width:100%}
+.gridwrap{overflow:auto;max-width:100%;width:fit-content;max-height:340px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+table.grid{border-collapse:collapse;font:14px/1.45 var(--mono)}
+.tbox .gridwrap{width:auto}
 .grid th,.grid td{padding:3px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
 .grid th+th,.grid td+td{border-left:1px solid var(--line)}
 .grid thead th{background:var(--sunk);position:sticky;top:0;font-weight:600}
@@ -350,3 +351,4 @@ ul.fds{margin:2px 0 0;padding-left:1.2em;display:flex;flex-wrap:wrap;gap:2px 18p
 details.ansheet>summary{cursor:pointer;font-weight:700;font-size:18px}
 @media (max-width:560px){.fixpair{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:480px){.grid th,.grid td{padding:3px 7px}table.grid{font-size:13px}.sqlc-ed{padding:8px 8px 0}.sqlc-out{padding:8px}}
+@media (max-width:560px){.tb td code,.anatab td code{white-space:normal;overflow-wrap:anywhere}}

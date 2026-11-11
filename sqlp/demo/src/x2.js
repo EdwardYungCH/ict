@@ -1,0 +1,33 @@
+// 示範理論單元：練 40、分析題 35、小測 25
+module.exports = {
+  id: 'x2', title: '數據庫設計（理論單元）示範', book: '示範', key: 'DEMO-x2-hmac-9b2e44c1a0', theory: true,
+  dbs: { lib: { MEMBER: [['MID', 'MNAME'], [['M1', 'Ann'], ['M2', 'Bob']], ['MID']], LOAN: [['MID', 'BID', 'LDATE'], [['M1', 'B1', '2025-09-01'], ['M1', 'B2', '2025-09-03'], ['M2', 'B1', '2025-10-10']], ['MID', 'BID', 'LDATE']] } },
+  sections: [
+    { id: 's1', title: '功能相關性與鍵碼', pages: '示範',
+      learn: [{ pts: ['候選鍵碼：最少的屬性組合，可以決定所有屬性。'] }, { er: { entities: [{ name: '會員', attrs: ['*會員編號', '姓名'] }, { name: '書本', attrs: ['*書本編號', '書名'] }, { name: '借書記錄', attrs: ['#會員編號', '#書本編號', '借出日期'], at: [1, 1] }], rels: [{ a: '會員', b: '書本', name: '借', card: 'M:N' }, { a: '會員', b: '借書記錄', name: '有', card: '1:M' }] } }],
+      practice: [
+        { id: 'x2-s1-p1', type: 'fd', pts: 5, q: '寫出所有候選鍵碼。', attrs: 'A B C D E', fds: 'A,B->C; C->D; D->A', ask: 'keys' },
+        { id: 'x2-s1-p2', type: 'fd', pts: 5, q: '計算 {A}⁺。', attrs: 'A B C D', fds: 'A->B; B->C', ask: 'closure:A' },
+        { id: 'x2-s1-p3', type: 'fd', pts: 5, q: '最高範式？', attrs: 'A B C D', fds: 'A,B->C; B->D', ask: 'nf', options: ['1NF', '2NF', '3NF'] },
+        { id: 'x2-s1-p4', type: 'fd', pts: 10, q: '把 R 分拆成第三範式（無損、保留相關性）。', attrs: 'SID SNAME CLASS TEACHER', fds: 'SID->SNAME,CLASS; CLASS->TEACHER', ask: 'decompose3NF' },
+        { id: 'x2-s1-p5', type: 'fill', pts: 5, q: '填寫。', attrs: 'A B C', fds: 'A->B; B->C', blanks: [{ label: '候選鍵碼', fd: 'keys' }, { label: '最高範式', fd: 'nf' }] },
+        { id: 'x2-s1-p6', type: 'mc', pts: 5, q: '這句 SQL 會出現什麼錯誤？', db: 'lib', sql: "INSERT INTO MEMBER VALUES ('M1', 'Cat')", ask: 'error', options: ['沒有錯誤', '違反主關鍵碼限制', '違反外鍵碼限制', '語法錯誤'] },
+        { id: 'x2-s1-p7', type: 'fd', pts: 5, q: '哪一個分拆符合第三範式？', attrs: 'A B C', fds: 'A->B; B->C', ask: 'decompose3NF', options: ['R1(A, B); R2(B, C)', 'R1(A, B); R2(A, C)', 'R1(A, C); R2(B, C)'] },
+      ] },
+    { kind: 'write', id: 'w', title: '分析題',
+      tasks: [
+        { kind: 'table', id: 'x2-w1', pts: 20, tier: '分析', title: '判斷關係', q: '判斷每對實體的關係。', head: ['實體', '關係'], opts: { c: ['1:1', '1:M', 'M:N'] }, rows: [['會員—借書記錄', { sel: 'c', a: '1:M' }], ['會員—書本', { sel: 'c', a: 'M:N' }], ['主關鍵碼欄位數目（LOAN）', { text: true, a: '3', accept: ['三'] }]] },
+        { id: 'x2-w2', pts: 15, title: '借書次數', q: '列出每位會員的 MNAME 及借書次數。', db: 'lib', starter: 'SELECT MNAME FROM MEMBER', ref: 'SELECT M.MNAME, COUNT(*) FROM MEMBER M JOIN LOAN L ON M.MID = L.MID GROUP BY M.MID' },
+      ] },
+    { kind: 'quiz', id: 'q', title: '小測',
+      items: [
+        { id: 'x2-q1', pts: 5, type: 'fd', q: 'R(A, B, C)，A→B，B→C。最高範式？', attrs: 'A B C', fds: 'A->B; B->C', ask: 'nf', options: ['1NF', '2NF', '3NF', 'BCNF 以上'] },
+        { id: 'x2-q2', pts: 5, q: '主關鍵碼可以是 NULL 嗎？', options: ['可以', '不可以'], answer: 1 },
+        { id: 'x2-q3', pts: 5, q: '刪除 M1 會怎樣？（LOAN 的 MID 是外鍵碼）', db: 'lib', sql: "CREATE TABLE L2 (MID CHAR(2), FOREIGN KEY (MID) REFERENCES MEMBER(MID)); INSERT INTO L2 VALUES ('M1'); DELETE FROM MEMBER WHERE MID = 'M1'", ask: 'error', options: ['沒有錯誤', '違反外鍵碼限制', '違反主關鍵碼限制'], verify: true, answer: 1 },
+        { id: 'x2-q4', pts: 5, q: 'LOAN 有多少項記錄？', db: 'lib', sql: 'SELECT COUNT(*) FROM LOAN', ask: { cell: [1, 1] }, options: ['2', '3', '4'] },
+        { id: 'x2-q5', pts: 5, q: '哪一項是候選鍵碼？', type: 'fd', attrs: 'A B C', fds: 'A->B; B->C', ask: 'keys', options: ['{A}', '{B}', '{C}', '{A, B}'] },
+      ] },
+    { kind: 'endless', id: 'e', title: '無限練習', gens: ['fdKey', 'fdNf', 'erCard'] },
+    { kind: 'report', id: 'r', title: '交功課' },
+  ],
+};

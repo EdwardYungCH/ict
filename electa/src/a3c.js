@@ -6,7 +6,6 @@
  * 教科書疑似錯誤：p.134–135「SELECT NAME, MAX(SCORE) FROM STUDENT 只會傳回數據表中第一位學生的名字（Ada）」——只在關閉 ONLY_FULL_GROUP_BY 時如此；MySQL 8.0 預設會報錯（ERROR 1140）。本平台按 MySQL 8.0 預設，執行時會報錯。
  * 教科書疑似錯誤：p.153、p.155 例題 3.3(b) 題目要求體重「超出」該品種的全球平均重量，答案卻寫 `c.WEIGHT < b.WEIGHT`，應為 `c.WEIGHT > b.WEIGHT`。本單元 s5 用 `>`。另 p.153 子查詢寫法 `b. WEIGHT` 多了空格（可執行，但不規範）。
  * 教科書疑似錯誤：p.154 例題 3.3(c) 第二個寫法 `… WHERE ID IN (SELECT HID FROM CAT c WHERE HID = h.ID HAVING COUNT(c.ID) > CAPACITY)` 在沒有 GROUP BY 的子查詢的 HAVING 中直接用外層欄位 CAPACITY，寫法不規範，不建議學生使用；本單元只用書中答案（第三個寫法）。
- * 備註：p.154 例題 3.3(c) 第一個寫法 `SELECT h.NAME … GROUP BY HID` 在 MySQL 8.0 可執行（HID = h.ID 令 h.NAME 由 HID 決定），但本平台的模擬器較嚴格會報錯；本單元不使用該寫法。
  */
 const C = (...ls) => ls.join('\n');
 const HOT_SUB = { t: 'hot', why: 'DSE 卷二A 常考以子查詢找最高／最低值的記錄，以及 IN／NOT IN／EXISTS' };
@@ -243,7 +242,7 @@ module.exports = {
         { id: 'a3c-s5-p3', type: 'fill', pts: 1, src: '教科書 p.156 測試站 3.3(a)', db: 'game',
           sql: C('SELECT COUNT(ID) FROM PLAYER WHERE ID IN', '    (SELECT OWNER FROM ARMY a, CLASS c WHERE CID = c.ID AND STR > 90)'),
           q: '點算擁有力量高於 90 的軍隊之玩家人數。',
-          blanks: [{ label: '人數', ask: { cell: [0, 'COUNT(ID)'] } }],
+          blanks: [{ label: '人數', ask: { cell: [1, 'COUNT(ID)'] } }],
           hint: '力量高於 90 的兵種：弓箭手 95、火魔法師 110、黑魔法師 120（騎士 90 不算）。IN 令擁有多隊的玩家只計一次。' },
       ],
     },

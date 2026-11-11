@@ -1,7 +1,6 @@
 /* 單元 a5b：數據冗餘、異常與規範化（1NF、2NF、3NF）、非規範化、數據私隱
  * 教科書 選修A 第 5 章 p.277–307（例題 5.4–5.6、測試站 5.5–5.7、活動 5.2、實驗站 5.1、課題練習 p.305–307）
  * 所有 SQL 答案在 build 時由引擎計算／核對；功能相關性題（fd）由 FDX 計算。
- * 本平台的模擬器不支援 CREATE TABLE／CREATE VIEW，所以只執行其中的 SELECT 部分。
  *
  * // 教科書疑似錯誤：p.291–292 CLASSLIST 的主關鍵碼是 CLASS，但表中 3B 重複了三次（共 5 行），違反實體完整性；應只有 3 行
  * //   （SELECT DISTINCT CLASS, CTEACH）。若照書中 5 行執行 p.292 的四表連接，結果是 18 行而不是書中的 8 行。本單元用 3 行版本，並以練習題展示此問題。
@@ -108,17 +107,17 @@ module.exports = {
         { warn: '例題 5.4(a)（p.281）：Adam 改為擁有另一物業。因主關鍵碼是 CID+PID，Adam 與舊物業只有一項記錄，更新**不會**不一致；但舊物業只由 Adam 擁有，改動後舊物業的數據便丟失——這是**刪除異常**，不是更新異常。' },
       ],
       tries: [
-        { id: 'a5b-s1-t1', pts: 4, src: '教科書 p.279', db: 'flat', ask: { cell: [0, 'COUNT(*)'] },
+        { id: 'a5b-s1-t1', pts: 4, src: '教科書 p.279', db: 'flat', ask: { cell: [1, 'COUNT(*)'] },
           sql: C("UPDATE STUDENT SET ETEACH = 'Mrs Lee' WHERE ENAME = 'ICT';", "SELECT COUNT(*) FROM STUDENT WHERE ETEACH = 'Mrs Lee'"),
           q: '先估：要保持數據一致，Mrs Lee 接手 ICT 時要更新多少項記錄？', options: ['1', '2', '3', '8'],
           why: 'Clem、Gabe、Finn 三項 ICT 記錄都存有教師名字。數據重複得越多，更新異常的機會越大。' },
       ],
       practice: [
-        { id: 'a5b-s1-p1', type: 'mc', pts: 2, src: '教科書 p.280 表 5.15', db: 'flat', verify: true, ask: { cell: [0, 'COUNT(*)'] }, tags: [HOT_ANO],
+        { id: 'a5b-s1-p1', type: 'mc', pts: 2, src: '教科書 p.280 表 5.15', db: 'flat', verify: true, ask: { cell: [1, 'COUNT(*)'] }, tags: [HOT_ANO],
           sql: C("DELETE FROM STUDENT WHERE SNAME = 'Ada';", "SELECT COUNT(*) FROM STUDENT WHERE CLASS = '3A'"),
           q: 'Ada 退學，她的記錄被刪除。之後 STUDENT 還有多少項 3A 班的記錄？', options: ['0', '1', '2', '7'], answer: 0,
           hint: '3A 班有多少個學生？', why: '3A 的班主任資料（Mrs Au）也隨之丟失——刪除異常。' },
-        { id: 'a5b-s1-p2', type: 'mc', pts: 2, src: '教科書 p.281–282 例題 5.4(b)、(c)', db: 'citizen', verify: true, ask: { cell: [0, 'COUNT(*)'] }, tags: [HOT_ANO],
+        { id: 'a5b-s1-p2', type: 'mc', pts: 2, src: '教科書 p.281–282 例題 5.4(b)、(c)', db: 'citizen', verify: true, ask: { cell: [1, 'COUNT(*)'] }, tags: [HOT_ANO],
           sql: C('SELECT COUNT(*)', 'FROM CITIZEN', "WHERE PADDRESS LIKE 'CC City%'"),
           q: 'CC City 被重新命名為 CC Court。以上語句找出須要更新的記錄數目，結果是什麼？', options: ['1', '2', '3', '8'], answer: 1,
           hint: 'CC City 有兩個物業。', why: 'CC City 11/F Flat C 和 CC City 15/F Flat D 各一項記錄，須更新兩項，可能出現更新異常。' },
@@ -270,8 +269,7 @@ module.exports = {
           '**用戶存取權限**：不同身份只獲授權進行需要的操作。數據庫模式設計員：CREATE、DROP、ALTER；帳戶管理員：INSERT、UPDATE、DELETE、SELECT；顧客：只可 UPDATE 及 SELECT 自身帳戶的數據。（p.299 表 5.22）',
           '**檢視（VIEW）**限制用戶只能看到部分數據（某些記錄或某些欄位）。（p.299–300）',
         ] },
-        { code: C('CREATE VIEW AFILM AS', '    (SELECT * FROM ACCOUNT WHERE ATYPE IN (0, 1))'), cap: 'p.300：只負責電影串流（ATYPE 0、1）的客戶服務員只可看 AFILM。' },
-        { sim: { db: 'acct', sql: C('SELECT *', 'FROM ACCOUNT', 'WHERE ATYPE IN (0, 1)') }, cap: '模擬器不支援 CREATE VIEW；這裏執行檢視中的 SELECT 部分，看看客戶服務員能看到哪些記錄（數據自擬）。' },
+        { sim: { db: 'acct', sql: C('CREATE VIEW AFILM AS', '    (SELECT * FROM ACCOUNT WHERE ATYPE IN (0, 1));', 'SELECT * FROM AFILM') }, cap: '建立檢視後，客戶服務員只查詢 AFILM，看不到劇集帳戶（p.300；數據自擬）。試再建立只有 AID、USERNAME、ATYPE 三欄的檢視。' },
         { sim: { db: 'game', sql: C('SELECT PNAME, HKID, SEX, PNUM', 'FROM P', 'WHERE TNUM = (SELECT TNUM', "              FROM P", "              WHERE PNUM = '579')") },
           cap: '例題 5.6(a)（p.300–301）：用 Kara 的參賽者編號找出她的隊友。但網頁顯示隊友的**香港身份證號碼**，侵犯數據私隱——應從 SELECT 中刪去 HKID。' },
       ],
@@ -283,7 +281,7 @@ module.exports = {
       ],
       practice: [
         { id: 'a5b-s5-p1', type: 'mc', pts: 1, src: '教科書 p.300', db: 'acct', verify: true, ask: 'rows',
-          sql: C('SELECT *', 'FROM ACCOUNT', 'WHERE ATYPE IN (0, 1)'),
+          sql: C('CREATE VIEW AFILM AS', '    (SELECT * FROM ACCOUNT WHERE ATYPE IN (0, 1));', 'SELECT * FROM AFILM'),
           q: '檢視 AFILM 中有多少項記錄？', options: ['2', '3', '4', '6'], answer: 1,
           hint: 'ATYPE 0、1 是電影。', why: 'amy88、cat_c、eva_e 三個帳戶。' },
         { id: 'a5b-s5-p2', type: 'mc', pts: 1, src: '教科書 p.301 例題 5.6(c)',
@@ -293,7 +291,7 @@ module.exports = {
         { id: 'a5b-s5-p3', type: 'fill', pts: 1, src: '教科書 p.302 測試站 5.7(a)', db: 'health',
           sql: C('SELECT AVG(HEIGHT)', 'FROM STUDENT', "WHERE SEX = 'F' AND AGE BETWEEN 11 AND 14"),
           q: '執行測試站 5.7(a) 的語句（數據自擬），年齡介乎 11 至 14 歲的女學生的平均身高是多少？',
-          blanks: [{ label: 'AVG(HEIGHT)', ask: { cell: [0, 'AVG(HEIGHT)'] } }], hint: 'BETWEEN 包括 11 和 14；Cathy 16 歲、Gigi 10 歲不計。' },
+          blanks: [{ label: 'AVG(HEIGHT)', ask: { cell: [1, 'AVG(HEIGHT)'] } }], hint: 'BETWEEN 包括 11 和 14；Cathy 16 歲、Gigi 10 歲不計。' },
         { id: 'a5b-s5-p4', type: 'mc', pts: 1, src: '教科書 p.302 測試站 5.7(b)、(d)',
           q: '學生身體檢查的數據存於 STUDENT。以下哪項正確？',
           options: ['醫生可用這些數據為醫療服務做定向廣告，因為數據是他收集的', '用數據做定向廣告並非原本的收集目的，會侵犯數據私隱；只負責搜索和匯出數據的研究人員應獲 SELECT 權限', '研究人員應獲 CREATE 和 DELETE 權限', '只要用檢視，便可以把數據用於任何目的'], answer: 1,
@@ -345,7 +343,7 @@ module.exports = {
           q: 'QUESTION (YEAR, QUESTION, MARK, TCODE, TOTALMARK) 記錄每年考卷的題目：YEAR+QUESTION 是主關鍵碼，TOTALMARK 是該年考卷的總分。這個數據表為何不符合 3NF？',
           options: ['YEAR → TOTALMARK 是部分功能相關性，所以連 2NF 也不符合', 'TCODE → MARK 是遞移功能相關性', 'MARK 有多於一個值', '主關鍵碼不可以是複合鍵'], answer: 'A',
           why: '總分只依賴年份（主關鍵碼的一部分）；應把它抽出成 PAPER (YEAR, TOTALMARK)。' },
-        { id: 'a5b-q5', pts: 4, src: '教科書 p.282 測試站 5.5(a)–(b)', tags: [HOT_ANO], db: 'prod', verify: true, ask: { cell: [0, 'COUNT(*)'] },
+        { id: 'a5b-q5', pts: 4, src: '教科書 p.282 測試站 5.5(a)–(b)', tags: [HOT_ANO], db: 'prod', verify: true, ask: { cell: [1, 'COUNT(*)'] },
           sql: C('SELECT COUNT(*)', 'FROM PROD', "WHERE SNAME = 'HomeZone'"),
           q: 'HomeZone 的店主由 Cadan 換為 Abby。為避免更新異常，要更新多少項記錄？（以上語句計算）', options: ['1', '3', '4', '9'], answer: 'C',
           why: 'HomeZone 出售四種產品，店主名字重複了四次；只更新一項便會出現更新異常。' },

@@ -1,8 +1,8 @@
 /* 單元 a4：關聯式數據庫——元素、模式、關鍵欄位、索引、完整性、回滾
  * 教科書 選修A 第 4 章 p.200–241（活動 4.1–4.6、例題 4.1–4.2、測試站 4.1–4.4、實驗站 4.1、課題練習 p.238–241）
  * 所有 SQL 答案在 build 時由引擎計算／核對。
- * 本平台的 SQL 引擎不會自動執行 PRIMARY KEY／FOREIGN KEY／CHECK 限制，
- * 所以本單元用 SELECT 查出「違反完整性」的記錄（DSE 卷二A 常見寫法）。
+ * 單元數據庫沒有預先定義 FOREIGN KEY／CHECK 限制（部分題目用 ALTER TABLE 即場加入，示範 DBMS 如何拒絕）；
+ * 寫 SQL 部分用 SELECT 查出「違反完整性」的記錄。
  *
  * // 教科書疑似錯誤：p.218「將主數據表 STUDENT 連接到父數據表 CLASS」——按上表應為 CLUB（文字版已註明原文如此）。
  * // 教科書疑似錯誤：p.220 例題 4.2(a) 答案「PNMAE」應為 PNAME；p.221 測試站 4.2 答案「ANMAE」「DATE」應為 ANAME、PDATE。
@@ -111,7 +111,7 @@ module.exports = {
       ],
       tries: [
         { id: 'a4-s1-t1', pts: 4, src: '教科書 p.206', db: 'club',
-          sql: C('SELECT C.NAME', 'FROM STUDENT S, CLUB C', "WHERE S.CID = C.CID AND S.NAME = 'Eva'"), ask: { cell: [0, 'NAME'] },
+          sql: C('SELECT C.NAME', 'FROM STUDENT S, CLUB C', "WHERE S.CID = C.CID AND S.NAME = 'Eva'"), ask: { cell: [1, 'NAME'] },
           q: '先估：Eva 加入了什麼學會？', options: ['Science Club', 'Chess Club', 'Art Club', 'English Club'],
           why: 'Eva 的 CID 是 4，在 CLUB 中 CID 4 是 Science Club。' },
       ],
@@ -184,8 +184,8 @@ module.exports = {
         { id: 'a4-s2-p4', type: 'fill', pts: 1, src: '教科書 p.218', db: 'sc',
           sql: C("UPDATE STUDENTCLUB SET CTEACH = 'Mr Suen' WHERE CNAME = 'Science Club';", "SELECT COUNT(*) FROM STUDENTCLUB WHERE CTEACH = 'Mr Suen'"),
           q: 'Science Club 換老師後，STUDENTCLUB 有多少項記錄的 CTEACH 是 Mr Suen？（即是要更新多少項記錄）',
-          blanks: [{ label: '記錄數目', ask: { cell: [0, 'COUNT(*)'] } }], hint: '數數有多少位學生加入了 Science Club。' },
-        { id: 'a4-s2-p5', type: 'mc', pts: 1, src: '教科書 p.218', db: 'sc', verify: true, ask: { cell: [0, 'COUNT(*)'] },
+          blanks: [{ label: '記錄數目', ask: { cell: [1, 'COUNT(*)'] } }], hint: '數數有多少位學生加入了 Science Club。' },
+        { id: 'a4-s2-p5', type: 'mc', pts: 1, src: '教科書 p.218', db: 'sc', verify: true, ask: { cell: [1, 'COUNT(*)'] },
           sql: C("DELETE FROM STUDENTCLUB WHERE NAME = 'Ada';", "SELECT COUNT(*) FROM STUDENTCLUB WHERE CNAME = 'Art Club'"),
           q: 'Ada 退學，她的記錄被刪除。之後還可以在 STUDENTCLUB 找到多少項有 Art Club 資料的記錄？', options: ['0', '1', '2', '3'], answer: 0,
           hint: '有多少位學生加入了 Art Club？', why: 'Ada 是 Art Club 唯一的學生，刪除她之後 Art Club 的房間和老師資料都消失了。' },
@@ -207,7 +207,9 @@ module.exports = {
         ] },
         { code: C('CREATE TABLE STUDENT (', '    SID CHAR(5) PRIMARY KEY,', '    NAME VARCHAR(40),', '    SEX CHAR(1),', '    CLASS CHAR(2),', '    CNO INT,', '    CHECK (LENGTH(SID) = 5),', "    CHECK (SEX IN ('M', 'F')),", "    CHECK (CLASS IN ('1A', '1B', '1C', '1D')),", '    CHECK (CNO BETWEEN 1 AND 30)', ')'),
           cap: 'p.229：用數據類型與 CHECK 限制定義域，DBMS 便會拒絕不在域內的值（例如 CNO 為 \'One\' 或 -6）。' },
-        { note: '本平台的模擬器不會執行這些限制。我們改用 **SELECT 查出違反完整性的記錄**：重複的主關鍵碼用 `GROUP BY … HAVING COUNT(*) > 1`；無效的外鍵碼用 `NOT IN (SELECT 主關鍵碼 FROM 父數據表)`；超出域的值用 `NOT BETWEEN`、`NOT IN (…)`。' },
+        { sim: { db: 'club', sql: C('ALTER TABLE STUDENT ADD FOREIGN KEY (CID) REFERENCES CLUB(CID);', "INSERT INTO STUDENT VALUES ('03520', 'Kit', 'M', '3C', 3)") },
+          cap: '先定義外鍵碼，再插入一位 CID 為 3 的學生：成功。試把 3 改為 5——DBMS 會拒絕（圖 4.6）；NULL 則可以。再試 `DELETE FROM CLUB WHERE CID = 4`（圖 4.8）。' },
+        { note: '如果數據表**沒有**定義限制（例如由舊系統匯入的數據），錯誤的數據便可能已經存在。這時可用 **SELECT 查出違反完整性的記錄**：重複的主關鍵碼用 `GROUP BY … HAVING COUNT(*) > 1`；無效的外鍵碼用 `NOT IN (SELECT 主關鍵碼 FROM 父數據表)`；超出域的值用 `NOT BETWEEN`、`NOT IN (…)`。' },
         { sim: { db: 'seat', sql: C('SELECT SNAME, CID', 'FROM STUDENT', 'WHERE CID NOT IN (SELECT CID FROM CLUB)') },
           cap: 'p.231 活動 4.6 第 2 題：找出外鍵碼 CID 無效的學生。再試把條件改為 `SROW NOT IN (\'1\', \'2\', \'3\', \'4\', \'5\')`，找出座位列號不在域 {1 .. 5} 內的記錄。' },
         { warn: '`CID NOT IN (子查詢)` 不會選出 CID 為 NULL 的記錄（NULL 與任何值比較的結果都是 NULL）。這正好符合參照完整性：外鍵碼可以是 NULL。' },
@@ -220,16 +222,20 @@ module.exports = {
           sql: C('SELECT SNAME', 'FROM STUDENT', 'WHERE CID NOT IN (SELECT CID FROM CLUB)'),
           q: '先估：結果是什麼？', options: ['Linda Wong', 'John Chau', 'John Chau, Linda Wong', '（沒有記錄）'],
           why: 'Linda Wong 的 CID 是 3169，CLUB 只有 1558、3196、4453、4700，所以違反參照完整性。John Chau 的問題是 SROW 為 S（域完整性），CID 4453 是有效的。' },
-        { id: 'a4-s3-t2', pts: 4, src: '教科書 p.227 圖 4.8', db: 'club', ask: { cell: [0, 'COUNT(*)'] },
+        { id: 'a4-s3-t2', pts: 4, src: '教科書 p.227 圖 4.8', db: 'club', ask: { cell: [1, 'COUNT(*)'] },
           sql: C('DELETE FROM CLUB WHERE CID = 4;', 'SELECT COUNT(*)', 'FROM STUDENT', 'WHERE CID NOT IN (SELECT CID FROM CLUB)'),
           q: '先估：假如 DBMS 沒有阻止這個刪除，之後有多少位學生的 CID 變成無效？', options: ['0', '1', '3', '4'],
           why: 'Eva、Gabe、Dio 的 CID 都是 4。刪除 Science Club 後，他們的外鍵碼參照不存在的記錄；Ben 的 CID 是 NULL，不計算在內。所以 DBMS 會阻止這個刪除。' },
       ],
       practice: [
-        { id: 'a4-s3-p1', type: 'mc', pts: 2, src: '教科書 p.230 活動 4.6 第 1 題', tags: [HOT_INT],
+        { id: 'a4-s3-p1', type: 'mc', pts: 1, src: '教科書 p.230 活動 4.6 第 1 題', tags: [HOT_INT],
           q: '上面「活動 4.6 第 1 題」的數據表最有可能違反哪項／些完整性？\n(1) 實體完整性\n(2) 參照完整性\n(3) 域完整性',
           options: ['只有 (1)', '只有 (2)', '只有 (1) 和 (3)', '只有 (2) 和 (3)'], answer: 0,
           hint: '每個欄位（甚至 CLASS+CLASSNO）都有重複值。', why: '找不到不重複的欄位或欄位組合作主關鍵碼，所以違反實體完整性；其他值看來都合理。' },
+        { id: 'a4-s3-p5', type: 'mc', pts: 1, src: '教科書 p.227 圖 4.9', db: 'club', verify: true, ask: 'error',
+          sql: C('ALTER TABLE STUDENT ADD FOREIGN KEY (CID) REFERENCES CLUB(CID);', 'UPDATE CLUB SET CID = 5 WHERE CID = 1'),
+          q: '執行以上兩句 SQL，第二句的結果是什麼？', options: ['沒有錯誤', '違反主關鍵碼限制', '違反外鍵碼限制', '違反 CHECK 限制'], answer: 2,
+          hint: 'Clem 和 Finn 的 CID 是 1。', why: '父數據表中被參照的主關鍵碼不可以更改，否則 Clem 和 Finn 便參照一個不存在的學會。' },
         { id: 'a4-s3-p2', type: 'mc', pts: 2, src: '教科書 p.231 活動 4.6 第 2 題', tags: [HOT_INT],
           q: '活動 4.6 第 2 題的 STUDENT (SCLN, SROW, SNAME, SEX, CID) 及 CLUB（見模擬器）最有可能違反哪項／些完整性？（SCLN、SROW 是座位的欄號和列號，由 1 至 5）\n(1) 實體完整性\n(2) 參照完整性\n(3) 域完整性',
           options: ['只有 (1)', '只有 (2)', '只有 (1) 和 (3)', '只有 (2) 和 (3)'], answer: 3,
@@ -265,7 +271,7 @@ module.exports = {
           cap: '實驗站 4.1（p.234–235）：第一行把數據庫 SCHOOL **匯出（備份）**為 SQL 檔案（內有 CREATE TABLE、INSERT INTO 語句）；第二行把檔案**匯入**，回滾數據庫。在命令提示字元輸入。' },
       ],
       tries: [
-        { id: 'a4-s4-t1', pts: 4, src: '教科書 p.233', db: 'roll', ask: { cell: [0, 'COUNT(*)'] },
+        { id: 'a4-s4-t1', pts: 4, src: '教科書 p.233', db: 'roll', ask: { cell: [1, 'COUNT(*)'] },
           sql: C("UPDATE STUDENT SET CLASS = '6A' WHERE CLASS = '5A';", "DELETE FROM STUDENT WHERE CLASS = '6A';", 'SELECT COUNT(*) FROM STUDENT'),
           q: '先估：老師把兩句的次序倒轉了。最後 STUDENT 有多少項記錄？', options: ['0', '3', '7', '10'],
           why: '先把 7 位 5A 學生改為 6A，於是 10 位學生全是 6A，再全部刪除，留下空表。正確次序（先刪除再升班）會剩下 7 項記錄。' },
@@ -331,7 +337,7 @@ module.exports = {
           options: ['索引會令 SELECT 結果出錯', '每次新增或更新記錄都要更新所有索引表，需時較長；索引表亦佔用儲存空間', '一個數據表只可以有一個索引', '建立索引後便不可以再插入記錄'], answer: 'B',
           why: '應只為經常搜尋的欄位（FNAME、ANAME、FYEAR）建立索引。' },
         { id: 'a4-q5', pts: 4, src: '自擬（DSE 卷二A 子查詢與 NULL）', tags: [{ t: 'trap', why: 'NOT IN 遇上 NULL：外鍵碼為 NULL 的記錄不會被選出。' }],
-          db: 'club', verify: true, ask: { cell: [0, 'COUNT(*)'] },
+          db: 'club', verify: true, ask: { cell: [1, 'COUNT(*)'] },
           sql: C("INSERT INTO STUDENT VALUES ('03520', 'Kit', 'M', '3C', 5);", 'SELECT COUNT(*)', 'FROM STUDENT', 'WHERE CID NOT IN (SELECT CID FROM CLUB)'),
           q: '在學生與學會數據庫（Ben 的 CID 是 NULL）執行以上語句，最後的結果是什麼？', options: ['0', '1', '2', '8'], answer: 'B',
           why: '只有 Kit 的 CID 5 不存在於 CLUB。Ben 的 CID 是 NULL，`NULL NOT IN (…)` 的結果是 NULL，不會被計算。' },

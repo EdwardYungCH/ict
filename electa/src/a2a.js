@@ -96,7 +96,7 @@ module.exports = {
       ],
       tries: [
         { id: 'a2a-s1-t1', pts: 4, src: '教科書 p.62', db: 'school', sql: 'SELECT NAME, SCORE1*0.4+SCORE2*0.6 AS FINAL FROM STUDENT WHERE NAME = \'Eva\'',
-          ask: { cell: [0, 'FINAL'] }, q: '先估：Eva（SCORE1 = 62，SCORE2 = 83）的 FINAL 是多少？',
+          ask: { cell: [1, 'FINAL'] }, q: '先估：Eva（SCORE1 = 62，SCORE2 = 83）的 FINAL 是多少？',
           options: ['74.6', '72.5', '145', '89.8'],
           why: '先乘後加：62 × 0.4 + 83 × 0.6 = 24.8 + 49.8 = 74.6。' },
       ],

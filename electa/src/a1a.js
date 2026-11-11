@@ -117,7 +117,7 @@ module.exports = {
       ],
       tries: [
         { id: 'a1a-s2-t1', pts: 4, src: '教科書 p.56 課後練習第 3(b) 題', tags: [TRAP_TYPE], db: 'player', sql: 'SELECT PID, SCORE1 FROM PLAYER ORDER BY SCORE1 DESC',
-          ask: { cell: [0, 'PID'] }, q: '先估：PLAYER 的 SCORE1 是 CHAR(2)，四位玩家分別是 001 \'-4\'、002 \'11\'、003 \'1\'、004 \'7\'。`ORDER BY SCORE1 DESC` 的第一行是哪位玩家？',
+          ask: { cell: [1, 'PID'] }, q: '先估：PLAYER 的 SCORE1 是 CHAR(2)，四位玩家分別是 001 \'-4\'、002 \'11\'、003 \'1\'、004 \'7\'。`ORDER BY SCORE1 DESC` 的第一行是哪位玩家？',
           options: ['001', '002', '003', '004'],
           why: '字串由第一個字符比較：\'7\' > \'1\' > \'-\'，所以 \'7\' 排第一，\'11\' 只排第二。把 SCORE1 定義為 INT 便會正確排序。' },
       ],
@@ -175,7 +175,7 @@ module.exports = {
           blanks: [{ label: '行數', ask: 'rows' }], hint: '在試算區先執行 `SELECT MTYPE FROM MEMBER` 比較。' },
         { id: 'a1a-s3-p4', type: 'mc', pts: 1, src: '教科書 p.22 例題 1.2(a)', tags: [HOT_DML], db: 'event',
           sql: 'INSERT INTO EVENT (EID, ENAME, EDATE, FEE, FINISHED) VALUES (83320, \'攝影班\', \'2036-09-10\', 30, 0); SELECT PIC FROM EVENT WHERE EID = 83320',
-          ask: { cell: [0, 'PIC'] }, verify: true,
+          ask: { cell: [1, 'PIC'] }, verify: true,
           q: '執行 `INSERT INTO EVENT (EID, ENAME, EDATE, FEE, FINISHED) VALUES (83320, \'攝影班\', \'2036-09-10\', 30, 0)`。新記錄的 PIC 是什麼？',
           options: ['0', 'NULL', '\'\'（空字串）', '出錯，因為少了 PIC'], answer: 1,
           hint: '略過的欄位會是空值。', why: '插入時沒有提供 PIC 的值，所以是 NULL（而不是 0）。' },

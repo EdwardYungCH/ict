@@ -119,7 +119,7 @@ module.exports = {
       tries: [
         { id: 'a3a-s2-t1', pts: 4, src: '教科書 p.110', db: 'club',
           sql: C('SELECT SID, s.NAME, CLASS, c.NAME AS CLUBNAME, ROOM', '    FROM STUDENT s LEFT JOIN CLUB c ON s.CID = c.CID', '    WHERE SCORE >= 60', '    ORDER BY CLASS'),
-          q: '先估：結果第一行（ORDER BY CLASS 後）的 CLUBNAME 是什麼？', ask: { cell: [0, 'CLUBNAME'] }, options: ['NULL', 'Art Club', 'Chess Club', 'Science Club'],
+          q: '先估：結果第一行（ORDER BY CLASS 後）的 CLUBNAME 是什麼？', ask: { cell: [1, 'CLUBNAME'] }, options: ['NULL', 'Art Club', 'Chess Club', 'Science Club'],
           why: '3A 班有 Ada（0 分，被 WHERE 篩走）和 Ben（86 分）。Ben 沒有學會，LEFT JOIN 後 c.NAME 是 NULL。' },
       ],
       practice: [
@@ -231,7 +231,7 @@ module.exports = {
       tries: [
         { id: 'a3a-s5-t1', pts: 4, src: '教科書 p.121 測試站 3.1(a)(iii)', db: 'shop',
           sql: C('SELECT SHOP.NAME, COUNT(PID) FROM SHOP', '    LEFT JOIN PROD ON SHOP.SID = PROD.SID', '    GROUP BY SHOP.SID'),
-          q: '先估：Tai Po Shop（沒有任何產品）那一行的 COUNT(PID) 是什麼？', ask: { cell: [3, 'COUNT(PID)'] }, options: ['0', '1', 'NULL', '不會出現這一行'],
+          q: '先估：Tai Po Shop（沒有任何產品）那一行的 COUNT(PID) 是什麼？', ask: { cell: [4, 'COUNT(PID)'] }, options: ['0', '1', 'NULL', '不會出現這一行'],
           why: 'SHOP 在左方，LEFT JOIN 保留 Tai Po Shop；那一行的 PID 是 NULL，COUNT(PID) 不計 NULL，所以是 0。' },
       ],
       practice: [
@@ -284,7 +284,7 @@ module.exports = {
           q: '執行以下語句，結果有多少行？', sql: 'SELECT * FROM CLUB LEFT JOIN STUDENT ON CLUB.CID = STUDENT.CID',
           options: ['6', '7', '8', '11'], answer: 'B',
           why: 'CLUB 在左方：6 行相符的記錄，加上沒有會員的 English Club，共 7 行；Ben 不會出現。' },
-        { id: 'a3a-q2', pts: 4, src: '教科書 p.118–119 例題 3.1(b)', tags: [{ t: 'trap', why: 'COUNT(*) 會點算外連接產生的 NULL 行' }], db: 'club', verify: true, ask: { cell: [2, 'N'] },
+        { id: 'a3a-q2', pts: 4, src: '教科書 p.118–119 例題 3.1(b)', tags: [{ t: 'trap', why: 'COUNT(*) 會點算外連接產生的 NULL 行' }], db: 'club', verify: true, ask: { cell: [3, 'N'] },
           q: '以下語句中，English Club（第 3 行）的 N 是多少？', sql: C('SELECT c.NAME, COUNT(*) AS N FROM CLUB c', '    LEFT JOIN STUDENT s ON c.CID = s.CID', '    GROUP BY c.CID ORDER BY c.CID'),
           options: ['0', '1', 'NULL', '7'], answer: 'B',
           why: 'English Club 沒有會員，但 LEFT JOIN 仍產生一行（學生欄位是 NULL）；COUNT(*) 點算行數，得 1。應改用 COUNT(s.SID)。' },

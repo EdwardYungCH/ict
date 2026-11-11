@@ -276,9 +276,10 @@
       let ok = true;
       cols.forEach((c, j) => { if (uniqCols.has(UPc(c))) { const v = newKeyVal(rows.map((r) => r[j]).filter((x) => x !== null), (m.types || {})[UPc(c)], rnd); if (v === null) ok = false; else src[j] = v; } });
       if (!ok) continue;
-      const W2 = E.clone(W); W2[tn][1].splice(Math.floor(rnd() * (rows.length + 1)), 0, src);
-      if (checkAll(W2)) W = W2;
-      if (W[tn][1].length >= 3) { for (let tries = 0; tries < 4; tries++) { const W3 = E.clone(W); W3[tn][1].splice(Math.floor(rnd() * W3[tn][1].length), 1); if (checkAll(W3)) { W = W3; break; } } }
+      const at = Math.floor(rnd() * (rows.length + 1));
+      const W2 = E.clone(W); W2[tn][1].splice(at, 0, src);
+      let added = -1; if (checkAll(W2)) { W = W2; added = at; }
+      if (W[tn][1].length >= 3) { for (let tries = 0; tries < 4; tries++) { const W3 = E.clone(W); let k = Math.floor(rnd() * W3[tn][1].length); if (k === added) k = (k + 1) % W3[tn][1].length; W3[tn][1].splice(k, 1); if (checkAll(W3)) { W = W3; break; } } }
     }
     const W0 = E.clone(W);
     names.forEach((tn) => tweakNums(W, tn, rnd, 0.3));
@@ -363,8 +364,11 @@
   function checkSql(task, sql, U, refSql) {
     const ref = refSql || task.ref;
     if (!String(sql).trim()) return { ok: false, empty: true, list: [] };
+    const base = dbOf(U, task.db);
+    const pre = E.runScript(base, sql);
+    if (pre.error && pre.error.code === 'syntax') return { ok: false, list: [{ i: 0, ok: false, msg: `執行出錯（${pre.error.label}${pre.error.idx ? `，第 ${pre.error.idx + 1} 句` : ''}）：${pre.error.msg}`, hidden: false }] };
     const ruleMsg = checkRules(task, sql); if (ruleMsg) return { ok: false, ruleMsg, list: [] };
-    const base = dbOf(U, task.db), dbs = [base].concat(variants(base, task.id || ref));
+    const dbs = [base].concat(variants(base, task.id || ref));
     const ordered = (task.check && task.check.order) || refOrdered(ref);
     const list = []; let all = true;
     dbs.forEach((T, i) => {
@@ -694,8 +698,8 @@
     const U = ctx.U, answers = fillAnswers(it, U);
     const inputs = it.blanks.map((b, i) => h('input.txt', { type: 'text', 'aria-label': b.label, autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', 'data-i': i }));
     const body = h('div.stack', mdEl('div.q', it.q), it.attrs && it.fds ? fdHead(it) : null, it.sql && it.showTables !== false ? itemTables(it, U) : null, it.sql ? codeView(it.sql) : null,
-      h('div', { style: { display: 'grid', gap: '8px' } }, it.blanks.map((b, i) => h('label.row', mdEl('span', b.label), inputs[i]))), h('p.pts', '多個值用「, 」分隔；沒有記錄可留空或寫「沒有記錄」。'));
-    const accept = (i, v) => { const b = it.blanks[i]; if (b.fd) return fdInfo(Object.assign({}, it, { ask: b.fd })).match(v); return same(v, answers[i], true) || (b.accept || []).some((a) => same(v, a, true)); };
+      h('div', { style: { display: 'grid', gap: '8px' } }, it.blanks.map((b, i) => h('label.row', mdEl('span', b.label), inputs[i]))), h('p.pts', '多個值用「, 」分隔；多行結果每行之間用「 / 」分隔；沒有記錄可留空或寫「沒有記錄」。'));
+    const accept = (i, v) => { const b = it.blanks[i]; if (answers[i].includes('\n')) v = v.replace(/\s*\/\s*/g, '\n'); if (b.fd) return fdInfo(Object.assign({}, it, { ask: b.fd })).match(v); return same(v, answers[i], true) || (b.accept || []).some((a) => same(v, a, true)); };
     return practiceShell(it, ctx, body,
       () => {
         const vals = inputs.map((x) => x.value.trim());
@@ -907,6 +911,7 @@
     for (let k = 0; opts.length < 4 && fill && k < 40; k++) { const a = fill(); if (a != null && !seen.some((x) => same(x, a))) { seen.push(a); opts.push(a); } }
     return { ans, options: shuffle(opts) };
   }
+  const perturbFill = (ans) => () => { const ls = String(ans).split('\n').map((l) => l.split(', ')); const cells = []; ls.forEach((l, i) => l.forEach((c, j) => { if (isNum(c)) cells.push([i, j]); })); if (!cells.length) return ls.length > 1 ? ls.slice(0, -1).map((l) => l.join(', ')).join('\n') : null; const [i, j] = pick(cells); ls[i][j] = fmtV(Number(ls[i][j]) + pick([-5, -1, 1, 2, 5])); return ls.map((l) => l.join(', ')).join('\n'); };
   const subsetFill = (vals) => () => sample(vals, R(0, Math.min(vals.length, 4))).join(', ');
   const numFill = (ans) => () => { const n = Number(ans); if (!Number.isFinite(n)) return null; return fmtV(n + pick([-2, -1, 1, 2, 3, 5, 10])); };
   const GENS = (SQ.GENS = SQ.GENS || {});
@@ -953,7 +958,7 @@
       if (a.split(/[\n,]/).every((x) => !/\.\d{3,}/.test(x)) && !/NULL/.test(a)) break;
     }
     q = ask === 'table' ? '執行以下 SQL，結果是什麼？（聚合函數會略過 NULL；COUNT(*) 則點算所有記錄）' : '執行以下 SQL，結果是什麼？（聚合函數會略過 NULL；COUNT(*) 則點算所有記錄）';
-    const mc = mcFrom(T, sql, ask, ws, ask === 'table' ? null : numFill(askAnswer({ sql, ask, _T: T })));
+    const mc = mcFrom(T, sql, ask, ws, (ask === 'table' ? perturbFill : numFill)(askAnswer({ sql, ask, _T: T })));
     return Object.assign({ type: '聚合函數及分組', T, sql, ask, q }, mc);
   };
   const WORDS = ['Luggage', 'Database', 'Computer', 'Elective', 'Keyboard', 'Monitor', 'Network', 'Printer', 'Student', 'Library', 'Hong Kong', 'Sha Tin', 'Ice Cream'];
@@ -1042,7 +1047,7 @@
     ];
     const [sql, ws] = pick(forms);
     const ask = { after: 'ITEM' };
-    const mc = mcFrom(T, sql, ask, ws, null);
+    const mc = mcFrom(T, sql, ask, ws, perturbFill(askAnswer({ sql, ask, _T: T })));
     return Object.assign({ type: 'INSERT／UPDATE／DELETE', T, sql, ask, q: '執行以下 SQL 後，數據表 ITEM 的內容是什麼？（沒有給值的欄位是 NULL）' }, mc);
   };
   function absRel() {
@@ -1089,7 +1094,7 @@
   ];
   GENS.erCard = () => {
     const [a, b, s, c] = pick(ER_BANK); const flip = rand() < 0.4;
-    const card = flip ? c.split(':').reverse().join(':') : c, x = flip ? b : a, y = flip ? a : b;
+    const card = flip && c !== 'M:N' ? c.split(':').reverse().join(':') : c, x = flip ? b : a, y = flip ? a : b;
     return { type: '實體關係（基數）', q: `${s}\n「${x}」與「${y}」之間的關係（${x}：${y}）是哪一種？`, options: ['1:1', '1:M', 'M:1', 'M:N'], ans: card, why: `一個「${x}」對應${card.split(':')[1] === 'M' || card.split(':')[1] === 'N' ? '多個' : '一個'}「${y}」；一個「${y}」對應${card.split(':')[0] === 'M' ? '多個' : '一個'}「${x}」。`, er: { entities: [{ name: x }, { name: y }], rels: [{ a: x, b: y, name: '?', card: '?:?' }] } };
   };
   SQ.GEN_NAMES = Object.keys(GENS);
@@ -1116,7 +1121,7 @@
         fb.replaceChildren(feedback(ok ? 'good' : 'bad', ok ? '答對了！' : '未對。綠色的是正確答案。', g.why || (g.sql ? '可以在下面執行這句 SQL 核對。' : null)));
         if (g.sql) after.replaceChildren(Console({ T: g.T, sql: g.sql, tablesOpen: false }).el);
       };
-      area.replaceChildren(h('div.row', h('span.pill.prac', h('i', '∞'), g.type)), mdEl('div.q', g.q), g.fd ? fdHead(g.fd) : null, g.er ? erEl(g.er) : null, g.sql && !g.noTables ? h('div.tables.mini', tablesEl(g.T)) : null, g.sql ? codeView(g.sql) : null, h('div.endopts' + (tableish ? '.tall' : ''), { role: 'group', 'aria-label': '選項' }, btns), h('div.row', bChk, bNext), fb, after);
+      area.replaceChildren(...[h('div.row', h('span.pill.prac', h('i', '∞'), g.type)), mdEl('div.q', g.q), g.fd ? fdHead(g.fd) : null, g.er ? erEl(g.er) : null, g.sql && !g.noTables ? h('div.tables.mini', tablesEl(g.T)) : null, g.sql ? codeView(g.sql) : null, h('div.endopts' + (tableish ? '.tall' : ''), { role: 'group', 'aria-label': '選項' }, btns), h('div.row', bChk, bNext), fb, after].filter(Boolean));
     }
     box.append(mdEl('p', sec.intro || '按教科書題型隨機生成，答案由 SQL 引擎計算。想練多少就練多少。'), stat, area);
     updStat(); next();

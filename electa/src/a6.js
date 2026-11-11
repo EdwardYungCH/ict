@@ -157,7 +157,7 @@ module.exports = {
         { id: 'a6-s1-p3', type: 'fill', pts: 2, src: '自擬（參考教科書 p.78–80 例題 2.3）', db: 'mart',
           q: '寫出以下語句的輸出。',
           sql: C('SELECT MID(CUSTOMERNAME, 1, 4) AS A, LENGTH(EMAIL) AS B, MONTH(TRANSDATE) AS C', 'FROM CUSTOMER, SALES', "WHERE CUSTOMER.CUSTOMERID = SALES.CUSTOMERID AND TRANSACTIONID = 'T1005'"),
-          blanks: [{ label: 'A', ask: { cell: [0, 'A'] } }, { label: 'B', ask: { cell: [0, 'B'] } }, { label: 'C', ask: { cell: [0, 'C'] } }],
+          blanks: [{ label: 'A', ask: { cell: [1, 'A'] } }, { label: 'B', ask: { cell: [1, 'B'] } }, { label: 'C', ask: { cell: [1, 'C'] } }],
           hint: 'T1005 的顧客是 C1002。MID 由第 1 個字符起取 4 個；LENGTH 包括 @ 和 . 。' },
       ],
     },
@@ -335,7 +335,7 @@ module.exports = {
     },
     // ───────────────────────── write ─────────────────────────
     {
-      kind: 'write',
+      id: 'write', kind: 'write', title: '寫 SQL：DSE 長題', pages: '綜合練習 p.309–311 第 8(b)(iv)(v)、10(c) 題',
       tasks: [
         { id: 'a6-w1', pts: 10, title: '向 C2001 出售的產品', db: 'mart',
           q: C('綜合練習 p.311 第 10(c) 題。', '', '使用 `mart` 數據庫，寫一句 SQL：列出曾經向顧客 `\'C2001\'` 出售的**產品名稱**，按產品名稱的字母順序（升序）排列。每個產品名稱只列一次。'),
@@ -358,7 +358,7 @@ module.exports = {
     },
     // ───────────────────────── quiz ─────────────────────────
     {
-      kind: 'quiz',
+      id: 'quiz', kind: 'quiz', title: '小測', pages: '綜合練習 p.308–310',
       items: [
         { id: 'a6-q1', pts: 3, src: '綜合練習 p.308 第 1(a) 題', tags: [HOT_INT],
           q: '零售連鎖公司用 SHOP 和 STAFF 儲存數據，SHOP 有一欄記錄經理的員工編號（外鍵碼）。一名身為經理的員工離職，其 STAFF 記錄被刪除，管理員沒有採取其他行動。可能會違反哪種完整性？',
@@ -391,7 +391,7 @@ module.exports = {
           why: 'MINUS（EXCEPT）保留在第一個結果、但不在第二個結果中的值。在本單元的數據，結果是 P3007。' },
       ],
     },
-    { kind: 'endless', gens: ['sqlAgg', 'sqlJoin', 'sqlSub', 'fdNf'] },
-    { kind: 'report' },
+    { id: 'more', kind: 'endless', title: '無限練習', gens: ['sqlAgg', 'sqlJoin', 'sqlSub', 'fdNf'], intro: '隨機生成分組、連接、子查詢及範式題目，答案由模擬器計算。不計分，但次數會寫進報告。' },
+    { id: 'report', kind: 'report', title: '交功課' },
   ],
 };
