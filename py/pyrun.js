@@ -466,8 +466,10 @@
         return res;
       });
   }
+  PyRun.busy = 0; // 測試用：正在執行或排隊的數目
   PyRun.run = function (code, opt) {
-    const p = chain.then(() => runNow(code, opt));
+    PyRun.busy++;
+    const p = chain.then(() => runNow(code, opt)).finally(() => { PyRun.busy--; });
     chain = p.catch(() => null);
     return p;
   };
