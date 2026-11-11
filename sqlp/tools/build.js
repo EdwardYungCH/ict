@@ -44,6 +44,7 @@ loaded.sort((a, b) => { const ia = planOf(a.id), ib = planOf(b.id); if (ia >= 0 
 // ---------- 核對 ----------
 function checkUnit(U) {
   const P = [], W = [];
+  SQ.defaultTitles(U);
   const chk = (c, m) => { if (!c) P.push(m); };
   const tryF = (id, f) => { try { f(); } catch (e) { P.push(`${id}：${e.message}`); } };
   chk(U.title, '沒有 title'); chk(/^[\x21-\x7e]{12,}$/.test(U.key || ''), 'key 要是 12 個字符以上的英文／數字字串');

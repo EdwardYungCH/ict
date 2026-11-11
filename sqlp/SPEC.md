@@ -155,3 +155,6 @@ The page shows the expected result on the unit db unless `showExpected:false`. B
 
 **Course**: `course.json` `{code, title, kicker, subtitle, pin, plan:[[id,title,ch]]}`. Report `app` = `<code>SQL自學平台`. Categories:
 試 / 練 / 寫SQL (theory units: 分析題; or `writeLabel`) / 小測.
+
+Sections with `kind` may omit `title`/`id`: defaults 寫SQL（theory: 分析題；or `writeLabel`）／小測／無限練習／交功課, id = kind.
+`ask.cell` row numbers are **1-based only** (checked: all current units use 1-based correctly).

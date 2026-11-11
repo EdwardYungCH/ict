@@ -1149,10 +1149,14 @@
   }
   SQ.renderLearn = renderLearn;
 
+  const KIND_TITLE = { write: '寫SQL', quiz: '小測', endless: '無限練習', report: '交功課' };
+  function defaultTitles(U) { (U.sections || []).forEach((sec, i) => { if (!sec.title) sec.title = sec.kind === 'write' ? (U.writeLabel || (U.theory ? '分析題' : '寫SQL')) : KIND_TITLE[sec.kind] || `第 ${i + 1} 節`; if (!sec.id) sec.id = sec.kind || 's' + (i + 1); }); return U; }
+  SQ.defaultTitles = defaultTitles;
   // ---------------- 單元頁 ----------------
   SQ.unit = function (U, CRS) {
     CRS = CRS || {};
     SQ._unit = U; SQ._course = CRS;
+    defaultTitles(U);
     const PIN = CRS.pin || '';
     const KEY = `sqlp:${CRS.code || 'c'}:${U.id}:v1`;
     const blank = () => ({ reg: null, sec: 0, visited: [0], items: {}, drafts: {}, quiz: { ans: {}, submitted: false }, endless: { n: 0, right: 0 }, started: new Date().toISOString() });
@@ -1347,6 +1351,7 @@
       return h('section.card', h('h2', { style: { margin: 0 } }, '核對學生報告'), h('p', '可貼上報告文字，或選擇多個報告檔案（.txt）。系統會檢查 HMAC 簽名，並匯總成 CSV（可用 Excel 開啟）。'), ta, h('div.row', bGo, bClr, h('label.row', '上載檔案：', file)), res);
     }
     function answerSheet(U) {
+      defaultTitles(U);
       const body = h('div.blk');
       const det = h('details.ansheet', h('summary', `${U.id.toUpperCase()} ${U.title}：答案及重點`), body);
       det.addEventListener('toggle', () => { if (det.open && !body.children.length) body.append(...sheetBody(U)); });

@@ -49,7 +49,7 @@ def new_page(browser, width, scheme='light', block_storage=False):
     if block_storage:
         ctx.add_init_script("Object.defineProperty(window,'localStorage',{get(){throw new DOMException('blocked','SecurityError')}});")
     pg = ctx.new_page()
-    pg.set_default_timeout(15000)
+    pg.set_default_timeout(8000)
     errs = []
     pg.on('console', lambda m: errs.append(m.text) if m.type == 'error' and 'fonts.g' not in m.text and 'ERR_FAILED' not in m.text else None)
     pg.on('pageerror', lambda e: errs.append(str(e)))
@@ -405,13 +405,22 @@ with sync_playwright() as p:
     for u in UNITS:
         if not os.path.exists(os.path.join(CDIR, u, 'index.html')):
             check(f'{u} 頁面存在', False, '先執行 build.js'); continue
-        reps.append(full_run(browser, u, 1366))
-        reps.append(full_run(browser, u, 390))
-        dark_and_blocked(browser, u)
-    if reps:
-        teacher_verify(browser, reps)
-        teacher_verify(browser, reps, 390)
-    hub(browser)
+        for w in (1366, 390):
+            try:
+                reps.append(full_run(browser, u, w))
+            except Exception as e:
+                check(f'{u}@{w} 完整流程沒有中斷', False, f'{type(e).__name__}: {str(e).splitlines()[0][:300]}')
+        try:
+            dark_and_blocked(browser, u)
+        except Exception as e:
+            check(f'{u} 深色／封鎖／老師模式流程沒有中斷', False, f'{type(e).__name__}: {str(e).splitlines()[0][:300]}')
+    for fn, a in ((teacher_verify, (reps,)), (teacher_verify, (reps, 390)), (hub, ())):
+        if fn is teacher_verify and not reps:
+            continue
+        try:
+            fn(browser, *a)
+        except Exception as e:
+            check(f'{fn.__name__} 流程沒有中斷', False, f'{type(e).__name__}: {str(e).splitlines()[0][:300]}')
     browser.close()
 
 bad = [r for r in results if not r[1]]
