@@ -191,7 +191,7 @@ function collect(U) {
         t.tests.forEach((ts, ti) => job({ code: t.ref, inputs: ts.inputs || '', files: ts.files, fixRandom: ts.fixRandom || t.fixRandom }, (r) => {
           if (r.err && !t.allowError) P(u, `${t.id}：參考答案在第 ${ti + 1} 組測試出錯 ${errTxt(r.err)}`);
           t._exp[ti] = expOf(r, t.check);
-          if (ti === 0) t._sample = r.out;
+          if (ti === 0) { t._sample = r.out; if (t.check && t.check.file) t._sampleFile = { name: t.check.file, text: t.check.file in r.files ? r.files[t.check.file] : null }; }
         }));
         const starter = t.starter || '';
         const st = [];

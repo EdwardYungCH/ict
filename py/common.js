@@ -35,7 +35,7 @@
     get(k) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { this.ok = false; return null; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { this.ok = false; return false; } },
   };
-  if (typeof localStorage !== 'undefined' || typeof document !== 'undefined') {
+  if (typeof document !== 'undefined') {
     try { const t = '__pyt'; localStorage.setItem(t, '1'); localStorage.removeItem(t); } catch (e) { store.ok = false; }
   }
   PY.h = h; PY.md = md; PY.store = store;
@@ -292,7 +292,7 @@
     const varsEl = h('div.vtab');
     const side = h('div.ide-side', h('h4', '變量'), varsEl);
     const main = h('div.ide-main', codeBox, side);
-    const hasInput = !o.noInput && (o.editable || /\binput\s*\(/.test(o.code || '') || (o.inputs != null && String(o.inputs) !== ''));
+    const hasInput = !o.noInput && (o.alwaysInput || /\binput\s*\(/.test(o.code || '') || (o.inputs != null && String(o.inputs) !== ''));
     const inTa = h('textarea.ide-in', { rows: Math.max(1, String(o.inputs || '').split('\n').length), spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off', 'aria-label': '輸入數據（每行一個）' });
     inTa.value = o.inputs || '';
     const inRow = hasInput ? h('label.ide-inrow', h('span', '輸入', h('small', '（每行一個值，依次給每次 input()；不夠時會在 Shell 問你）')), inTa) : null;
@@ -691,10 +691,13 @@
     box.append(mdEl('div.q', task.q || task.prompt || ''));
     const t0 = task.tests[0] || {};
     const sample = task.sample != null ? task.sample : task._sample;
-    box.append(h('div.sample', h('div.sample-h', '例子：', testLabel(t0, 0).replace(/^第 1 組/, '')), h('pre.out', normOut(sample) || '（沒有輸出）')));
+    const sf = task._sampleFile;
+    box.append(h('div.sample', h('div.sample-h', '例子：', testLabel(t0, 0).replace(/^第 1 組/, '')),
+      sf && !normOut(sample) ? null : h('pre.out', normOut(sample) || '（沒有輸出）'),
+      sf ? h('div.sample-h', `執行後 ${sf.name} 的內容：`) : null, sf ? h('pre.out', sf.text == null ? '（沒有這個檔案）' : sf.text === '' ? '（空檔案）' : sf.text) : null));
     if (task.rules && task.rules.length) box.append(h('ul.rules', task.rules.map((r) => h('li', r.msg || (r.must ? `要用到 ${r.must}` : r.mustNot ? `不可用 ${r.mustNot}` : '')))));
     box.append(h('p.pts', `提交後會用 ${task.tests.length} 組數據自動評核（包括邊界值）。`));
-    const ide = PyIDE({ code: draft != null ? draft : task.starter || '', editable: true, inputs: t0.inputs || '', files: t0.files, fixRandom: task.fixRandom || t0.fixRandom, fname: task.id.replace(/-/g, '_') + '.py', minRows: 8,
+    const ide = PyIDE({ code: draft != null ? draft : task.starter || '', editable: true, alwaysInput: true, inputs: t0.inputs || '', files: t0.files, fixRandom: task.fixRandom || t0.fixRandom, fname: task.id.replace(/-/g, '_') + '.py', minRows: 8,
       onChange: (v) => { ctx.state.drafts = ctx.state.drafts || {}; ctx.state.drafts[task.id] = v; ctx.save(); } });
     const bSubmit = h('button.btn.primary', { type: 'button' }, '提交評核');
     const bRef = h('button.btn.ghost', { type: 'button', hidden: !((st.tries || 0) >= 2) || st.done }, '看參考答案（只得 1 分）');

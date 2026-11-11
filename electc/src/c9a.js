@@ -76,11 +76,6 @@ def TL():
     global D, steps
     steps = steps + 1
     D = (D + 3) % 4
-
-def TR():
-    global D, steps
-    steps = steps + 1
-    D = (D + 1) % 4
 `;
 
 const HOT_2D = { t: 'hot', why: '二維陣列配合巢式循環（DSE 2015 卷二D 第 3 題為本書第 3 題的參考）' };
@@ -397,7 +392,7 @@ print('Count:', len(found))`,
           tests: [{ inputs: 'C' }, { inputs: 'A' }, { inputs: 'E' }, { inputs: 'D' }],
           hint: '`ord(letter) - ord(\'A\')` 把 A 至 E 變成 0 至 4。用一個列表收集已售座位，最後用 `\' \'.join(...)` 輸出；列表是空的便輸出 None。' },
         { id: 'c9a-w2', pts: 12, title: '機械車自動回家 goBack()', src: '教科書 p.335 綜合練習第 2(b) 題',
-          q: '`FW()`、`TL()`、`TR()` 已寫好，每做一個動作 `steps` 便加 1。輸入 `X Y D`（以空格分隔）。\n寫出三個子程式：\n(1) `turnZero()`：**只用 TL**，令機械車轉向北；\n(2) `goZero()`：面向北時返回充電器（先向北走 Y 步，再 TL，向西走 X 步）；\n(3) `goBack()`：先 turnZero() 再 goZero()。\n主程式已寫好：最後輸出 `X Y D steps`。',
+          q: '`FW()`、`TL()` 已寫好（這題沒有 TR），每做一個動作 `steps` 便加 1。輸入 `X Y D`（以空格分隔）。\n寫出三個子程式：\n(1) `turnZero()`：**只用 TL**，令機械車轉向北；\n(2) `goZero()`：面向北時返回充電器（先向北走 Y 步，再 TL，向西走 X 步）；\n(3) `goBack()`：先 turnZero() 再 goZero()。\n主程式已寫好：最後輸出 `X Y D steps`。',
           starter: ROBOT_IO + R`
 def turnZero():
     pass
@@ -437,7 +432,7 @@ D = int(nums[2])
 goBack()
 print(X, Y, D, steps)`,
           tests: [{ inputs: '4 3 1' }, { inputs: '0 0 2' }, { inputs: '2 0 3' }, { inputs: '0 3 0' }, { inputs: '6 4 2' }],
-          rules: [{ must: 'def turnZero', msg: '要寫子程式 turnZero' }, { must: 'def goZero', msg: '要寫子程式 goZero' }, { mustNot: 'TR()', msg: '依題目，轉向只可用 TL()' }],
+          rules: [{ must: 'def turnZero', msg: '要寫子程式 turnZero' }, { must: 'def goZero', msg: '要寫子程式 goZero' }, { mustNot: 'TR(', msg: '依題目，轉向只可用 TL()' }],
           hint: '`turnZero`：`for i in range(D): TL()`。`goZero` 跟第 2(b)(i) 題一樣。三個函數都不用 global，因為 FW()、TL() 已負責改變 X、Y、D。' },
         { id: 'c9a-w3', pts: 13, title: '河內塔（遞歸）', src: '教科書 p.342–343 開放式問題第 4 題',
           q: '輸入圓盤數目 n。若 n 不在 1 至 10 之間，輸出 `Invalid`；否則輸出把所有圓盤由棍子 A 移到棍子 B（以 C 作輔助）的步驟，格式與書中相同：`Move disk 1 from A to B`。\n提示：要移動 n 個圓盤由 A 到 B：先把上面 n − 1 個由 A 移到 C，再把第 n 個由 A 移到 B，最後把 n − 1 個由 C 移到 B。',
